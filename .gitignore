@@ -96,4 +96,6 @@ replay_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/java,eclipse
 
-/src/main/java/common/Constants.java
+target/
+
+final/src/main/java/com/project/app/common/Constants.java
