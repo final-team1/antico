@@ -40,10 +40,10 @@
 <style>
 
 .fixed {
-    position: fixed;
     left:16px;
     top:0;
     background-color: white;
+    margin-bottom: 1%;
     z-index: 10;
 }
 
@@ -272,7 +272,7 @@ div.categoreIcon {
 <body>
 
 <!-- 데스크톱 버전 -->
-<div class="container-fluid fixed" style="padding-left: 0px; padding-right: 0px;">
+<div class="container-fluid fixed sticky-top" style="padding-left: 0px; padding-right: 0px;">
 
 
 <div class="content desktop">
@@ -379,7 +379,7 @@ div.categoreIcon {
 
 
 
-<div class="content container-fluid mobile fixed" style=" padding-left: 0px;">
+<div class="content container-fluid mobile fixed sticky-top" style=" padding-left: 0px;">
 
 
 <div class="d-flex" style="vertical-align: middle;  height:80px;">
