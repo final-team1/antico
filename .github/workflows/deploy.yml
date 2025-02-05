@@ -19,7 +19,7 @@ jobs:
                   cache: maven
 
             - name: Cache Maven packages
-              uses: actions/cache@v2
+              uses: actions/cache@v4
               with:
                   path: ~/.m2
                   key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -29,7 +29,7 @@ jobs:
               run: mvn -B clean package --file pom.xml
 
             - name: Upload build artifact (WAR file)
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: trelloServer
                   path: target/*.war
@@ -40,7 +40,7 @@ jobs:
 
         steps:
             - name: Download build artifact
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v4
               with:
                   name: trelloServer
                   path: target/
