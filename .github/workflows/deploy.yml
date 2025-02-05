@@ -59,8 +59,20 @@ jobs:
               run: |
                   echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
                   chmod 600 private_key.pem
-                  scp -i private_key.pem -o StrictHostKeyChecking=no final/target/*.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/trelloServer.war
+
+                  # 기존 .war 파일 및 배포된 폴더 삭제 (충돌 방지)
+                  ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer.war
+                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer/
+                  EOF
+
+                  # 새로운 .war 파일 업로드 (webapps/ 경로로 바로 업로드)
+                  scp -i private_key.pem -o StrictHostKeyChecking=no final/target/trelloServer.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/tomcat/apache-tomcat-10.1.34/webapps/
+
+                  # Tomcat 재시작
                   ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
                     sudo systemctl restart tomcat
                   EOF
+
+                  # SSH 키 삭제 (보안 강화)
                   rm -f private_key.pem
