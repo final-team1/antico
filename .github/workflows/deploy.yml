@@ -65,4 +65,4 @@ jobs:
                   # Tomcat 중지 후 기존 파일 삭제
                   ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
                     sudo systemctl stop tomcat
-                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer.wa
+                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer.war
