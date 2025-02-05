@@ -375,6 +375,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>final</finalName>
 		<plugins>
 		 	<!-- Maven WAR Plugin: 불필요한 파일 제거 -->
 	        <plugin>

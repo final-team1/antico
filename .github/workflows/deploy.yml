@@ -21,7 +21,7 @@ jobs:
                   cache: maven
 
             - name: Clear Maven Cache
-              run: rm -rf ~/.m2/repository # ✅ 손상된 JAR 문제 방지
+              run: rm -rf ~/.m2/repository
 
             - name: Build with Maven
               working-directory: final
@@ -35,7 +35,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: final
-                  path: final/target/final.war # ✅ 명확한 파일 지정
+                  path: final/target/final.war
 
     deploy:
         needs: build
