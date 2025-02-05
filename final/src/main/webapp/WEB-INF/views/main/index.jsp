@@ -92,7 +92,7 @@
 
 </div>
 
-<h2 class="mb-4" style="margin-top:15%;">최재혁님 이런상품은 어때요?</h2>
+<h2 class="mb-4" style="margin-top:15%;">최재혁 및 김진성님 이런상품은 어때요?</h2>
 <div class="menuImgContainer container" style="height:200px;">
 
 	<div class="swiper swiperCategory">
