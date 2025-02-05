@@ -375,6 +375,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>trelloServer</finalName>  <!-- ✅ 빌드된 `.war` 파일의 최종 이름을 설정 -->
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
