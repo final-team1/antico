@@ -375,7 +375,6 @@
 	</dependencies>
 
 	<build>
-		<finalName>trelloServer</finalName>  <!-- ✅ 빌드된 `.war` 파일의 최종 이름을 설정 -->
 		<plugins>
 		 	<!-- Maven WAR Plugin: 불필요한 파일 제거 -->
 	        <plugin>

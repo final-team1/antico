@@ -34,8 +34,8 @@ jobs:
             - name: Upload build artifact (WAR file)
               uses: actions/upload-artifact@v4
               with:
-                  name: trelloServer
-                  path: final/target/trelloServer.war # ✅ 명확한 파일 지정
+                  name: final
+                  path: final/target/final.war # ✅ 명확한 파일 지정
 
     deploy:
         needs: build
@@ -44,7 +44,7 @@ jobs:
             - name: Download build artifact
               uses: actions/download-artifact@v4
               with:
-                  name: trelloServer
+                  name: final
                   path: final/target/
 
             - name: Verify WAR file exists after download
@@ -58,12 +58,12 @@ jobs:
                   # Tomcat 중지 후 기존 파일 삭제
                   ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
                     sudo systemctl stop tomcat
-                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer.war
-                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer/
+                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/final.war
+                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/final/
                   EOF
 
                   # 새로운 WAR 파일 업로드
-                  scp -i private_key.pem -o StrictHostKeyChecking=no final/target/trelloServer.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/tomcat/apache-tomcat-10.1.34/webapps/
+                  scp -i private_key.pem -o StrictHostKeyChecking=no final/target/final.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/tomcat/apache-tomcat-10.1.34/webapps/
 
                   # 파일이 정상적으로 업로드되었는지 확인
                   ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
@@ -77,9 +77,3 @@ jobs:
 
                   # SSH 키 삭제 (보안 강화)
                   rm -f private_key.pem
-
-            - name: Check Tomcat Logs After Deployment
-              run: |
-                  ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-                    tail -n 50 /home/tomcat/apache-tomcat-10.1.34/logs/catalina.out
-                  EOF
