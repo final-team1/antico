@@ -10,7 +10,9 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
             - name: Set up JDK 17
               uses: actions/setup-java@v4
               with:
@@ -29,11 +31,15 @@ jobs:
               working-directory: final
               run: mvn -B clean package
 
+            - name: Verify WAR file exists before upload
+              working-directory: final
+              run: ls -al target
+
             - name: Upload build artifact (WAR file)
               uses: actions/upload-artifact@v4
               with:
                   name: trelloServer
-                  path: target/*.war
+                  path: final/target/*.war # ✅ 업로드 경로 수정
 
     deploy:
         needs: build
@@ -44,13 +50,16 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: trelloServer
-                  path: target/
+                  path: final/target/ # ✅ 다운로드 경로 수정
+
+            - name: Verify WAR file exists after download
+              run: ls -al final/target/
 
             - name: Deploy to EC2
               run: |
                   echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
                   chmod 600 private_key.pem
-                  scp -i private_key.pem -o StrictHostKeyChecking=no target/*.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/trelloServer.war
+                  scp -i private_key.pem -o StrictHostKeyChecking=no final/target/*.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/trelloServer.war
                   ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
                     sudo systemctl restart tomcat
                   EOF
