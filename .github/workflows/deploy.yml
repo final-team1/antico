@@ -27,6 +27,9 @@ jobs:
                   key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
                   restore-keys: ${{ runner.os }}-m2
 
+            - name: Clear Maven Cache (Optional)
+              run: rm -rf ~/.m2/repository/com/project # ❗ 손상된 JAR 방지
+
             - name: Build with Maven
               working-directory: final
               run: mvn -B clean package
@@ -39,18 +42,17 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: trelloServer
-                  path: final/target/*.war # ✅ 업로드 경로 수정
+                  path: final/target/trelloServer.war # ✅ 명확한 파일 지정
 
     deploy:
         needs: build
         runs-on: ubuntu-latest
-
         steps:
             - name: Download build artifact
               uses: actions/download-artifact@v4
               with:
                   name: trelloServer
-                  path: final/target/ # ✅ 다운로드 경로 수정
+                  path: final/target/
 
             - name: Verify WAR file exists after download
               run: ls -al final/target/
@@ -60,19 +62,7 @@ jobs:
                   echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
                   chmod 600 private_key.pem
 
-                  # 기존 .war 파일 및 배포된 폴더 삭제 (충돌 방지)
+                  # Tomcat 중지 후 기존 파일 삭제
                   ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer.war
-                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer/
-                  EOF
-
-                  # 새로운 .war 파일 업로드 (webapps/ 경로로 바로 업로드)
-                  scp -i private_key.pem -o StrictHostKeyChecking=no final/target/trelloServer.war ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/tomcat/apache-tomcat-10.1.34/webapps/
-
-                  # Tomcat 재시작
-                  ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-                    sudo systemctl restart tomcat
-                  EOF
-
-                  # SSH 키 삭제 (보안 강화)
-                  rm -f private_key.pem
+                    sudo systemctl stop tomcat
+                    sudo rm -rf /home/tomcat/apache-tomcat-10.1.34/webapps/trelloServer.wa

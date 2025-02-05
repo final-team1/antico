@@ -377,6 +377,21 @@
 	<build>
 		<finalName>trelloServer</finalName>  <!-- ✅ 빌드된 `.war` 파일의 최종 이름을 설정 -->
 		<plugins>
+		 	<!-- Maven WAR Plugin: 불필요한 파일 제거 -->
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-war-plugin</artifactId>
+	            <version>3.4.0</version>
+	            <configuration>
+	                <failOnMissingWebXml>false</failOnMissingWebXml>
+	                <packagingExcludes>
+	                    META-INF/maven/**,
+	                    META-INF/*.xml,  <!-- POM 등 불필요한 파일 제거 -->
+	                    META-INF/application.yml  <!-- 중복된 설정 제거 -->
+	                </packagingExcludes>
+	            </configuration>
+	        </plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
