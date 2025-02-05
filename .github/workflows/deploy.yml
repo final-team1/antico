@@ -26,7 +26,8 @@ jobs:
                   restore-keys: ${{ runner.os }}-m2
 
             - name: Build with Maven
-              run: mvn -B clean package --file pom.xml
+              working-directory: final
+              run: mvn -B clean package
 
             - name: Upload build artifact (WAR file)
               uses: actions/upload-artifact@v4
