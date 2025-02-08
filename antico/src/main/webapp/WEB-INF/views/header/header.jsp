@@ -9,10 +9,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>히히</title>
+<title>Antico</title>
   <!-- Required meta tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <%-- favicon.ico 적용 --%>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   
   <%-- Bootstrap CSS --%>
   <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/bootstrap-4.6.2-dist/css/bootstrap.min.css" >
@@ -282,7 +285,7 @@ div.categoreIcon {
 	<div class="d-flex" style="height:100px; width:70%; margin:0 auto;">
 		
 		<div class="" style="vertical-align: middle;">
-			<img class="mt-4" src="https://web.joongna.com/main-web/assets/images/custom-logo.svg" width="200"/>
+			<img class="mt-4" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
 		</div>
 		<div class="flex-fill">
 			<div>
