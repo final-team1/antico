@@ -35,8 +35,10 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
 
 
 mybatis: #mybatis 설정
- #type-aliases-package: com.spring.app.**.domain 
- #mapper-locations: com/spring/app/**/mapper/*.xml   #src/main/java 아래 패키지속에 매퍼파일을 만드는 경우 
+  configuration:
+    map-underscore-to-camel-case: true  
+  #type-aliases-package: com.spring.app.**.domain 
+  #mapper-locations: com/spring/app/**/mapper/*.xml   #src/main/java 아래 패키지속에 매퍼파일을 만드는 경우 
   mapper-locations: mybatis/mapper/**/*.xml          #src/main/resources 아래 폴더속에 매퍼파일을 만드는 경우
 logging: #로그 지정
   level:
