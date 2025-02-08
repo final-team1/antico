@@ -398,7 +398,7 @@ div.categoreIcon {
 	</div>
 	
 	<div class="flex-fill">
-		<img class="mt-4" src="https://web.joongna.com/main-web/assets/images/custom-logo.svg" width="100"/>
+		<img class="mt-4" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="100"/>
 	</div>
 	
 	<div style="vertical-align: middle; margin:25px 10px 0 0;">
@@ -410,7 +410,7 @@ div.categoreIcon {
 
 <div id="mySidenav" class="scrollMenu">
 
-	<img class="scrollImg" src="https://web.joongna.com/main-web/assets/images/custom-logo.svg" width="200"/>
+	<img class="scrollImg" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
 		
 	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 	
@@ -427,7 +427,6 @@ div.categoreIcon {
 	<a href="#">내폰팔기</a>
 	<a href="#">로그인</a>
 </div>
-
 
 <hr style="margin:0;">
 </div>

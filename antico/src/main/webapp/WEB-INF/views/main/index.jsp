@@ -66,6 +66,9 @@
 <jsp:include page=".././header/header.jsp" />
 
 <div class="container mt-5">
+
+<!-- 사이트 탭 테스트용  -->
+<button onclick="showReviewTab()">후기확인</button>
 	
 <!-- Slider main container -->
 <div class="mainImgContainer">
@@ -147,6 +150,8 @@
 	</div>
 	
 </div>
+
+<jsp:include page="../tab/tab.jsp"></jsp:include>
 	
 </div>
 
@@ -220,7 +225,28 @@ breakpoints: {
 
 });
 
-  
+</script>
+
+<script>
+	//후기 확인 테스트 함수
+	function showReviewTab() {
+		$.ajax({
+			url : "<%=ctxPath%>/review/",
+			data : {
+				"memNo" : 1
+			},
+			type : "post",
+			success : function(html) {
+				openSideTab(html);
+			},
+			error : function(e) {
+				console.log(e);
+				// 예외처리 필요
+				alert("불러오기 실패");
+				closeSideTab();
+			}
+		});
+	}
 </script>
 
 
