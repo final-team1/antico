@@ -65,81 +65,6 @@
 	}
 </style>
 <div id="review_container">
-	<!-- 좋았어요, 최고에요 설문조사 통계 -->
-	<div id="like_survey_container">
-		<h4 class="survey_title">이런점이 좋았어요</h4>
-		
-		<div class="survey_item">
-			<span>친절/매너가 좋아요</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>응답이 빨라요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>상품 상태가 좋아요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>무료나눔을 해주었어요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>택배 거래가 수월했어요.(포장, 협조적)</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>거래 시간을 잘 지켜요</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-	</div>
-	
-	<!-- 아쉬워요 설문조사 통계 -->
-	<div id="dislike_survey_container">
-		<h4 class="survey_title">이런점이 아쉬웠어요</h4>
-		
-		<div class="survey_item">
-			<span>친절/매너가 아쉬워요</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>응답이 느려요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>상품 상태가 아쉬워요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-	</div>
-	
 	<!-- 최근 5개 후기 내역 -->
 	<div id="preview_review_container">
 		<h4 style="margin-bottom : 20px;">상세한 후기도 있어요 <span id="total_survey_count">21</span></h4>
@@ -214,7 +139,11 @@
 			</div>
 		</div>
 		
-		<button id="showAllReviewBtn">후기 전체 보기</button>
+		<button id="showAllReviewBtn" onclick="showAllReview()">후기 전체 보기</button>
 	</div>
-	
 </div>
+
+<script>
+
+
+</script>

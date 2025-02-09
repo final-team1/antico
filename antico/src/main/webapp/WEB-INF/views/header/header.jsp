@@ -37,8 +37,13 @@
   <%-- 스피너 및 datepicker 를 사용하기 위해 jQueryUI CSS 및 JS --%>
   <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.css" />
   <script type="text/javascript" src="<%=ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
-<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-  <%-- === jQuery 에서 ajax로 파일을 업로드 할때 가장 널리 사용하는 방법 : ajaxForm === --%> 
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <%-- === jQuery 에서 ajax로 파일을 업로드 할때 가장 널리 사용하는 방법 : ajaxForm === --%>
+  
+  <%-- toast 알림을 위한 CDN --%>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+  <script src="<%=ctxPath%>/js/custom_toast.js"></script>
+  <link rel="stylesheet" href="<%=ctxPath%>/css/custom_toast.css">
 
 <style>
 

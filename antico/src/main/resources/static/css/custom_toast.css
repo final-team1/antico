@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+.custom-toast {
+  	padding: 13px;
+}
+
+.custom-progress-bar {
+  	background-color: gray;
+}
