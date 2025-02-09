@@ -69,6 +69,8 @@
 
 <!-- 사이트 탭 테스트용  -->
 <button onclick="showReviewTab()">후기확인</button>
+
+<button onclick="showAlert('success', '테스트')">토스트 테스트</button>
 	
 <!-- Slider main container -->
 <div class="mainImgContainer">

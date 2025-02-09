@@ -19,11 +19,11 @@ public class ReviewController {
 	// private final ReviewService reviewService;
 	
 	/*
-	 * 사용자 후기 페이지 조회
+	 * 사용자 후기 메인 페이지 조회
 	 */
 	@PostMapping("/")
 	@ResponseBody
-	public ModelAndView getReviewListPage(String memNo, ModelAndView mav) {
+	public ModelAndView getReviewMainPage(String memNo, ModelAndView mav) {
 		
 		// TODO AOP 커스텀 어노테이션 사용 예정
 		// 회원 일련번호 숫자 유효성 검사
@@ -38,12 +38,40 @@ public class ReviewController {
 //		List<ReviewVO> reviewList = reviewService.getReviewList(paraMap); // 받은 후기 중 최근 5개 조회
 //		Map<String, Integer> receivedSurveyMap = reviewService.getReceivedSurveyMap(memNo); // 긍정적인 후기 설문 조사 현황 조회 
 		
-		mav.setViewName("review/review");
+		mav.setViewName("review/main");
 //		mav.addObject("reviewList", reviewList);
 //		mav.addObject("likeSurveyMap", likeSurveyMap);
 		
 		return mav;
 	}
+	
+	/*
+	 * 사용자 전체 후기 페이지 조회
+	 */
+	@PostMapping("/all_reviews")
+	@ResponseBody
+	public ModelAndView getReviewListPage(String memNo, ModelAndView mav) {
+		
+		// TODO AOP 커스텀 어노테이션 사용 예정
+		// 회원 일련번호 숫자 유효성 검사
+		if(!NumberUtils.isCreatable(memNo)) {
+			throw new IllegalArgumentException();
+		}
+		
+//		Map<String, String> paraMap = new HashMap<>();
+//		paraMap.put("memNo", memNo);
+//		paraMap.put("amount", "5");
+//		
+//		List<ReviewVO> reviewList = reviewService.getReviewList(paraMap); // 받은 후기 중 최근 5개 조회
+//		Map<String, Integer> receivedSurveyMap = reviewService.getReceivedSurveyMap(memNo); // 긍정적인 후기 설문 조사 현황 조회 
+		
+		mav.setViewName("review/all_reviews");
+//		mav.addObject("reviewList", reviewList);
+//		mav.addObject("likeSurveyMap", likeSurveyMap);
+		
+		return mav;
+	}
+	
 	
 
 }
