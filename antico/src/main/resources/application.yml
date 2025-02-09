@@ -2,9 +2,9 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
   profiles: #실행환경(dev(개발),test(테스트),local(로컬),prod(운영))
     active: local 
 
-  datasource: #DB 접속이 1개만 있을 경우
+  datasource-antico: #DB 접속이 1개만 있을 경우
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@211.238.142.186:xe
+    jdbcUrl: jdbc:oracle:thin:@211.238.142.186:1521:xe
     username: final_orauser1
     password: gclass
     type: com.zaxxer.hikari.HikariDataSource

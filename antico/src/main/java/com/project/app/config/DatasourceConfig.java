@@ -20,15 +20,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration  // Spring 컨테이너가 처리해주는 클래스로서, 클래스내에 하나 이상의 @Bean 메소드를 선언만 해주면 런타임시 해당 빈에 대해 정의되어진 대로 요청을 처리해준다.
 @EnableTransactionManagement // 스프링 부트에서 Transaction 처리를 위한 용도
-public class Datasource_mymvcuser_Configuration {
+public class DatasourceConfig {
 
 	@Value("${mybatis.mapper-locations}")  // *.yml 파일에 있는 설정값을 가지고 온 것으로서 mapper 파일의 위치를 알려주는 것이다.
-    private String mapperLocations;
+    private String mapperLocations;  // *.yml 파일에 있는 설정값을 가지고 온 것으로서 mapper 파일의 위치를 알려주는 것이다.
 	
  //	@Bean(name = "dataSource")  와  @Bean @Qualifier("dataSource") 은 같은 것이다.  
 	@Bean
  	@Qualifier("dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource-mymvcuser")
+	@ConfigurationProperties(prefix = "spring.datasource-antico")
  // @Primary
     public DataSource dataSource(){
         return DataSourceBuilder.create().build();
@@ -68,18 +68,6 @@ public class Datasource_mymvcuser_Configuration {
     public SqlSessionTemplate sqlSessionTemplate(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
-    /*
-       @Primary 는 처음 스프링 구동 시 기본으로 사용할 Bean을 설정하는 것이다.
-    
-       @Autowired
-       private SqlSessionTemplate abc;
-       -- 위처럼 별도 Bean 설정없이 @Autowired로 연결한 경우, abc 에는 @Primary로 설정한 SqlSessionTemplate 빈이 주입된다.
-    
-       @Autowired
-	   @Qualifier("sqlsession")
-       private SqlSessionTemplate abc;
-       -- 위처럼 @Qualifier("sqlsession")을 해주면 빈 이름이 sqlsession 인 SqlSessionTemplate 객체가 abc 에 주입된다. 
-    */
     
     @Bean
     public PlatformTransactionManager transactionManager_mymvc_user() {
