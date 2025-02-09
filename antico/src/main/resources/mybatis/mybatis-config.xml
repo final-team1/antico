@@ -5,8 +5,9 @@
 
     <!-- domain(VO) package -->
 	<typeAliases>
-
-
+		
+		<typeAlias type="com.project.app.member.domain.MemberVO" alias="MemberVO"/>
+		
 	</typeAliases>
 
 </configuration>
