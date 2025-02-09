@@ -274,6 +274,16 @@ div.categoreIcon {
   margin: 6px 0;
 }
 
+li > a{
+	color: black;
+	text-decoration: none;
+}
+
+li > a:hover{
+	color: black;
+	text-decoration: none;
+}
+
 </style>
 
 </head>
@@ -318,7 +328,7 @@ div.categoreIcon {
 					<li style="color: gray" class="">|</li>
 					<li class="">판매하기</li>
 					<li style="color: gray" class="">|</li>
-					<li class="">마이</li>	
+					<li class=""><a href="<%=ctxPath%>/member/login">마이</a></li>	
 				</ul>
 			</div>
 		</div>
