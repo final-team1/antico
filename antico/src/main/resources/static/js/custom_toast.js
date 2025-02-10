@@ -25,3 +25,13 @@ function showAlert(type, msg) {
 		title: msg == null ? "오류가 발생했습니다. 다시 시도하여 주십시오" : msg 
 	});
 }
+
+function showConfirmModal() {
+	Swal.fire({
+	  title: "후드티님이 차단됩니다.",
+	  
+	  text: "채팅 불가, 사용자 차단, 단골/찜 해제, 알림 미수신",
+	  confirmButtonText: "확인",
+	  icon: "warning"
+	});
+}

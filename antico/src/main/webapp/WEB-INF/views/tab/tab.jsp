@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	String tabTitle = request.getParameter("tabTitle");
+%>
 
 <style>
 	div#sidetab_container {
@@ -9,7 +12,7 @@
 		height : 100vh;
 		max-height : 100vh;
 		overflow: hidden;
-		padding : 10px 5px 10px 20px;
+		padding : 10px 20px 10px 20px;
 		background-color : white;
 		z-index : 999;
 		display : none;
@@ -76,7 +79,7 @@
 		<div id="goBack">
 			<button type="button" id="close" onclick="closeSideTab()">&lt;</button>
 		</div>
-		<span id="sidetab_title">후기</span>
+		<span id="sidetab_title"><%=tabTitle%></span>
 	</div>
 	<div id="sidetab_content">
 	</div>
