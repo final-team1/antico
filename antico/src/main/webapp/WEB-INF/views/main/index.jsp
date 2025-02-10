@@ -69,6 +69,7 @@
 
 <!-- 사이트 탭 테스트용  -->
 <button onclick="showReviewTab()">후기확인</button>
+<button onclick="showReviewRegisterTab()">후기 등록 확인</button>
 
 <button onclick="showAlert('success', '테스트')">토스트 테스트</button>
 	
@@ -153,7 +154,9 @@
 	
 </div>
 
-<jsp:include page="../tab/tab.jsp"></jsp:include>
+<jsp:include page="../tab/tab.jsp">
+	<jsp:param name="tabTitle" value="후기" />
+</jsp:include>
 	
 </div>
 
@@ -235,7 +238,27 @@ breakpoints: {
 		$.ajax({
 			url : "<%=ctxPath%>/review/",
 			data : {
-				"memNo" : 1
+				"memNo" : "1"
+			},
+			type : "post",
+			success : function(html) {
+				openSideTab(html);
+			},
+			error : function(e) {
+				console.log(e);
+				// 예외처리 필요
+				alert("불러오기 실패");
+				closeSideTab();
+			}
+		});
+	}
+	
+	//후기 확인 테스트 함수
+	function showReviewRegisterTab() {
+		$.ajax({
+			url : "<%=ctxPath%>/review/register",
+			data : {
+				"memNo" : "1"
 			},
 			type : "post",
 			success : function(html) {
