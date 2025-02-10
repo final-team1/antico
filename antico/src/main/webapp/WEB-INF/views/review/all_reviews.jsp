@@ -67,7 +67,7 @@
 <div id="review_container">
 	<!-- 최근 5개 후기 내역 -->
 	<div id="preview_review_container">
-		<h4 style="margin-bottom : 20px;">상세한 후기도 있어요 <span id="total_survey_count">21</span></h4>
+		<h4 style="margin-bottom : 20px;">전체후기 <span id="total_survey_count">21</span></h4>
 		
 		<div class="review_item">
 			<div class="reivew_profile">
