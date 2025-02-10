@@ -398,6 +398,19 @@
 	                </packagingExcludes>
 	            </configuration>
 	        </plugin>
+	        
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>17</source>  <!-- Java 버전에 맞게 설정 -->
+                <target>17</target>
+                <compilerArgs>
+                    <arg>-parameters</arg>
+                </compilerArgs>
+            </configuration>
+        </plugin>
 
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
