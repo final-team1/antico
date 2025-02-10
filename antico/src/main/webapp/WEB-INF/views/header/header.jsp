@@ -284,6 +284,10 @@ li > a:hover{
 	text-decoration: none;
 }
 
+img.main_logo {
+	cursor : pointer;
+}
+
 </style>
 
 </head>
@@ -300,7 +304,7 @@ li > a:hover{
 	<div class="d-flex" style="height:100px; width:70%; margin:0 auto;">
 		
 		<div class="" style="vertical-align: middle;">
-			<img class="mt-4" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
+			<img class="mt-4 main_logo" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
 		</div>
 		<div class="flex-fill">
 			<div>
@@ -413,7 +417,7 @@ li > a:hover{
 	</div>
 	
 	<div class="flex-fill">
-		<img class="mt-4" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="100"/>
+		<img class="mt-4 main_logo" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="100"/>
 	</div>
 	
 	<div style="vertical-align: middle; margin:25px 10px 0 0;">
@@ -462,7 +466,9 @@ function closeNav() {
 
 $(document).ready(function(){
 	
-
+	$("img.main_logo").click(function(e){
+		location.href = "<%=ctxPath%>/index";
+	});	
 	
 });
 
