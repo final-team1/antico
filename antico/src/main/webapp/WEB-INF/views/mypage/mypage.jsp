@@ -171,22 +171,28 @@ function closeShareModal() {
 				</button>
                 
                 <!-- 공유 모달 -->
-                <div id="shareModal" class="modal" style="width: 25%; height: 25%; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                    <div class="modal-content" style="border-radius: 6%;">
-                        <button class="share-option" onclick="shareToFacebook()">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" width="32" height="32" alt="Facebook">
-                            페이스북
-                        </button>
-                        <button class="share-option" onclick="copyUrl()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M16 1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h2v2H4v2h4v-4H4V3h12v5h2V3a2 2 0 0 0-2-2Zm-3 6v2h2V7h-2ZM6 7v2h2V7H6Zm10 10H10a2 2 0 0 0-2 2v4h2v-4h6v4h2v-4a2 2 0 0 0-2-2Zm-4-8v2h2V9h-2Z"/>
-                            </svg>
-                            URL 복사
-                        </button>
-                        <button class="close-btn" onclick="closeShareModal()">닫기</button>
-                    </div>
-                </div>
-
+                
+					<div class="modal" id="shareModal" style="width: 100vw; height: 100vh; display:none; background-color: rgba(0, 0, 0, 0.5); position: fixed; top: 0px; left: 0px; z-index: 99;">
+						
+	                <div style="width: 25%; height: 25%; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;">
+	
+	                    <div class="modal-content" style="border-radius: 6%;">
+	                        <button class="share-option" onclick="shareToFacebook()">
+	                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" width="32" height="32" alt="Facebook">
+	                            페이스북
+	                        </button>
+	                        <button class="share-option" onclick="copyUrl()">
+	                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+	                                <path fill="currentColor" d="M16 1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h2v2H4v2h4v-4H4V3h12v5h2V3a2 2 0 0 0-2-2Zm-3 6v2h2V7h-2ZM6 7v2h2V7H6Zm10 10H10a2 2 0 0 0-2 2v4h2v-4h6v4h2v-4a2 2 0 0 0-2-2Zm-4-8v2h2V9h-2Z"/>
+	                            </svg>
+	                            URL 복사
+	                        </button>
+	                        <button class="close-btn" onclick="closeShareModal()">닫기</button>
+	                    </div>
+	
+	                </div>
+	                
+					</div>
             </section>
 
             <section class="stats-section">
