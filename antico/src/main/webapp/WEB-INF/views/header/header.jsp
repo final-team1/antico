@@ -330,7 +330,7 @@ img.main_logo {
 				<ul id="userManu" class="" style="padding-inline-start: 0px; margin-block-end: 0em;">
 					<li class="">채팅하기</li>
 					<li style="color: gray" class="">|</li>
-					<li class="">판매하기</li>
+					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
 					<li class=""><a href="<%=ctxPath%>/member/login">마이</a></li>	
 				</ul>
