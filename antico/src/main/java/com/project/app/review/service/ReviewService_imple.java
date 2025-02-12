@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.app.review.mapper.ReviewMapper;
+import com.project.app.review.model.ReviewMapper;
 
 @Service
 public class ReviewService_imple implements ReviewService {

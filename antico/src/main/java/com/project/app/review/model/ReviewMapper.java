@@ -1,4 +1,4 @@
-package com.project.app.review.mapper;
+package com.project.app.review.model;
 
 import java.util.List;
 
