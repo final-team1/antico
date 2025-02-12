@@ -3,13 +3,11 @@
 <!-- ==== mapper 기본설정 ==== -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="member">
+<mapper namespace="com.project.app.member.model.MemberDAO">
 
 	<insert id="registerMember" parameterType="MemberVO">
-		
 		insert into tbl_member(pk_mem_no, mem_regdate, mem_user_id, mem_passwd, mem_tel, mem_passwd_change_date, mem_authorization, mem_rank, mem_point)
 		values(1 , sysdate, #{mem_user_id}, #{mem_passwd}, 'sadfdsf', sysdate, 0, 0, 0)
-		
 	</insert>
 	
 	<select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
@@ -17,6 +15,14 @@
 		from tbl_member
 		where mem_user_id = #{mem_user_id}
 	</select>
+		
+	<select id="selectMemberByMemberNo" parameterType="String" resultType="MemberVO">
+		select pk_mem_no, mem_regdate, mem_user_id, mem_tel, mem_passwd_change_date, mem_authorization, mem_point, mem_score, mem_status
+		from tbl_member
+		where pk_mem_no = #{memberNo} and mem_status = 1
+	</select>
+	
+	
 
 </mapper>
 
