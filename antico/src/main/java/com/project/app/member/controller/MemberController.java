@@ -18,6 +18,31 @@ public class MemberController {
 	@Autowired
 	MemberService service;
 	
+
+	
+	@GetMapping("login")
+	public ModelAndView showLoginPage(
+			 			ModelAndView mav){
+		
+		
+		mav.setViewName("main/login");
+		
+		return mav;
+	}
+	
+	
+	
+	@GetMapping("register")
+	public ModelAndView goRegisterMember(ModelAndView mav) {
+		
+		
+		mav.setViewName("main/register");
+		
+		return mav;
+	}
+	
+	
+	
 	@PostMapping("register")
 	public ModelAndView registerMember(@RequestParam String mem_user_id, @RequestParam String mem_passwd, 
 			 			ModelAndView mav){
@@ -36,17 +61,5 @@ public class MemberController {
 		
 		return mav;
 	}
-	
-	@GetMapping("login")
-	public ModelAndView showLoginPage(
-			 			ModelAndView mav){
-		
-		
-		mav.setViewName("main/login");
-		
-		return mav;
-	}
-	
-	
 	
 }

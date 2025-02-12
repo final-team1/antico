@@ -13,19 +13,39 @@
 		<img class="main_logo" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
 	</div>
 	
-	<div class="" style="width:100%; margin:4% auto 10% auto; border: solid 1px gray; border-radius: 3%; padding: 20px 20px">
+	<div class="" style="width:100%; margin:4% auto 10% auto; border: solid 1.5px #E6E6E6; border-radius: 3%; padding: 20px 20px">
 		
 		<div class="textSpan">
 			<span class="block">중고나라에 오신 것을</span>
 			<span>환영합니다.</span>
 		</div>
+		<form action="${ctxPath}/auth/login" method="post">
+		<div style="padding:8% 2% 1% 2%; width:100%;">
+			
+			<input type="text" name="mem_user_id" class="textbox" placeholder="아이디"/>
+				
+		</div>
+		<div style="padding:1% 2% 1% 2%;">
+				<input type="text" name="mem_passwd" class="textbox" placeholder="비밀번호"/>
+		</div>		
 		
-		<div style="width:100%; margin-top: 150px; text-align: center;">
-			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/kakao_login_medium_wide.png" width="95%"/>
+				
+		<div style="padding:1% 2% 1% 2%;">
+			<button type="submit" name="loginBtn" class="BtnStyle">로그인</button>
+		</div>	
+		
+			
+		
+		</form>
+		<div style="width:100%; margin: 150px 0 3% 0; text-align: center;">
+			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/kakao.png" width="95%"/>
 			
 		</div>
-		<div style="width:100%; text-align: center; padding-bottom:">
-			<img id="naverImg" class="mt-1" src="${pageContext.request.contextPath}/images/login/btnG_완성형.png" width="95%" height="auto"/>
+		<div style="width:100%; text-align: center; padding-bottom: 3%;">
+			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
+		</div>			
+		<div style="padding:1% 2% 1% 2%;"">
+			<button type="button" class="BtnStyle" onclick="location:href='${pageContext.request.contextPath}/member/register'">회원가입하기</button>
 		</div>
 		
 	<p id="token-result"></p>
@@ -49,6 +69,25 @@
 
 
 <style type="text/css">
+
+*{
+font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.BtnStyle{
+	width:100%;
+	padding: 10px;
+	border-radius: 8px;
+	border:0px;
+}
+.textbox{
+	width:100%;
+	border: solid 1px #E6E6E6;
+	border-radius: 7px;
+	font-size: 12pt; 
+	padding:10px;
+	
+}
 .block{
 	display: block;
 }
@@ -58,10 +97,11 @@
 	line-height: 2rem;
 }
 .marginBt{
+	
 	margin-bottom: 15%; 
 }
-.naverImg{
-	height:60px;
+#kakaoImg{
+	border-radius: 6px;
 }
 </style>
 
@@ -83,7 +123,11 @@ $(document).ready(function(){
 		
 	});
 	
-	console.log(getAccessToken());
+	loginBtn.onClick(function(){
+		
+		submit();
+		
+	});
 	
 });
 
