@@ -7,7 +7,7 @@
 <jsp:include page=".././header/header.jsp" />    
 
 <div style="width:25%; margin:0 auto 10% auto;">
-<form action="${ctxPath}/auth/login" method="post">
+
 	
 	<div style="width:100%; margin:0 auto 0 auto; text-align: center;">
 		<img class="main_logo" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
@@ -19,39 +19,39 @@
 			<span class="block">중고나라에 오신 것을</span>
 			<span>환영합니다.</span>
 		</div>
-		
-		<div style="padding:8% 2% 1% 2%; width:100%; margin-bottom: 5%;">
-			<p>아이디</p>
+		<form action="${ctxPath}/auth/login" method="post">
+		<div style="padding:8% 2% 1% 2%; width:100%;">
+			
 			<input type="text" name="mem_user_id" class="textbox" placeholder="아이디"/>
 				
 		</div>
-		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
-			<p>비밀번호</p>
-			<input type="text" name="mem_passwd" class="textbox" placeholder="비밀번호"/>
+		<div style="padding:1% 2% 1% 2%;">
+				<input type="text" name="mem_passwd" class="textbox" placeholder="비밀번호"/>
 		</div>		
 		
 				
-		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
-			전회번호
-			<input type="text" name="mem_passwd" class="textbox" placeholder="- 없이 숫자만 입력해주세요"/>
+		<div style="padding:1% 2% 1% 2%;">
+			<button type="submit" name="loginBtn" class="BtnStyle">로그인</button>
 		</div>	
 		
 			
 		
-		
+		</form>
 		<div style="width:100%; margin: 150px 0 3% 0; text-align: center;">
-			
+			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/kakao.png" width="95%"/>
 			
 		</div>
 		<div style="width:100%; text-align: center; padding-bottom: 3%;">
-			
+			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
 		</div>			
 		<div style="padding:1% 2% 1% 2%;"">
-			<button type="button" class="BtnStyle" onclick="location.href='${ctxPath}/member/register'">회원가입하기</button>
+			<button type="button" class="BtnStyle" onclick="location:href='${pageContext.request.contextPath}/member/register'">회원가입하기</button>
 		</div>
 		
-
-	</form>
+	<p id="token-result"></p>
+	<button class="api-btn" onclick="requestUserInfo()" style="visibility:hide">사용자 정보 가져오기</button>
+	</div>
+	
 	
 <%-- 	<form action="${ctxPath}/auth/login" method="post">
 		
@@ -123,6 +123,11 @@ $(document).ready(function(){
 		
 	});
 	
+	loginBtn.onClick(function(){
+		
+		submit();
+		
+	});
 	
 });
 
@@ -140,6 +145,5 @@ function requestUserInfo() {
       });
   }
 </script>
-
 
 <jsp:include page=".././footer/footer.jsp" />

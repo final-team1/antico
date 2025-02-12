@@ -12,7 +12,7 @@ import com.project.app.member.domain.MemberVO;
 import com.project.app.member.service.MemberService;
 
 @Controller
-@RequestMapping("member/*")
+@RequestMapping("/member/*")
 public class MemberController {
 	
 	@Autowired
