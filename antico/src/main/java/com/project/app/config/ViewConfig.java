@@ -13,14 +13,11 @@ import org.springframework.web.servlet.view.JstlView;
 
 @Configuration  // Spring 컨테이너가 처리해주는 클래스로서, 클래스내에 하나 이상의 @Bean 메소드를 선언만 해주면 런타임시 해당 빈에 대해 정의되어진 대로 요청을 처리해준다.   
 public class ViewConfig {
-    
 
-	
 	@Bean
 	@Order(0)
 	ViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-	//	viewResolver.setOrder(1);
 		viewResolver.setOrder(0);
 		viewResolver.setViewClass(JstlView.class);
 		viewResolver.setPrefix("/WEB-INF/views/");

@@ -26,30 +26,14 @@ public class DatasourceConfig {
 
 	@Value("${mybatis.mapper-locations}")  // *.yml 파일에 있는 설정값을 가지고 온 것으로서 mapper 파일의 위치를 알려주는 것이다.
     private String mapperLocations;  // *.yml 파일에 있는 설정값을 가지고 온 것으로서 mapper 파일의 위치를 알려주는 것이다.
-	
- //	@Bean(name = "dataSource")  와  @Bean @Qualifier("dataSource") 은 같은 것이다.  
+	  
 	@Bean
  	@Qualifier("dataSource")
 	@ConfigurationProperties(prefix = "spring.datasource-antico")
- // @Primary
     public DataSource dataSource(){
         return DataSourceBuilder.create().build();
     }
-   /*
-     @ConfigurationProperties은 *.properties , *.yml 파일에 있는 property를 자바 클래스에 값을 가져와서 사용할 수 있게 해주는 어노테이션이다. 
-     
-     @ConfigurationProperties를 사용하기 위해서는 
-     pom.xml 에서 아래와 같이 spring-boot-configuration-processor 를 추가해주어야 한다. 
-     spring-boot-configuration-processor는 pom.xml에서 다음과 같이 추가한다.
-    
-	 <dependency>
-	    <groupId>org.springframework.boot</groupId>
-	    <artifactId>spring-boot-configuration-processor</artifactId>
-	 </dependency>
-   */
 	
-	
- // @Bean(name = "sqlSessionFactory") 또는 
     @Bean
     @Qualifier("sqlSessionFactory")
     @Primary
@@ -63,7 +47,6 @@ public class DatasourceConfig {
 
     }
 
- // @Bean(name = "sqlsession") 또는 
     @Bean
     @Qualifier("sqlsession")
     @Primary
@@ -77,33 +60,5 @@ public class DatasourceConfig {
         tm.setDataSource(dataSource());
         return tm;
     }
-    
- /*
-	다음으로 transaction을 실행시키려고 하는 위치에서 다음의 예제와 같이 구현하시면 됩니다.
-	@Service
-	public class SampleService {
-	
-	    @Autowired
-	    private SampleDao dao;
-	    
-	    @Transactional(value="transactionManager_mymvc_user")
-	    @Override
-	    public boolean insertSample(Sample sample) {
-	        int returnId = dao.deleteSample(sample);
-	        if (returnId > 0) {
-	            dao.insertSample(sample);
-	            return true;
-	        }
-	        return false;
-	    }
-	} 
-	
-	여기서 application에 선언한 transaction manager가 복수일 경우 target으로 하는 transaction manager명을 명시해야 합니다. 
-	그렇지 않으면 다음과 같은 exception이 발생합니다.
-	NoUniqueBeanDefinitionException
-	No qualifying bean of type 'org.springframework.transaction.TransactionManager'
-	
-	org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type 'org.springframework.transaction.TransactionManager' available: expected single matching bean but found 2: transactionManager_hr,transactionManager_mymvc_user
- */
 	
 }
