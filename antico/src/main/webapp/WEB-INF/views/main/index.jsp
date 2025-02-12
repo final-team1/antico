@@ -10,6 +10,28 @@
 
 <style type="text/css">
 
+
+/* 대서리 메뉴용 */
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    word-break: break-word; /* 글자가 길면 자동 줄 바꿈 */
+    white-space: normal; /* 기본적으로 줄 바꿈 허용 */
+}
+
+.table thead th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.table-container {
+    overflow-x: auto; /* 테이블이 너무 길 경우 스크롤 허용 */
+    max-width: 100%;
+}
+/* 대서리 메뉴용 */
+
+
 .swiperMain {
     width: 100%;
     height: 100%;
@@ -153,6 +175,56 @@
 	</div>
 	
 </div>
+	<h2>대서리 점심메뉴</h2>
+	<div class="table-container">
+	    <table class="table">
+	        <thead>
+	            <tr>
+	                <th></th>
+	                <th>월요일</th>
+	                <th>화요일</th>
+	                <th>수요일</th>
+	                <th>목요일</th>
+	                <th>금요일</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr>
+	                <th scope="row">밥</th>
+	                <td></td>
+	                <td>백미<br>흑미</td>
+	                <td>백미<br>흑미</td>
+	                <td>백미<br>흑미</td>
+	                <td>새우볶음밥<br>스파게티</td>
+	            </tr>
+	            <tr>
+	                <th scope="row">국</th>
+	                <td></td>
+	                <td>김치찌개<br></td>
+	                <td>무오뎅국</td>
+	                <td>콩나물국</td>
+	                <td>콘스프<br>팽이버섯미소국</td>
+	            </tr>
+	            <tr>
+	                <th scope="row">메인메뉴</th>
+	                <td></td>
+	                <td>돼지불고기<br>코다리조림<br>동그랑땡</td>
+	                <td>오삼고추장볶음<br>스모크햄야채볶음<br>알감자조림</td>
+	                <td>간장찜닭<br>매운새우볶음<br>빨간소세지전</td>
+	                <td>미트볼<br>마늘빵</td>
+	            </tr>
+	            <tr>
+	                <th scope="row">반찬</th>
+	                <td></td>
+	                <td>콩나물<br>고사리<br>청포묵무침<br>쌈</td>
+	                <td>알배추겉절이<br>김치</td>
+	                <td>김치볶음<br>깍두기</td>
+	                <td>김치<br>샐러드</td>
+	            </tr>
+	        </tbody>
+	    </table>
+	</div>
+
 
 <jsp:include page="../tab/tab.jsp">
 	<jsp:param name="tabTitle" value="후기" />
