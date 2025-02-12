@@ -34,6 +34,9 @@
   <script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
   <script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
 
+	<%-- 카카오 api --%>
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
+
   <%-- 스피너 및 datepicker 를 사용하기 위해 jQueryUI CSS 및 JS --%>
   <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.css" />
   <script type="text/javascript" src="<%=ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
@@ -330,7 +333,7 @@ img.main_logo {
 				<ul id="userManu" class="" style="padding-inline-start: 0px; margin-block-end: 0em;">
 					<li class="">채팅하기</li>
 					<li style="color: gray" class="">|</li>
-					<li class="">판매하기</li>
+					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
 					<li class=""><a href="<%=ctxPath%>/member/login">마이</a></li>	
 				</ul>
@@ -369,7 +372,7 @@ img.main_logo {
 			<a class="menuStyle">찜한상품</a>
 		</div>
 		<div class="menuItem">
-			<a class="menuStyle">내폰팔기</a>
+			<a class="menuStyle" href="<%= ctxPath%>/notice/list">고객센터</a>
 		</div>
 		
 		</div>
