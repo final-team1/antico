@@ -6,8 +6,8 @@
 <mapper namespace="com.project.app.member.model.MemberDAO">
 
 	<insert id="registerMember" parameterType="MemberVO">
-		insert into tbl_member(pk_mem_no, mem_regdate, mem_user_id, mem_passwd, mem_tel, mem_passwd_change_date, mem_authorization, mem_rank, mem_point)
-		values(1 , sysdate, #{mem_user_id}, #{mem_passwd}, 'sadfdsf', sysdate, 0, 0, 0)
+		insert into tbl_member(pk_mem_no, mem_regdate, mem_user_id, mem_passwd, mem_tel, mem_passwd_change_date,mem_authorization , mem_point, mem_score,mem_status)
+		values(6 , sysdate, #{mem_user_id}, #{mem_passwd}, 'sadfdsf', sysdate, 3, 0, 0,1)
 	</insert>
 	
 	<select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
