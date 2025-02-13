@@ -19,7 +19,7 @@ public class MemberDetailService implements UserDetailsService{
 	private final MemberDAO mdao;
 	
 	@Autowired
-	private PasswordEncoder passEncoder;
+	private PasswordEncoder pass_encoder;
 	
 	public MemberDetailService(MemberDAO mdao) {
 		this.mdao = mdao;

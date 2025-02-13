@@ -2,6 +2,8 @@ package com.project.app.config;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.poi.util.Beta;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,17 +12,24 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
+import com.project.app.member.service.CustomAccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	
-	private final String[] permittedUrls = {"/**"};
+	@Autowired
+	private final CustomAccessHandler custom_handler;
+	
+	public SecurityConfig(CustomAccessHandler custom_handler) {
+		this.custom_handler = custom_handler; 
+	}
 
-	/*
+	/* 
 	 * Bcrypt bean 등록
 	 */
     @Bean
@@ -49,6 +58,9 @@ public class SecurityConfig {
               
               .anyRequest().authenticated()
       )
+     .exceptionHandling(ex -> ex
+    		 .accessDeniedHandler(custom_handler)
+    		 )
       .csrf(AbstractHttpConfigurer::disable)
       .formLogin((formLogin) ->
       		formLogin
