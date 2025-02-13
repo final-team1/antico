@@ -1,4 +1,4 @@
-package com.project.app.product.mapper;
+package com.project.app.product.model;
 
 import org.apache.ibatis.annotations.Mapper;
 
