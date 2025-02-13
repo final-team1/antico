@@ -11,4 +11,7 @@ public interface MemberDAO {
 
 	MemberVO selectMemberByUserId(String mem_user_id);
 
+	// memberNo를 통한 단일 사용자 조회
+	MemberVO selectMemberByMemberNo(String memberNo);
+
 }

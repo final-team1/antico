@@ -312,7 +312,6 @@ breakpoints: {
 			data : {
 				"memNo" : "1"
 			},
-			type : "post",
 			success : function(html) {
 				openSideTab(html);
 			},
@@ -332,7 +331,6 @@ breakpoints: {
 			data : {
 				"memNo" : "1"
 			},
-			type : "post",
 			success : function(html) {
 				openSideTab(html);
 			},

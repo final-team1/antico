@@ -22,7 +22,7 @@ const Toast = Swal.mixin({
 function showAlert(type, msg) {
 	Toast.fire({
 		icon: type,
-		title: msg == null ? "오류가 발생했습니다. 다시 시도하여 주십시오" : msg 
+		title: msg.trim() == "" ? "오류가 발생했습니다. 다시 시도하여 주십시오" : msg 
 	});
 }
 
