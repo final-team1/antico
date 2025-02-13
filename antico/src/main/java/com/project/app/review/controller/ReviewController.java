@@ -1,23 +1,31 @@
 package com.project.app.review.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.project.app.component.annotation.MemberNoValidation;
+import com.project.app.review.service.ReviewService;
+
+import lombok.RequiredArgsConstructor;
+
 /*
  * 판매자/구매자 리뷰 컨트롤러
  */
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/review/*")
 public class ReviewController {	
 	
-	// private final ReviewService reviewService;
-	
-	
+	private final ReviewService reviewService;
 	
 	/*
 	 * 사용자 후기 메인 페이지 조회
@@ -49,7 +57,7 @@ public class ReviewController {
 	/*
 	 * 사용자 전체 후기 페이지 조회
 	 */
-	@PostMapping("all_reviews")
+	@GetMapping("all_reviews")
 	@ResponseBody
 	public ModelAndView getReviewListPage(@RequestParam String memNo, ModelAndView mav) {
 		
@@ -73,10 +81,26 @@ public class ReviewController {
 		return mav;
 	}
 	
-	@PostMapping("register")
+	/*
+	 * 사용자 후기 등록 페이지 조회
+	 */
+	@GetMapping("register")
 	public ModelAndView getReviewRegisterPage(@RequestParam String memNo, ModelAndView mav) {
+		// 사용자 일련번호가 유효한지 (로그인 유저)
 		mav.setViewName("review/register");
 		return mav;
+	}
+	
+	/*
+	 * 사용자 후기 등록
+	 */
+	@PostMapping("register")
+	@ResponseBody
+	@MemberNoValidation
+	public Map<String, String> reviewRegister(@RequestParam String memNo) {
+		Map<String, String> map = new HashMap<>();
+		map.put("msg", "성공하였습니다.");
+		return map;
 	}
 	
 	

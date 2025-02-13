@@ -447,4 +447,22 @@
 		});
 		
 	});
+	
+	function goReviewRegister() {
+		$.ajax({
+			url : "${ctxPath}/review/register",
+			type : "post",
+			data : {
+				"memNo" : "3"
+			},
+			success : function(json) {
+				console.log(json);
+				showAlert("success", json.msg);
+			},
+			 error: function(request, status, error){
+				 console.log(request, error);
+				 showAlert("error", "");
+			}
+		});
+	}
 </script>
