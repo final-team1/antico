@@ -44,8 +44,9 @@ public class SecurityConfig {
      http.authorizeHttpRequests(
     		
     		  request -> request
+    		  .requestMatchers("/product/**").hasAnyRole("USER_1","USER_2","USER_3","ADMIN_1","ADMIN_2")
+              .requestMatchers("/**").permitAll()
               
-              .requestMatchers(permittedUrls).permitAll()
               .anyRequest().authenticated()
       )
       .csrf(AbstractHttpConfigurer::disable)
