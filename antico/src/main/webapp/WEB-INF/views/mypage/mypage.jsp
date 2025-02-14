@@ -44,6 +44,12 @@ div.container {
 	color: #333;
 }
 
+.sidebar ul li:hover {
+    transform: translateX(5px); /* 오른쪽으로 5px 이동 */
+    transition: transform 0.2s ease-in-out; /* 부드러운 애니메이션 */
+    font-weight: bold;
+}
+
 .content {
 	flex: 1;
 	padding: 20px;
@@ -106,10 +112,13 @@ div.container {
 
 .point {
 	background: white;
-	padding: 5px 0 0 20px;
-	margin-top: 20px;
-	border-radius: 8px;
+	padding: 5px 0 0 0;
+	height: 100px;
+	margin-top: 28px;
+	border-radius: 5px;
+	border: solid 1px #eee;
 }
+
 
 hr {
 	border: none;
@@ -117,6 +126,7 @@ hr {
 	margin: 10px 0;
 	width: 80%;
 }
+
 
 /* 공유 버튼 스타일 */
 .share-btn {
@@ -265,7 +275,7 @@ hr {
 	width: 16%;
 }
 
-@media ( max-width : 768px) {
+@media ( max-width : 1279px) {
 	.cardcontainer {
 		grid-template-columns: 1fr 1fr;
 	}
@@ -281,7 +291,7 @@ hr {
 	}
 }
 
-@media ( max-width : 575px) {
+@media ( min-width : 1280px) {
 	.cardcontainer {
 		grid-template-columns: 1fr;
 	}
@@ -308,6 +318,79 @@ hr {
 	border-radius: 4px;
 }
 
+
+.product-nav button{
+	position: relative;
+	font-size: 12pt;
+	padding:12px 16px;
+	color: black;
+}
+.product-nav button:hover{
+	 text-decoration-line: none;
+	 color: black;
+}
+
+
+@media (min-width: 1280px) {
+  .product-nav button {
+    font-size: 12pt;
+	padding:12px 16px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .product-nav button {
+    font-size: 10pt;
+	padding:6px 12px;
+  }
+}
+
+
+.product-nav button::after{
+	width: 0px;
+	content: "";
+	position: absolute;
+	bottom: -18px; 
+	left: 0;
+	border-top: 2px solid black; 
+	transform:translateX(-100%);
+}
+.product-nav button:hover::after {
+	width:100%;
+	transform:translateX(0%);
+	transition: width 0.45s;
+
+}
+
+
+.product-nav button{
+	background-color: white;
+	border: solid 0px red;
+	margin-left: 80px;
+	padding-top: 20px;
+	
+}
+.product-nav {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 17px;
+}
+
+.orderby button {
+	background-color: white;
+	float: right;
+	border: solid 0px;
+	text-align: center;
+	border-right: solid 1px #E0E0E0;
+	margin-left: 4px;
+	font-size: 10pt;
+	color: gray;
+}
+.orderby button:hover {
+	color: black;
+}
+.orderby button:first-child {
+	border: solid 0px;
+}
 
 </style>
 
@@ -386,7 +469,7 @@ hr {
 
 					<!-- 점수 막대기 -->
 					<div class="stat-box score-level mt-2">
-						<p>스코어</p>
+						<p style="font-weight: bold;">스코어</p>
 						<div class="trust-bar">
 							<div class="trust-progress" style="width: 75%;"></div>
 						</div>
@@ -395,11 +478,10 @@ hr {
 					</div>
 
 					<!-- auto-register -->
-					<section class="point">
-						<h3>내 포인트</h3>
+					<section class="point" style=" text-align: right;">
+						<h5 style="font-weight: bold; text-align: left; padding-left: 10px; padding-top: 5px;">내 포인트</h5>
 						<button class="btn">
-							포인트 들어올거임
-						    <fmt:formatNumber value="${pointValue}" pattern="#,###"/>P
+						    <fmt:formatNumber value="${pointValue}" pattern="#,###" style="text-align:right;"/>포인트 들어올거임<span style="font-size: 22pt; font-weight: bold; color: #7A9E23;"> P</span>
 						</button>
 					</section>
 				</div>
@@ -410,9 +492,10 @@ hr {
 				<section class="my-products mt-5">
 					<h4 style="font-weight: bold;">내 상품</h4>
 					<nav class="product-nav">
-						<a href="#">전체</a> <a href="#">판매중</a> <a href="#">예약중</a> <a href="#">판매완료</a>
+						<button>전체</button> <button>판매중</button> <button>예약중</button><button>판매완료</button>
 					</nav>
-					<p>총 2개</p>
+					<br>
+					<span>총 2개</span><span class="orderby"><button>최신순</button><button>낮은가격순</button><button>높은가격순</button></span>
 				</section>
 
 				<!-- 상품 목록 -->
@@ -454,7 +537,7 @@ hr {
 		<h4 style="font-weight: bold;">공유하기</h4>
 		<div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 20px;">
 		    <button class="share-option" onclick="shareToFacebook()">
-		        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHAzRSK17YfLdsOwRx4XbobTB2gZV0DRqnJg&s" width="64" height="64" style="border-radius: 50%;">
+		        <img src="https://dbdzm869oupei.cloudfront.net/img/sticker/preview/26354.png" width="64" height="64" style="border-radius: 50%;">
 		    </button>
 		    <button class="share-option" onclick="copyUrl()">
 		        <img src="https://beosyong.com/img/mypage_link.png" width="64" height="64">
