@@ -112,31 +112,31 @@ public class CustomUserDetails implements UserDetails {
 		return member_user_id;
 	}
 	
-	public String getPk_mem_no() {
+	public String getPk_member_no() {
 		return pk_member_no;
 	}
 
-	public String getMem_regdate() {
+	public String getMember_regdate() {
 		return member_regdate;
 	}
 	
-	public String getMem_tel() {
+	public String getMember_tel() {
 		return member_tel;
 	}
 
-	public String getMem_passwd_change_date() {
+	public String getMember_passwd_change_date() {
 		return member_passwd_change_date;
 	}
 	
-	public String getMem_point() {
+	public String getMember_point() {
 		return member_point;
 	}
 	
-	public String getMem_score() {
+	public String getMember_score() {
 		return member_score;
 	}
 
-	public String getMem_status() {
+	public String getMember_status() {
 		return member_status;
 	}
 

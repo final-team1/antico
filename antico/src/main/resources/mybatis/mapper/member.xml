@@ -13,7 +13,7 @@
 	<select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
 		select *
 		from tbl_member
-		where mem_user_id = #{mem_user_id}
+		where member_user_id = #{member_user_id}
 	</select>
 		
 	<select id="selectMemberByMemberNo" parameterType="String" resultType="MemberVO">
