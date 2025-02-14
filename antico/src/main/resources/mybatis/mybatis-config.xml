@@ -8,6 +8,11 @@
 		
 		<typeAlias type="com.project.app.member.domain.MemberVO" alias="MemberVO"/>
 		
+		<typeAlias type="com.project.app.product.domain.ProductVO" alias="ProductVO"/>
+		<typeAlias type="com.project.app.product.domain.ProductImageVO" alias="ProductImageVO"/>
+		<typeAlias type="com.project.app.product.domain.CategoryVO" alias="CategoryVO"/>
+		<typeAlias type="com.project.app.product.domain.CategoryDetailVO" alias="CategoryDetailVO"/>
+		
 	</typeAliases>
 
 </configuration>
