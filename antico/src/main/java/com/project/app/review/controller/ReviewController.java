@@ -1,9 +1,14 @@
 package com.project.app.review.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+
+import javax.naming.directory.NoSuchAttributeException;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,9 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.project.app.component.annotation.MemberNoValidation;
+import com.project.app.exception.BusinessException;
+import com.project.app.exception.ExceptionCode;
+import com.project.app.review.domain.ReviewVO;
+import com.project.app.review.domain.SurveyVO;
+import com.project.app.review.domain.TradeVO;
 import com.project.app.review.service.ReviewService;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 /*
@@ -30,27 +40,16 @@ public class ReviewController {
 	/*
 	 * 사용자 후기 메인 페이지 조회
 	 */
-	@PostMapping("/")
+	@GetMapping("/")
 	@ResponseBody
-	public ModelAndView getReviewMainPage(@RequestParam String memNo, ModelAndView mav) {
+	public ModelAndView getReviewMainPage(@RequestParam String pk_member_no, ModelAndView mav) {
 		
-		// TODO AOP 커스텀 어노테이션 사용 예정
 		// 회원 일련번호 숫자 유효성 검사
 //		if(!NumberUtils.isCreatable(memNo)) {
-//			throw new IllegalArgumentException("잘못된 회원 번호 입니다.");
 //		}
 		
-//		Map<String, String> paraMap = new HashMap<>();
-//		paraMap.put("memNo", memNo);
-//		paraMap.put("amount", "5");
-//		
-//		List<ReviewVO> reviewList = reviewService.getReviewList(paraMap); // 받은 후기 중 최근 5개 조회
-//		Map<String, Integer> receivedSurveyMap = reviewService.getReceivedSurveyMap(memNo); // 긍정적인 후기 설문 조사 현황 조회 
-		
 		mav.setViewName("review/main");
-//		mav.addObject("reviewList", reviewList);
-//		mav.addObject("likeSurveyMap", likeSurveyMap);
-		
+
 		return mav;
 	}
 	
@@ -59,25 +58,15 @@ public class ReviewController {
 	 */
 	@GetMapping("all_reviews")
 	@ResponseBody
-	public ModelAndView getReviewListPage(@RequestParam String memNo, ModelAndView mav) {
+	public ModelAndView getReviewListPage(@RequestParam String pk_member_no, ModelAndView mav) {
 		
 		// TODO AOP 커스텀 어노테이션 사용 예정
 		// 회원 일련번호 숫자 유효성 검사
-		if(!NumberUtils.isCreatable(memNo)) {
+		if(!NumberUtils.isCreatable(pk_member_no)) {
 			throw new IllegalArgumentException();
 		}
 		
-//		Map<String, String> paraMap = new HashMap<>();
-//		paraMap.put("memNo", memNo);
-//		paraMap.put("amount", "5");
-//		
-//		List<ReviewVO> reviewList = reviewService.getReviewList(paraMap); // 받은 후기 중 최근 5개 조회
-//		Map<String, Integer> receivedSurveyMap = reviewService.getReceivedSurveyMap(memNo); // 긍정적인 후기 설문 조사 현황 조회 
-		
 		mav.setViewName("review/all_reviews");
-//		mav.addObject("reviewList", reviewList);
-//		mav.addObject("likeSurveyMap", likeSurveyMap);
-		
 		return mav;
 	}
 	
@@ -85,24 +74,70 @@ public class ReviewController {
 	 * 사용자 후기 등록 페이지 조회
 	 */
 	@GetMapping("register")
-	public ModelAndView getReviewRegisterPage(@RequestParam String memNo, ModelAndView mav) {
-		// 사용자 일련번호가 유효한지 (로그인 유저)
+	@ResponseBody
+	public ModelAndView getReviewRegisterPage(@RequestParam String pk_trade_no, ModelAndView mav) {
+		
+		// TODO 페이지를 띄울 경우 상품정보, 회원정보, 거래정보가 존재하는 상황 확인
+		// 작성자가 로그인 유저임과 동시에 거래내역이 존재하며, 후기를 작성한 상태가 아니여야한다.
+		// 거래내역이 동일하고 작성자가 로그인 유저인 후기 내역이 존재하면 BACK 시킨다.
+
+		ReviewVO reviewVO = reviewService.getReview(pk_trade_no);
+		
+		// 동일한 거래에서 작성된 후기가 존재하면 예외 발생
+		if(reviewVO != null) {
+			throw new BusinessException(ExceptionCode.REVIEW_AREADY_EXISTS);
+		}
+
+		// 후기 설문문항 목록 조회
+		List<SurveyVO> survey_vo_list = reviewService.getSurveyMapList();
+		mav.addObject("survey_vo_list", survey_vo_list);
 		mav.setViewName("review/register");
 		return mav;
 	}
 	
 	/*
-	 * 사용자 후기 등록
+	 * 사용자 블랙리스트 추가
+	 * pk_target_member_no : 차단 대상 사용자 일련번호
 	 */
-	@PostMapping("register")
+	@PostMapping("add_blacklist")
 	@ResponseBody
-	@MemberNoValidation
-	public Map<String, String> reviewRegister(@RequestParam String memNo) {
-		Map<String, String> map = new HashMap<>();
-		map.put("msg", "성공하였습니다.");
+	public Map<String, Integer> addBlacklist(@RequestParam String pk_target_member_no) {
+		int blacklist_success = 0;  
+
+		blacklist_success = reviewService.addBlacklist(pk_target_member_no);
+		
+		Map<String, Integer> map = new HashMap<>();
+		map.put("blacklist_success", blacklist_success);
+		
 		return map;
 	}
 	
-	
+	/*
+	 * 사용자 후기 등록
+	 * map keys
+	 * 	arr_pk_survey_resp_no : 사용자가 선택한 설문문항 테이블 일련번호 문자열
+	 * 	pk_trade_no : 거래 일련번호
+	 * 	review_content : 후기 내역
+	 */
+	@PostMapping("register")
+	@ResponseBody
+	public Map<String, Integer> registerReivew(@RequestParam Map<String, String> para_map) {
+		int review_success = 0;
+
+		// TODO 이미지 추가
+		
+		String str_pk_survey_resp_no =  para_map.get("arr_pk_survey_resp_no");
+
+		// 사용자 선택 설문문항 테이블 일련번호 문자열이 유효할 경우 삽입 처리
+		if(StringUtils.isNotBlank(str_pk_survey_resp_no)) {
+			// 후기 등록
+			review_success = reviewService.registerReview(para_map); 
+		}
+		
+		Map<String, Integer> map = new HashMap<>();
+		map.put("review_success", review_success);		
+		
+		return map;
+	}
 
 }

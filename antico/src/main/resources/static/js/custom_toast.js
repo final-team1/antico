@@ -29,9 +29,16 @@ function showAlert(type, msg) {
 function showConfirmModal() {
 	Swal.fire({
 	  title: "후드티님이 차단됩니다.",
-	  
 	  text: "채팅 불가, 사용자 차단, 단골/찜 해제, 알림 미수신",
 	  confirmButtonText: "확인",
+	  showDenyButton: true,
+	  denyButtonText:"취소",
 	  icon: "warning"
-	});
+	}).then((result) => {
+	    if (result.isConfirmed) {
+	      Swal.fire("Saved!", "", "success");
+	    } else if (result.isDenied) {
+	      Swal.fire("Changes are not saved", "", "info");
+	    }
+  });
 }

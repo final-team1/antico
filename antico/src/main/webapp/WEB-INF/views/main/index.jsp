@@ -310,7 +310,7 @@ breakpoints: {
 		$.ajax({
 			url : "<%=ctxPath%>/review/",
 			data : {
-				"memNo" : "1"
+				"pk_member_no" : "1"
 			},
 			success : function(html) {
 				openSideTab(html);
@@ -329,16 +329,15 @@ breakpoints: {
 		$.ajax({
 			url : "<%=ctxPath%>/review/register",
 			data : {
-				"memNo" : "1"
+				"pk_trade_no" : "1"
 			},
 			success : function(html) {
 				openSideTab(html);
 			},
-			error : function(e) {
-				console.log(e);
-				// 예외처리 필요
-				alert("불러오기 실패");
-				closeSideTab();
+			 error: function(request, status, error){
+				 console.log(request);
+				 showAlert("error", request.responseText);
+				 closeSideTab();
 			}
 		});
 	}

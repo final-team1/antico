@@ -5,6 +5,8 @@
 
 <%-- context path --%>
 <c:set var="ctxPath" value="${pageContext.request.contextPath}" />
+<%-- 후기 설문 문항 정보 목록 --%>
+<c:set var="survey_vo_list" value="${requestScope.survey_vo_list}"/>
 
 <style>
 	div#review_register_container {
@@ -209,84 +211,43 @@
 		</div>
 		
 		<div class="survey_box" id="survey_best_box">
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">친절/매너가 좋아요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">응답이 빨라요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">상품상태가 좋아요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">거래 시간을 잘지켜요.</span>
-			</div>
+			<c:forEach var="survey" items="${survey_vo_list}">
+				<c:if test="${survey.pk_survey_no < 5}">
+					<div class="survey" data-pk_survey_no = "${survey.pk_survey_no}">
+						<div class="survey_checkbox">
+							<img src="${ctxPath}/images/icon/check.svg"/>
+						</div>
+						<span class="survey_span">${survey.survey_content}</span>
+					</div>
+				</c:if>
+			</c:forEach>
 		</div>
 		
 		<div class="survey_box" id="survey_good_box">
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">친절/매너가 좋아요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">응답이 빨라요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">상품상태가 좋아요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">거래 시간을 잘지켜요.</span>
-			</div>
+			<c:forEach var="survey" items="${survey_vo_list}">
+				<c:if test="${survey.pk_survey_no < 5}">
+					<div class="survey" data-pk_survey_no = "${survey.pk_survey_no}">
+						<div class="survey_checkbox">
+							<img src="${ctxPath}/images/icon/check.svg"/>
+						</div>
+						<span class="survey_span">${survey.survey_content}</span>
+					</div>
+				</c:if>
+			</c:forEach>
 		</div>
 		
 		<div class="survey_box" id="survey_bad_box">
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">친절/매너가 아쉬워요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">응답이 느려요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">상품상태가 아쉬워요.</span>
-			</div>
-			<div class="survey">
-				<div class="survey_checkbox">
-					<img src="${ctxPath}/images/icon/check.svg"/>
-				</div>
-				<span class="survey_span">거래 시간을 거래 시간을 안지켜요.</span>
-			</div>
+		
+			<c:forEach var="survey" items="${survey_vo_list}">
+				<c:if test="${survey.pk_survey_no > 4}">
+					<div class="survey" data-pk_survey_no = "${survey.pk_survey_no}">
+						<div class="survey_checkbox">
+							<img src="${ctxPath}/images/icon/check.svg"/>
+						</div>
+						<span class="survey_span">${survey.survey_content}</span>
+					</div>
+				</c:if>
+			</c:forEach>
 			
 			<hr>
 			
@@ -412,17 +373,20 @@
 			}
 			else {
 				
-				if($(this).hasClass("add_blacklist_checkbox") && !$(this).hasClass("checked")) {
+				if($(this).hasClass("add_blacklist_checkbox")) {
 					
-					showConfirmModal();
-		
-					$(this).find("div.survey_checkbox img").prop("src", "${ctxPath}/images/icon/checked.svg");
-					
-					$(this).find("div.survey_checkbox img").css({
-						"filter" : "invert(56%) sepia(37%) saturate(967%) hue-rotate(91deg) brightness(101%) contrast(98%)"
-					});
-					
-					$(this).addClass("checked");
+					Swal.fire({
+						  title: "후드티님이 차단됩니다.",
+						  text: "채팅 불가, 사용자 차단, 단골/찜 해제, 알림 미수신",
+						  confirmButtonText: "확인",
+						  showDenyButton: true,
+						  denyButtonText:"취소",
+						  icon: "warning"
+						}).then((result) => {
+						    if (result.isConfirmed) {
+						    	addBlacklist();
+						    }
+					  });
 	
 				}
 				else {
@@ -449,20 +413,82 @@
 	});
 	
 	function goReviewRegister() {
+		
+		let arr_pk_survey_resp_no = [];
+		
+		$("div.survey").each(function(index, item){
+			if($(item).hasClass("checked")){
+				arr_pk_survey_resp_no.push($(item).data("pk_survey_no"));
+			}
+		});
+		
 		$.ajax({
 			url : "${ctxPath}/review/register",
 			type : "post",
 			data : {
-				"memNo" : "3"
+				"arr_pk_survey_resp_no" : arr_pk_survey_resp_no.join(","),
+				"pk_trade_no" : "1",
+				"review_content" : $("div#review_textarea_box textarea").val(),
 			},
 			success : function(json) {
 				console.log(json);
-				showAlert("success", json.msg);
+				
+				if(json.review_success > 0) {
+					showAlert("success", "후기 등록을 성공했습니다.")
+				}
+				else {			
+					showAlert("error", "후기 등록을 실패했습니다. 다시 시도해주세요");
+				}
 			},
 			 error: function(request, status, error){
-				 console.log(request, error);
-				 showAlert("error", "");
+				 console.log(request.responseText);
+				 
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+			     showAlert("error", message);	 
+				 
 			}
 		});
 	}
+	
+	function addBlacklist() {
+    	$.ajax({
+			url : "${ctxPath}/review/add_blacklist",
+			type : "post",
+			data : {
+				"pk_target_member_no" : "4",
+			},
+			success : function(json) {
+				console.log(json);
+				
+				const blacklist_success = json.blacklist_success;
+				
+				if(blacklist_success != 1) {
+					showAlert("error", "사용자 차단을 실패했습니다. 마이페이지에서 다시 시도해주세요");
+				}
+				else {
+					showAlert("success", "사용자를 차단하였습니다.");
+					
+					$("div.add_blacklist_checkbox").find("div.survey_checkbox img").prop("src", "${ctxPath}/images/icon/checked.svg");
+					
+					$("div.add_blacklist_checkbox").find("div.survey_checkbox img").css({
+						"filter" : "invert(56%) sepia(37%) saturate(967%) hue-rotate(91deg) brightness(101%) contrast(98%)"
+					});
+					
+					$("div.add_blacklist_checkbox").addClass("checked");
+				}
+			},
+			 error: function(request, status, error){
+				 console.log(request.responseText);
+				 
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+			     showAlert("error", message);	 
+				 
+			}
+		});
+	}
+	
 </script>

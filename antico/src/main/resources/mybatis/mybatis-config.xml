@@ -5,9 +5,12 @@
 
     <!-- domain(VO) package -->
 	<typeAliases>
-		
 		<typeAlias type="com.project.app.member.domain.MemberVO" alias="MemberVO"/>
-		
+		<typeAlias type="com.project.app.review.domain.TradeVO" alias="TradeVO"/>
+		<typeAlias type="com.project.app.review.domain.ReviewVO" alias="ReviewVO"/>
+		<typeAlias type="com.project.app.review.domain.SurveyVO" alias="SurveyVO"/>
+		<typeAlias type="com.project.app.review.domain.BlacklistVO" alias="BlacklistVO"/>
 	</typeAliases>
+
 
 </configuration>
