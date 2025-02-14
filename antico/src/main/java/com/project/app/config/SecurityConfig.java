@@ -63,10 +63,10 @@ public class SecurityConfig {
     		
     	  request -> request
     	  
-    	  .requestMatchers("/product/**").authenticated()
+    	  //.requestMatchers("/product/**").authenticated()
           .requestMatchers("/**").permitAll()
              
-          .anyRequest().authenticated()
+          //.anyRequest().authenticated()
     )
     .exceptionHandling(ex -> ex
     	 .accessDeniedHandler(custom_handler)
@@ -76,8 +76,8 @@ public class SecurityConfig {
     .formLogin((formLogin) ->
       	formLogin
       		.loginPage("/member/login")
-      		.usernameParameter("mem_user_id")
-      		.passwordParameter("mem_passwd")
+      		.usernameParameter("member_user_id")
+      		.passwordParameter("member_passwd")
       		.loginProcessingUrl("/auth/login")
       		.defaultSuccessUrl("/index", true)
       		.failureUrl("/member/login")

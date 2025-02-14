@@ -22,11 +22,11 @@
 		<form action="${ctxPath}/auth/login" method="post">
 		<div style="padding:8% 2% 1% 2%; width:100%;">
 			
-			<input type="text" name="mem_user_id" class="textbox" placeholder="아이디"/>
+			<input type="text" name="member_user_id" class="textbox" placeholder="아이디"/>
 				
 		</div>
 		<div style="padding:1% 2% 1% 2%;">
-				<input type="text" name="mem_passwd" class="textbox" placeholder="비밀번호"/>
+				<input type="text" name="member_passwd" class="textbox" placeholder="비밀번호"/>
 		</div>		
 		
 				
