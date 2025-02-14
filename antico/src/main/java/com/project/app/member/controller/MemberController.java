@@ -57,11 +57,11 @@ public class MemberController {
 		
 		
 		
-		mvo.setMem_passwd(mem_passwd);
-		mvo.setMem_user_id(mem_user_id);
+		mvo.setMember_passwd(mem_passwd);
+		mvo.setMember_user_id(mem_user_id);
 		
-		System.out.println(mvo.getMem_user_id());
-		System.out.println(mvo.getMem_passwd());
+		System.out.println(mvo.getMember_user_id());
+		System.out.println(mvo.getMember_passwd());
 		
 		int n = service.registerMember(mvo);
 		
