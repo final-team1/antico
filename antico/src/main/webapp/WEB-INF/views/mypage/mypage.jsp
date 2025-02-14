@@ -404,6 +404,25 @@ hr {
 	function closeShareModal() {
 		document.getElementById("shareModal").style.display = "none";
 	}
+	
+	// URL 복사
+	function copyUrl() {
+		var url = '';
+		var textarea = document.createElement("textarea");
+		document.body.appendChild(textarea);
+		url = window.document.location.href;
+		textarea.value = url;
+		textarea.select();
+		document.execCommand("copy");
+		document.body.removeChild(textarea);
+		showAlert('success', 'URL 복사완료');
+	}
+	
+	// 인스타공유
+	function shareToInsta() {
+		window.open("https://www.instagram.com/accounts/login/", "_blank");
+	}
+	
 </script>
 
 <jsp:include page=".././header/header.jsp" />
@@ -536,7 +555,7 @@ hr {
 	<div class="modal-content" style="width: 25%;">
 		<h4 style="font-weight: bold;">공유하기</h4>
 		<div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 20px;">
-		    <button class="share-option" onclick="shareToFacebook()">
+		    <button class="share-option" onclick="shareToInsta()">
 		        <img src="https://dbdzm869oupei.cloudfront.net/img/sticker/preview/26354.png" width="64" height="64" style="border-radius: 50%;">
 		    </button>
 		    <button class="share-option" onclick="copyUrl()">
