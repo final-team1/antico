@@ -19,7 +19,7 @@ public class MemberDetailService implements UserDetailsService{
 	private final MemberDAO mdao;
 	
 	@Autowired
-	private PasswordEncoder passEncoder;
+	private PasswordEncoder pass_encoder;
 	
 	public MemberDetailService(MemberDAO mdao) {
 		this.mdao = mdao;
@@ -34,10 +34,10 @@ public class MemberDetailService implements UserDetailsService{
 		// TODO memberVO 유효성검사
 		
 		
-		return new CustomUserDetails(mvo.getPk_mem_no(), mvo.getMem_passwd() , mvo.getMem_user_id()
-				 , mvo.getMem_regdate(),mvo.getMem_tel(), mvo.getMem_passwd_change_date()
-				 ,mvo.getMem_authorization(), mvo.getMem_point(), mvo.getMem_score()
-			     ,mvo.getMem_status());
+		return new CustomUserDetails(mvo.getPk_member_no(), mvo.getMember_passwd() , mvo.getMember_user_id()
+				 , mvo.getMember_regdate(),mvo.getMember_tel(), mvo.getMember_passwd_change_date()
+				 ,mvo.getMember_role(), mvo.getMember_point(), mvo.getMember_score()
+			     ,mvo.getMember_status());
 	}
 	
 	
