@@ -21,12 +21,12 @@
 		
 		<div style="padding:8% 2% 1% 2%; width:100%; margin-bottom: 5%;">
 			<p>아이디</p>
-			<input type="text" name="mem_user_id" class="textbox" placeholder="아이디"/>
+			<input type="text" name="member_user_id" class="textbox" placeholder="아이디"/>
 				
 		</div>
 		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
 			<p>비밀번호</p>
-			<input type="text" name="mem_passwd" class="textbox" placeholder="비밀번호"/>
+			<input type="text" name="member_passwd" class="textbox" placeholder="비밀번호"/>
 		</div>		
 		
 				

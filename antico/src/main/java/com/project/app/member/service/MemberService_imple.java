@@ -22,7 +22,7 @@ public class MemberService_imple implements MemberService {
 	
 	@Override
 	public int registerMember(MemberVO mvo) {
-		mvo.setMem_passwd(pwdEncoder.encode(mvo.getMem_passwd()));
+		mvo.setMember_passwd(pwdEncoder.encode(mvo.getMember_passwd()));
 		
 		return memberDAO.registerMember(mvo);
 	}

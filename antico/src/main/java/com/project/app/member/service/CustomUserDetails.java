@@ -1,4 +1,4 @@
-package com.project.app.member.service;
+	package com.project.app.member.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,37 +12,38 @@ import com.project.app.member.domain.MemberVO;
 
 public class CustomUserDetails implements UserDetails {
 	
-	private final String pk_mem_no;
-	private final String mem_passwd;
-	private final String mem_user_id;
-	private final String mem_regdate;
-	private final String mem_tel;
-	private final String mem_passwd_change_date;
-	private final String mem_authorization;
-	private final String mem_point;
-	private final String mem_score;
-	private final String mem_status;
+	private final String pk_member_no;
+	private final String member_regdate;
+	private final String member_user_id;
+	private final String member_passwd;
+	private final String member_tel;
+	private final String member_passwd_change_date;
+	private final String member_role;
+	private final String member_point;
+	private final String member_score;
+	private final String member_status;
 	
 	
 	
 	
 	
 
-	public CustomUserDetails(String pk_mem_no, String mem_passwd, String mem_user_id, String mem_regdate,
-			String mem_tel, String mem_passwd_change_date, String mem_authorization, String mem_point, String mem_score,
-			String mem_status) {
-		this.pk_mem_no = pk_mem_no;
-		this.mem_passwd = mem_passwd;
-		this.mem_user_id = mem_user_id;
-		this.mem_regdate = mem_regdate;
-		this.mem_tel = mem_tel;
-		this.mem_passwd_change_date = mem_passwd_change_date;
-		this.mem_authorization = mem_authorization;
-		this.mem_point = mem_point;
-		this.mem_score = mem_score;
-		this.mem_status = mem_status;
+
+	public CustomUserDetails(String pk_member_no, String member_regdate, String member_user_id, String member_passwd,
+			String member_tel, String member_passwd_change_date, String member_role, String member_point,
+			String member_score, String member_status) {
+		super();
+		this.pk_member_no = pk_member_no;
+		this.member_regdate = member_regdate;
+		this.member_user_id = member_user_id;
+		this.member_passwd = member_passwd;
+		this.member_tel = member_tel;
+		this.member_passwd_change_date = member_passwd_change_date;
+		this.member_role = member_role;
+		this.member_point = member_point;
+		this.member_score = member_score;
+		this.member_status = member_status;
 	}
-
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,7 +52,7 @@ public class CustomUserDetails implements UserDetails {
 		
 		String role = "";
 		
-		switch (mem_authorization) {
+		switch (member_role) {
 		case "0":
 			role = "ROLE_USER_1";
 			break;
@@ -103,40 +104,40 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return mem_passwd;
+		return member_passwd;
 	}
 
 	@Override
 	public String getUsername() {
-		return mem_user_id;
+		return member_user_id;
 	}
 	
-	public String getPk_mem_no() {
-		return pk_mem_no;
+	public String getPk_member_no() {
+		return pk_member_no;
 	}
 
-	public String getMem_regdate() {
-		return mem_regdate;
+	public String getMember_regdate() {
+		return member_regdate;
 	}
 	
-	public String getMem_tel() {
-		return mem_tel;
+	public String getMember_tel() {
+		return member_tel;
 	}
 
-	public String getMem_passwd_change_date() {
-		return mem_passwd_change_date;
+	public String getMember_passwd_change_date() {
+		return member_passwd_change_date;
 	}
 	
-	public String getMem_point() {
-		return mem_point;
+	public String getMember_point() {
+		return member_point;
 	}
 	
-	public String getMem_score() {
-		return mem_score;
+	public String getMember_score() {
+		return member_score;
 	}
 
-	public String getMem_status() {
-		return mem_status;
+	public String getMember_status() {
+		return member_status;
 	}
 
 
