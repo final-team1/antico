@@ -55,3 +55,19 @@ server:
       charset: UTF-8
       enabled: true #http 인코딩 지원을 활성화할지 여부
       force: true #post 방식으로 전송했을때 한글데이터가 안깨지도록 함.
+
+# Jasypt 암호화 설정
+jasypt:
+  encryptor:
+    bean: jasyptEncryptor
+
+# aws s3 설정
+cloud:
+  aws:
+    s3:
+      bucket: antico-uploads-files
+      stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ENC(bvAkCaRASAQvgnrGC808ZQulHHVIGuveSHlqFmtXGLM=)
+      secretKey: ENC(uZP25eC9J9oLHqiOV5/GjNcrHRL7yA8mrrZ3sGTwxJMDYg44Gh/LkJ8fHBp+k4xY6IOx/gdp/zk=)

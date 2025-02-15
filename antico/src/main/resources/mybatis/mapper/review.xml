@@ -1,14 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- ==== mapper 기본설정 ==== -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.project.app.review.model.ReviewMapper">
+<mapper namespace="com.project.app.review.model.ReviewDAO">
 
-	<select id="select" resultType="String">
-		select name 
-		from tbl_member
-		where userid = 'admin'
+	<!-- 후기 조회 -->
+	<select id="selectReview" resultType="ReviewVO">
+		select pk_review_no, fk_member_no, fk_trade_no, review_content, review_regdate, review_img_file_name, review_img_org_name
+		from tbl_review
+		where fk_trade_no = #{pk_trade_no} and fk_member_no = #{pk_member_no}
+	</select>
+
+	<!-- 거래 내역 조회 -->
+	<select id="selectTrade" parameterType="String" resultType="TradeVO">
+		select pk_trade_no, fk_seller_no, fk_consumer_no, fk_product_no, trade_status, trade_cancel_date, trade_pending_date, trade_confirm_date
+		from tbl_trade
+		where pk_trade_no = #{pk_trade_no}
+	</select>
+	
+	<!-- 후기 설문 문항 목록 조회 -->
+	<select id="selectSurveyList" resultType="SurveyVO">
+		select pk_survey_no, survey_content
+		from tbl_survey
+	</select>
+	
+	<!-- 시퀀스 후기 일련번호 조회 -->
+	<select id="selectPkReviewNo" resultType="String">
+		select review_seq.nextval from dual
+	</select>
+
+	<!-- 후기 저장 -->
+	<insert id="insertReview" parameterType="HashMap" keyColumn="pk_review_no" keyProperty="pk_review_no">
+	    insert into tbl_review (pk_review_no, fk_member_no, fk_trade_no, review_content, review_regdate, review_img_file_name, review_img_org_name)
+	    values (#{pk_review_no}, #{pk_member_no}, #{pk_trade_no}, #{review_content}, SYSDATE, #{review_img_file_name}, #{review_img_org_name})
+	</insert>
+
+	<!-- 후기 설문조사 삽입 -->
+	<insert id="insertSurveyResp">
+	    insert into tbl_survey_resp (pk_survey_resp_no, fk_review_no, fk_survey_no)
+	    <!-- select 결과 집합이 그대로 tbl_survey_resp 테이블로 삽입 -->
+	    select survey_resp_seq.nextval, a.fk_review_no, a.fk_survey_no 
+	    from (
+	    	<!-- union all을 통해 여러 행의 select 결과 값이 생성 -->
+	        <foreach collection="arr_pk_survey_resp_no" item="pk_survey_no" separator="UNION ALL">
+	            SELECT #{pk_review_no} as fk_review_no, #{pk_survey_no} as fk_survey_no from dual
+	        </foreach>
+	    ) a
+	</insert>
+
+	<!-- 블랙리스트 추가 -->
+	<insert id="insertBlackList">
+		insert into tbl_blacklist(pk_blacklist_no, fk_target_member_no, fk_member_no, blacklist_regdate)
+		values(blacklist_seq.nextval, #{pk_target_member_no}, #{pk_member_no}, sysdate)
+	</insert>
+	
+	<!-- 블랙리스트 조회 -->
+	<select id="selectBlacklist" resultType="BlacklistVO">
+		select pk_blacklist_no, fk_target_member_no, fk_member_no, blacklist_regdate
+		from tbl_blacklist
+		where fk_target_member_no = #{pk_target_member_no} and fk_member_no = #{pk_member_no}
 	</select>
 
 </mapper>

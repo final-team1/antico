@@ -2,17 +2,17 @@
 
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-
     <!-- domain(VO) package -->
 	<typeAliases>
-		
 		<typeAlias type="com.project.app.member.domain.MemberVO" alias="MemberVO"/>
-		
+		<typeAlias type="com.project.app.review.domain.TradeVO" alias="TradeVO"/>
+		<typeAlias type="com.project.app.review.domain.ReviewVO" alias="ReviewVO"/>
+		<typeAlias type="com.project.app.review.domain.SurveyVO" alias="SurveyVO"/>
+		<typeAlias type="com.project.app.review.domain.BlacklistVO" alias="BlacklistVO"/>
 		<typeAlias type="com.project.app.product.domain.ProductVO" alias="ProductVO"/>
 		<typeAlias type="com.project.app.product.domain.ProductImageVO" alias="ProductImageVO"/>
 		<typeAlias type="com.project.app.product.domain.CategoryVO" alias="CategoryVO"/>
 		<typeAlias type="com.project.app.product.domain.CategoryDetailVO" alias="CategoryDetailVO"/>
-		
 	</typeAliases>
 
 </configuration>

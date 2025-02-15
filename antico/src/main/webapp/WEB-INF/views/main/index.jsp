@@ -310,35 +310,48 @@ breakpoints: {
 		$.ajax({
 			url : "<%=ctxPath%>/review/",
 			data : {
-				"memNo" : "1"
+				"pk_member_no" : "1"
 			},
 			success : function(html) {
+				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
 				openSideTab(html);
 			},
 			error : function(e) {
-				console.log(e);
-				// 예외처리 필요
-				alert("불러오기 실패");
-				closeSideTab();
+ 				 console.log(request.responseText);
+				 
+ 				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+				 // 사이드 탭 닫기
+			     showAlert("error", message);
+			     closeSideTab();
 			}
 		});
 	}
 	
-	//후기 확인 테스트 함수
+	//후기 등록 테스트 함수
 	function showReviewRegisterTab() {
 		$.ajax({
 			url : "<%=ctxPath%>/review/register",
 			data : {
-				"memNo" : "1"
+				"pk_trade_no" : "1"
 			},
 			success : function(html) {
+				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
 				openSideTab(html);
 			},
-			error : function(e) {
-				console.log(e);
-				// 예외처리 필요
-				alert("불러오기 실패");
-				closeSideTab();
+			 error: function(request, status, error){
+				 console.log(request.responseText);
+				 
+				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+			     showAlert("error", message);
+			     
+			     // 사이드 탭 닫기
+			     closeSideTab();
 			}
 		});
 	}

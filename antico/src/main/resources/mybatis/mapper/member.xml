@@ -22,7 +22,6 @@
 		where pk_mem_no = #{memberNo} and mem_status = 1
 	</select>
 	
-	
 
 </mapper>
 
