@@ -9,10 +9,10 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.project</groupId>
-	<artifactId>final</artifactId>
+	<artifactId>antico</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>final</name>
+	<name>antico</name>
 	<description>Myspring project for Spring Boot</description>
 	<url/>
 	<licenses>
