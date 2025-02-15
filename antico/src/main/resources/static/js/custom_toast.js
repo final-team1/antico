@@ -34,11 +34,5 @@ function showConfirmModal() {
 	  showDenyButton: true,
 	  denyButtonText:"취소",
 	  icon: "warning"
-	}).then((result) => {
-	    if (result.isConfirmed) {
-	      Swal.fire("Saved!", "", "success");
-	    } else if (result.isDenied) {
-	      Swal.fire("Changes are not saved", "", "info");
-	    }
-  });
+	});
 }

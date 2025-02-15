@@ -17,13 +17,13 @@ public interface ReviewDAO {
 	// 거래 일련번호를 통한 후기 조회
 	ReviewVO selectReview(String pk_member_no, String pk_trade_no);
 	
-	// 거래 일련번호를 통해 거래 내역 유무 조회 TODO 추후에 거래 관련 DAO로 이동
+	// 거래 일련번호를 통해 거래 내역 유무 조회 || TODO 추후에 거래 관련 DAO로 이동
 	Optional<TradeVO> selectTrade(String pk_trade_no);
 	
 	// 후기 설문 문항 정보 조회
 	List<SurveyVO> selectSurveyList();
 
-	// 후기 삽입 전 시퀀스 값 조회
+	// 시퀀스 후기 일련번호 조회
 	String selectPkReviewNo();
 	
 	// 후기 저장

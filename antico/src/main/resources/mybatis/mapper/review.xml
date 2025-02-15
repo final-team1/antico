@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- ==== mapper 기본설정 ==== -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.project.app.review.model.ReviewDAO">
 
+	<!-- 후기 조회 -->
 	<select id="selectReview" resultType="ReviewVO">
 		select pk_review_no, fk_member_no, fk_trade_no, review_content, review_regdate, review_img_file_name, review_img_org_name
 		from tbl_review
@@ -29,17 +29,19 @@
 		select review_seq.nextval from dual
 	</select>
 
-	<!-- 후기 삽입 -->
+	<!-- 후기 저장 -->
 	<insert id="insertReview" parameterType="HashMap" keyColumn="pk_review_no" keyProperty="pk_review_no">
 	    insert into tbl_review (pk_review_no, fk_member_no, fk_trade_no, review_content, review_regdate, review_img_file_name, review_img_org_name)
-	    values (#{pk_review_no}, #{pk_member_no}, #{pk_trade_no}, #{review_content}, SYSDATE, NULL, NULL)
+	    values (#{pk_review_no}, #{pk_member_no}, #{pk_trade_no}, #{review_content}, SYSDATE, #{review_img_file_name}, #{review_img_org_name})
 	</insert>
 
 	<!-- 후기 설문조사 삽입 -->
 	<insert id="insertSurveyResp">
 	    insert into tbl_survey_resp (pk_survey_resp_no, fk_review_no, fk_survey_no)
+	    <!-- select 결과 집합이 그대로 tbl_survey_resp 테이블로 삽입 -->
 	    select survey_resp_seq.nextval, a.fk_review_no, a.fk_survey_no 
 	    from (
+	    	<!-- union all을 통해 여러 행의 select 결과 값이 생성 -->
 	        <foreach collection="arr_pk_survey_resp_no" item="pk_survey_no" separator="UNION ALL">
 	            SELECT #{pk_review_no} as fk_review_no, #{pk_survey_no} as fk_survey_no from dual
 	        </foreach>
