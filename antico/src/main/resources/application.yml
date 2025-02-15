@@ -60,6 +60,7 @@ server:
 jasypt:
   encryptor:
     bean: jasyptEncryptor
+    password : ${JASYPT_ENCRYPTOR_PASSWORD}
 
 # aws s3 설정
 cloud:
