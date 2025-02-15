@@ -23,7 +23,7 @@ jobs:
 
             - name: Build with Maven
               working-directory: antico
-              run: mvn -B clean package
+              run: mvn -B clean package -Djasypt.encryptor.password=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
 
             - name: Verify WAR file exists before upload
               working-directory: antico
@@ -39,7 +39,7 @@ jobs:
         needs: build
         runs-on: ubuntu-latest
         env:
-            JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD}}
+            JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
         steps:
             - name: Download build artifact
               uses: actions/download-artifact@v4
