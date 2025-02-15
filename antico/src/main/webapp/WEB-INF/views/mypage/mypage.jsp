@@ -1,11 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+    String ctx_Path = request.getContextPath();
+%>
+<c:set var="ctx_Path" value="${pageContext.request.contextPath}" />
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
-<c:set var="ctxPath" value="${pageContext.request.contextPath}" />
-<link rel="stylesheet"
-	href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+<script type="text/javascript" src="<%= ctx_Path%>/js/mypage/pointcharge.js"></script>
+
 <style>
+
 div.container {
 	padding: 10px 50px;
 }
@@ -55,12 +61,12 @@ div.container {
 	padding: 20px;
 }
 
-.profile-section {
+.profile_section {
 	padding: 20px 0px 20px 0;
 	border-radius: 8px;
 }
 
-.stats-section {
+.stats_section {
 	width: 100%;
 	display: grid;
 	height: 55%;
@@ -71,7 +77,7 @@ div.container {
 	border: solid 1px #eee;
 }
 
-.stat-box {
+.stat_box {
 	position: relative;
 	flex: 1;
 	padding: 10px;
@@ -80,7 +86,7 @@ div.container {
 	justify-content: center;
 }
 
-.stat-box::after {
+.stat_box::after {
 	content: "";
 	position: absolute;
 	top: 50%;
@@ -91,7 +97,7 @@ div.container {
 	background-color: #eee;
 }
 
-.stat-box:last-child::after {
+.stat_box:last-child::after {
 	content: "";
 	position: absolute;
 	top: 0px;
@@ -99,13 +105,13 @@ div.container {
 	height: 0px;
 }
 
-.stat-box p {
+.stat_box p {
 	color: grey;
 	font-size: 10pt;
 	margin-bottom: 5px;
 }
 
-.stat-box span {
+.stat_box span {
 	font-weight: bold;
 	font-size: 16pt;
 }
@@ -159,7 +165,7 @@ hr {
 	align-items: center;
 }
 
-.modal-content {
+.modal_content {
 	background: white;
 	padding: 20px;
 	display: flex;
@@ -168,7 +174,7 @@ hr {
 	text-align: center;
 }
 
-.share-btn-arrow {
+.share_btn_arrow {
 	justify-content: center;
 	align-items: center;
 	padding: 10px;
@@ -180,16 +186,16 @@ hr {
 	transition: background 0.3s;
 }
 
-.share-btn-arrow:hover {
+.share_btn_arrow:hover {
 	background: #f0f0f0;
 }
 
-.share-option {
+.share_option {
 	border: solid 0px red;
 	background-color: white;
 }
 
-.close-btn { /* 공유하기 닫기버튼 */
+.close_btn { /* 공유하기 닫기버튼 */
 	width: 100%;
 	height: 48px;
 	background-color: #000;
@@ -298,13 +304,13 @@ hr {
 }
 
 /* 신뢰지수 막대기 */
-.score-level {
+.score_level {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-.trust-bar {
+.trust_bar {
 	width: 100%;
 	background-color: #ddd;
 	height: 8px;
@@ -312,41 +318,41 @@ hr {
 	margin: 5px 0;
 }
 
-.trust-progress {
+.trust_progress {
 	height: 100%;
 	background-color: #4CAF50; /* 초록색 */
 	border-radius: 4px;
 }
 
 
-.product-nav button{
+.product_nav button{
 	position: relative;
 	font-size: 12pt;
 	padding:12px 16px;
 	color: black;
 }
-.product-nav button:hover{
+.product_nav button:hover{
 	 text-decoration-line: none;
 	 color: black;
 }
 
 
 @media (min-width: 1280px) {
-  .product-nav button {
+  .product_nav button {
     font-size: 12pt;
 	padding:12px 16px;
   }
 }
 
 @media (max-width: 1279px) {
-  .product-nav button {
+  .product_nav button {
     font-size: 10pt;
 	padding:6px 12px;
   }
 }
 
 
-.product-nav button::after{
+.product_nav button::after{
 	width: 0px;
 	content: "";
 	position: absolute;
@@ -355,7 +361,7 @@ hr {
 	border-top: 2px solid black; 
 	transform:translateX(-100%);
 }
-.product-nav button:hover::after {
+.product_nav button:hover::after {
 	width:100%;
 	transform:translateX(0%);
 	transition: width 0.45s;
@@ -363,14 +369,14 @@ hr {
 }
 
 
-.product-nav button{
+.product_nav button{
 	background-color: white;
 	border: solid 0px red;
 	margin-left: 80px;
 	padding-top: 20px;
 	
 }
-.product-nav {
+.product_nav {
     border-bottom: 2px solid #eee;
     padding-bottom: 17px;
 }
@@ -423,6 +429,24 @@ hr {
 		window.open("https://www.instagram.com/accounts/login/", "_blank");
 	}
 	
+	
+	// 카카오톡 공유하기 openApi 
+    Kakao.init('482ce4a8dbba039290fe052de413a915');
+    console.log(Kakao.isInitialized()); // 초기화 확인
+
+    function shareToKakao() {
+        var currentURL = window.location.href; // 현재 페이지 URL 가져오기
+
+        Kakao.Link.sendDefault({
+            objectType: 'text', // 텍스트 형식
+            text: '이 링크를 확인해 보세요!\n' + currentURL, // 공유할 URL
+            link: {
+                mobileWebUrl: currentURL,
+                webUrl: currentURL,
+            },
+        });
+    }
+	
 </script>
 
 <jsp:include page=".././header/header.jsp" />
@@ -436,14 +460,13 @@ hr {
 		<ul>
 			<li><a href="#">판매내역</a></li>
 			<li><a href="#">구매내역</a></li>
-			<li><a href="#">택배</a></li>
 			<li><a href="#">찜한 상품</a></li>
 		</ul>
 		<hr>
 		<h5 style="font-weight: bold;">내 정보</h5>
 		<ul>
 			<li><a href="#">계좌 관리</a></li>
-			<li><a href="#">배송지 관리</a></li>
+			<li><a href="javascript:pointcharge('<%= ctx_Path%>')">포인트 충전</a></li>
 			<li><a href="#">거래 후기</a></li>
 			<li><a href="#">탈퇴하기</a></li>
 		</ul>
@@ -456,11 +479,11 @@ hr {
 			<!-- div2 -->
 			<div
 				style="display: flex; justify-content: space-between; width: 100%;">
-				<!-- 왼쪽 profile-section -->
-				<section class="profile-section" style="flex: 1;">
-					<div class="profile-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-						<h4 style="font-weight: bold;">닉네임</h4>
-						<button class="share-btn-arrow" onclick="openShareModal()">
+				<!-- 왼쪽 profile_section -->
+				<section class="profile_section" style="flex: 1;">
+					<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+						<h4 class="name" style="font-weight: bold;">닉네임</h4>
+						<button class="share_btn_arrow" onclick="openShareModal()">
 							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
                             </svg>
@@ -468,16 +491,16 @@ hr {
 					</div>
 					<p style="font-size: 13px; color: gray; padding-top: 12px; letter-spacing: -0.5px;">
 						앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>
-					<section class="stats-section">
-						<div class="stat-box">
+					<section class="stats_section">
+						<div class="stat_box">
 							<p>안전거래</p>
 							<span>1</span>
 						</div>
-						<div class="stat-box">
+						<div class="stat_box">
 							<p>거래후기</p>
 							<span style="text-decoration: underline;">1</span>
 						</div>
-						<div class="stat-box">
+						<div class="stat_box">
 							<p>단골</p>
 							<span>0</span>
 						</div>
@@ -487,10 +510,10 @@ hr {
 				<div style="flex: 1; padding-left: 20px;">
 
 					<!-- 점수 막대기 -->
-					<div class="stat-box score-level mt-2">
+					<div class="stat_box score_level mt-2">
 						<p style="font-weight: bold;">스코어</p>
-						<div class="trust-bar">
-							<div class="trust-progress" style="width: 75%;"></div>
+						<div class="trust_bar">
+							<div class="trust_progress" style="width: 75%;"></div>
 						</div>
 						<span>75%</span>
 						<!-- 예시 퍼센트 -->
@@ -508,9 +531,9 @@ hr {
 
 			<!-- div2 아래, div1 내부 -->
 			<div>
-				<section class="my-products mt-5">
+				<section class="my_products mt-5">
 					<h4 style="font-weight: bold;">내 상품</h4>
-					<nav class="product-nav">
+					<nav class="product_nav">
 						<button>전체</button> <button>판매중</button> <button>예약중</button><button>판매완료</button>
 					</nav>
 					<br>
@@ -524,13 +547,11 @@ hr {
 							<li class="cardbox" style="width: 100%; list-style: none;">
 								<a href="/CLARETe/shop/prodView.cl?p_num=${pvoList.p_num}">
 									<div class="cardimg">
-										<img src="/CLARETe/images/${pvoList.p_image}"
-											style="width: 100%; display: block;">
+										<img src="/CLARETe/images/${pvoList.p_image}" style="width: 100%; display: block;">
 									</div>
 									<div class="cardname">${pvoList.p_name}</div>
 									<div class="cardprice">
-										<span><fmt:formatNumber value="${pvoList.p_price}"
-												type="number" groupingUsed="true"></fmt:formatNumber> </span><span>원</span>
+										<span><fmt:formatNumber value="${pvoList.p_price}" type="number" groupingUsed="true"></fmt:formatNumber> </span><span>원</span>
 									</div>
 							</a>
 							</li>
@@ -540,7 +561,7 @@ hr {
 
 				<c:if test="${empty requestScope.pvoList}">
 					<div class="mypage_contants_bottom">
-						<div class="recent-orders-box">
+						<div class="none_product">
 							<div>선택된 조건에 해당하는 상품이 없습니다.</div>
 						</div>
 					</div>
@@ -552,17 +573,20 @@ hr {
 
 <!-- 공유 모달 -->
 <div id="shareModal" class="modal">
-	<div class="modal-content" style="width: 25%;">
+	<div class="modal_content" style="width: 25%;">
 		<h4 style="font-weight: bold;">공유하기</h4>
 		<div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 20px;">
-		    <button class="share-option" onclick="shareToInsta()">
+		    <button class="share_option" onclick="shareToInsta()">
 		        <img src="https://dbdzm869oupei.cloudfront.net/img/sticker/preview/26354.png" width="64" height="64" style="border-radius: 50%;">
 		    </button>
-		    <button class="share-option" onclick="copyUrl()">
+		    <button class="share_option" onclick="shareToKakao()">
+		        <img src="https://blog.kakaocdn.net/dn/dMWSyr/btq5R2rw7Rf/3CyUtcWWWQkKVZDdKiQ46K/img.png" width="64" height="64" style="border-radius: 50%;">
+		    </button>
+		    <button class="share_option" onclick="copyUrl()">
 		        <img src="https://beosyong.com/img/mypage_link.png" width="64" height="64">
 		    </button>
 		</div>
-		<button class="close-btn" onclick="closeShareModal()" style="align-self: center;">닫기</button>
+		<button class="close_btn" onclick="closeShareModal()" style="align-self: center;">닫기</button>
 	</div>
 </div>
 
