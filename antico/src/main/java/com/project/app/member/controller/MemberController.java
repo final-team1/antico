@@ -1,6 +1,10 @@
 package com.project.app.member.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,35 +16,20 @@ import com.project.app.member.domain.MemberVO;
 import com.project.app.member.service.MemberService;
 
 @Controller
-@RequestMapping("member/*")
+@RequestMapping("/member/*")
 public class MemberController {
 	
 	@Autowired
 	MemberService service;
 	
-	@PostMapping("register")
-	public ModelAndView registerMember(@RequestParam String mem_user_id, @RequestParam String mem_passwd, 
-			 			ModelAndView mav){
-		
-		MemberVO mvo = new MemberVO();
-		
-		mvo.setMem_passwd(mem_passwd);
-		mvo.setMem_user_id(mem_user_id);
-		
-		System.out.println(mvo.getMem_user_id());
-		System.out.println(mvo.getMem_passwd());
-		
-		int n = service.registerMember(mvo);
-		
-		
-		
-		return mav;
-	}
+
 	
 	@GetMapping("login")
 	public ModelAndView showLoginPage(
 			 			ModelAndView mav){
 		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(authentication.getAuthorities());
 		
 		mav.setViewName("main/login");
 		
@@ -48,5 +37,37 @@ public class MemberController {
 	}
 	
 	
+	
+	@GetMapping("register")
+	public ModelAndView goRegisterMember(ModelAndView mav) {
+		
+		
+		mav.setViewName("main/register");
+		
+		return mav;
+	}
+	
+	
+	
+	@PostMapping("register")
+	public ModelAndView registerMember(@RequestParam String mem_user_id, @RequestParam String mem_passwd, 
+			 			ModelAndView mav){
+		
+		MemberVO mvo = new MemberVO();
+		
+		
+		
+		mvo.setMember_passwd(mem_passwd);
+		mvo.setMember_user_id(mem_user_id);
+		
+		System.out.println(mvo.getMember_user_id());
+		System.out.println(mvo.getMember_passwd());
+		
+		int n = service.registerMember(mvo);
+		
+		
+		
+		return mav;
+	}
 	
 }

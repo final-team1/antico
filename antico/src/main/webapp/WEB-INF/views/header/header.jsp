@@ -48,6 +48,9 @@
   <script src="<%=ctxPath%>/js/custom_toast.js"></script>
   <link rel="stylesheet" href="<%=ctxPath%>/css/custom_toast.css">
 
+
+  <%-- font cdn --%>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
 <style>
 
 .fixed {
@@ -112,13 +115,13 @@ input.searchBar {
 
 .search_bar_container{
 	background-color: #F1F4F6;
-	border-radius: 5%; 
+	border-radius: 8px; 
 }
 
 .searchBar {
 	border: none;
 	background-color: #F1F4F6;
-	border-radius: 5%; 
+	border-radius: 7px; 
 }
 
 

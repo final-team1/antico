@@ -20,9 +20,18 @@ public class MypageController {
 	private MypageService service;
 	
 	@GetMapping("mypagemain")
-	public String mypagemain(HttpServletRequest request) {
+	public String mypagemain(HttpServletRequest request, ModelAndView mav) {
+		
+	//	service.pointcharge();
 		
 		return "mypage/mypage";
+	}
+	
+	@GetMapping("pointcharge")
+	public String pointcharge(HttpServletRequest request) {
+		
+		
+		return "mypage/pointcharge";
 	}
 	
 }

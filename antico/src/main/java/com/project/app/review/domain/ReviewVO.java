@@ -1,6 +1,5 @@
 package com.project.app.review.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,25 +9,20 @@ import lombok.Setter;
 
 @Getter
 @Setter // TODO 추후에 setter 함수 제거 
-@Builder
 public class ReviewVO {
 	
-	private String pkRevNo; // 후기 PK 일련번호
+	private String pk_review_no; // 후기 PK 일련번호
 	
-	private String fkWrtNo; // 작성자 회원 일련번호
+	private String fk_member_no; // 작성자 회원 일련번호
 	
-	private String fkRcvNo; // 작성대상 회원 일련번호
+	private String fk_trade_no; // 거래 일련번호
 	
-	private String fkTraNo; // 거래 일련번호
+	private String review_content; // 후기 내용
 	
-	private String prodName; // 거래 상품명
+	private String review_regdate; // 후기 등록일자
 	
-	private String revContent; // 후기 내역
+	private String review_img_file_name; // 후기 사진 파일명
 	
-	private String revRegdate; // 후기 작성 일자
-	
-	private String revImgFileName; // 후기 사진 파일명
-	
-	private String revImgOrgName; // 후기 원본 사진명
+	private String review_img_org_name; // 후기 원본 사진명
 
 }
