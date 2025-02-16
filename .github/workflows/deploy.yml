@@ -18,10 +18,6 @@ jobs:
                   distribution: "temurin"
                   cache: maven
 
-            - name: Replace JASYPT_ENCRYPTOR_PASSWORD in application.yml
-              run: |
-                  sed -i "s/\${JASYPT_ENCRYPTOR_PASSWORD}/$JASYPT_ENCRYPTOR_PASSWORD/g" antico/src/main/resources/application.yml
-
             - name: Clear Maven Cache
               run: rm -rf ~/.m2/repository
 
