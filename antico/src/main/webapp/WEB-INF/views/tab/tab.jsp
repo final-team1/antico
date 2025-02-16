@@ -95,13 +95,16 @@
 	});
 	
 	// 사이드 네비게이션 열기
-	function openSideTab(html) {
+	function openSideTab(html, tabTitle) {
 		// 반응형 사이드 네비게이션 처리
 		// 브라우저 너비가 1024px (FHD 화면 기준)보다 이하인 경우 반응형 처리
 		const width = document.body.clientWidth > 1024 ? "700px" : "100vw";
 		
 		// 사이드 탭에 HTML 요소 삽입
 		$("div#sidetab_content").html(html);
+		
+		// 탭 제목 동적으로 설정
+		$("span#sidetab_title").text(tabTitle);
 		
 		$("div#sidetab_container")
 		.css("display", "block")

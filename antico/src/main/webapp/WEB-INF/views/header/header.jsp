@@ -375,7 +375,7 @@ img.main_logo {
 			<a class="menuStyle">찜한상품</a>
 		</div>
 		<div class="menuItem">
-			<a class="menuStyle" href="<%= ctxPath%>/notice/list">고객센터</a>
+			<a class="menuStyle" href="<%= ctxPath%>/notice/noticelist">고객센터</a>
 		</div>
 		
 		</div>
