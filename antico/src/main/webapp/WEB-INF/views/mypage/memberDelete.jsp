@@ -6,8 +6,22 @@
 
 <script>
 $(document).ready(function() {
-	
+    // 체크박스 상태에 따라 탈퇴 버튼 활성화/비활성화
+    function checkCheckboxes() {
+        var checkboxes = document.querySelectorAll('input[name="reason"]:checked');
+        var submitButton = document.getElementById("withdraw_button");
+        submitButton.disabled = checkboxes.length === 0; // 하나라도 체크되지 않으면 버튼 비활성화
+    }
+
+    // 체크박스를 클릭할 때마다 checkCheckboxes 함수 호출
+    $("input[name='reason']").change(function() {
+        checkCheckboxes();
+    });
+
+    // 페이지 로딩 시 체크박스 상태 확인
+    checkCheckboxes();
 });
+
    // 기타 눌렀을 때 토글
    function toggleOtherReason() {
        var other_input = document.getElementById("other_reason");
@@ -91,7 +105,31 @@ $(document).ready(function() {
     .container {
 	    overflow: hidden; /* 스크롤을 숨깁니다 */
 	}
-    
+	
+	.info li {
+		padding-left: 15px;
+		margin-top: 10px;
+		font-size: 10pt;
+	}
+	
+    /* 회원탈퇴 버튼 스타일 */
+	#withdraw_button {
+	    background-color: #28a745;
+	    color: white;
+	    font-size: 14px;
+	    padding: 10px 20px;
+	    border: none;
+	    border-radius: 5px;
+	    cursor: pointer;
+	    width:100%;
+	    height:9%;
+	    transition: background-color 0.3s;
+	}
+	
+	#withdraw_button:disabled {
+	    background-color: #ddd;
+	    cursor: not-allowed;
+	}
 </style>
 
 <body>
@@ -144,12 +182,17 @@ $(document).ready(function() {
 	            <span>전자 상거래 등에서의 소비자 보호에 관한 법률 규정에 따라 아래와 같이 기록을 보관하며, 법률 의한 경우 외 다른 목적으로 이용되지 않습니다.</span>
 	        </li>
 	        <hr style="width: 100%; margin-top: 15px; border: solid 1px #666666;">
-	        <ul style="font-size: 12px; color: #666; padding-left: 0; margin-left: 0; margin-top: 10px;">
-	            <li>표시 광고에 대한 기록: 6개월</li>
-	            <li>계약 또는 청약철회, 대금결제 및 재화 등의 공급에 관한 기록: 5년</li>
-	            <li>소비자의 불만 또는 분쟁처리에 관한 기록: 3년</li>
-	            <li>로그인 기록: 3개월</li>
-	            <li>전자금융거래기록: 5년</li>
+	        <ul class="info" style="font-size: 12px; color: #666; padding-left: 0; margin-left: 0; margin-top: 10px;">
+	            <li>표시 광고에 대한 기록 <span style="float: right; font-size: 12pt; font-weight: bold;  padding-right: 15px;">6개월</span></li>
+	            <hr style="width: 100%; margin-top: 15px; border: solid 1px #eee;">
+	            <li>계약 또는 청약철회, 대금결제 및 재화 등의 공급에 관한 기록  <span style="float: right; font-size: 12pt; font-weight: bold;  padding-right: 15px;">5년</span></li>
+	            <hr style="width: 100%; margin-top: 15px; border: solid 1px #eee;">
+	            <li>소비자의 불만 또는 분쟁처리에 관한 기록  <span style="float: right; font-size: 12pt; font-weight: bold;  padding-right: 15px;">3년</span></li>
+	            <hr style="width: 100%; margin-top: 15px; border: solid 1px #eee;">
+	            <li>로그인 기록  <span style="float: right; font-size: 12pt; font-weight: bold;  padding-right: 15px;">3개월</span></li>
+	            <hr style="width: 100%; margin-top: 15px; border: solid 1px #eee;">
+	            <li>전자금융거래기록  <span style="float: right; font-size: 12pt; font-weight: bold; padding-right: 15px;">5년</span></li>
+	            <hr style="width: 100%; margin-top: 15px; border: solid 1px #eee;">
 	        </ul>
 	        <li style="display: flex; margin-bottom: 15px;">
 	            <strong><span style="color: #28a745; margin-right: 10px;">04</span></strong>
@@ -157,7 +200,7 @@ $(document).ready(function() {
 	        </li>
 	    </ul>
 	</div>
-
+    <button id="withdraw_button" disabled>회원 탈퇴</button>
 </div>
 
 
