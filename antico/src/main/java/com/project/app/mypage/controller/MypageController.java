@@ -20,18 +20,45 @@ public class MypageController {
 	private MypageService service;
 	
 	@GetMapping("mypagemain")
-	public String mypagemain(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView mypagemain(HttpServletRequest request, ModelAndView mav) {
 		
-	//	service.pointcharge();
-		
-		return "mypage/mypage";
+	//	mav.addObject("category_detail_list", category_detail_list);
+		mav.setViewName("mypage/mypage");
+		return mav;
 	}
 	
 	@GetMapping("pointcharge")
-	public String pointcharge(HttpServletRequest request) {
+	public ModelAndView pointcharge(HttpServletRequest request, ModelAndView mav) {
 		
+	//	int n  = service.pointcharge(); // 결제하기를 눌렀을 경우 회원의 포인트 업데이트
 		
-		return "mypage/pointcharge";
+	//	mav.addObject("n", n);
+		mav.setViewName("mypage/pointcharge");
+		return mav;
+	}
+	
+	@GetMapping("sellList")
+	public ModelAndView sellList(HttpServletRequest request, ModelAndView mav) {
+		mav.setViewName("mypage/sellList");
+		return mav;
+	}
+	
+	@GetMapping("buyList")
+	public ModelAndView buyList(HttpServletRequest request, ModelAndView mav) {
+		mav.setViewName("mypage/buyList");
+		return mav;
+	}
+	
+	@GetMapping("myBank")
+	public ModelAndView myBank(HttpServletRequest request, ModelAndView mav) {
+		mav.setViewName("mypage/myBank");
+		return mav;
+	}
+	
+	@GetMapping("memberDelete")
+	public ModelAndView memberDelete(HttpServletRequest request, ModelAndView mav) {
+		mav.setViewName("mypage/memberDelete");
+		return mav;
 	}
 	
 }
