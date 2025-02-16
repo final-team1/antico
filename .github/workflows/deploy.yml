@@ -53,8 +53,8 @@ jobs:
             - name: Replace JASYPT_ENCRYPTOR_PASSWORD in application.yml before deployment
               run: |
                   export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
-                  envsubst < antico/src/main/resources/application.yml > antico/src/main/resources/application.yml.tmp
-                  mv antico/src/main/resources/application.yml.tmp antico/src/main/resources/application.yml
+                  envsubst < antico/WEB-INF/classes/application.yml > antico/WEB-INF/classes/application.yml.tmp
+                  mv antico/WEB-INF/classes/application.yml.tmp antico/WEB-INF/classes/application.yml
 
             - name: Deploy to EC2
               run: |
