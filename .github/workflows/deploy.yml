@@ -54,6 +54,12 @@ jobs:
             - name: Verify WAR file exists after download
               run: ls -al antico/target/
 
+            - name: Replace JASYPT_ENCRYPTOR_PASSWORD in application.yml before deployment
+              run: |
+                  export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+                  envsubst < antico/src/main/resources/application.yml > antico/src/main/resources/application.yml.tmp
+                  mv antico/src/main/resources/application.yml.tmp antico/src/main/resources/application.yml
+
             - name: Deploy to EC2
               run: |
                   echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
