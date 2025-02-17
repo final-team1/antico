@@ -115,6 +115,14 @@ div.container {
 	font-weight: bold;
 	font-size: 16pt;
 }
+.stat_box a {
+	font-weight: bold;
+	font-size: 16pt;
+	color: black;
+}
+.stat_box a:hover {
+	color: green;
+}
 
 .point {
 	background: white;
@@ -474,6 +482,25 @@ hr {
 	      });
 	}
 	
+	// 계좌 후기 클릭시
+	function myreview() {
+		var tabTitle = "거래 후기";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/myBank",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+	
+	
 	// 탈퇴하기 클릭시
 	function memberDelete() {
 		var tabTitle = "탈퇴하기";
@@ -558,7 +585,7 @@ hr {
 		<ul>
 			<li><a href="#" onclick="myBank()">계좌 관리</a></li>
 			<li><a href="javascript:pointcharge('<%= ctx_Path%>')">포인트 충전</a></li>
-			<li><a href="#" >거래 후기</a></li>
+			<li><a href="#" onclick="myreview()">거래 후기</a></li>
 			<li><a href="#" onclick="memberDelete()">탈퇴하기</a></li>
 		</ul>
 	</aside>
@@ -589,7 +616,7 @@ hr {
 						</div>
 						<div class="stat_box">
 							<p>거래후기</p>
-							<span style="text-decoration: underline;">1</span>
+							<a href="#" onclick="myreview()" style="text-decoration: underline;">1</a>
 						</div>
 						<div class="stat_box">
 							<p>단골</p>
@@ -644,7 +671,7 @@ hr {
 									<div class="cardprice">
 										<span><fmt:formatNumber value="${pvoList.p_price}" type="number" groupingUsed="true"></fmt:formatNumber> </span><span>원</span>
 									</div>
-							</a>
+								</a>
 							</li>
 						</c:forEach>
 					</c:if>
