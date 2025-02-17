@@ -22,18 +22,18 @@ public class NoticeController {
 	private NoticeService service;
 
 	// 공지사항 조회
-	@GetMapping("noticelist")
+	@GetMapping("notice_list")
 	public ModelAndView list(ModelAndView mav, HttpServletRequest request, 
 			                 @RequestParam(defaultValue = "") String searchType, @RequestParam(defaultValue = "") String searchWord,
 			                 @RequestParam(defaultValue = "1") String currentShowPageNo) {
 		
-		List<NoticeVO> NoticeList = null;
+		List<NoticeVO> notice_list = null;
 
-		NoticeList = service.NoticeListSearch();
+		notice_list = service.notice_list();
 		
-		mav.addObject("NoticeList", NoticeList);
+		mav.addObject("notice_list", notice_list);
 		
-		mav.setViewName("notice/noticelist");
+		mav.setViewName("notice/notice_list");
 		
 		return mav;
 	}

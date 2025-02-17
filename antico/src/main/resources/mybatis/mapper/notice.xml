@@ -6,7 +6,7 @@
 <mapper namespace="com.project.app.notice.model.NoticeDAO">
 	
 	<!-- 공지사항 조회 -->
-	<select id="NoticeListSearch" resultType="NoticeVO">
+	<select id="notice_list" resultType="NoticeVO">
 		select pk_notice_no, fk_member_no, notice_title, notice_content
 	       , notice_filename, notice_orgfilename, notice_fileSize, notice_views, to_char(notice_date, 'yyyy-mm-dd hh24:mi:ss') AS notice_date
 	       , to_char(notice_update_date, 'yyyy-mm-dd hh24:mi:ss') AS notice_update_date

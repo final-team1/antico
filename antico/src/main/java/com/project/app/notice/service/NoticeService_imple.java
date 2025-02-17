@@ -18,9 +18,9 @@ public class NoticeService_imple implements NoticeService {
 	// 공지사항 조회
 	@Transactional(readOnly = true)
 	@Override
-	public List<NoticeVO> NoticeListSearch() {
-		List<NoticeVO> NoticeListSearch = dao.NoticeListSearch();		
-		return NoticeListSearch;
+	public List<NoticeVO> notice_list() {
+		List<NoticeVO> notice_list = dao.notice_list();		
+		return notice_list;
 	}
 
 }
