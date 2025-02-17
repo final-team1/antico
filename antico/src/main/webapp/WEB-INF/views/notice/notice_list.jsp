@@ -30,22 +30,22 @@
 		</form>
 	</div>
 		
-	<c:if test="${not empty requestScope.NoticeList}">
-		<c:forEach var="NoticeVO" items="${requestScope.NoticeList}" varStatus="status">
+	<c:if test="${not empty requestScope.notice_list}">
+		<c:forEach var="NoticeVO" items="${requestScope.notice_list}" varStatus="status">
 			<ul style="padding: 0; margin: 0 auto 3% auto; width: 90%;">
 				<li style="list-style: none; width: 100%;">
 					<button class="noticelist" onclick="noticeReply();" style="background-color: transparent; text-transform: none; border-width: 1px 0 1px; width: 100%; padding: 3% 0;">
-						<span style="float: left;">${NoticeVO.noti_title}</span><i class="fa-solid fa-chevron-down" style="margin-left: 10px; float: right;"></i>
+						<span style="float: left; margin-left: 1%;">${NoticeVO.notice_title}</span><i class="fa-solid fa-chevron-down" style="float: right; margin-right: 1%;"></i>
 					</button>
 					<div id="replylist" style="background-color: #eee; width: 100%; padding: 3% 0; display: none;">
-						${NoticeVO.noti_content}
+						<span style="margin-left: 1%;">${NoticeVO.notice_content}</span>
 					</div>
 				</li>
 			</ul>
 		</c:forEach>
 	</c:if>
 	
-	<c:if test="${empty requestScope.NoticeList}">
+	<c:if test="${empty requestScope.notice_list}">
 		<ul style="padding: 0; margin: 0 auto 3% auto; width: 90%;">
 			<li style="list-style: none; width: 100%;">
 				<button style="background-color: transparent; text-transform: none; border-width: 1px 0 1px; width: 100%; padding: 3% 0;">
@@ -99,7 +99,7 @@
 		var tabTitle = "문의내역";
 		
 		$.ajax({
-			url : "<%=ctxPath%>/inquire/inquirelist",
+			url : "<%=ctxPath%>/inquire/inquire_list",
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},
@@ -117,7 +117,7 @@
 		var tabTitle = "1:1 문의";
 		
 		$.ajax({
-			url : "<%=ctxPath%>/inquire/inquireadd",
+			url : "<%=ctxPath%>/inquire/inquire_add",
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},

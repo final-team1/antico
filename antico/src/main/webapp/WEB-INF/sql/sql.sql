@@ -1,18 +1,6 @@
 
 select * from tab;
 
-select *
-from tbl_member;
-
-delete from tbl_member
-where pk_mem_no = 6
-
-commit;
-
-insert into tbl_member (pk_mem_no, mem_regdate, mem_user_id, mem_passwd, mem_tel, mem_passwd_change_date,mem_authorization , mem_point, mem_score,mem_status )
-                    values(mem_seq.nextval, to_char(sysdate), 'admin', 'qwer1234$', '010-0101-0101', to_char(sysdate), 3,0, 0, 1);
-                    
-
 ------------------------------------------------------------------------------------------------------------------------------
 -- 회원테이블
 
@@ -27,25 +15,15 @@ mem_passwd_change_date    DATE                  NOT NULL,
 mem_authorization         NUMBER(1)             NOT NULL,
 mem_point                 NUMBER                NOT NULL,
 mem_score                 NUMBER    DEFAULT 0   NOT NULL,
-mem_status                NUMBER(1) DEFAULT 1   NOT NULL 
 
 CONSTRAINT mem_pk_mem_no PRIMARY KEY(pk_mem_no),
 CONSTRAINT mem_uq_mem_user_id UNIQUE(mem_user_id),
 CONSTRAINT mem_uq_mem_tel UNIQUE(mem_tel),
 CONSTRAINT mem_ck_mem_authorization check(mem_authorization in(0,1,2,3,4,5))
-CONSTRAINT mem_ck_mem_status check(mem_status in(0,1,2)) -- 0 : 탈퇴, 1 : 활성화, 2 : 정지지
 );
 
 CREATE SEQUENCE mem_seq;
 
-
-select *
-from tbl_member;
-
-insert into tbl_inquire(pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_status, inquire_secret, inquire_regdate)
-        values(inquire_seq.nextval, 3, 'AA', 'AAA', default, default, default) 
-
-COMMIT;
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 메인페이지 이미지 테이블
@@ -65,41 +43,25 @@ CREATE SEQUENCE main_seq;
 ------------------------------------------------------------------------------------------------------------------------------
 -- 문의 테이블
 
-SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate,
-    CASE 
-        WHEN inquire_secret = 0 THEN '공개'
-        WHEN inquire_secret = 1 THEN '비공개'
-    END AS inquire_secret_status,    
-    CASE 
-        WHEN inquire_status = 0 THEN '미답변'
-        WHEN inquire_status = 1 THEN '답변완료'
-    END AS inquire_status_status
-FROM tbl_inquire;
-
-
-
 drop table tbl_inquire purge
-
-select *
-from tbl_inquire;
 
 create table tbl_inquire
 (
-pk_inquire_no          NUMBER                                 NOT NULL,
-fk_member_no           NUMBER                                 NOT NULL,
-inquire_title          NVARCHAR2(50)                          NOT NULL,
-inquire_content        NVARCHAR2(2000)                        NOT NULL,
-inquire_filename       VARCHAR2(255)                                  ,
-inquire_orgfilename    VARCHAR2(255)                                  ,
-inquire_file_size      NUMBER                                         ,
-inquire_status         NUMBER(1)        default 0             NOT NULL,
-inquire_secret         NUMBER(1)        default 0             NOT NULL,
-inquire_regdate        DATE             default sysdate       NOT NULL,
+pk_inq_no          NUMBER                                 NOT NULL,
+fk_mem_no          NUMBER                                 NOT NULL,
+inq_title          NVARCHAR2(50)                           NOT NULL,
+inq_content        NVARCHAR2(2000)                         NOT NULL,
+inq_fileorgname    VARCHAR2(255)                          NOT NULL,
+inq_filename       VARCHAR2(255)                          NOT NULL,
+ing_filesize       NUMBER                                 NOT NULL,
+inq_status         NUMBER(1)        default 0             NOT NULL,
+inq_secret         NUMBER(1)        default 0             NOT NULL,
+inq_regdate        DATE             default sysdate       NOT NULL,
 
-CONSTRAINT inquire_pk_inquire_no PRIMARY KEY(pk_inquire_no),
-CONSTRAINT inquire_fk_member_no FOREIGN KEY (fk_member_no) REFERENCES tbl_member(pk_member_no) ON DELETE CASCADE,
-CONSTRAINT inquire_ck_inquire_status check(inquire_status in(0,1)),
-CONSTRAINT inquire_ck_inquire_secret check(inquire_secret in(0,1))
+CONSTRAINT inquire_pk_inq_no PRIMARY KEY(pk_inq_no),
+CONSTRAINT inquire_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(PK_mem_no) on delete cascade,
+CONSTRAINT inquire_ck_inq_status check(inq_status in(0,1)),
+CONSTRAINT inquire_ck_inq_secret check(inq_secret in(0,1))
 );
 
 CREATE SEQUENCE inquire_seq;
@@ -157,8 +119,7 @@ CONSTRAINT notice_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_mem
 
 CREATE SEQUENCE notice_seq;
 
-insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date, inquire_secret, inquire_regdate)
-        values(notice_seq.nextval, 3, 'AA', 'AAA', default, default, default) 
+
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 포인트 기록 테이블
@@ -380,7 +341,6 @@ CONSTRAINT prod_ck_prod_sale_type check(prod_sale_type in(0,1))
 );
 
 
-
 CREATE SEQUENCE prod_seq;
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -428,6 +388,7 @@ fk_seller_no   NUMBER                               NOT NULL,
 fk_consumer_no   NUMBER                               NOT NULL,
 fk_prod_no       NUMBER                               NOT NULL,
 tra_status       NUMBER(1)      default 1              NOT NULL,
+tra_regdate       DATE          default sysdate      NOT NULL,
 tra_cancel_date   DATE                                ,
 tra_pending_date    DATE                    ,
 tra_confirm_date    DATE                    ,
@@ -544,7 +505,49 @@ CREATE SEQUENCE acc_seq;
 show user;
 
 
+INSERT INTO tbl_notice (
+    pk_noti_no,
+    fk_mem_no,
+    noti_title,
+    noti_content,
+    noti_filename,
+    noti_orgfilename,
+    noti_filesize,
+    noti_views,
+    noti_date,
+    noti_update_date
+)
+VALUES (
+    notice_seq.nextval,                          -- pk_noti_no: Unique identifier (replace with actual value)
+    3,                        -- fk_mem_no: Foreign key reference to tbl_member (replace with actual value)
+    'Important Notice Title',    -- noti_title: Title of the notice
+    'This is the content of the important notice...',  -- noti_content: Content of the notice
+    NULL,                        -- noti_filename: Set to NULL since it is nullable
+    NULL,                        -- noti_orgfilename: Set to NULL since it is nullable
+    NULL,                        -- noti_filesize: Set to NULL since it is nullable
+    0,                           -- noti_views: Default to 0 if not specified
+    SYSDATE,                     -- noti_date: Date the notice is created (defaults to SYSDATE)
+    SYSDATE                      -- noti_update_date: Date the notice was last updated (defaults to SYSDATE)
+);
 
+
+select *
+from tbl_notice
+
+select pk_noti_no, fk_mem_no, noti_title, noti_content
+	       , noti_filename, noti_orgfilename, noti_filesize, noti_views, to_char(noti_date, 'yyyy-mm-dd hh24:mi:ss') AS noti_date
+	       , to_char(noti_update_date, 'yyyy-mm-dd hh24:mi:ss') AS noti_update_date
+	  from tbl_notice	  
+	  order by pk_noti_no desc
+
+DELETE FROM tbl_notice
+WHERE pk_noti_no = 2;
+
+commit;
+
+
+select *
+from tbl_member
 
 
 
