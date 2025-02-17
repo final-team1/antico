@@ -10,6 +10,6 @@ import com.project.app.notice.domain.NoticeVO;
 public interface NoticeDAO {
 	
 	// 공지사항 조회
-	List<NoticeVO> NoticeListSearch();
+	List<NoticeVO> notice_list();
 
 }
