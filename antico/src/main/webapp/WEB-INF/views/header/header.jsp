@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 
    String ctxPath = request.getContextPath();
@@ -52,6 +54,9 @@
   <%-- font cdn --%>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
 <style>
+*{
+font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
 
 .fixed {
     left:16px;
@@ -338,7 +343,14 @@ img.main_logo {
 					<li style="color: gray" class="">|</li>
 					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
-					<li class=""><a href="<%=ctxPath%>/member/login">마이</a></li>	
+					<li class="">
+					
+
+					<a href="<%=ctxPath%>/member/login">마이</a>
+						<c:if test="${empty pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
+						<c:if test="${empty not pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/mypage/mypagemain">마이</a></c:if>
+					
+					</li>	
 				</ul>
 			</div>
 		</div>
