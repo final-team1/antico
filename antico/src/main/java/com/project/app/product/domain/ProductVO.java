@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ProductVO {
 	
-	private String pk_prod_no; 				// 상품번호
+	private String pk_product_no; 			// 상품번호
 	private String fk_member_no;  			// 회원번호
 	private String fk_region_no;   			// 지역번호
 	private String fk_category_no;   		// 상위카테고리번호
