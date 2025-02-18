@@ -118,6 +118,7 @@
 		
 		$.ajax({
 			url : "<%=ctxPath%>/inquire/inquire_add",
+			cache: false,
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},
