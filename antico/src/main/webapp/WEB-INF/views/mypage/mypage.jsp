@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-<script type="text/javascript" src="<%= ctx_Path%>/js/mypage/pointcharge.js"></script>
+<script type="text/javascript" src="<%= ctx_Path%>/js/pointcharge.js"></script>
 
 <style>
 
