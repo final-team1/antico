@@ -16,6 +16,8 @@ public enum ExceptionCode {
 	
 	BLACKLIST_AREADY_EXISTS(400, "이미 차단한 회원입니다."), // 이미 차단한 회원을 차단하려는 경우
 	
+	NOT_CONSUMER_MEMBER(400, "구매자가 아닙니다."),
+	
 	
 	// file upload 관련 예외
 	
