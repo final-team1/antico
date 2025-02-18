@@ -21,6 +21,10 @@
 			<th style="text-align: center; vertical-align: middle;">내용</th>	
 			<td>
 				<textarea name="inquire_content" id="content" style="width: 100%; height: 400px; resize:none; border-width: 0;"></textarea>
+
+				<div id="file-preview-container" style="display: none;"> 
+				    <img id="file-preview" src="" alt="미리보기" style="width: 500px; height: 185px; display: block;">
+				</div>
 			</td>
 		</tr>
 		
@@ -30,22 +34,102 @@
 		        <label for="file-upload" class="custom-file-upload">
 	            	파일 선택
 		        </label>
-		        <input type="file" name="attach" id="file-upload" onchange="displayFileName()" />
+		        <input type="file" name="attach" id="file-upload" onchange="displayFilePreview()" />
 		        <span id="file-name">선택된 파일 없음</span>
 	        </td>
     	</tr>
 	</table>
+	
+	
 	
 	<div class="btns">
 		<div class="toggle-btn" onclick="toggleVisibility()">
 	        <i id="toggle-icon" class="fa-solid fa-toggle-off"></i>
 	        <span id="toggle-text">&nbsp;&nbsp;공개</span>
 	    </div>
-	    
+	    <input type="hidden" name="inquire_secret" id="inquire_secret" value="0"> <!-- 초기값을 '0'으로 설정 -->	     
 	    <button class="inquire-add-btn" type="button" style="background-color: #fff; border-radius: 5px; padding: 10px 5px;">제출하기</button>
 	</div>
-	
 </form>
+
+<script type="text/javascript">
+
+	let isPublic = true;
+
+	// 파일 선택 후 미리보기
+	function displayFilePreview() {
+	    var fileInput = $("#file-upload")[0];
+	    var fileNameDisplay = $("#file-name");
+	    var previewContainer = $("#file-preview-container");
+	    var previewImage = $("#file-preview");
+	    
+	    if (fileInput.files.length > 0) {
+	        var file = fileInput.files[0];
+	        fileNameDisplay.text(file.name);
+	        
+	        if (file.type.startsWith("image/")) {
+	            var fileReader = new FileReader();
+	            fileReader.onload = function(e) {
+	                previewImage.attr("src", e.target.result);
+	                previewContainer.show();
+	            };
+	            
+	            fileReader.readAsDataURL(file);
+	        } 
+	        else {
+	            previewContainer.hide();
+	        }
+	    } 
+	    else {
+	        fileNameDisplay.text("선택된 파일 없음");
+	        previewContainer.hide();
+	    }
+	}
+
+	function toggleVisibility() {
+	    const icon = $("#toggle-icon");
+	    const text = $("#toggle-text");
+	    const secret = $("#inquire_secret");
+
+	    if (isPublic) {
+	        icon.removeClass("fa-toggle-off").addClass("fa-toggle-off fa-flip-horizontal");
+	        text.html("&nbsp;&nbsp;비공개");
+	        secret.val("1");  // 비공개일 때는 '1'
+	    } 
+	    else {
+	        icon.removeClass("fa-toggle-off fa-flip-horizontal").addClass("fa-toggle-off");
+	        text.html("&nbsp;&nbsp;공개");
+	        secret.val("0");  // 공개일 때는 '0'
+	    }
+	    isPublic = !isPublic; // 상태를 반전
+	}
+
+	$(document).ready(function(){
+		// 글쓰기 버튼
+		$("button.inquire-add-btn").click(function(){
+			// === 글제목 유효성 검사 === 
+	        const title = $("input[name='inquire_title']").val().trim();	  
+	        if(title == "") {
+	    	    alert("글제목을 입력하세요!!");
+	    	    $("input[name='inquire_title']").val("");
+	    	    return; // 종료
+	        }
+	        
+	        const content = $("textarea[name='inquire_content']").val().trim();
+	        if(content.length == 0) {
+	    	    alert("글내용을 입력하세요!!");
+	    	    return; // 종료
+	        }
+	        
+	        // 폼(form)을 전송(submit)
+		    const frm = document.addFrm;
+		    frm.method = "post";
+		    frm.action = "<%= ctxPath %>/inquire/inquire_add";
+		    frm.submit();
+		});
+	});
+</script>
+
 
 <style>
 	th {
@@ -108,66 +192,3 @@
     }
 </style>
 
-
-<script type="text/javascript">
-	function displayFileName() {
-	    var fileInput = document.getElementById("file-upload");
-	    var fileNameDisplay = document.getElementById("file-name");
-	    
-	    // 선택된 파일이 있을 경우 파일명 표시
-	    if (fileInput.files.length > 0) {
-	        fileNameDisplay.textContent = fileInput.files[0].name;
-	    } else {
-	        fileNameDisplay.textContent = "선택된 파일 없음";
-	    }
-	}
-	
-	let isPublic = true;
-
-	function toggleVisibility() {
-	    const icon = document.getElementById("toggle-icon");
-	    const text = document.getElementById("toggle-text");
-
-	    if (isPublic) {
-	        icon.classList.remove("fa-toggle-off");
-	        icon.classList.add("fa-toggle-off", "fa-flip-horizontal");
-	        text.innerHTML = "&nbsp;&nbsp;비공개";
-	    } else {
-	        icon.classList.remove("fa-toggle-off", "fa-flip-horizontal");
-	        icon.classList.add("fa-toggle-off");
-	        text.innerHTML = "&nbsp;&nbsp;공개";
-	    }
-
-        isPublic = !isPublic; // 상태를 반전
-    }
-	
-	$(document).ready(function(){
-		
-		// 글쓰기 버튼
-		$("button.inquire-add-btn").click(function(){
-			// alert("클릭");
-			
-		    // === 글제목 유효성 검사 === 
-	        const title = $("input:text[name='inquire_title']").val().trim();	  
-	        if(title == "") {
-	    	    alert("글제목을 입력하세요!!");
-	    	    $("input:text[name='title']").val("");
-	    	    return; // 종료
-	        }
-	        
-	        const content = $("textarea[name='inquire_content']").val().trim();
-	        if(content.trim().length == 0) {
-	    	    alert("글내용을 입력하세요!!");
-	    	    return; // 종료
-	        }
-	        
-	        // 폼(form)을 전송(submit)
-		    const frm = document.addFrm;
-		    frm.method = "post";
-		    frm.action = "<%= ctxPath%>/inquire/inquire_add";
-		    frm.submit();
-			
-		});
-		
-	});
-</script>

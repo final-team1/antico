@@ -1,6 +1,7 @@
 package com.project.app.inquire.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,13 +119,26 @@ public class InquireController {
 		return mav;
 	}
 	
-	// 문의 작성폼
+	// 문의 상세보기
 	@GetMapping("inquire_detail")
-	public ModelAndView inquiredetail(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {		
+	public ModelAndView inquiredetail(ModelAndView mav, HttpServletRequest request) {
+		
+		String pk_inquire_no = "";
+		
+		pk_inquire_no = request.getParameter("pk_inquire_no");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("pk_inquire_no", pk_inquire_no);
+				
+		InquireVO inquirevo = null;
+
+		inquirevo = service.inquire_detail(paraMap);
+		
+		mav.addObject("inquirevo", inquirevo);
+		
 		mav.setViewName("inquire/inquire_detail");
 		return mav;
 	}
-	
 	
 	
 	
