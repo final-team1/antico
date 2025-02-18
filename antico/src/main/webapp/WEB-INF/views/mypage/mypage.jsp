@@ -36,7 +36,6 @@ div.container {
 	list-style: none;
 	padding: 0;
 	font-size: 13px;
-	font-weight: 530;
 	letter-spacing: -0.5px;
 }
 
@@ -408,8 +407,9 @@ hr {
 
 </style>
 
-<script>
 
+
+<script>
 	// 판매내역 클릭시
 	function sellList() {
 		var tabTitle = "판매내역";
@@ -549,7 +549,7 @@ hr {
 	
 	
 	// 카카오톡 공유하기 openApi 
-    Kakao.init('482ce4a8dbba039290fe052de413a915');
+    Kakao.init('${requestScope.kakao_api_key}');
     console.log(Kakao.isInitialized()); // 초기화 확인
 
     function shareToKakao() {
