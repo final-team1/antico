@@ -157,8 +157,10 @@ CONSTRAINT notice_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_mem
 
 CREATE SEQUENCE notice_seq;
 
-insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date, inquire_secret, inquire_regdate)
-        values(notice_seq.nextval, 3, 'AA', 'AAA', default, default, default) 
+insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date, notice_views)
+        values(notice_seq.nextval, 3, 'AA', 'AAA', default, default) 
+
+commit;
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 포인트 기록 테이블

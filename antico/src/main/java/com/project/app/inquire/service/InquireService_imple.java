@@ -1,6 +1,7 @@
 package com.project.app.inquire.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,13 @@ public class InquireService_imple implements InquireService {
 	public int add_withFile(InquireVO inquirevo) {
 		int n = dao.add_withFile(inquirevo); // 첨부파일이 있는 경우
 		return n;
+	}
+
+	// 문의 상세보기
+	@Override
+	public InquireVO inquire_detail(Map<String, String> paraMap) {
+		InquireVO inquirevo = dao.inquire_detail(paraMap); // 글 1개 조회하기
+		return inquirevo;
 	}
 
 
