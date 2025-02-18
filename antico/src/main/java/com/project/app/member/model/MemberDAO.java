@@ -9,7 +9,7 @@ public interface MemberDAO {
 
 	int registerMember(MemberVO mvo);
 
-	MemberVO selectMemberByUserId(String mem_user_id);
+	MemberVO selectMemberByUserId(String member_user_id);
 
 	// memberNo를 통한 단일 사용자 조회
 	MemberVO selectMemberByMemberNo(String memberNo);

@@ -18,6 +18,50 @@
 		from tbl_category_detail
 	</select>
 	
+	
+	<!-- 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기 -->
+	<resultMap id="RegionResultMap" type="HashMap">
+	    <result property="pk_region_no" column="pk_region_no"/>
+	    <result property="full_address" column="FULL_ADDRESS"/>
+	    <result property="region_town" column="region_town"/>
+	    <result property="region_lat" column="region_lat"/>
+	    <result property="region_lng" column="region_lng"/>
+	</resultMap>
+	
+	<select id="regionSearch" parameterType="HashMap" resultMap="RegionResultMap">
+		select pk_region_no
+		     , region_state || ' ' || region_city || ' ' || region_town AS FULL_ADDRESS
+		     , region_town
+		     , region_lat, region_lng
+		from tbl_region
+		where lower(region_town) like '%'||lower(#{search_word})||'%'
+		order by region_town asc
+	</select>
+	
+	
+	<!-- 상품번호 채번해오기 (상품 및 이미지 테이블 저장하기 위해) -->
+	<select id="getNo" resultType="String">
+		select prod_seq.nextval
+		from dual
+	</select>
+	
+
+	<!-- 상품 테이블에 상품 정보 저장  -->
+	<insert id="addProduct" parameterType="ProductVO">
+	insert into tbl_product (pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title
+	                       , product_contents, product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views)
+		    		  values(#{pk_product_no}, 3, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
+		    		       , #{product_contents}, #{product_price}, #{product_status}, default, default, default, default, default)
+	</insert>
+	
+	
+    <!-- 이미지 테이블에 파일 넣어주기 -->
+	<insert id="addImage" parameterType="ProductImageVO">
+	insert into tbl_prod_img(pk_prod_img_no, fk_product_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail)  
+					 values (pi_seq.NEXTVAL, #{fk_product_no}, #{prod_img_name}, #{prod_img_org_name}, #{prod_img_is_thumbnail})
+	</insert>
+	
+	
 </mapper>
 
 

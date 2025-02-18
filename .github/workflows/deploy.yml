@@ -18,10 +18,6 @@ jobs:
                   distribution: "temurin"
                   cache: maven
 
-            - name: Replace JASYPT_ENCRYPTOR_PASSWORD in application.yml
-              run: |
-                  sed -i "s/\${JASYPT_ENCRYPTOR_PASSWORD}/$JASYPT_ENCRYPTOR_PASSWORD/g" antico/src/main/resources/application.yml
-
             - name: Clear Maven Cache
               run: rm -rf ~/.m2/repository
 
@@ -53,6 +49,12 @@ jobs:
 
             - name: Verify WAR file exists after download
               run: ls -al antico/target/
+
+            - name: Replace JASYPT_ENCRYPTOR_PASSWORD in application.yml before deployment
+              run: |
+                  export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+                  envsubst < antico/WEB-INF/classes/application.yml > antico/WEB-INF/classes/application.yml.tmp
+                  mv antico/WEB-INF/classes/application.yml.tmp antico/WEB-INF/classes/application.yml
 
             - name: Deploy to EC2
               run: |
