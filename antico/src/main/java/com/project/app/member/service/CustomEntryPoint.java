@@ -18,7 +18,7 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 			AuthenticationException authException) throws IOException, ServletException {
 		
 		String ctx_path = request.getContextPath();
-		
+		System.out.println("AuthenticationEntryPoint");
 		response.sendRedirect(ctx_path+"/index");
 		
 

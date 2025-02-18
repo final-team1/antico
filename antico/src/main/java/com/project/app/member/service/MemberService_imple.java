@@ -27,10 +27,11 @@ public class MemberService_imple implements MemberService {
 		return memberDAO.registerMember(mvo);
 	}
 
+	
 	@Override
 	@Transactional(readOnly = true)
-	public MemberVO getMember(String memberNo) {
-		return memberDAO.selectMemberByMemberNo(memberNo);
+	public MemberVO getMember(String pk_member_no) {
+		return memberDAO.selectMemberByMemberNo(pk_member_no);
 	}
 
 

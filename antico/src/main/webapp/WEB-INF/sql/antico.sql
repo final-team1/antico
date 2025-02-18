@@ -5,7 +5,7 @@ select *
 from tbl_member;
 
 delete from tbl_member
-where pk_mem_no = 6
+where pk_mem_no = 6;
 
 commit;
 
