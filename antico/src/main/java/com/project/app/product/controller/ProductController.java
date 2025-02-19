@@ -174,6 +174,8 @@ public class ProductController {
 		return mav;
 	}
 	
+	
+	
 
 	// 지역 추가 버튼 클릭 시 사이드바 지역 검색창 요청
 	@GetMapping("regionlist")

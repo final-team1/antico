@@ -66,6 +66,8 @@ public class SecurityConfig {
     	  request -> request
     	  
     	  .requestMatchers("/product/**").authenticated()
+    	  .requestMatchers("/mypage/**").authenticated()
+    	  
           .requestMatchers("/**").permitAll()
              
           .anyRequest().authenticated()
@@ -77,15 +79,19 @@ public class SecurityConfig {
     .csrf(AbstractHttpConfigurer::disable)
     .formLogin((formLogin) ->
       	formLogin
-	      		.loginPage("/member/login")
-	      		.loginProcessingUrl("/auth/login")
-	      		.usernameParameter("member_user_id")
-	      		.passwordParameter("member_passwd")
-	      		.defaultSuccessUrl("/index", true)
-	      		.failureHandler(login_failure_handler)
+	      	.loginPage("/member/login")
+	      	.loginProcessingUrl("/auth/login")
+	      	.usernameParameter("member_user_id")
+	      	.passwordParameter("member_passwd")
+	      	.defaultSuccessUrl("/index", true)
+	      	.failureHandler(login_failure_handler)
       		.permitAll()
-    		);
-     
+    	)
+     .logout(logout -> logout
+    		 .logoutUrl("/logout")
+    		 .logoutSuccessUrl("/index")
+    		 .clearAuthentication(true)
+    		 );
      
      return http.build();
      }

@@ -5,7 +5,7 @@
 
 <style>
 	div#sidetab_container {
-		position : absolute;
+		position : fixed;
 		top : 0;
 		right : 0;
 		width: 0px;
@@ -14,7 +14,7 @@
 		overflow: hidden;
 		padding : 10px 20px 10px 20px;
 		background-color : white;
-		z-index : 999;
+		z-index : 9999;
 		display : none;
 	}
 	
@@ -27,12 +27,12 @@
 	}
 	
 	div#overlay {
-		position : absolute;
+		position : fixed;
 		top : 0;
 		right : 0;
 		width: 100vw;
 		height: 100vh;
-		z-index : 998;
+		z-index : 9998;
 		background: rgba(0, 0, 0, 0.5);
 		display: none;
 	}
@@ -128,8 +128,6 @@
 	function closeSideTab() {
 		// 후기 페이지의 변수 제거
 		delete cur_page;
-		
-		console.log(historyStack.length);
 		
 		if(historyStack.length > 1) {
 			historyStack.pop();

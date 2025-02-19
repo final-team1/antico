@@ -1,5 +1,7 @@
 package com.project.app.member.service;
 
+import java.util.Map;
+
 import com.project.app.member.domain.MemberVO;
 
 public interface MemberService {
@@ -8,5 +10,7 @@ public interface MemberService {
 	
 	// 단일 사용자 정보 조회
 	MemberVO getMember(String memberNo);
+
+	
 	
 }
