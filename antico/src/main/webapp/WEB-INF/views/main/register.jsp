@@ -32,7 +32,7 @@
 				
 		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
 			전회번호
-			<input type="text" name="a" class="textbox" placeholder="- 없이 숫자만 입력해주세요"/>
+			<input type="text" name="member_tel" class="textbox" placeholder="- 없이 숫자만 입력해주세요"/>
 		</div>	
 		
 			

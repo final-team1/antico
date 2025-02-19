@@ -12,13 +12,22 @@ import org.springframework.stereotype.Component;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
 
+import lombok.AllArgsConstructor;
+
 @Component
 public class GetMemberDetail {
 	
 	@Autowired
 	private MemberDAO member_dao;
 	
-	
+	public GetMemberDetail(MemberDAO member_dao) {
+		super();
+		this.member_dao = member_dao;
+	}
+
+
+
+
 	@Bean
 	public MemberVO MemberDetail() {
 		

@@ -369,7 +369,7 @@ img.main_logo {
 					
 						<li style="margin-top:2px;"><a href="<%=ctxPath%>/mypage/mypagemain">마이페이지</a></li>
 						<li><hr style="margin: 4px;"></li>
-						<li style="margin-top:8px;"><p>로그아웃</p></li>
+						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
 						
 					</ul>
 					</li>	
@@ -505,6 +505,12 @@ function closeNav() {
 }
 
 $(document).ready(function(){
+	
+	if('${requestScope.message}' != ""){
+		
+		showAlert('error', ${requestScope.message});
+		
+	}
 	
 	$("ul.my_header").css("display", "none");
 	
