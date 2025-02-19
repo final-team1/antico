@@ -4,8 +4,13 @@ select * from tab;
 select *
 from tbl_member;
 
+select *
+from tbl_product;
+
 delete from tbl_member
 where pk_mem_no = 6;
+
+
 
 commit;
 
@@ -37,6 +42,7 @@ CONSTRAINT mem_ck_mem_status check(mem_status in(0,1,2)) -- 0 : 탈퇴, 1 : 활�
 );
 
 CREATE SEQUENCE mem_seq;
+
 
 
 select *

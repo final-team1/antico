@@ -35,7 +35,10 @@
 			<input type="text" name="member_tel" class="textbox" placeholder="- 없이 숫자만 입력해주세요"/>
 		</div>	
 		
-			
+		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
+			이름
+			<input type="text" name="member_name" class="textbox" placeholder=""/>
+		</div>	
 		
 		
 		<div style="width:100%; margin: 150px 0 3% 0; text-align: center;">
