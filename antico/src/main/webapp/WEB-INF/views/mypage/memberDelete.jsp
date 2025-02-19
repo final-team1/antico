@@ -84,7 +84,7 @@ $(document).ready(function() {
         };
 
         $.ajax({
-            url: "<%= ctx_path %>/mypage/deletesubmit",
+            url: "<%= ctx_path %>/mypage/delete_submit",
             type: "POST",
             data: JSON.stringify(param),
             contentType: "application/json",  // JSON 형식으로 보내기 위해 설정

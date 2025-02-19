@@ -26,16 +26,19 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value="/mypage/*")
 public class MypageController {
 
+	// 카카오 api키
 	@Value("${kakao.apikey}")
 	private String kakao_api_key;
 	
+	// 이니시스결제 api 키
 	@Value("${pointcharge.chargekey}")
 	private String pointcharge_chargekey;
 	
 	@Autowired
 	private MypageService service;
 	
-	@GetMapping("mypagemain")
+	// 마이페이지 메인
+	@GetMapping("mypagemain") 
 	public ModelAndView mypagemain(HttpServletRequest request, ModelAndView mav) {
 		
 	//	mav.addObject("category_detail_list", category_detail_list);
@@ -44,6 +47,7 @@ public class MypageController {
 		return mav;
 	}
 	
+	// 포인트 충전
 	@GetMapping("pointcharge")
 	public ModelAndView pointcharge(HttpServletRequest request, ModelAndView mav) {
 		
@@ -55,32 +59,36 @@ public class MypageController {
 		return mav;
 	}
 	
-	@GetMapping("sellList")
+	// 판매내역
+	@GetMapping("sell_list")
 	public ModelAndView sellList(HttpServletRequest request, ModelAndView mav) {
 		mav.setViewName("mypage/sellList");
 		return mav;
 	}
 	
-	@GetMapping("buyList")
+	// 구매내역
+	@GetMapping("buy_list")
 	public ModelAndView buyList(HttpServletRequest request, ModelAndView mav) {
 		mav.setViewName("mypage/buyList");
 		return mav;
 	}
 	
-	@GetMapping("myBank")
+	// 계좌관리
+	@GetMapping("mybank")
 	public ModelAndView myBank(HttpServletRequest request, ModelAndView mav) {
 		mav.setViewName("mypage/myBank");
 		return mav;
 	}
 	
-	@GetMapping("memberDelete")
+	// 탈퇴하기
+	@GetMapping("member_delete")
 	public ModelAndView memberDelete(HttpServletRequest request, ModelAndView mav) {
 		
 		mav.setViewName("mypage/memberDelete");
 		return mav;
 	}
 	
-	@PostMapping("deletesubmit")
+	@PostMapping("delete_submit")
 	@ResponseBody
 	public Map<String, Integer> deleteSubmit(@RequestBody LeaveVO lvo) {
 	    // 탈퇴 신청 정보 저장
@@ -91,9 +99,9 @@ public class MypageController {
 	    
 	    return paraMap;
 	}
-
-
-	@PostMapping("/chargeComplete")
+	
+	// 충전하기 결제
+	@PostMapping("/charge_complete")
 	@ResponseBody
 	public Map<String, Object> chargeComplete(@RequestBody Map<String, Object> requestData) {
 	    String memberUserId = (String) requestData.get("memberUserId");
@@ -108,6 +116,11 @@ public class MypageController {
 	    return response;
 	}
 
-
+	@GetMapping("mybank_list")
+	public ModelAndView mybank_list(HttpServletRequest request, ModelAndView mav) {
+		mav.setViewName("mypage/mybank_list");
+		return mav;
+	}
+	
 	
 }
