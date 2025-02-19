@@ -9,41 +9,43 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
 import com.project.app.member.service.CustomAccessHandler;
 import com.project.app.member.service.CustomEntryPoint;
+import com.project.app.member.service.LoginFailureHandler;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 	
-	@Autowired
+	
 	private final CustomAccessHandler custom_handler;
 	
-	@Autowired
+	
 	private final CustomEntryPoint custom_entry_point;
 	
 	
+	private final LoginFailureHandler login_failure_handler;
 
-
-	public SecurityConfig(CustomAccessHandler custom_handler, CustomEntryPoint custom_entry_point) {
-		super();
-		this.custom_handler = custom_handler;
-		this.custom_entry_point = custom_entry_point;
-	}
+	
 
 	/* 
 	 * Bcrypt bean 등록
 	 */
     @Bean
-    PasswordEncoder pwdEncoder() {
+    PasswordEncoder pwd_encoder() {
 		return new BCryptPasswordEncoder();
 	}
     
@@ -63,10 +65,10 @@ public class SecurityConfig {
     		
     	  request -> request
     	  
-    	  //.requestMatchers("/product/**").authenticated()
+    	  .requestMatchers("/product/**").authenticated()
           .requestMatchers("/**").permitAll()
              
-          //.anyRequest().authenticated()
+          .anyRequest().authenticated()
     )
     .exceptionHandling(ex -> ex
     	 .accessDeniedHandler(custom_handler)
@@ -75,17 +77,20 @@ public class SecurityConfig {
     .csrf(AbstractHttpConfigurer::disable)
     .formLogin((formLogin) ->
       	formLogin
-      		.loginPage("/member/login")
-      		.usernameParameter("member_user_id")
-      		.passwordParameter("member_passwd")
-      		.loginProcessingUrl("/auth/login")
-      		.defaultSuccessUrl("/index", true)
-      		.failureUrl("/member/login")
+	      		.loginPage("/member/login")
+	      		.loginProcessingUrl("/auth/login")
+	      		.usernameParameter("member_user_id")
+	      		.passwordParameter("member_passwd")
+	      		.defaultSuccessUrl("/index", true)
+	      		.failureHandler(login_failure_handler)
       		.permitAll()
     		);
      
-      
+     
      return http.build();
      }
+
+	
+	
 	
 }

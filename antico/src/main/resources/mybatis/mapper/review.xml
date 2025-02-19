@@ -60,8 +60,89 @@
 		from tbl_blacklist
 		where fk_target_member_no = #{pk_target_member_no} and fk_member_no = #{pk_member_no}
 	</select>
-
+	
+	<resultMap type="HashMap" id="sellerSurveyStatListMap">
+		<result column="pk_survey_no" property="pk_survey_no" javaType="String"/>
+		<result column="survey_content" property="survey_content" javaType="String"/>
+		<result column="count" property="count" javaType="String"/>
+	</resultMap>
+	
+	 <!-- 판매자 구매 리뷰 통계 조회(긍정적 리뷰, 부정적 리뷰, 리뷰 당 받은 개수) 뷰 테이블에서 조회 -->
+	<select id="selectConsumerSurveyStatList" parameterType="String" resultMap="sellerSurveyStatListMap">
+		select pk_survey_no, survey_content, count(*) as count
+		from v_review_survey_resp
+		where fk_seller_no = #{pk_member_no}
+		group by pk_survey_no, survey_content
+	</select>
+	
+	<!-- 사용자가 받은 구매 후기 전체 개수 뷰 테이블에서 조회 -->
+	<select id="selectConsumerTotalReviewCount" parameterType="String" resultType="int">
+        select count(distinct pk_review_no)
+        from v_review_survey_resp
+        where fk_seller_no = #{pk_member_no}
+	</select>
+	
+	<resultMap type="HashMap" id="reviewSummaryMap">
+		<result column="pk_review_no" property="pk_review_no" javaType="String" />
+		<result column="fk_consumer_no" property="fk_consumer_no" javaType="String" />
+		<result column="consumer_name" property="consumer_name" javaType="String" />
+		<result column="review_content" property="review_content" javaType="String" />
+		<result column="review_regdate" property="review_regdate" javaType="String" />
+		<result column="review_img_file_name" property="review_img_file_name" javaType="String" />
+	</resultMap>
+		
+	<resultMap type="HashMap" id="reviewMap">
+		<result column="pk_review_no" property="pk_review_no" javaType="String" />
+		<result column="fk_consumer_no" property="fk_consumer_no" javaType="String" />
+		<result column="consumer_name" property="consumer_name" javaType="String" />
+		<result column="fk_seller_no" property="fk_seller_no" javaType="String" />
+		<result column="seller_name" property="seller_name" javaType="String" />
+		<result column="pk_trade_no" property="pk_trade_no" javaType="String" />
+		<result column="review_content" property="review_content" javaType="String" />
+		<result column="review_regdate" property="review_regdate" javaType="String" />
+		<result column="review_img_file_name" property="review_img_file_name" javaType="String" />
+		<result column="review_img_org_name" property="review_img_org_name" javaType="String" />
+		<result column="product_title" property="product_title" javaType="String" />
+	</resultMap>
+	
+	<!-- 최근 받은 구매 후기 목록 가져오기 뷰 테이블에서 조회 -->
+	<select id="selectConsumerReviewList" resultMap="reviewSummaryMap">
+		select pk_review_no, fk_consumer_no, consumer_name, review_content, 
+			   to_char(review_regdate, 'yyyy-mm-dd') as review_regdate, review_img_file_name
+		from
+		(
+			select rownum as rnum, a.*
+			from
+			(
+				select distinct pk_review_no, fk_consumer_no, consumer_name, 
+					   review_content, review_regdate, 
+					   review_img_file_name
+				from v_review_survey_resp
+				where fk_seller_no = #{pk_member_no}
+				order by review_regdate desc
+			) a
+		)
+		where rnum between #{paging_dto.first_row} and #{paging_dto.last_row}
+	</select>
+	
+	<!-- 후기 상세 조회 -->
+	<select id="selectConsumerReviewDetails" resultMap="reviewMap">
+		select distinct pk_review_no, fk_consumer_no, consumer_name, fk_seller_no, seller_name, 
+			   pk_trade_no, review_content, review_img_file_name, review_img_org_name,
+			   product_title, review_regdate
+		from v_review_survey_resp join 
+		where pk_review_no = #{pk_review_no}
+	</select>
+	
+	<!-- 후기 설문 응답 목록 상세 조회 -->
+	<select id="selectSurveyRespList" resultType="SurveyVO">
+		select pk_survey_no, survey_content
+		from v_review_survey_resp
+		where pk_review_no = #{pk_review_no}
+	</select>
+	
 </mapper>
+
 
 
 

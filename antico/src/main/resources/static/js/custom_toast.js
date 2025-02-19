@@ -26,6 +26,7 @@ function showAlert(type, msg) {
 	});
 }
 
+// 확인 모달
 function showConfirmModal() {
 	Swal.fire({
 	  title: "후드티님이 차단됩니다.",
@@ -34,5 +35,46 @@ function showConfirmModal() {
 	  showDenyButton: true,
 	  denyButtonText:"취소",
 	  icon: "warning"
+	});
+}
+
+// 후기 모달
+function showReviewModal(json, icon_url) {
+	const review = json.review_map; // 후기 상세 정보
+	const survey_list = json.survey_list; // 후기 작성자가 선택한 설문 문항 정보 
+
+	v_html = `
+			<div class="review_detail_box">
+				<img src="${icon_url}" width=100 height=100/>
+				
+				<span class="review_detail_title">
+					${review.consumer_name}님과 거래한 거래 후기
+				</span>
+				
+				<div class="review_detail_product_title_box">
+					<span>${review.product_title}</span>
+				</div>`;
+				
+	if(review.review_img_file_name) {
+		v_html += `<img src="${review.review_img_file_name}" height=300 />`;
+	}		
+				
+	v_html += `	<div class="review_detail_cotent_box">
+					${review.review_regdate}
+					<p class="review_detail_content">${review.review_content}</p>
+					<hr/>			
+				`;
+			
+	$.each(survey_list, function(index, item){
+		v_html += `<li class="review_detail_survey">${item.survey_content}</li>`;
+	});
+
+	v_html += `</div></div>`;
+	
+	Swal.fire({
+		html: v_html,
+		width : 800,
+		showCloseButton : true,
+		showConfirmButton : false
 	});
 }

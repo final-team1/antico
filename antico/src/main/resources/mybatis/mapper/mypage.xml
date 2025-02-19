@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.mypage.model.MypageDAO">
+
+    <!-- 탈퇴 신청 삽입 -->
+    <insert id="insertLeaveRequest">
+        insert into leave (fk_member_no, leave_reason, leave_date)
+        values (#{fk_member_no}, #{leave_reason}, sysdate)
+    </insert>
+
+    <!-- 회원번호로 탈퇴 신청 조회 -->
+    <select id="getLeaveRequestByMemberNo" resultType="com.project.app.mypage.domain.LeaveVO">
+        select * from leave 
+        where fk_member_no = #{memberno} 
+        and leave_date >= sysdate - interval '72' hour
+    </select>
+
+    <!-- 탈퇴 신청 삭제 -->
+    <delete id="deleteLeaveRequest">
+        delete from leave where fk_member_no = #{memberno}
+    </delete>
+
+</mapper>
+
+
+
+

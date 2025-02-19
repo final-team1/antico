@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-<script type="text/javascript" src="<%= ctx_Path%>/js/mypage/pointcharge.js"></script>
+<script type="text/javascript" src="<%= ctx_Path%>/js/pointcharge.js"></script>
 
 <style>
 
@@ -36,7 +36,6 @@ div.container {
 	list-style: none;
 	padding: 0;
 	font-size: 13px;
-	font-weight: 530;
 	letter-spacing: -0.5px;
 }
 
@@ -114,6 +113,14 @@ div.container {
 .stat_box span {
 	font-weight: bold;
 	font-size: 16pt;
+}
+.stat_box a {
+	font-weight: bold;
+	font-size: 16pt;
+	color: black;
+}
+.stat_box a:hover {
+	color: green;
 }
 
 .point {
@@ -400,7 +407,118 @@ hr {
 
 </style>
 
+
+
 <script>
+	// 판매내역 클릭시
+	function sellList() {
+		var tabTitle = "판매내역";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/sellList",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+
+	// 구매내역 클릭시
+	function buyList() {
+		var tabTitle = "구매내역";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/buyList",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+	
+	// 찜한 상품 클릭시
+	function wishList() {
+		var tabTitle = "찜한 상품";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/buyList",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+	
+	// 계좌 관리 클릭시
+	function myBank() {
+		var tabTitle = "계좌 관리";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/myBank",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+	
+	// 계좌 후기 클릭시
+	function myreview() {
+		var tabTitle = "거래 후기";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/myBank",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+	
+	
+	// 탈퇴하기 클릭시
+	function memberDelete() {
+		var tabTitle = "탈퇴하기";
+	      
+	      $.ajax({
+	         url : "<%=ctx_Path%>/mypage/memberDelete",
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(e) {
+	            console.log(e);
+	            // 예외처리 필요
+	            alert("불러오기 실패");
+	            closeSideTab();
+	         }
+	      });
+	}
+	
 	//모달 열기
 	function openShareModal() {
 		document.getElementById("shareModal").style.display = "flex";
@@ -431,7 +549,7 @@ hr {
 	
 	
 	// 카카오톡 공유하기 openApi 
-    Kakao.init('482ce4a8dbba039290fe052de413a915');
+    Kakao.init('${requestScope.kakao_api_key}');
     console.log(Kakao.isInitialized()); // 초기화 확인
 
     function shareToKakao() {
@@ -458,17 +576,17 @@ hr {
 		<br>
 		<h5 style="font-weight: bold;">거래 정보</h5>
 		<ul>
-			<li><a href="#">판매내역</a></li>
-			<li><a href="#">구매내역</a></li>
-			<li><a href="#">찜한 상품</a></li>
+			<li><a href="#" onclick="sellList()">판매내역</a></li>
+			<li><a href="#" onclick="buyList()">구매내역</a></li>
+			<li><a href="#" onclick="wishList()">찜한 상품</a></li>
 		</ul>
 		<hr>
 		<h5 style="font-weight: bold;">내 정보</h5>
 		<ul>
-			<li><a href="#">계좌 관리</a></li>
+			<li><a href="#" onclick="myBank()">계좌 관리</a></li>
 			<li><a href="javascript:pointcharge('<%= ctx_Path%>')">포인트 충전</a></li>
-			<li><a href="#">거래 후기</a></li>
-			<li><a href="#">탈퇴하기</a></li>
+			<li><a href="#" onclick="myreview()">거래 후기</a></li>
+			<li><a href="#" onclick="memberDelete()">탈퇴하기</a></li>
 		</ul>
 	</aside>
 
@@ -498,7 +616,7 @@ hr {
 						</div>
 						<div class="stat_box">
 							<p>거래후기</p>
-							<span style="text-decoration: underline;">1</span>
+							<a href="#" onclick="myreview()" style="text-decoration: underline;">1</a>
 						</div>
 						<div class="stat_box">
 							<p>단골</p>
@@ -553,7 +671,7 @@ hr {
 									<div class="cardprice">
 										<span><fmt:formatNumber value="${pvoList.p_price}" type="number" groupingUsed="true"></fmt:formatNumber> </span><span>원</span>
 									</div>
-							</a>
+								</a>
 							</li>
 						</c:forEach>
 					</c:if>
@@ -591,3 +709,6 @@ hr {
 </div>
 
 <jsp:include page=".././footer/footer.jsp" />
+
+
+<jsp:include page="../tab/tab.jsp"></jsp:include>

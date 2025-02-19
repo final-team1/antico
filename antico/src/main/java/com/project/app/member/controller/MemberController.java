@@ -50,22 +50,22 @@ public class MemberController {
 	
 	
 	@PostMapping("register")
-	public ModelAndView registerMember(@RequestParam String mem_user_id, @RequestParam String mem_passwd, 
+	public ModelAndView registerMember(@RequestParam String member_user_id, @RequestParam String member_passwd, 
 			 			ModelAndView mav){
 		
 		MemberVO mvo = new MemberVO();
 		
 		
 		
-		mvo.setMember_passwd(mem_passwd);
-		mvo.setMember_user_id(mem_user_id);
+		mvo.setMember_passwd(member_passwd);
+		mvo.setMember_user_id(member_user_id);
 		
 		System.out.println(mvo.getMember_user_id());
 		System.out.println(mvo.getMember_passwd());
 		
 		int n = service.registerMember(mvo);
 		
-		
+		mav.setViewName("index");
 		
 		return mav;
 	}

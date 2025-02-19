@@ -27,11 +27,7 @@ public class CustomAccessHandler implements AccessDeniedHandler {
 		if(request_url.startsWith(ctx_path+"/product")) {
 			
 			response.sendRedirect(ctx_path+"/index");
-			
-		}else {
-			
-			response.sendRedirect("/index");
-			
+			System.out.println("AccessDeniedHandler");
 		}
 		
 

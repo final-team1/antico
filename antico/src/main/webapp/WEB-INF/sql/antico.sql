@@ -5,7 +5,7 @@ select *
 from tbl_member;
 
 delete from tbl_member
-where pk_mem_no = 6
+where pk_mem_no = 6;
 
 commit;
 
@@ -39,6 +39,14 @@ CONSTRAINT mem_ck_mem_status check(mem_status in(0,1,2)) -- 0 : 탈퇴, 1 : 활�
 CREATE SEQUENCE mem_seq;
 
 
+select *
+from tbl_member;
+
+insert into tbl_inquire(pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_status, inquire_secret, inquire_regdate)
+        values(inquire_seq.nextval, 3, 'AA', 'AAA', default, default, default) 
+
+COMMIT;
+
 ------------------------------------------------------------------------------------------------------------------------------
 -- 메인페이지 이미지 테이블
 
@@ -57,25 +65,41 @@ CREATE SEQUENCE main_seq;
 ------------------------------------------------------------------------------------------------------------------------------
 -- 문의 테이블
 
+SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate,
+    CASE 
+        WHEN inquire_secret = 0 THEN '공개'
+        WHEN inquire_secret = 1 THEN '비공개'
+    END AS inquire_secret_status,    
+    CASE 
+        WHEN inquire_status = 0 THEN '미답변'
+        WHEN inquire_status = 1 THEN '답변완료'
+    END AS inquire_status_status
+FROM tbl_inquire;
+
+
+
 drop table tbl_inquire purge
+
+select *
+from tbl_inquire;
 
 create table tbl_inquire
 (
-pk_inq_no          NUMBER                                 NOT NULL,
-fk_mem_no          NUMBER                                 NOT NULL,
-inq_title          NVARCHAR2(50)                           NOT NULL,
-inq_content        NVARCHAR2(2000)                         NOT NULL,
-inq_fileorgname    VARCHAR2(255)                          NOT NULL,
-inq_filename       VARCHAR2(255)                          NOT NULL,
-ing_filesize       NUMBER                                 NOT NULL,
-inq_status         NUMBER(1)        default 0             NOT NULL,
-inq_secret         NUMBER(1)        default 0             NOT NULL,
-inq_regdate        DATE             default sysdate       NOT NULL,
+pk_inquire_no          NUMBER                                 NOT NULL,
+fk_member_no           NUMBER                                 NOT NULL,
+inquire_title          NVARCHAR2(50)                          NOT NULL,
+inquire_content        NVARCHAR2(2000)                        NOT NULL,
+inquire_filename       VARCHAR2(255)                                  ,
+inquire_orgfilename    VARCHAR2(255)                                  ,
+inquire_file_size      NUMBER                                         ,
+inquire_status         NUMBER(1)        default 0             NOT NULL,
+inquire_secret         NUMBER(1)        default 0             NOT NULL,
+inquire_regdate        DATE             default sysdate       NOT NULL,
 
-CONSTRAINT inquire_pk_inq_no PRIMARY KEY(pk_inq_no),
-CONSTRAINT inquire_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(PK_mem_no) on delete cascade,
-CONSTRAINT inquire_ck_inq_status check(inq_status in(0,1)),
-CONSTRAINT inquire_ck_inq_secret check(inq_secret in(0,1))
+CONSTRAINT inquire_pk_inquire_no PRIMARY KEY(pk_inquire_no),
+CONSTRAINT inquire_fk_member_no FOREIGN KEY (fk_member_no) REFERENCES tbl_member(pk_member_no) ON DELETE CASCADE,
+CONSTRAINT inquire_ck_inquire_status check(inquire_status in(0,1)),
+CONSTRAINT inquire_ck_inquire_secret check(inquire_secret in(0,1))
 );
 
 CREATE SEQUENCE inquire_seq;
@@ -133,7 +157,10 @@ CONSTRAINT notice_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_mem
 
 CREATE SEQUENCE notice_seq;
 
+insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date, notice_views)
+        values(notice_seq.nextval, 3, 'AA', 'AAA', default, default) 
 
+commit;
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 포인트 기록 테이블

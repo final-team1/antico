@@ -9,166 +9,226 @@
 <c:set var="survey_vo_list" value="${requestScope.survey_vo_list}"/>
 
 <style>
-	div#review_register_container {
-		width : 100%;
-		height : 100%;
-		display : flex;
-		justify-content : space-between;
-		flex-direction : column;
-		align-items : center;
-	}
-	
-	div#review_register_container img {
-		width : 100%;
-		height : 100%;
-		object-fit : cover;
-	}
-	
-	div#review_main {
-		width : 100%;
-		height : 100%;
-		display : flex;
-		flex-direction : column;
-		align-items : center;
-	}
+div#review_register_container {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	align-items: center;
+}
 
-	div#register_header {
-		margin-top : 10px;
-		padding-bottom : 20px;
-		width : 100%;
-		height : 10%;
-		display : flex;
-		align-items : center;
-		border-bottom: 1px solid #eee;
+div#review_register_container img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+div#review_main {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+div#register_header {
+	margin-top: 20px;
+	padding-bottom: 20px;
+	width: 100%;
+	height: 20%;
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid #eee;
+}
+
+div#prod_img_box {
+	width: 10%;
+	height: 100%;
+}
+
+div#prod_info_box {
+	display: flex;
+	flex-direction: column;
+}
+
+div#feedback_title_box {
+	width: 100%;
+	margin: 30px 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+span.feedback_title {
+	font-size: 17pt;
+	font-weight: bold;
+}
+
+div#feedback_btn_box {
+	margin: 0 20px;
+	width: 80%;
+	display: flex;
+	justify-content: space-between;
+	align-itmes: center;
+	cursor: pointer;
+}
+
+div.feedback_btn {
+	width: 80px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+img.feedback_img {
+	filter: invert(100%) sepia(70%) saturate(242%) hue-rotate(217deg)
+		brightness(118%) contrast(87%);
+	transition: 0.5s ease;
+}
+
+span.feedback_type {
+	width: 100px;
+	text-align: center;
+	font-size: 15pt;
+	color: gray;
+	transition: 0.5s ease;
+	font-weight: bold;
+}
+
+button#review_register_btn {
+	border: none;
+	margin: 0 10px;
+	border-radius: 15px;
+	width: 100%;
+	padding: 15px;
+	background-color: #eee;
+	color: white;
+	font-size: 15pt;
+	margin-bottom: 10px;
+}
+
+button#review_register_btn:hover {
+	transition: 0.5s ease;
+	background-color: black;
+}
+
+div.survey_box {
+	margin: 20px 0;
+	width: 100%;
+}
+
+div.survey {
+	margin: 15px 0 10px 10px;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+span.survey_span {
+	margin-left: 10px;
+}
+
+div.survey_checkbox {
+	width: 30px;
+	height: 30px;
+}
+
+div.survey_checkbox img {
+	filter: invert(100%) sepia(70%) saturate(242%) hue-rotate(217deg)
+		brightness(118%) contrast(87%);
+}
+
+div.add_blacklist_box {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+span.survey_sub_span {
+	margin-left: 10px;
+	font-size: 10pt;
+	color: gray;
+}
+
+div#review_textarea_box {
+	margin-bottom: 20px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+textarea {
+	border-radius: 15px;
+	border: solid 1px #eee;
+	width: 100%;
+	height: 150px;
+}
+
+span.review_span {
+	margin-left: 9px;
+	font-size: 13pt;
+}
+
+div#review_image_box {
+	display : flex;
+	align-items : center;
+	margin-top: 20px;
+}
+
+div.btn_upload {
+	transition: 0.5s ease;
+	width: 150px;
+	height: 30px;
+	background: transparent;
+	border: solid 1px gray;
+	border-radius: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center; 
+	&:hover { 
+		background : black;
+		color: #fff;
 	}
-	
-	div#prod_img_box {
-		width : 10%;
-		height : 100%;
+}
+
+div#remove_image_btn {
+	transition: 0.5s ease;
+	margin-left : 30px;
+	width: 50px;
+	height: 30px;
+	background: transparent;
+	border: solid 1px gray;
+	border-radius: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center; 
+	&:hover { 
+		background : black;
+		color: #fff;
 	}
-	
-	div#prod_info_box {
-		display : flex;
-		flex-direction : column;
-	}
-	
-	div#feedback_title_box {
-		width : 100%;
-		margin : 30px 20px;
-		display : flex;
-		flex-direction : column;
-		justify-content : center;
-		align-items : flex-start;
-	}
-	
-	span.feedback_title {
-		font-size : 17pt;
-		font-weight : bold;
-	}
-	
-	div#feedback_btn_box {
-		margin : 0 20px;
-		width : 80%;
-		display : flex;
-		justify-content : space-between;
-		align-itmes : center;
-		cursor : pointer;
-	}
-	
-	div.feedback_btn {
-		width : 80px;
-		display : flex;
-		flex-direction : column;
-		justify-content : center;
-		align-items : center;
-	}
-	
-	img.feedback_img {
-		filter: invert(100%) sepia(70%) saturate(242%) hue-rotate(217deg) brightness(118%) contrast(87%);
-		transition : 0.5s ease;
-	}
-	
-	span.feedback_type {
-		width : 100px;
-		text-align : center;
-		font-size : 15pt;
-		color : gray;
-		transition : 0.5s ease;
-		font-weight : bold;
-	}
-	
-	button#review_register_btn {
-		border : none;
-		margin : 0 10px;
-		border-radius : 15px;
-		width : 100%;
-		padding : 15px;
-		background-color : #eee;
-		color : white;
-		font-size : 15pt;
-		margin-bottom : 10px;
-	}
-	
-	button#review_register_btn:hover {
-		transition : 0.5s ease;
-		background-color : black;
-	}
-	
-	div.survey_box {
-		margin : 20px 0;
-		width : 100%;
-	}
-	
-	div.survey {
-		margin : 15px 0 10px 10px;
-		display : flex;
-		align-items : center;
-		cursor : pointer;
-	}
-	
-	span.survey_span {
-		margin-left : 10px;
-	}
-	
-	div.survey_checkbox {
-		width : 30px;
-		height : 30px;
-	}
-	
-	div.survey_checkbox img {
-		filter: invert(100%) sepia(70%) saturate(242%) hue-rotate(217deg) brightness(118%) contrast(87%);
-	}
-	
-	div.add_blacklist_box {
-		display : flex;
-		flex-direction : column;
-		justify-content : center;
-	}
-	
-	span.survey_sub_span {
-		margin-left : 10px;
-		font-size : 10pt;
-		color : gray;
-	}
-	
-	div#review_textarea_box {
-		margin-bottom : 20px;
-		width : 100%;
-		display : flex;
-		flex-direction : column;
-	}
-	
-	textarea {
-		border-radius : 15px;
-		border : solid 1px #eee;
-		width : 100%;
-		height : 150px;
-	}
-	
-	span.review_span {
-		margin-left : 9px;
-		font-size : 13pt;
-	}
+}
+
+input#file {
+	display: none;
+}
+
+span#file_name{
+	margin-left : 30px;
+	font-weight : bold;
+}
+
+div#image_preview {
+	margin : 30px 0;
+	display : none;
+	width : 200px;
+	height : 200px;
+}
 </style>
 
 <div id="review_register_container">
@@ -267,16 +327,22 @@
 			<form id="reviewFrm" method="post" enctype="multipart/form-data">
 				<textarea name="review_content"></textarea>
 				<input type="hidden" name="arr_pk_survey_resp_no"/>
-				<input type="hidden" name="pk_trade_no" value="1"/>
-    			<input type="file" name="file" multiple="true"/>
+				<input type="hidden" name="pk_trade_no" value="30"/>
+				<input type="hidden" name="review_type" value="0"/>
+				
+				<div id="image_preview"></div>
+				
+				<div id="review_image_box">
+					<div class="btn_upload">이미지 업로드하기</div>
+    				<input type="file" name="file" id="file"/>
+    				<div id="remove_image_btn" onclick="removeImage()">취소</div>
+    				<span id="file_name"></span>
+    			</div>
 			</form>
 		</div>
 	</div>
-	
 
-	
-	<button id="review_register_btn" onclick="goReviewRegister()">후기 작성하기</button>
-	
+	<button type="button" id="review_register_btn" onclick="goReviewRegister()">후기 작성하기</button>
 </div>
 
 <script>
@@ -423,6 +489,61 @@
 			
 		});
 		
+		// 이미지 업로드 버튼 클릭 이벤트
+		$(document).on("click", "div.btn_upload", function(){
+			 // console.log("파일 업로드 버튼 클릭됨");
+			$("input#file").click();
+		});
+		
+		// 이미지 파일 선택 시 이미지 명 표시
+		$(document).on("change", "input#file", function(e){
+			const image_file = $(e.target)[0].files[0];
+			const file_name = image_file.name;
+			
+			console.log($(e.target)[0].files[0]);
+			
+			$("span#file_name").text(file_name);
+			
+			// 파일 확장자가 시작되는 인덱스 구하기
+			const i = file_name.indexOf(".");
+			
+			// 파일확장자가 없는 경우
+			if(i == -1) {
+				showAlert("warning", "업로드 이미지 형식이 잘못되었습니다. 다시 확인해주세요");
+				return;
+			}
+			
+			// 파일 확장자
+			const ext = file_name.substring(i+1);
+			
+			console.log(ext);
+			
+			// 파일 확장자가 이미지 형식이 아닌경우
+			if(ext != "jpg" && ext != "jpeg" && ext != "png" && ext != "gif"){
+				showAlert("warning", "업로드 이미지 형식이 잘못되었습니다. 다시 확인해주세요");
+				return;
+			}
+			
+			// 이미지 파일 크기 제한 최대 5MB
+			if(image_file.size > 1024 * 1024 * 5) {
+				showAlert("warning", "업로드 이미지는 최대 5MB까지 가능합니다.");
+				return;
+			}
+			
+			let v_html = ``;
+			
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				v_html += `<img id="preview" src="\${e.target.result}"/>`;
+				console.log(v_html);
+				$("div#image_preview").html(v_html).show();
+			}
+			
+			reader.readAsDataURL(image_file);
+
+		});
+		
+		
 	});
 	
 	// 후기 등록 요청 함수
@@ -435,6 +556,13 @@
 				arr_pk_survey_resp_no.push($(item).data("pk_survey_no"));
 			}
 		});
+		
+		// 설문문항을 클릭하지 않은 경우 경고 알림
+		if(arr_pk_survey_resp_no.length < 1) {
+			showAlert("warning", "설문 문항을 체크해 주세요");
+			return;
+		}		
+		
 		
 		// input 태그에 저장
 		$("input[name='arr_pk_survey_resp_no']").val(arr_pk_survey_resp_no.join(","));
@@ -514,6 +642,15 @@
 				 
 			}
 		});
+	}
+	
+	function removeImage() {
+		if($("img#preview")){
+			$("div#image_preview").html("");
+			$("input#file")[0].files[0] = null;
+			$("div#image_preview").hide();
+			$("span#file_name").text("");
+		}
 	}
 	
 </script>

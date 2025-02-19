@@ -6,6 +6,8 @@
 %>
 <title>포인트 충전</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+
 <style>
     body {
         background-color: #f8f9fa;
@@ -76,6 +78,9 @@
         background-color: #f8f9fa;
     }
 </style>
+
+
+
 </head>
 <body>
 
@@ -130,6 +135,8 @@
         </div>
     </div>
 
+</body>
+
     <script>
         function increaseAmount(value) {
             var amountInput = document.getElementById('amount');
@@ -153,6 +160,71 @@
             document.getElementById('silver-amount').textContent = silverAmount + '원';
             document.getElementById('bronze-amount').textContent = bronzeAmount + '원';
         }
-    </script>
+        
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector(".charge-btn").addEventListener("click", function (event) {
+                event.preventDefault(); // 기본 폼 제출 방지
 
-</body>
+                const IMP = window.IMP;
+                IMP.init("${requestScope.pointcharge_chargekey}"); // 가맹점 식별코드
+
+                const productName = "포인트 충전";
+                const amountInput = document.getElementById("amount");
+                const chargeAmount = parseInt(amountInput.value, 10); // 충전 금액
+                const memberUserId = document.querySelector('input[name="member_user_id"]').value; // 회원 ID 가져오기
+
+                if (!chargeAmount || chargeAmount < 1000) {
+                    alert("충전 금액을 1000원 이상 입력해주세요.");
+                    return;
+                }
+
+                IMP.request_pay(
+                    {
+                        pg: "html5_inicis", // PG사 선택
+                        pay_method: "card", // 결제 방식 (카드, 계좌이체 등)
+                        merchant_uid: "merchant_" + new Date().getTime(), // 주문번호 (고유값)
+                        name: productName, // 주문명
+                        amount: chargeAmount, // 결제 금액
+                        buyer_name: memberUserId, // 구매자 이름 (회원 ID)
+                        buyer_tel: "", // 구매자 전화번호 (필요시 추가)
+                        buyer_addr: "", // 구매자 주소 (필요시 추가)
+                        buyer_postcode: "" // 구매자 우편번호 (필요시 추가)
+                    },
+                    function (rsp) {
+                        if (rsp.success) {
+                            // 결제 성공 시 서버로 데이터 전송
+                            fetch("<%= ctx_Path %>/mypage/chargeComplete", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    memberUserId: memberUserId,
+                                    chargeAmount: chargeAmount,
+                                    imp_uid: rsp.imp_uid, // 결제 고유번호
+                                    merchant_uid: rsp.merchant_uid // 주문번호
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("충전이 완료되었습니다.");
+                                    window.location.href = "<%= ctx_Path %>/mypage"; // 마이페이지로 이동
+                                } else {
+                                    alert("충전은 완료되었으나 서버 처리에 실패했습니다. 고객센터로 문의해주세요.");
+                                }
+                            })
+                            .catch(error => {
+                                alert("충전 처리 중 오류가 발생했습니다.");
+                                console.error("Error:", error);
+                            });
+                        } else {
+                            alert(`결제에 실패하였습니다: ${rsp.error_msg}`);
+                        }
+                    }
+                );
+            });
+        });
+
+    </script>
