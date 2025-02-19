@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.project.app.common.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.service.MemberService;
 
@@ -20,7 +21,10 @@ import com.project.app.member.service.MemberService;
 public class MemberController {
 	
 	@Autowired
-	MemberService service;
+	private MemberService service;
+	
+	@Autowired
+	private GetMemberDetail get_member_detail;
 	
 
 	
@@ -29,9 +33,28 @@ public class MemberController {
 			 			ModelAndView mav){
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
 		System.out.println(authentication.getAuthorities());
 		
-		mav.setViewName("main/login");
+		if("[ROLE_ANONYMOUS]".equals(String.valueOf(authentication.getAuthorities()))) {
+			
+			mav.setViewName("main/login");
+			
+		}else {
+			
+			mav.setViewName("redirect:/index");
+			
+			mav.addObject("message", "이미 로그인 상태입니다.");
+			
+			System.out.println("로그인상태");
+			
+		}
+		
+		
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		
+		
+		System.out.println(member_vo.getPk_member_no());
 		
 		return mav;
 	}

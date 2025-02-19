@@ -28,6 +28,7 @@ public class CustomAccessHandler implements AccessDeniedHandler {
 			
 			response.sendRedirect(ctx_path+"/index");
 			System.out.println("AccessDeniedHandler");
+			
 		}
 		
 
