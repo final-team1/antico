@@ -16,8 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping(value="/*")
 public class IndexController {
 	
-	@Autowired
-	private MemberService member_service;
 	
 	@GetMapping("/")   // http://localhost:9090/final/
 	public String main() {

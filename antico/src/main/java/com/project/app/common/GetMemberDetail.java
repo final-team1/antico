@@ -12,13 +12,21 @@ import org.springframework.stereotype.Component;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
 
+import lombok.AllArgsConstructor;
+
 @Component
 public class GetMemberDetail {
 	
 	@Autowired
 	private MemberDAO member_dao;
 	
-	
+	public GetMemberDetail(MemberDAO member_dao) {
+		this.member_dao = member_dao;
+	}
+
+
+
+
 	@Bean
 	public MemberVO MemberDetail() {
 		
@@ -28,7 +36,7 @@ public class GetMemberDetail {
 		
 		if(authentication != null) {
 			
-			String member_user_id = ((User)authentication.getPrincipal()).getUsername();
+			String member_user_id = String.valueOf(((User)authentication.getPrincipal()).getUsername());
 			
 			member_vo = member_dao.selectMemberByUserId(member_user_id);
 			

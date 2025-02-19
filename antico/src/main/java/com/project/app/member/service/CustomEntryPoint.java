@@ -19,6 +19,7 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 		
 		String ctx_path = request.getContextPath();
 		System.out.println("AuthenticationEntryPoint");
+		
 		response.sendRedirect(ctx_path+"/index");
 		
 
