@@ -90,6 +90,7 @@ public class SecurityConfig {
      .logout(logout -> logout
     		 .logoutUrl("/logout")
     		 .logoutSuccessUrl("/index")
+    		 .clearAuthentication(true)
     		 );
      
      return http.build();

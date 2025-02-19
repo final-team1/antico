@@ -21,7 +21,6 @@ public class GetMemberDetail {
 	private MemberDAO member_dao;
 	
 	public GetMemberDetail(MemberDAO member_dao) {
-		super();
 		this.member_dao = member_dao;
 	}
 
@@ -37,7 +36,7 @@ public class GetMemberDetail {
 		
 		if(authentication != null) {
 			
-			String member_user_id = ((User)authentication.getPrincipal()).getUsername();
+			String member_user_id = String.valueOf(((User)authentication.getPrincipal()).getUsername());
 			
 			member_vo = member_dao.selectMemberByUserId(member_user_id);
 			
