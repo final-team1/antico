@@ -36,6 +36,7 @@
   <script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
   <script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
 
+
 	<%-- 카카오 api --%>
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
 
@@ -49,6 +50,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
   <script src="<%=ctxPath%>/js/custom_toast.js"></script>
   <link rel="stylesheet" href="<%=ctxPath%>/css/custom_toast.css">
+  <script type="text/javascript" src="<%=ctxPath%>/js/member/cookie.js"></script>
 
 
   <%-- font cdn --%>
@@ -506,11 +508,6 @@ function closeNav() {
 
 $(document).ready(function(){
 	
-	if('${requestScope.message}' != ""){
-		
-		showAlert('error', ${requestScope.message});
-		
-	}
 	
 	$("ul.my_header").css("display", "none");
 	

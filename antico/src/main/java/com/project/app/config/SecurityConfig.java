@@ -66,6 +66,7 @@ public class SecurityConfig {
     	  request -> request
     	  
     	  .requestMatchers("/product/**").authenticated()
+    	  
     	  .requestMatchers("/mypage/**").authenticated()
     	  
           .requestMatchers("/**").permitAll()

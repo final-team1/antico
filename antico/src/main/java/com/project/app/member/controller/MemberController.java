@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.project.app.common.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
@@ -30,7 +31,8 @@ public class MemberController {
 	
 	@GetMapping("login")
 	public ModelAndView showLoginPage(
-			 			ModelAndView mav){
+			 			ModelAndView mav,
+			 			RedirectAttributes redirectAttributes){
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
@@ -44,7 +46,7 @@ public class MemberController {
 			
 			mav.setViewName("redirect:/index");
 			
-			mav.addObject("message", "이미 로그인 상태입니다.");
+			redirectAttributes.addFlashAttribute("message", "이미 로그인 상태입니다.");
 			
 			System.out.println("로그인상태");
 			
@@ -69,6 +71,7 @@ public class MemberController {
 	
 	@PostMapping("register")
 	public ModelAndView registerMember(@RequestParam String member_user_id, @RequestParam String member_passwd, 
+			@RequestParam String member_name, @RequestParam String member_tel,
 			 			ModelAndView mav){
 		
 		MemberVO mvo = new MemberVO();
@@ -77,13 +80,12 @@ public class MemberController {
 		
 		mvo.setMember_passwd(member_passwd);
 		mvo.setMember_user_id(member_user_id);
-		
-		System.out.println(mvo.getMember_user_id());
-		System.out.println(mvo.getMember_passwd());
+		mvo.setMember_tel(member_tel);
+		mvo.setMember_name(member_name);
 		
 		int n = service.registerMember(mvo);
 		
-		mav.setViewName("index");
+		mav.setViewName("main/index");
 		
 		return mav;
 	}

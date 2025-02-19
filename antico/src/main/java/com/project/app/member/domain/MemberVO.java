@@ -17,5 +17,6 @@ public class MemberVO {
 	private String member_point;				// 사용자 점수 (등급 점수, 브론즈 : 0 ~ 99, 실버 : 100 ~ 199, 골드 : 200 ~)
 	private String member_score;				// 사용자 포인트
 	private String member_status; 				// 사용자 상태 (0 : 탈퇴, 1 : 가입, 2 : 정지)
+	private String member_name;					// 사용자 이름
 	
 }
