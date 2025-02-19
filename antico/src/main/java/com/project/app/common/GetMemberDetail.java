@@ -11,29 +11,32 @@ import org.springframework.stereotype.Component;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
 import com.project.app.member.service.CustomUserDetails;
-import com.project.app.member.service.MemberDetailService;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class GetMemberDetail {
 	
 	@Autowired
-	private MemberDAO memberdao;
+	private MemberDAO member_dao;
 	
-	@Autowired
-	private MemberDetailService member_detail_service;
 	
 	@Bean
 	public MemberVO MemberDetail() {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
-		String mem_user_id = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+		MemberVO member_vo = new MemberVO();
 		
-		MemberVO mvo = memberdao.selectMemberByUserId(mem_user_id);
+		if(authentication != null) {
+			
+			String mem_user_id = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+			
+			member_vo = member_dao.selectMemberByUserId(mem_user_id);
+			
+		}
 		
-		return mvo;
+		
+		
+		return member_vo;
 	}
 	
 }
