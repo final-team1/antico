@@ -119,6 +119,10 @@
 	
 	// 사이드 네비게이션 닫기
 	function closeSideTab() {
+		
+		$("div#sidetab_content").html("");
+		delete cur_page;
+		
 		$("div#sidetab_container")
         	.css("overflow", "hidden")
         	.animate({ width: "0px" }, 300, function () {
