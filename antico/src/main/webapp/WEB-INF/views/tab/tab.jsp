@@ -5,7 +5,7 @@
 
 <style>
 	div#sidetab_container {
-		position : absolute;
+		position : fixed;
 		top : 0;
 		right : 0;
 		width: 0px;
@@ -14,7 +14,7 @@
 		overflow: hidden;
 		padding : 10px 20px 10px 20px;
 		background-color : white;
-		z-index : 999;
+		z-index : 9999;
 		display : none;
 	}
 	
@@ -27,12 +27,12 @@
 	}
 	
 	div#overlay {
-		position : absolute;
+		position : fixed;
 		top : 0;
 		right : 0;
 		width: 100vw;
 		height: 100vh;
-		z-index : 998;
+		z-index : 9998;
 		background: rgba(0, 0, 0, 0.5);
 		display: none;
 	}
@@ -119,9 +119,6 @@
 	
 	// 사이드 네비게이션 닫기
 	function closeSideTab() {
-		$("div#sidetab_content").html("");
-		delete cur_page;
-		
 		$("div#sidetab_container")
         	.css("overflow", "hidden")
         	.animate({ width: "0px" }, 300, function () {
@@ -129,7 +126,6 @@
         	});
 
 	    $("div#overlay").fadeOut(300);
-	    
 	    $("body").css("overflow", "");
 	}
 </script>
