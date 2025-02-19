@@ -6,10 +6,11 @@ import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.project.app.common.PagingDTO;
+import com.project.app.mypage.domain.TradeVO;
 import com.project.app.review.domain.BlacklistVO;
 import com.project.app.review.domain.ReviewVO;
 import com.project.app.review.domain.SurveyVO;
-import com.project.app.review.domain.TradeVO;
 
 @Mapper
 public interface ReviewDAO {
@@ -37,5 +38,20 @@ public interface ReviewDAO {
 
 	// 블랙리스트 조회
 	BlacklistVO selectBlacklist(String pk_member_no, String pk_target_member_no);
+
+	// 리뷰 통계 조회(긍정적 리뷰, 부정적 리뷰, 리뷰 당 받은 개수)
+	List<Map<String, String>> selectConsumerSurveyStatList(String pk_member_no);
+
+	// 사용자가 받은 구매 후기 전체 개수
+	int selectConsumerTotalReviewCount(String pk_member_no);
+
+	// 최근 받은 구매 후기 목록 가져오기
+	List<Map<String, String>> selectConsumerReviewList(PagingDTO paging_dto, String pk_member_no);
+	
+	// 후기 상세 조회
+	Optional<Map<String, String>> selectConsumerReviewDetails(String pk_review_no);
+
+	// 후기 설문 응답 목록 상세 조회
+	List<SurveyVO> selectSurveyRespList(String pk_review_no);
 
 }

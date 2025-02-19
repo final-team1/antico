@@ -36,6 +36,7 @@
   <script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
   <script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
 
+
 	<%-- 카카오 api --%>
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
 
@@ -49,6 +50,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
   <script src="<%=ctxPath%>/js/custom_toast.js"></script>
   <link rel="stylesheet" href="<%=ctxPath%>/css/custom_toast.css">
+  <script type="text/javascript" src="<%=ctxPath%>/js/member/cookie.js"></script>
 
 
   <%-- font cdn --%>
@@ -133,6 +135,7 @@ input.searchBar {
 /* 서치바 끝 */
 
 #userManu{
+	position: relative;
 	list-style-type: none;
 	
 }
@@ -299,6 +302,22 @@ img.main_logo {
 	cursor : pointer;
 }
 
+
+.my_header{
+	position: absolute;
+	list-style: none;
+	height: 50px; 
+    width: 70px;
+    left: 114px;
+    top: 30px;
+    padding: 0;
+    text-align: center;
+    border: solid 1px #F1F4F6;
+    border-radius: 5px;
+    font-size: 12px;
+    display:none;
+}
+
 </style>
 
 </head>
@@ -344,12 +363,17 @@ img.main_logo {
 					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
 					<li class="">
+						
+						<c:if test="${pageContext.request.userPrincipal.name == null}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
+						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
 					
-
-					<a href="<%=ctxPath%>/member/login">마이</a>
-						<c:if test="${empty pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
-						<c:if test="${empty not pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/mypage/mypagemain">마이</a></c:if>
+					<ul class="my_header">
 					
+						<li style="margin-top:2px;"><a href="<%=ctxPath%>/mypage/mypagemain">마이페이지</a></li>
+						<li><hr style="margin: 4px;"></li>
+						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+						
+					</ul>
 					</li>	
 				</ul>
 			</div>
@@ -484,9 +508,24 @@ function closeNav() {
 
 $(document).ready(function(){
 	
+	
+	$("ul.my_header").css("display", "none");
+	
 	$("img.main_logo").click(function(e){
 		location.href = "<%=ctxPath%>/index";
 	});	
+	
+	
+	$("p.my_manu").bind("click", function(){
+		
+		if($("ul.my_header").css("display") == "none"){
+			$("ul.my_header").css("display", "block");
+		}else{
+			$("ul.my_header").css("display", "none");
+		}
+		
+	});
+	
 	
 });
 

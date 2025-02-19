@@ -36,7 +36,6 @@ div.container {
 	list-style: none;
 	padding: 0;
 	font-size: 13px;
-	font-weight: 530;
 	letter-spacing: -0.5px;
 }
 
@@ -408,14 +407,15 @@ hr {
 
 </style>
 
-<script>
 
+
+<script>
 	// 판매내역 클릭시
 	function sellList() {
 		var tabTitle = "판매내역";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/sellList",
+	         url : "<%=ctx_Path%>/mypage/sell_list",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -433,7 +433,7 @@ hr {
 		var tabTitle = "구매내역";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/buyList",
+	         url : "<%=ctx_Path%>/mypage/buy_list",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -451,7 +451,7 @@ hr {
 		var tabTitle = "찜한 상품";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/buyList",
+	         url : "<%=ctx_Path%>/mypage/buy_list",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -469,7 +469,7 @@ hr {
 		var tabTitle = "계좌 관리";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/myBank",
+	         url : "<%=ctx_Path%>/mypage/mybank",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -487,7 +487,7 @@ hr {
 		var tabTitle = "거래 후기";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/myBank",
+	         url : "<%=ctx_Path%>/mypage/mybank",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -506,7 +506,7 @@ hr {
 		var tabTitle = "탈퇴하기";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/memberDelete",
+	         url : "<%=ctx_Path%>/mypage/member_delete",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -549,7 +549,7 @@ hr {
 	
 	
 	// 카카오톡 공유하기 openApi 
-    Kakao.init('482ce4a8dbba039290fe052de413a915');
+    Kakao.init('${requestScope.kakao_api_key}');
     console.log(Kakao.isInitialized()); // 초기화 확인
 
     function shareToKakao() {

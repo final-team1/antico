@@ -2,33 +2,32 @@ package com.project.app.mypage.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.project.app.member.domain.MemberVO;
-import com.project.app.mypage.domain.LoginHistoryVO;
+import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.model.MypageDAO;
 
 @Service
 public class MypageService_imple implements MypageService {
 
-	@Autowired
-	private MypageDAO mypagedao;
+    @Autowired
+    private MypageDAO mypagedao;
 
-	
-	// 탈퇴 처리 로직
-	@Override
-	public int deletesubmit(MemberVO mvo, LoginHistoryVO lhvo) {
+    // 회원 탈퇴 신청 처리
+    @Override
+    public int deletesubmit(LeaveVO lvo) {
+        return mypagedao.insertLeaveRequest(lvo);
+    }
 
-		// 회원상태 업데이트
-	//	int a = mypagedao.deletesubmit1(mvo);
-		
-		// 탈퇴테이블 insert
-	//s	int b = mypagedao.deletesubmit2(mvo);
-		
-		
-		
-		return 0;
-	}
-	
+    // 로그인 시 탈퇴 신청 확인 및 취소 로직
+    @Override
+    public int cancelLeaveRequest(int memberNo) {
+        // 72시간이 지나지 않은 탈퇴 신청이 있는지 확인
+        LeaveVO leaveRequest = mypagedao.getLeaveRequestByMemberNo(memberNo);
 
-	
+        if (leaveRequest != null) {
+            // 탈퇴 신청 취소 (레코드 삭제)
+            return mypagedao.deleteLeaveRequest(memberNo);
+        }
+
+        return 0; // 취소할 탈퇴 신청이 없음
+    }
 }

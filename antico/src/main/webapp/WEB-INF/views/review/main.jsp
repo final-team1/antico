@@ -1,7 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}" />
+<c:set var="survey_stat_list" value="${requestScope.survey_stat_list}" />
+<c:set var="review_count" value="${requestScope.review_count}" />
+<c:set var="review_map_list" value="${requestScope.review_map_list}" />
 
 <style>
 	div#review_container {
@@ -32,7 +36,15 @@
 	
 	div.review_item {
 		margin : 20px 0;
+		padding : 10px;
+		cursor : pointer;
 	}
+	
+	div.review_item:hover {
+		border-radius : 15px;
+		background-color : #eee;
+		transition : 0.3s ease;
+	}	
 	
 	div.reivew_profile {
 		margin : 10px 0;
@@ -63,174 +75,153 @@
 		border-radius : 15px;
 		background-color : transparent;
 	}
+	
+	button#showAllReviewBtn:hover {
+		transition : 0.3s ease;
+		background-color : black;
+		color : white;
+	}
+	
+	img.icon_file {
+		filter: invert(69%) sepia(37%) saturate(5887%) hue-rotate(100deg) brightness(99%) contrast(90%);
+	}
+	
 </style>
 <div id="review_container">
 	<!-- 좋았어요, 최고에요 설문조사 통계 -->
-	<div id="like_survey_container">
+	<div id="like_survey_container">	
 		<h4 class="survey_title">이런점이 좋았어요</h4>
-		
-		<div class="survey_item">
-			<span>친절/매너가 좋아요</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>응답이 빨라요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>상품 상태가 좋아요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>무료나눔을 해주었어요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>택배 거래가 수월했어요.(포장, 협조적)</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>거래 시간을 잘 지켜요</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
+		<c:forEach items="${survey_stat_list}" var="survey_stat_map">
+				<!-- 좋았어요, 최고에요 설문조사 통계 -->
+				<c:if test="${survey_stat_map.pk_survey_no < 5}">
+					<div class="survey_item">
+						<span>${survey_stat_map.survey_content}</span>
+						<div>
+							<img src="${ctxPath}/images/icon/user.svg" width=20 />
+							<span class="vote_count">${survey_stat_map.count}</span>
+						</div>
+					</div>
+				</c:if>
+		</c:forEach>
 	</div>
-	
 	<!-- 아쉬워요 설문조사 통계 -->
-	<div id="dislike_survey_container">
+	<div id="dislike_survey_container">	
 		<h4 class="survey_title">이런점이 아쉬웠어요</h4>
-		
-		<div class="survey_item">
-			<span>친절/매너가 아쉬워요</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>응답이 느려요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
-		<div class="survey_item">
-			<span>상품 상태가 아쉬워요.</span>
-			<div>
-				<img src="${ctxPath}/images/icon/user.svg" width=20 />
-				<span class="vote_count">3</span>
-			</div>
-		</div>
+		<c:forEach items="${survey_stat_list}" var="survey_stat_map">
+				<!-- 좋았어요, 최고에요 설문조사 통계 -->
+				<c:if test="${survey_stat_map.pk_survey_no >= 5}">
+					<div class="survey_item">
+						<span>${survey_stat_map.survey_content}</span>
+						<div>
+							<img src="${ctxPath}/images/icon/user.svg" width=20 />
+							<span class="vote_count">${survey_stat_map.count}</span>
+						</div>
+					</div>
+				</c:if>
+		</c:forEach>
 	</div>
 	
 	<!-- 최근 5개 후기 내역 -->
 	<div id="preview_review_container">
-		<h4 style="margin-bottom : 20px;">상세한 후기도 있어요 <span id="total_survey_count">21</span></h4>
 		
-		<div class="review_item">
-			<div class="reivew_profile">
-				<img src="${ctxPath}/images/icon/user_circle.svg" width="40" />
-				<div class="review_profile_detail">
-					<span class="writer_name">사용자11</span>
-					<span>구매자 &nbsp; 2025-02-08</span>
-				</div>
-			</div>
+		<c:if test="${not empty review_map_list}">
+			<h4 style="margin-bottom : 20px;">상세한 후기도 있어요 <span id="total_survey_count">${review_count}</span></h4>
 			
-			<div class="review_content">
-				Antico 첫 거래인데 좋은 판매자분 만나서 좋았어요
-			</div>
-		</div>
-		
-		<div class="review_item">
-			<div class="reivew_profile">
-				<img src="${ctxPath}/images/icon/user_circle.svg" width="40" />
-				<div class="review_profile_detail">
-					<span class="writer_name">사용자11</span>
-					<span>구매자 &nbsp; 2025-02-08</span>
+			<c:forEach items="${review_map_list}" var="review_map" end="4">			
+				<div class="review_item" data-pk_review_no="${review_map.pk_review_no}">
+					<div class="reivew_profile">
+						<img src="${ctxPath}/images/icon/user_circle.svg" width="40" />
+						<div class="review_profile_detail">
+							<span class="writer_name">${review_map.consumer_name}</span>
+							<div style="display : flex; align-items : center;">
+								<span>${review_map.review_regdate}</span>
+								<c:if test="${not empty review_map.review_img_file_name}">
+									<img class="icon_file" src="${ctxPath}/images/icon/file.svg" width="20" />
+								</c:if>
+							</div>
+						</div>
+					</div>
+					
+					<div class="review_content">
+						${review_map.review_content}
+					</div>
 				</div>
-			</div>
+			</c:forEach>
 			
-			<div class="review_content">
-				Antico 첫 거래인데 좋은 판매자분 만나서 좋았어요
-			</div>
-		</div>
-		
-		<div class="review_item">
-			<div class="reivew_profile">
-				<img src="${ctxPath}/images/icon/user_circle.svg" width="40" />
-				<div class="review_profile_detail">
-					<span class="writer_name">사용자11</span>
-					<span>구매자 &nbsp; 2025-02-08</span>
-				</div>
-			</div>
-			
-			<div class="review_content">
-				Antico 첫 거래인데 좋은 판매자분 만나서 좋았어요
-			</div>
-		</div>
-		
-		<div class="review_item">
-			<div class="reivew_profile">
-				<img src="${ctxPath}/images/icon/user_circle.svg" width="40" />
-				<div class="review_profile_detail">
-					<span class="writer_name">사용자11</span>
-					<span>구매자 &nbsp; 2025-02-08</span>
-				</div>
-			</div>
-			
-			<div class="review_content">
-				Antico 첫 거래인데 좋은 판매자분 만나서 좋았어요
-			</div>
-		</div>
-		
-		<div class="review_item">
-			<div class="reivew_profile">
-				<img src="${ctxPath}/images/icon/user_circle.svg" width="40" />
-				<div class="review_profile_detail">
-					<span class="writer_name">사용자11</span>
-					<span>구매자 &nbsp; 2025-02-08</span>
-				</div>
-			</div>
-			
-			<div class="review_content">
-				Antico 첫 거래인데 좋은 판매자분 만나서 좋았어요
-			</div>
-		</div>
-		
-		<button id="showAllReviewBtn" onclick="showAllReview()">후기 전체 보기</button>
+			<button id="showAllReviewBtn" onclick="showAllReview()">후기 전체 보기</button>
+		</c:if>
 	</div>
 </div>
 
 <script>
-	function showAllReview() {
+	$(document).ready(function(){
+		
+		// 부정적 후기 설문 문항이 존재하지 않으면 머릿글 지우기
+		if($("div#dislike_survey_container div.survey_item").length == 0) {
+			$("div#dislike_survey_container h4.survey_title").text("");
+		}
+		
+		// 긍정적 후기 설문 문항이 존재하지 않으면 머릿글 지우기
+		if($("div#like_survey_container div.survey_item").length == 0) {
+			$("div#like_survey_container h4.survey_title").text("");
+		}
+		
+		// 후기 글 클릭 이벤트
+		$(document).on("click", "div.review_item", function(){
+			// 리뷰 일련번호
+			const pk_review_no = $(this).data("pk_review_no");
+			
+			// 후기 상세 내역 불러오기
+			loadReviewDetails(pk_review_no);
+		});
+	});
+
+	// 후기 전체 목록 불러오기
+	function showAllReview() {		
 		$.ajax({
 			url : "${pageContext.request.contextPath}/review/all_reviews",
 			data : {
-				"memNo" : "1"
+				"pk_member_no" : "3"
 			},
-			type : "post",
 			success : function(html) {
 				openSideTab(html);
 			},
-			error : function(xhr, status, error) {
-				showAlert("error", xhr.responseJSON.msg);
+			error: function(request, status, error){
+				 console.log(request.responseText);
+				 
+				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+			     showAlert("error", message);
+			     
+			     // 사이드 탭 닫기
+			     closeSideTab();
+			}
+		});
+	}
+	
+	// 후기 상세 내역 불러오기
+	function loadReviewDetails(pk_review_no){
+		$.ajax({
+			url : `${ctxPath}/review/details/\${pk_review_no}`,
+			dataType : "json",
+			success : function(json) {
+				// 후기 아이콘
+				const icon_url = "${ctxPath}/images/icon/review.svg";
+				showReviewModal(json, icon_url);
+			},
+			error: function(request, status, error){
+				 console.log(request.responseText);
+				 
+				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+			     showAlert("error", message);
+			     
+			     // 사이드 탭 닫기
+			     closeSideTab();
 			}
 		});
 	}
