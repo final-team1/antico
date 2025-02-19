@@ -56,7 +56,7 @@ function showReviewModal(json, icon_url) {
 				</div>`;
 				
 	if(review.review_img_file_name) {
-		v_html += `<img src="${review.review_img_file_name}" height=300 />`;
+		v_html += `<img src="${review.review_img_file_name}" width=300 />`;
 	}		
 				
 	v_html += `	<div class="review_detail_cotent_box">
