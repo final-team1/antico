@@ -19,8 +19,16 @@ font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFon
 
 div#container {
 	width: 70%;
-	margin: 140px auto;
+	margin: 0 auto;
 	text-align: center;
+}
+
+div#contents_container {
+    display: flex;
+    flex-direction: column;  /* 요소들을 세로로 정렬 */
+    align-items: center;     /* 수평 중앙 정렬 */
+    justify-content: center; /* 수직 중앙 정렬 */
+    height: 100%;            /* 부모 요소에 맞게 높이를 100%로 설정 */
 }
 
 i.custom-bounce {
@@ -59,22 +67,24 @@ button.main_btn, button.check_btn {
     
     
 <div id="container">
-
-	<!-- check 아이콘 -->
-	<div id="icon_wrap">
-		<i class="fa-regular fa-circle-check custom-bounce" style="color: #0dcc5a;"></i> 
-	</div>
 	
-	<div id="add_success_text_wrap">
-		<span id="add_success_text">상품 등록 완료!</span>
-	</div>
-	
-	<div id="main_back">
-		<button class="main_btn" onclick="window.location.href='<%= ctxPath%>/index'">메인 페이지</button>	
-	</div>
-	
-	<div id="check_product">
-		<button class="check_btn" onclick="">등록 상품 확인</button>	
+	<div id="contents_container">
+		<!-- check 아이콘 -->
+		<div id="icon_wrap">
+			<i class="fa-regular fa-circle-check custom-bounce" style="color: #0dcc5a;"></i> 
+		</div>
+		
+		<div id="add_success_text_wrap">
+			<span id="add_success_text">상품 등록 완료!</span>
+		</div>
+		
+		<div id="main_back">
+			<button class="main_btn" onclick="window.location.href='<%= ctxPath%>/index'">메인 페이지</button>	
+		</div>
+		
+		<div id="check_product">
+			<button class="check_btn" onclick="">등록 상품 확인</button>	
+		</div>
 	</div>
 
 </div>
