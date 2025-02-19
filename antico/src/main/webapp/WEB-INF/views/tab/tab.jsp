@@ -88,6 +88,8 @@
 <div id="overlay"></div>
 
 <script type="text/javascript">
+
+	let historyStack = [];
 	
 	$(document).ready(function(){
 		// 초기 사이드 네비게이션 숨기기
@@ -99,6 +101,11 @@
 		// 반응형 사이드 네비게이션 처리
 		// 브라우저 너비가 1024px (FHD 화면 기준)보다 이하인 경우 반응형 처리
 		const width = document.body.clientWidth > 1024 ? "700px" : "100vw";
+		
+		// historyStack에 페이지 저장
+		historyStack.push(html);
+		
+		console.log(historyStack.length);
 		
 		// 사이드 탭에 HTML 요소 삽입
 		$("div#sidetab_content").html(html);
@@ -119,17 +126,31 @@
 	
 	// 사이드 네비게이션 닫기
 	function closeSideTab() {
-		
-		$("div#sidetab_content").html("");
+		// 후기 페이지의 변수 제거
 		delete cur_page;
 		
-		$("div#sidetab_container")
-        	.css("overflow", "hidden")
-        	.animate({ width: "0px" }, 300, function () {
-            	$(this).css("display", "none");
-        	});
+		if(historyStack.length > 1) {
+			historyStack.pop();
+			let previousPage = historyStack[historyStack.length - 1];
+			
+			$("div#sidetab_content").html(previousPage);
+		}
+		
+		else {
+			historyStack = [];
+			
+			$("div#sidetab_content").html("");
+			
+			$("div#sidetab_container")
+	        	.css("overflow", "hidden")
+	        	.animate({ width: "0px" }, 300, function () {
+	            	$(this).css("display", "none");
+	        	});
 
-	    $("div#overlay").fadeOut(300);
-	    $("body").css("overflow", "");
+		    $("div#overlay").fadeOut(300);
+		    
+		    $("body").css("overflow", "");
+		}
 	}
+	
 </script>
