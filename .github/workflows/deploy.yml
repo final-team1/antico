@@ -38,8 +38,6 @@ jobs:
     deploy:
         needs: build
         runs-on: ubuntu-latest
-        env:
-            JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
         steps:
             - name: Download build artifact
               uses: actions/download-artifact@v4
@@ -49,12 +47,6 @@ jobs:
 
             - name: Verify WAR file exists after download
               run: ls -al antico/target/
-
-            - name: Replace JASYPT_ENCRYPTOR_PASSWORD in application.yml before deployment
-              run: |
-                  export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
-                  envsubst < antico/WEB-INF/classes/application.yml > antico/WEB-INF/classes/application.yml.tmp
-                  mv antico/WEB-INF/classes/application.yml.tmp antico/WEB-INF/classes/application.yml
 
             - name: Deploy to EC2
               run: |
