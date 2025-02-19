@@ -51,11 +51,6 @@ public class MemberController {
 		}
 		
 		
-		MemberVO member_vo = get_member_detail.MemberDetail();
-		
-		
-		System.out.println(member_vo.getPk_member_no());
-		
 		return mav;
 	}
 	
