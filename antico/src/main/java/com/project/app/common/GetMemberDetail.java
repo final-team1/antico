@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
-import com.project.app.member.service.CustomUserDetails;
 
 @Component
 public class GetMemberDetail {
@@ -28,13 +28,11 @@ public class GetMemberDetail {
 		
 		if(authentication != null) {
 			
-			String mem_user_id = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+			String member_user_id = ((User)authentication.getPrincipal()).getUsername();
 			
-			member_vo = member_dao.selectMemberByUserId(mem_user_id);
+			member_vo = member_dao.selectMemberByUserId(member_user_id);
 			
 		}
-		
-		
 		
 		return member_vo;
 	}

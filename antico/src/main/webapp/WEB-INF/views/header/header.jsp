@@ -133,6 +133,7 @@ input.searchBar {
 /* 서치바 끝 */
 
 #userManu{
+	position: relative;
 	list-style-type: none;
 	
 }
@@ -299,6 +300,22 @@ img.main_logo {
 	cursor : pointer;
 }
 
+
+.my_header{
+	position: absolute;
+	list-style: none;
+	height: 50px; 
+    width: 70px;
+    left: 114px;
+    top: 30px;
+    padding: 0;
+    text-align: center;
+    border: solid 1px #F1F4F6;
+    border-radius: 5px;
+    font-size: 12px;
+    display:none;
+}
+
 </style>
 
 </head>
@@ -346,8 +363,15 @@ img.main_logo {
 					<li class="">
 						
 						<c:if test="${pageContext.request.userPrincipal.name == null}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
-						<c:if test="${pageContext.request.userPrincipal.name != null}"><a href="<%=ctxPath%>/mypage/mypagemain">마이</a></c:if>
+						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
 					
+					<ul class="my_header">
+					
+						<li style="margin-top:2px;"><a href="<%=ctxPath%>/mypage/mypagemain">마이페이지</a></li>
+						<li><hr style="margin: 4px;"></li>
+						<li style="margin-top:8px;"><p>로그아웃</p></li>
+						
+					</ul>
 					</li>	
 				</ul>
 			</div>
@@ -482,15 +506,23 @@ function closeNav() {
 
 $(document).ready(function(){
 	
+	$("ul.my_header").css("display", "none");
+	
 	$("img.main_logo").click(function(e){
 		location.href = "<%=ctxPath%>/index";
 	});	
 	
-	$.ajax({
+	
+	$("p.my_manu").bind("click", function(){
 		
-		
+		if($("ul.my_header").css("display") == "none"){
+			$("ul.my_header").css("display", "block");
+		}else{
+			$("ul.my_header").css("display", "none");
+		}
 		
 	});
+	
 	
 });
 
