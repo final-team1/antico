@@ -344,11 +344,9 @@ img.main_logo {
 					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
 					<li class="">
-					
-
-					<a href="<%=ctxPath%>/member/login">마이</a>
-						<c:if test="${empty pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
-						<c:if test="${empty not pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/mypage/mypagemain">마이</a></c:if>
+						
+						<c:if test="${pageContext.request.userPrincipal.name == null}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
+						<c:if test="${pageContext.request.userPrincipal.name != null}"><a href="<%=ctxPath%>/mypage/mypagemain">마이</a></c:if>
 					
 					</li>	
 				</ul>
@@ -487,6 +485,12 @@ $(document).ready(function(){
 	$("img.main_logo").click(function(e){
 		location.href = "<%=ctxPath%>/index";
 	});	
+	
+	$.ajax({
+		
+		
+		
+	});
 	
 });
 
