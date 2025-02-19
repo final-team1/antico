@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%
+    String ctx_Path = request.getContextPath();
+%>
 <style>
 .info_box {
 	background-color: white;
@@ -35,6 +38,34 @@
 
 
 </style>
+
+<script>
+$(document).ready(function() {
+	
+	
+	
+}); // end of $(document).ready(function ()}
+
+//변경 클릭시
+function mybank_list() {
+	var tabTitle = "변경";
+      
+      $.ajax({
+         url : "<%=ctx_Path%>/mypage/mybank_list",
+         success : function(html) {
+            openSideTab(html, tabTitle);
+         },
+         error : function(e) {
+            console.log(e);
+            // 예외처리 필요
+            alert("불러오기 실패");
+            closeSideTab();
+         }
+      });
+}
+
+</script>
+
 <body>
 
     <div class="container" style="background-color: #eee;">
@@ -42,12 +73,12 @@
         <div class="info_box" style="display: flex; margin-top: 20px;">
         	<span style="padding-top: 10px; font-weight: bold; font-size: 11pt;">안전거래 정산/환불 계좌 및 <br>
 				정산내역을 확인하실 수 있습니다.</span>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqC-EmTsFrLhtq9S5pSybIe7Z57Lx0JU7K4A&s" style="width:20%; margin-left: 190px;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqC-EmTsFrLhtq9S5pSybIe7Z57Lx0JU7K4A&s" style="width:20%; margin-left: 225px;">
         </div>
 		<div class="info_box1">
 			<div>
 				<span style="font-weight: bold; font-size: 13pt;">대표 계좌</span>
-				<button class="change">변경</button>
+				<button class="change" onclick="mybank_list()">변경</button>
 				<hr style="width: 100%; margin-top: 8px;">
 
 				<ul class="bank_list">

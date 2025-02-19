@@ -194,7 +194,7 @@
                     function (rsp) {
                         if (rsp.success) {
                             // 결제 성공 시 서버로 데이터 전송
-                            fetch("<%= ctx_Path %>/mypage/chargeComplete", {
+                            fetch("<%= ctx_Path %>/mypage/charge_complete", {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"
