@@ -6,14 +6,26 @@
 <mapper namespace="com.project.app.notice.model.NoticeDAO">
 	
 	<!-- 공지사항 조회 -->
-	<select id="notice_list" resultType="NoticeVO">
+	<select id="notice_list" resultType="NoticeVO" parameterType="HashMap">
 		select pk_notice_no, fk_member_no, notice_title, notice_content
 	       , notice_filename, notice_orgfilename, notice_fileSize, notice_views, to_char(notice_date, 'yyyy-mm-dd hh24:mi:ss') AS notice_date
 	       , to_char(notice_update_date, 'yyyy-mm-dd hh24:mi:ss') AS notice_update_date
-	  	from tbl_notice	  
+	  	from tbl_notice
+	  	<if test='searchWord != ""'>
+          where lower(notice_title) like '%' || lower(#{searchWord}) || '%'
+        </if>
 	  	order by pk_notice_no desc
 	</select>
 
+	<!-- 검색어 입력시 자동글 완성하기 -->
+	<select id="notice_searchshow" parameterType="HashMap" resultType="String">
+		select notice_title
+		from tbl_notice
+		<if test='searchWord != ""'>
+		where lower(notice_title) like '%'||lower(#{searchWord})||'%'
+		</if>
+		order by notice_date desc
+	</select>
 </mapper>
 
 

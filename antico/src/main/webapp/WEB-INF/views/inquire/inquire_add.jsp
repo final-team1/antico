@@ -7,6 +7,7 @@
 <%
 	String ctxPath = request.getContextPath();
 %>
+
 <i class="fa-solid fa-bell" style="margin-bottom: 3%;">&nbsp;&nbsp;문의하신 사항은 확인 후 영업일 2~5일 이내 순차적으로 답변 드리겠습니다.</i>
 <form name="addFrm" enctype="multipart/form-data">
 	<table style="width: 625px; table-layout: fixed;" class="table table-bordered">	
@@ -137,12 +138,15 @@
         text-align: center;
         vertical-align: middle;
     }
+    
     td {
         width: 450px;
     }    
+    
     input[type="file"] {
         display: none;
     }
+    
     .custom-file-upload {
         display: inline-block;
         padding: 5px 5px;
@@ -154,18 +158,19 @@
         cursor: pointer;
         transition: background-color 0.3s;
     }  
+    
     .custom-file-upload:hover {
         background-color: #eee;
     }
-    .inquire-add-btn {
-    	
-    }   
+    
     .inquire-add-btn:hover {
         background-color: #eee !important;
     }
+    
     input:focus {
         outline: none;
     }
+    
     textarea:focus {
     	outline: none;
     }
@@ -176,14 +181,17 @@
         align-items: center;
         width: 95%;
     }
+    
     .toggle-btn {
         cursor: pointer;
         display: flex;
         align-items: center;
     }
+    
     .fa-toggle-off {
         font-size: 40px;
     }
+    
     .inquire-add-btn {
         background-color: #fff;
         border-radius: 5px;
