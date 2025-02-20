@@ -14,7 +14,7 @@
 		overflow: hidden;
 		padding : 10px 20px 10px 20px;
 		background-color : white;
-		z-index : 9999;
+		z-index : 999;
 		display : none;
 	}
 	
@@ -32,7 +32,7 @@
 		right : 0;
 		width: 100vw;
 		height: 100vh;
-		z-index : 9998;
+		z-index : 998;
 		background: rgba(0, 0, 0, 0.5);
 		display: none;
 	}

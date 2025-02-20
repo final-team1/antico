@@ -52,7 +52,7 @@
 		<if test="product_sale_type == 0"> 
 		insert into tbl_product (pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title
 		                       , product_contents, product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views)
-			    		  values(#{pk_product_no}, 3, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
+			    		  values(#{pk_product_no}, #{fk_member_no}, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
 			    		       , #{product_contents}, #{product_price}, #{product_status}, 0, default, default, #{product_sale_type}, default)
 		</if>
 		
@@ -60,7 +60,7 @@
 		<if test="product_sale_type == 1">
 		insert into tbl_product (pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title
 		                       , product_contents, product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views)
-			    		  values(#{pk_product_no}, 3, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
+			    		  values(#{pk_product_no}, #{fk_member_no}, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
 			    		       , #{product_contents}, #{product_price}, #{product_status}, 3, default, default, #{product_sale_type}, default)	
 		</if>
 	</insert>

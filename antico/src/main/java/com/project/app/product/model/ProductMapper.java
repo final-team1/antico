@@ -22,14 +22,10 @@ public interface ProductMapper {
 	// 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기
 	List<Map<String, Object>> regionSearch(Map<String, String> paraMap);
 	
-	// 상품번호 채번해오기
-	String getNo();
-	
-	// 상품 테이블에 상품 정보 저장
-	int addProduct(ProductVO productvo);
-	
-	// 이미지 테이블에 파일 넣어주기
-	int addImage(ProductImageVO product_imgvo);
+	// 상품 등록 관련 부분 //
+	String getNo(); // 상품번호 채번해오기
+	int addProduct(ProductVO productvo); // 상품 테이블에 상품 정보 저장
+	int addImage(ProductImageVO product_imgvo); // 이미지 테이블에 파일 넣어주기
 	
 
 	
