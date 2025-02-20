@@ -412,7 +412,7 @@ hr {
 <script>
 	// 판매내역 클릭시
 	function sellList() {
-		var tabTitle = "판매내역";
+		const tabTitle = "판매내역";
 	      
 	      $.ajax({
 	         url : "<%=ctx_Path%>/mypage/sell_list",
@@ -430,7 +430,7 @@ hr {
 
 	// 구매내역 클릭시
 	function buyList() {
-		var tabTitle = "구매내역";
+		const tabTitle = "구매내역";
 	      
 	      $.ajax({
 	         url : "<%=ctx_Path%>/mypage/buy_list",
@@ -448,7 +448,7 @@ hr {
 	
 	// 찜한 상품 클릭시
 	function wishList() {
-		var tabTitle = "찜한 상품";
+		const tabTitle = "찜한 상품";
 	      
 	      $.ajax({
 	         url : "<%=ctx_Path%>/mypage/buy_list",
@@ -466,7 +466,7 @@ hr {
 	
 	// 계좌 관리 클릭시
 	function myBank() {
-		var tabTitle = "계좌 관리";
+		const tabTitle = "계좌 관리";
 	      
 	      $.ajax({
 	         url : "<%=ctx_Path%>/mypage/mybank",
@@ -484,7 +484,7 @@ hr {
 	
 	// 계좌 후기 클릭시
 	function myreview() {
-		var tabTitle = "거래 후기";
+		const tabTitle = "거래 후기";
 	      
 	      $.ajax({
 	         url : "<%=ctx_Path%>/mypage/mybank",
@@ -503,7 +503,7 @@ hr {
 	
 	// 탈퇴하기 클릭시
 	function memberDelete() {
-		var tabTitle = "탈퇴하기";
+		const tabTitle = "탈퇴하기";
 	      
 	      $.ajax({
 	         url : "<%=ctx_Path%>/mypage/member_delete",
@@ -531,8 +531,8 @@ hr {
 	
 	// URL 복사
 	function copyUrl() {
-		var url = '';
-		var textarea = document.createElement("textarea");
+		let url = '';
+		let textarea = document.createElement("textarea");
 		document.body.appendChild(textarea);
 		url = window.document.location.href;
 		textarea.value = url;
@@ -553,7 +553,7 @@ hr {
     console.log(Kakao.isInitialized()); // 초기화 확인
 
     function shareToKakao() {
-        var currentURL = window.location.href; // 현재 페이지 URL 가져오기
+        let currentURL = window.location.href; // 현재 페이지 URL 가져오기
 
         Kakao.Link.sendDefault({
             objectType: 'text', // 텍스트 형식
@@ -600,7 +600,7 @@ hr {
 				<!-- 왼쪽 profile_section -->
 				<section class="profile_section" style="flex: 1;">
 					<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-						<h4 class="name" style="font-weight: bold;">닉네임</h4>
+						<h4 class="name" style="font-weight: bold;">${requestScope.userid}</h4>
 						<button class="share_btn_arrow" onclick="openShareModal()">
 							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />

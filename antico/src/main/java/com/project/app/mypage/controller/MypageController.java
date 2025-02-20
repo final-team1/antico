@@ -1,6 +1,7 @@
 package com.project.app.mypage.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.JsonObject;
+import com.project.app.common.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.domain.LoginHistoryVO;
@@ -25,7 +28,13 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping(value="/mypage/*")
 public class MypageController {
-
+	
+	@Autowired
+	private GetMemberDetail get_member_detail;
+	
+	@Autowired
+	private MemberVO member_vo;
+	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
 	private String kakao_api_key;
@@ -41,9 +50,16 @@ public class MypageController {
 	@GetMapping("mypagemain") 
 	public ModelAndView mypagemain(HttpServletRequest request, ModelAndView mav) {
 		
+		String userid = member_vo.getMember_user_id();
+		
+		mav.addObject("userid", userid);
 	//	mav.addObject("category_detail_list", category_detail_list);
 		mav.addObject("kakao_api_key", kakao_api_key);
 		mav.setViewName("mypage/mypage");
+		
+		member_vo = get_member_detail.MemberDetail();
+		
+		
 		return mav;
 	}
 	
@@ -80,25 +96,38 @@ public class MypageController {
 		return mav;
 	}
 	
-	// 탈퇴하기
+	// 탈퇴뷰단
 	@GetMapping("member_delete")
 	public ModelAndView memberDelete(HttpServletRequest request, ModelAndView mav) {
-		
+		String member_no = member_vo.getPk_member_no();
+		mav.addObject("member_no", member_no);
 		mav.setViewName("mypage/memberDelete");
 		return mav;
 	}
 	
+	// 탈퇴 신청시 탈퇴테이블에 insert
 	@PostMapping("delete_submit")
 	@ResponseBody
-	public Map<String, Integer> deleteSubmit(@RequestBody LeaveVO lvo) {
-	    // 탈퇴 신청 정보 저장
-	    int n = service.deletesubmit(lvo);
-	    
-	    Map<String, Integer> paraMap = new HashMap<>();
-	    paraMap.put("n", n);
-	    
-	    return paraMap;
+	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo) {
+	    String fk_member_no = lvo.getFk_member_no();
+	    String leave_reason = lvo.getLeave_reason();
+	//    System.out.println("회원번호: " + fk_member_no);
+	//    System.out.println("탈퇴 사유: " + leave_reason);
+
+	    Map<String, String> paraMap = new HashMap<>();
+	    paraMap.put("fk_member_no", fk_member_no);
+	    paraMap.put("leave_reason", leave_reason);
+
+	    int n = service.delete_submit(paraMap);
+	//    System.out.println(n + "n확인");
+
+	    Map<String, Integer> response = new HashMap<>();
+	    response.put("n", n);
+
+	    return response;
 	}
+
+	
 	
 	// 충전하기 결제
 	@PostMapping("/charge_complete")

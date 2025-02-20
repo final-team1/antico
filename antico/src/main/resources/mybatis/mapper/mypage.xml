@@ -22,6 +22,12 @@
     <delete id="deleteLeaveRequest">
         delete from leave where fk_member_no = #{memberno}
     </delete>
+    
+    <insert id="delete_submit" parameterType="Map">
+	    insert into tbl_leave sets(pk_leave_no, fk_member_no, leave_reason, leave_date)
+	    values (leave_seq.nextval, to_number(#{fk_member_no}), #{leave_reason}, sysdate)
+	</insert>
+
 
 </mapper>
 
