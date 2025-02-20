@@ -1,16 +1,13 @@
 package com.project.app.mypage.model;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
-import com.project.app.mypage.domain.LeaveVO;
 
 @Mapper
 public interface MypageDAO {
-    // 탈퇴 신청 삽입
-    int insertLeaveRequest(LeaveVO lvo);
 
-    // 회원번호로 탈퇴 신청 조회
-    LeaveVO getLeaveRequestByMemberNo(int memberNo);
+	// 탈퇴 테이블 탈퇴신청시 insert
+	int delete_submit(Map<String, String> paraMap);
 
-    // 탈퇴 신청 삭제
-    int deleteLeaveRequest(int memberNo);
 }

@@ -6,6 +6,8 @@
 
 <script>
 $(document).ready(function() {
+	
+	
     // 체크박스 상태에 따라 탈퇴 버튼 활성화/비활성화
     function checkCheckboxes() {
         var checkboxes = document.querySelectorAll('input[name="reason"]:checked');
@@ -56,7 +58,7 @@ $(document).ready(function() {
         // 모달 닫기
         var modal = document.getElementById("confirmationModal");
         modal.style.display = "none";
-        window.location.href = "/antico/index";
+        location.href = "/antico/mypage/memberDelete";
     });
 
     // 모달 취소 버튼 클릭 시 모달 닫기
@@ -76,32 +78,54 @@ $(document).ready(function() {
     // 페이지 로드 시 '기타' 체크박스 상태에 맞춰 입력란 토글
     toggleOtherReason();
     
-    
-    $("button#confirmButton").click(function() {
-        var param = {
-            member: memberData,  // memberData는 MemberVO 객체에 맞는 데이터
-            loginHistory: loginHistoryData  // loginHistoryData는 LoginHistoryVO 객체에 맞는 데이터
-        };
+////////////////////////////////////////////////////////
+   let selected_reasons = [];
 
-        $.ajax({
-            url: "<%= ctx_path %>/mypage/delete_submit",
-            type: "POST",
-            data: JSON.stringify(param),
-            contentType: "application/json",  // JSON 형식으로 보내기 위해 설정
-            dataType: "json",
-            success: function(json) {
-                if (json.n == 1) {
-                    alert("탈퇴신청이 완료되었습니다.");
-                } else {
-                    alert("탈퇴실패!!");
-                }
-            },
-            error: function(request, status, error) {
-                alert("code : " + request.status + "\n" + "message " + request.responseText + "\n" + "error: " + error);
-            }
-        });
-    }); // end of $("button#confirmButton").click(function() {})
+   $("#withdraw_button").click(function () {
+       selected_reasons = []; // 초기화
+       
+       $("input[name='reason']:checked").each(function () {
+           if ($(this).val() === "기타") {
+               let other_reason = $("#other_reason").val().trim();
+               if (other_reason) {
+                   selected_reasons.push("기타: " + other_reason);
+               }
+           } else {
+               selected_reasons.push($(this).val());
+           }
+       });
 
+       console.log("선택된 탈퇴 사유:", selected_reasons);
+   });
+
+   $("#confirmButton").click(function () {
+	    const member_no = $("input[name='member_no']").val(); // hidden input에서 값 가져오기
+
+	    let formData = {
+	        fk_member_no: member_no, // VO의 변수명과 맞춰야 함
+	        leave_reason: selected_reasons.join(", ") // VO의 leave_reason 필드에 매핑
+	    };
+
+	    $.ajax({
+	        url: "<%= ctx_path %>/mypage/delete_submit",
+	        type: "POST",
+	        contentType: "application/json",
+	        data: JSON.stringify(formData),
+	        dataType: "json",
+	        success: function (json) {
+	            console.log("응답 데이터:", JSON.stringify(json));
+	            if (json.n == 1) {
+	                alert("탈퇴 신청이 완료되었습니다.");
+	                location.href = "<%= ctx_path %>/logout";
+	            } else {
+	                alert("탈퇴 실패!!");
+	            }
+	        },
+	        error: function (request, status, error) {
+	            alert("오류 발생: " + request.responseText);
+	        }
+	    });
+	});
 
     
 }); // end of $(document).ready(function() {})
@@ -156,9 +180,6 @@ $(document).ready(function() {
         padding-top: 5px;
     }
 
-    body {
-        height: 100%;      /* 화면 전체를 사용하도록 설정 */
-    }
 
     .container {
         overflow: hidden; /* 스크롤을 숨깁니다 */
@@ -258,15 +279,15 @@ $(document).ready(function() {
         box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7);
     }
 </style>
-
-<body>
+<form name="delete_frm">
+<input type="hidden" name="member_no" value="${requestScope.member_no}"/>
     <div id="container">
         <h5 style="font-weight: bold; margin-top: 45px; letter-spacing: -0.5px;">탈퇴 사유를 알려주시면</h5>
         <h5 style="font-weight: bold; letter-spacing: -0.5px;">개선을 위해 노력하겠습니다</h5>
-
+		
         <div style="margin-top: 30px;">
             <span style="color: gray; font-size: 10pt; letter-spacing: -0.5px;">다중 선택이 가능해요.</span>
-
+	
             <div class="checkbox_group" style="margin-top: 10px;">
                 <input type="checkbox" id="reason_1" name="reason" value="사용 빈도 낮음, 개인정보 및 보안 우려">
                 <label for="reason_1">사용 빈도가 낮고 개인정보 및 보안 우려</label>
@@ -312,7 +333,7 @@ $(document).ready(function() {
         </div>
         
         <div style="margin-top: 30px; font-size: 12px;">
-            <button type="button" id="withdraw_button" class="btn" disabled>회원탈퇴 신청</button>
+            <button type="button" type="button" id="withdraw_button" class="btn" disabled>회원탈퇴 신청</button>
         </div>
     </div>
 
@@ -324,9 +345,9 @@ $(document).ready(function() {
 		    <span style="color: #28a745; font-weight: bold;">72시간 이내</span> 재접속이 없을 시 탈퇴 처리됩니다.</p>
             
             <div class="modal_footer">
-                <button id="cancelButton" class="btn1">취소</button>
-                <button id="confirmButton" class="btn1">신청</button>
+                <button id="cancelButton" type="button" class="btn1">취소</button>
+                <button id="confirmButton" type="button" class="btn1">신청</button>
             </div>
         </div>
     </div>
-</body>
+</form>

@@ -1,11 +1,10 @@
 package com.project.app.mypage.service;
 
-import com.project.app.mypage.domain.LeaveVO;
+import java.util.Map;
+
 
 public interface MypageService {
-    // 탈퇴 신청 로직
-    int deletesubmit(LeaveVO lvo);
 
-    // 로그인 시 탈퇴 신청 확인 및 취소 로직
-    int cancelLeaveRequest(int memberNo);
+    // 탈퇴테이블 insert
+	int delete_submit(Map<String, String> paraMap);
 }
