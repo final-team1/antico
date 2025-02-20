@@ -1,4 +1,4 @@
-package com.project.app.member.service;
+package com.project.app.security;
 
 import java.io.IOException;
 import java.net.URLEncoder;

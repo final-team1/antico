@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.app.common.GetMemberDetail;
+import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
 

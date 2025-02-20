@@ -1,4 +1,4 @@
-package com.project.app.common;
+package com.project.app.component;
 
 import java.net.http.HttpRequest;
 
