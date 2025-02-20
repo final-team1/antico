@@ -19,9 +19,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
-import com.project.app.member.service.CustomAccessHandler;
-import com.project.app.member.service.CustomEntryPoint;
-import com.project.app.member.service.LoginFailureHandler;
+import com.project.app.security.CustomAccessHandler;
+import com.project.app.security.CustomEntryPoint;
+import com.project.app.security.LoginFailureHandler;
 
 import lombok.RequiredArgsConstructor;
 

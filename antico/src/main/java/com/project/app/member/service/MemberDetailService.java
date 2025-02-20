@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
+import com.project.app.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
 
