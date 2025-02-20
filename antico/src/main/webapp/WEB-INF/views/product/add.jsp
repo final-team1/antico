@@ -22,11 +22,12 @@
 }
 
 
-/* div 전체 틀 */
+/* div 전체 틀 */ 
 div#container {
 	width: 50%;
 	margin: 0 auto;
 }
+
 
 /* 상품이미지 */
 div#prod_img_container {
@@ -268,7 +269,7 @@ input[type='date']::before {
 	<!-- 상품 등록 시작 -->
 	<form name="prod_add_frm" enctype="multipart/form-data">	
 		
-		<input type="hidden" name="fk_member_no" value="${sessionScope.loginuser.pk_member_no}" />
+		<%-- <input type="hidden" name="fk_member_no" value="${sessionScope.loginuser.pk_member_no}" /> --%>
 		
 		<!-- 상품 이미지  -->
 		<div id="prod_img_container">

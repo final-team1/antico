@@ -26,9 +26,9 @@ div#container {
 div#contents_container {
     display: flex;
     flex-direction: column;  /* 요소들을 세로로 정렬 */
-    align-items: center;     /* 수평 중앙 정렬 */
-    justify-content: center; /* 수직 중앙 정렬 */
-    height: 100%;            /* 부모 요소에 맞게 높이를 100%로 설정 */
+    align-items: center;    
+    justify-content: center; 
+    height: 100%; 
 }
 
 i.custom-bounce {
