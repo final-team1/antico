@@ -5,10 +5,10 @@
 
 <mapper namespace="com.project.app.member.model.MemberDAO">
 
-	<insert id="registerMember" parameterType="MemberVO">
-		insert into tbl_member(pk_member_no, member_regdate, member_user_id, member_passwd, member_tel, member_passwd_change_date,member_role , member_point, member_score,member_status, member_name)
-		values(7 , sysdate, #{member_user_id}, #{member_passwd}, '12341234', sysdate, 0, 0, 0,1, '최재혁')
-	</insert>
+   	<insert id="registerMember" parameterType="MemberVO">
+      insert into tbl_member(pk_member_no, member_regdate, member_user_id, member_passwd, member_tel, member_passwd_change_date,member_role , member_point, member_score,member_status, member_name)
+      values(mem_seq.nextval , sysdate, #{member_user_id}, #{member_passwd}, #{member_tel}, sysdate, 0, 0, 0,1, #{member_name})
+   </insert>
 	
 	<select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
 		select *

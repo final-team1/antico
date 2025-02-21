@@ -38,13 +38,7 @@ $(document).ready(function() {
         }
     }
 
-    // 기타 입력 시 글자 수 업데이트
-    function updateCharCount() {
-        var textarea = document.getElementById("other_reason");
-        var char_count = document.getElementById("char_count");
-        var current_length = textarea.value.length;
-        char_count.textContent = current_length + "/200";
-    }
+
 
     // 탈퇴 버튼 클릭 시 모달 열기
     document.getElementById("withdraw_button").addEventListener("click", function() {
@@ -121,6 +115,15 @@ $(document).ready(function() {
    
     
 }); // end of $(document).ready(function() {})
+
+// 기타 입력 시 글자 수 업데이트
+function updateCharCount() {
+    var textarea = document.getElementById("other_reason");
+    var char_count = document.getElementById("char_count");
+    var current_length = textarea.value.length;
+    char_count.textContent = current_length + "/200";
+}
+
 </script>
 
 <style>
