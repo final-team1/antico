@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -56,8 +55,7 @@ public class ProductController {
 
 	// 상품 등록 완료 요청
 	@PostMapping("add")
-	public ModelAndView add(Map<String, String> paraMap, ModelAndView mav, ProductVO productvo
-						  , ProductImageVO product_imgvo, MultipartHttpServletRequest mrequest) {
+	public ModelAndView add(Map<String, String> paraMap, ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
 	      	
 		  // 로그인한 회원의 회원번호 값 가져오기
 		  String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
@@ -76,7 +74,7 @@ public class ProductController {
 	      int n = service.addProduct(productvo, product_imgvo, attach_list);
 
 	      if (n > 0) { // 저장이 성공한 경우 성공 페이지로 이동한다.
-	         mav.setViewName("product/add_success");
+	         mav.setViewName("product/add_success"); // 상품 등록 완료 페이지
 
 	      } // end of if(n > 0)
 	      
