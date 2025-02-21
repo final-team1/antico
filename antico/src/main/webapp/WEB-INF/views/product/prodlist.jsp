@@ -51,6 +51,27 @@ tr.tr_title {
 	border-top: solid 2px black;
 }
 
+input.price_range {
+	border: solid 1px #cccccc;
+	border-radius: 6px;
+	width: 150px;
+	height: 40px;
+	font-size: 10pt;
+	padding: 10px;
+}
+
+button.price_range_button {
+	margin-left: 10px;
+	background-color: black;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	width: 60px;
+	height: 40px;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
 /* 플러스, 마이너스 버튼 */
 button.plus_minus {
 	border: none;
@@ -63,7 +84,8 @@ i.plus_minus {
 
 
 td.td_title {
-	background-color: #F7F9FA
+	background-color: #F7F9FA;
+	vertical-align: middle;
 }
 
 
@@ -227,17 +249,25 @@ div.product_regdate {
 							<td class="td_title td_first_title">
 								<div style="display: flex; justify-content: space-between;">
 									<span>카테고리</span>
-									<button class="plus_minus"><i class="fa-solid fa-plus plus_minus"></i></button></td>
+									<button class="plus_minus"><i class="fa-solid fa-plus plus_minus"></i></button>
 								</div>
+							</td>	
 							<td >전체</td>
 						</tr>
 						<tr class="tr_second">
-							<td class="td_title td_second_title"><span>카테고리상세</span></td>
+							<td class="td_title td_second_title"></td>
 							<td>패션잡화</td>
 						</tr>
 						<tr>
-							<td class="td_title">가격</td>
-							<td>최소가격~최대가격 적용</td>
+							<td class="td_title">
+								<span>가격</span>
+							</td>
+							<td>
+								<input type="text" class="price_range" placeholder="최소 가격"/>
+								<span>~</span>
+								<input type="text" class="price_range" placeholder="최대 가격"/>
+								<button class="price_range_button">적용</button>
+							</td>
 						</tr>
 						<tr>
 							<td class="td_title">근처동네</td>
@@ -290,7 +320,7 @@ div.product_regdate {
 						
 						<!-- 상품 이미지 및 하트 아이콘 -->
 						<div class="card-head">
-							<img src='<%= ctxPath%>/resources/productImages/20250219160551584091671131800.jpg' class="card-img-top mb-3 zoom"/>
+							<img src='<%= ctxPath%>/resources/productImages/20250219104353434697302867500.png' class="card-img-top mb-3 zoom"/>
 							<span><i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this)" ></i></span>
 						</div>
 						

@@ -248,17 +248,18 @@ input[type='date'] {
 }
 
 
-/* placehodler 넣어주기 */
+/* placehodler 넣어주기 
 input[type='date']::before {
     color: #444444;
     content: attr(placeholder);
     position: absolute;
-    top: 50%; /* 수 직 중앙 정렬 */
-    left: 10px; /* 왼쪽 여백 */
-    transform: translateY(-50%); /* 정확한 수직 중앙 정렬 */
-    pointer-events: none; /* 텍스트가 클릭되지 않도록 */
-    z-index: 0; /* ::before 텍스트가 아래에 오도록 설정 */
+    top: 50%; /* 수 직 중앙 정렬 
+    left: 10px; /* 왼쪽 여백 
+    transform: translateY(-50%); /* 정확한 수직 중앙 정렬 
+    pointer-events: none; /* 텍스트가 클릭되지 않도록 
+    z-index: 0; /* ::before 텍스트가 아래에 오도록 설정 
 }
+*/
 
 </style>
 

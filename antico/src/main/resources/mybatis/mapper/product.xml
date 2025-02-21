@@ -4,7 +4,54 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.project.app.product.model.ProductMapper">
-	
+
+
+	<!-- 상품 테이블 및 이미지 테이블로 상품 정보 가져오기 -->
+	<resultMap id="getProductInfoMap" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="fk_region_no" 			column="fk_region_no" 			javaType="String"/>
+	    <result property="fk_category_no" 			column="fk_category_no" 		javaType="String"/>
+	    <result property="fk_category_detail_no" 	column="fk_category_detail_no" 	javaType="String"/>  
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="product_views" 			column="product_views" 			javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	</resultMap>
+	<select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
+		select P.pk_product_no, 
+		       P.fk_member_no, 
+		       P.fk_region_no, 
+		       P.fk_category_no, 
+		       P.fk_category_detail_no, 
+		       P.product_title, 
+		       P.product_contents, 
+		       P.product_price, 
+		       P.product_status, 
+		       P.product_sale_status, 
+		       P.product_regdate, 
+		       P.product_update_date, 
+		       P.product_sale_type, 
+		       P.product_views,
+		       I.pk_prod_img_no,
+		       I.fk_product_no,
+		       I.prod_img_name,
+		       I.prod_img_org_name,
+		       I.prod_img_is_thumbnail
+		from tbl_product P JOIN tbl_prod_img I
+		ON P.pk_product_no = I.fk_product_no
+		ORDER BY P.pk_product_no
+	</select>
+
 	<!-- 상품등록 form 페이지에 상위 카테고리명 보여주기 -->
 	<select id="getCategory" resultType="CategoryVO">
 		select pk_category_no, category_name
@@ -21,11 +68,11 @@
 	
 	<!-- 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기 -->
 	<resultMap id="RegionResultMap" type="HashMap">
-	    <result property="pk_region_no" column="pk_region_no"/>
-	    <result property="full_address" column="FULL_ADDRESS"/>
-	    <result property="region_town" column="region_town"/>
-	    <result property="region_lat" column="region_lat"/>
-	    <result property="region_lng" column="region_lng"/>
+	    <result property="pk_region_no" column="pk_region_no" 	javaType="String"/>
+	    <result property="full_address" column="FULL_ADDRESS"	javaType="String"/>
+	    <result property="region_town" 	column="region_town"	javaType="String"/>
+	    <result property="region_lat" 	column="region_lat"		javaType="String"/>
+	    <result property="region_lng" 	column="region_lng"		javaType="String"/>
 	</resultMap>
 	
 	<select id="regionSearch" parameterType="HashMap" resultMap="RegionResultMap">

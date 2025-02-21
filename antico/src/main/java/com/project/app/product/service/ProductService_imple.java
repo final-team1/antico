@@ -27,6 +27,15 @@ public class ProductService_imple implements ProductService {
 
 	@Autowired
 	private S3FileManager s3fileManager;
+		
+	
+	// 상품 테이블 및 이미지 테이블로 상품 정보 가져오기
+	@Override
+	public List<Map<String, String>> getProductInfo() {
+		List<Map<String, String>> product_info = productMapper.getProductInfo();
+		return product_info;
+	}
+
 	
 	
 	// 상품등록 form 페이지에 상위 카테고리명 보여주기
@@ -66,7 +75,7 @@ public class ProductService_imple implements ProductService {
 				
 		int n = 0, result = 0; // result 값
 		
-		// 상품 테이블에 상품 저장
+		// #1. 상품 테이블에 상품 저장
 		n = productMapper.addProduct(productvo); 
 		
 		if (n > 0 ) { // 상품 저장이 성공한 경우면
@@ -79,8 +88,8 @@ public class ProductService_imple implements ProductService {
 						
 						// S3에 첨부파일 업로드 하기
 						List<Map<String, String>> fileList = s3fileManager.upload(attach_list, "product", FileType.IMAGE);
-						// System.out.println(fileList.get(i).get("org_file_name")); // 첫 번째 첨부파일 원본 파일명 가져오기
-						// System.out.println(fileList.get(i).get("file_name")); 	  // 첫 번째 첨부파일 업로드되는 파일명 가져오기
+						// System.out.println(fileList.get(i).get("org_file_name")); // 첨부파일 원본 파일명 가져오기
+						// System.out.println(fileList.get(i).get("file_name")); 	 // 첨부파일 업로드되는 파일명 가져오기
 						
 						// 이미지 VO에 값 넣어주기
 						product_imgvo.setProd_img_name(fileList.get(i).get("org_file_name")); // 저장된 파일명
@@ -93,17 +102,19 @@ public class ProductService_imple implements ProductService {
 						product_imgvo.setFk_product_no(productvo.getPk_product_no());
 						// System.out.println(productvo.getPk_product_no());	
 						
-						// 이미지 테이블에 이미지 정보 저장
+						// #2. 이미지 테이블에 이미지 정보 저장
 						result = productMapper.addImage(product_imgvo);
 		
 						index++; // 첫 번째 이미지 이후는 일반 사진으로 설정
 					}	
 				} // end of for (MultipartFile attach : attach_list)		
-			}
+			
+			} // end of if (attach_list != null && attach_list.size() > 0)
 		
 		} // end of if (n > 0 ) { // 상품 저장이 성공한 경우면
 		
 	    return result;
-	}	
+	}
+
 	
 }

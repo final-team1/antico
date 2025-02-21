@@ -12,6 +12,10 @@ import com.project.app.product.domain.ProductVO;
 
 public interface ProductService {
 	
+	
+	// 상품 테이블 및 이미지 테이블로 상품 정보 가져오기
+	List<Map<String, String>> getProductInfo();
+	
 	// 상품등록 form 페이지에 상위 카테고리명 보여주기
 	List<CategoryVO> getCategory();
 	
