@@ -58,57 +58,82 @@ public class MemberDetailService implements UserDetailsService{
 		String leave_member_no = member_dao.leaveCheck(member_user_id);
 		
 		
-		
 		System.out.println("탈퇴신청을 한 회원인지 체크"+leave_member_no);
 	
 		Cookie cookie;
-		if(leave_member_no != null) { // 탈퇴신청을 한 회원이라면
-			// 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회
-			String fk_member_no = member_dao.loginCheck(leave_member_no);
-			System.out.println("로그인시 탈퇴 신청후 72시간이 지난 회원이 있는지 확인"+fk_member_no);
+
+		// 로그인시 회원상태가 1인것만 로그인 가능하도록
+		String member_status = member_vo.getMember_status();
+		
+		if("0".equals(member_status)) {
+			try {
+				cookie = new Cookie("message", URLEncoder.encode("이미&nbsp;탈퇴한&nbsp;회원입니다.", "UTF-8"));
+				
+				cookie.setMaxAge(5); 
+				
+				cookie.setPath("/");
+				
+				response.addCookie(cookie);
+				
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 			
-			if(fk_member_no != null) { // 탈퇴신청을 한 회원이면서 72시간이 지났다면
-				// 72시간이 지난 회원이 로그인을 할 때 회원상태 업데이트
-				member_dao.statusUpdate(fk_member_no);
+			try {
+				response.sendRedirect(ctx_path+"/logout");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			
+			if(leave_member_no != null) { // 탈퇴신청을 한 회원이라면
+				// 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회
+				String fk_member_no = member_dao.loginCheck(leave_member_no);
+				System.out.println("로그인시 탈퇴 신청후 72시간이 지난 회원이 있는지 확인"+fk_member_no);
 				
-				try {
-					cookie = new Cookie("message", URLEncoder.encode("이미&nbsp;탈퇴한&nbsp;회원입니다.", "UTF-8"));
+				if(fk_member_no != null) { // 탈퇴신청을 한 회원이면서 72시간이 지났다면
+					// 72시간이 지난 회원이 로그인을 할 때 회원상태 업데이트
+					member_dao.statusUpdate(fk_member_no);
 					
-					cookie.setMaxAge(5); 
+					try {
+						cookie = new Cookie("message", URLEncoder.encode("탈퇴&nbsp;후&nbsp;72시간이&nbsp;지나&nbsp;로그인이&nbsp;불가능합니다.", "UTF-8"));
+						
+						cookie.setMaxAge(5); 
+						
+						cookie.setPath("/");
+						
+						response.addCookie(cookie);
+						
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
 					
-					cookie.setPath("/");
+					try {
+						response.sendRedirect(ctx_path+"/logout");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} else {
+					// 탈퇴신청은 했지만 72시간이 지나지 않은 회원이 로그인한 경우
+					member_dao.leaveDelete(leave_member_no);
 					
-					response.addCookie(cookie);
-					
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					response.sendRedirect(ctx_path+"/logout");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				// 탈퇴신청은 했지만 72시간이 지나지 않은 회원이 로그인한 경우
-				member_dao.leaveDelete(leave_member_no);
-				
-				try {
-					cookie = new Cookie("message", URLEncoder.encode("탈퇴&nbsp;신청이&nbsp;취소되었습니다.", "UTF-8"));
-					
-					cookie.setMaxAge(5); 
-					
-					cookie.setPath("/");
-					
-					response.addCookie(cookie);
-					
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-				try {
-					response.sendRedirect(ctx_path+"/");
-				} catch (IOException e) {
-					e.printStackTrace();
+					try {
+						cookie = new Cookie("message", URLEncoder.encode("탈퇴&nbsp;신청이&nbsp;취소되었습니다.", "UTF-8"));
+						
+						cookie.setMaxAge(5); 
+						
+						cookie.setPath("/");	
+						
+						response.addCookie(cookie);
+						
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+					try {
+						response.sendRedirect(ctx_path+"/");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

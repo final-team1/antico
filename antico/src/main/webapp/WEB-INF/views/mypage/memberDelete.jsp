@@ -52,15 +52,6 @@ $(document).ready(function() {
         modal.style.display = "block";
     });
 
-    // 모달 확인 버튼 클릭 시 탈퇴 처리
-    document.getElementById("confirmButton").addEventListener("click", function() {
-        // 여기서 실제 탈퇴 처리를 위한 서버 요청 등을 추가할 수 있습니다.
-        // 모달 닫기
-        var modal = document.getElementById("confirmationModal");
-        modal.style.display = "none";
-        location.href = "/antico/mypage/memberDelete";
-    });
-
     // 모달 취소 버튼 클릭 시 모달 닫기
     document.getElementById("cancelButton").addEventListener("click", function() {
         var modal = document.getElementById("confirmationModal");
@@ -99,10 +90,10 @@ $(document).ready(function() {
    });
 
    $("#confirmButton").click(function () {
-	    const member_no = $("input[name='member_no']").val(); // hidden input에서 값 가져오기
+	    const pk_member_no = $("input[name='pk_member_no']").val(); // hidden input에서 값 가져오기
 
 	    let formData = {
-	        fk_member_no: member_no, // VO의 변수명과 맞춰야 함
+	        fk_member_no: pk_member_no, // VO의 변수명과 맞춰야 함
 	        leave_reason: selected_reasons.join(", ") // VO의 leave_reason 필드에 매핑
 	    };
 
@@ -127,6 +118,7 @@ $(document).ready(function() {
 	    });
 	});
 
+   
     
 }); // end of $(document).ready(function() {})
 </script>
@@ -280,7 +272,7 @@ $(document).ready(function() {
     }
 </style>
 <form name="delete_frm">
-<input type="hidden" name="member_no" value="${requestScope.member_no}"/>
+<input type="hidden" name="pk_member_no" value="${requestScope.pk_member_no}"/>
     <div id="container">
         <h5 style="font-weight: bold; margin-top: 45px; letter-spacing: -0.5px;">탈퇴 사유를 알려주시면</h5>
         <h5 style="font-weight: bold; letter-spacing: -0.5px;">개선을 위해 노력하겠습니다</h5>

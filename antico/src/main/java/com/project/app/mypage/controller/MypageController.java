@@ -99,8 +99,8 @@ public class MypageController {
 	// 탈퇴뷰단
 	@GetMapping("member_delete")
 	public ModelAndView memberDelete(HttpServletRequest request, ModelAndView mav) {
-		String member_no = member_vo.getPk_member_no();
-		mav.addObject("member_no", member_no);
+		String pk_member_no = member_vo.getPk_member_no();
+		mav.addObject("pk_member_no", pk_member_no);
 		mav.setViewName("mypage/memberDelete");
 		return mav;
 	}
@@ -109,17 +109,17 @@ public class MypageController {
 	@PostMapping("delete_submit")
 	@ResponseBody
 	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo) {
-	    String fk_member_no = lvo.getFk_member_no();
+		String fk_member_no = lvo.getFk_member_no();
 	    String leave_reason = lvo.getLeave_reason();
-	//    System.out.println("회원번호: " + fk_member_no);
-	//    System.out.println("탈퇴 사유: " + leave_reason);
+	    System.out.println("lvo 회원번호: " + fk_member_no);
+	    System.out.println("lvo 탈퇴 사유: " + leave_reason);
 
 	    Map<String, String> paraMap = new HashMap<>();
 	    paraMap.put("fk_member_no", fk_member_no);
 	    paraMap.put("leave_reason", leave_reason);
 
 	    int n = service.delete_submit(paraMap);
-	//    System.out.println(n + "n확인");
+	    System.out.println(n + "delete_submit 확인");
 
 	    Map<String, Integer> response = new HashMap<>();
 	    response.put("n", n);
