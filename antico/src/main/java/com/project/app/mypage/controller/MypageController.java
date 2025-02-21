@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.JsonObject;
-import com.project.app.common.GetMemberDetail;
+import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.domain.LoginHistoryVO;

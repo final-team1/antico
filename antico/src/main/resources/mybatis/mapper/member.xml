@@ -15,7 +15,7 @@
 		from tbl_member
 		where member_user_id = #{member_user_id}
 	</select>
-		
+	
 	<select id="selectMemberByMemberNo" parameterType="String" resultType="MemberVO">
 		select *
 		from tbl_member
@@ -38,7 +38,7 @@
 	    where l.leave_date is not null
 	    and (sysdate - l.leave_date) > 72 / 24
 	    and m.member_status = 1
-	    and m.member_no = #{leave_member_no}
+	    and m.pk_member_no = #{leave_member_no}
 	</select>
 
 	<!-- 72시간이 지난 회원이 로그인을 할 때 회원상태 업데이트 -->
