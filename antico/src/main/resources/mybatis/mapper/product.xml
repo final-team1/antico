@@ -6,7 +6,7 @@
 <mapper namespace="com.project.app.product.model.ProductMapper">
 
 
-	<!-- 상품 테이블 및 이미지 테이블로 상품 정보 가져오기 -->
+	<!-- 특정 상품에 대한 상품 및 대표이미지 정보 가져오기 -->
 	<resultMap id="getProductInfoMap" type="HashMap">
 	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
@@ -23,33 +23,32 @@
 	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
 	    <result property="product_views" 			column="product_views" 			javaType="String"/>
 	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
-	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
 	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
 	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
 	</resultMap>
 	<select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
-		select P.pk_product_no, 
-		       P.fk_member_no, 
-		       P.fk_region_no, 
-		       P.fk_category_no, 
-		       P.fk_category_detail_no, 
-		       P.product_title, 
-		       P.product_contents, 
-		       P.product_price, 
-		       P.product_status, 
-		       P.product_sale_status, 
-		       P.product_regdate, 
-		       P.product_update_date, 
-		       P.product_sale_type, 
-		       P.product_views,
-		       I.pk_prod_img_no,
-		       I.fk_product_no,
-		       I.prod_img_name,
-		       I.prod_img_org_name,
-		       I.prod_img_is_thumbnail
+	   select P.pk_product_no, 
+		      P.fk_member_no, 
+		      P.fk_region_no, 
+		      P.fk_category_no, 
+		      P.fk_category_detail_no, 
+	          P.product_title, 
+		      P.product_contents, 
+		      P.product_price, 
+		      P.product_status, 
+		      P.product_sale_status, 
+		      P.product_regdate, 
+		      P.product_update_date, 
+		      P.product_sale_type, 
+		      P.product_views,
+		      I.pk_prod_img_no,
+		      I.prod_img_org_name,
+		      I.prod_img_is_thumbnail
 		from tbl_product P JOIN tbl_prod_img I
 		ON P.pk_product_no = I.fk_product_no
-		ORDER BY P.pk_product_no
+		where P.pk_product_no = #{pk_product_no}
+		and   I.prod_img_is_thumbnail = 1
+		order by P.pk_product_no
 	</select>
 
 	<!-- 상품등록 form 페이지에 상위 카테고리명 보여주기 -->

@@ -29,15 +29,14 @@ public class ProductService_imple implements ProductService {
 	private S3FileManager s3fileManager;
 		
 	
-	// 상품 테이블 및 이미지 테이블로 상품 정보 가져오기
+	// 특정 상품에 대한 상품 및 대표이미지 정보 가져오기
 	@Override
-	public List<Map<String, String>> getProductInfo() {
-		List<Map<String, String>> product_info = productMapper.getProductInfo();
+	public Map<String, String> getProductInfo(String pk_product_no) {
+		Map<String, String> product_info = productMapper.getProductInfo(pk_product_no);
 		return product_info;
 	}
 
-	
-	
+
 	// 상품등록 form 페이지에 상위 카테고리명 보여주기
 	@Override
 	public List<CategoryVO> getCategory() {
