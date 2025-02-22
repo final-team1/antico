@@ -13,4 +13,7 @@ public interface MypageDAO {
 	// 결제하기를 눌렀을 경우 회원의 포인트 업데이트
 	int pointcharge(Map<String, String> paraMap);
 
+	// 회원의 포인트를 업데이트
+	int pointupdate(Map<String, String> paraMap);
+
 }

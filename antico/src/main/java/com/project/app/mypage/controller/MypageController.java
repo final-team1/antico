@@ -111,17 +111,21 @@ public class MypageController {
 	@PostMapping("point_update")
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
-		
+		System.out.println("point_update방문");
 	//	String member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
 		String charge_commission = chargevo.getCharge_commission(); // 수수료
-
+		
+		int point_pct = (int) (Integer.parseInt(charge_price) * (Integer.parseInt(charge_commission)/100.0));
+		
+		int point_insert = Integer.parseInt(charge_price) - point_pct;
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("fk_member_no", fk_member_no);
 		paraMap.put("charge_price", charge_price);
 		paraMap.put("charge_commission", charge_commission);
+		paraMap.put("point_insert", String.valueOf(point_insert));
 		
 		int n  = service.pointcharge(paraMap); // 결제하기를 눌렀을 경우 회원의 포인트 업데이트
 		
