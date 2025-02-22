@@ -18,4 +18,10 @@ public class MypageService_imple implements MypageService {
 		int n = mypagedao.delete_submit(paraMap);
 		return n;
 	}
+
+	@Override
+	public int pointcharge(Map<String, String> paraMap) {
+		int n = mypagedao.pointcharge(paraMap);
+		return n;
+	}
 }

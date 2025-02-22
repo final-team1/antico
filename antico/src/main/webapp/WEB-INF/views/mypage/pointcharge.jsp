@@ -86,7 +86,7 @@
 
     <div class="charge-container">
         <div class="charge-title">포인트 충전</div>
-        <div class="user-info">회원 ID: <strong><%= ctx_Path %></strong></div>
+        <div class="user-info">회원 ID: <strong>${requestScope.member_user_id}</strong></div>
 
         <form action="charge_process.jsp" method="post">
             <label for="amount" class="form-label">충전 금액 선택</label>
@@ -98,8 +98,9 @@
                 <button type="button" onclick="increaseAmount(50000)">50,000원</button>
                 <button type="button" onclick="increaseAmount(100000)">100,000원</button>
             </div>
-
-            <input type="hidden" name="member_user_id" value="<%= ctx_Path %>">
+			<input type="hidden" name="member_user_id" value="<%= ctx_Path %>">
+            <input type="hidden" name="pk_member_no" value="${requestScope.pk_member_no}">
+            <input type="hidden" name="charge_commission" value="${requestScope.charge_commission}">
 
             <button type="submit" class="charge-btn mt-3">충전하기</button>
         </form>
@@ -132,6 +133,7 @@
                     </tr>
                 </tbody>
             </table>
+            <span style="font-size: 12pt; padding-top: 5px; color: red;">현재 회원님이 해당하는 수수료는 ${requestScope.charge_commission}% 입니다.</span>
         </div>
     </div>
 
@@ -194,14 +196,15 @@
                     function (rsp) {
                         if (rsp.success) {
                             // 결제 성공 시 서버로 데이터 전송
-                            fetch("<%= ctx_Path %>/mypage/charge_complete", {
+                            fetch("<%= ctx_Path %>/mypage/point_update", {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
-                                    memberUserId: memberUserId,
-                                    chargeAmount: chargeAmount,
+                                	fk_member_no: fk_member_no,
+                                	charge_commission: charge_commission,
+                                	charge_price: charge_price,
                                     imp_uid: rsp.imp_uid, // 결제 고유번호
                                     merchant_uid: rsp.merchant_uid // 주문번호
                                 })
@@ -226,5 +229,6 @@
                 );
             });
         });
-
+        window.opener.goCoinUpdate('<%= ctx_Path%>', '${requestScope.fk_member_no}','${requestScope.charge_price}'); 
+        self.close(); // 팝업창 닫기
     </script>
