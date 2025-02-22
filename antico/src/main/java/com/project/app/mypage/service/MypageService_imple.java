@@ -21,7 +21,16 @@ public class MypageService_imple implements MypageService {
 
 	@Override
 	public int pointcharge(Map<String, String> paraMap) {
-		int n = mypagedao.pointcharge(paraMap);
-		return n;
+		int n = mypagedao.pointcharge(paraMap); // 충전테이블 insert
+		int m = 0;
+		if(n == 1) {
+			m = mypagedao.pointupdate(paraMap); // 회원의 포인트 update
+		}
+		int x = 0;
+		if(m == 1) {
+			x = mypagedao.point_history(paraMap); // 포인트가 충전되면 포인트내역 테이블에 insert
+		}
+		
+		return n*m*x;
 	}
 }
