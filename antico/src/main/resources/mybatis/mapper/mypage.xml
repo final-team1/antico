@@ -11,6 +11,12 @@
 	    values (leave_seq.nextval, to_number(#{fk_member_no}), #{leave_reason}, sysdate)
 	</insert>
 
+	<!-- 탈퇴 신청시 탈퇴테이블에 insert -->
+    <insert id="pointcharge" parameterType="Map">
+	    insert into tbl_charge sets(pk_charge_no, fk_member_no, charge_price, charge_regdate, charge_commission)
+		values (charge_seq.nextval, #{fk_member_no}, #{charge_price}, sysdate, #{charge_commission})
+	</insert>
+	
 
 </mapper>
 

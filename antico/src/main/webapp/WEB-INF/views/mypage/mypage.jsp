@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <%
     String ctx_Path = request.getContextPath();
 %>
@@ -327,7 +329,6 @@ hr {
 
 .trust_progress {
 	height: 100%;
-	background-color: #4CAF50; /* 초록색 */
 	border-radius: 4px;
 }
 
@@ -600,7 +601,7 @@ hr {
 				<!-- 왼쪽 profile_section -->
 				<section class="profile_section" style="flex: 1;">
 					<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-						<h4 class="name" style="font-weight: bold;">${requestScope.userid}</h4>
+						<h4 class="name" style="font-weight: bold;">${requestScope.member_name}</h4>
 						<button class="share_btn_arrow" onclick="openShareModal()">
 							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
@@ -629,19 +630,18 @@ hr {
 
 					<!-- 점수 막대기 -->
 					<div class="stat_box score_level mt-2">
-						<p style="font-weight: bold;">스코어</p>
+						<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
 						<div class="trust_bar">
-							<div class="trust_progress" style="width: 75%;"></div>
+							<div class="trust_progress" style="width: 75%; background-color:${requestScope.role_color};"></div>
 						</div>
 						<span>75%</span>
-						<!-- 예시 퍼센트 -->
 					</div>
 
 					<!-- auto-register -->
 					<section class="point" style=" text-align: right;">
 						<h5 style="font-weight: bold; text-align: left; padding-left: 10px; padding-top: 5px;">내 포인트</h5>
-						<button class="btn">
-						    <fmt:formatNumber value="${pointValue}" pattern="#,###" style="text-align:right;"/>포인트 들어올거임<span style="font-size: 22pt; font-weight: bold; color: #7A9E23;"> P</span>
+						<button class="btn" onclick="myBank()">
+						    <span style="font-size: 16pt; font-weight: bold;"><fmt:formatNumber value="${requestScope.member_point}" type="number" pattern="#,###"/></span><span style="font-size: 22pt; font-weight: bold; color: #7A9E23;"> P</span>
 						</button>
 					</section>
 				</div>

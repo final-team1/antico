@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.JsonObject;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
+import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.domain.LoginHistoryVO;
 import com.project.app.mypage.service.MypageService;
@@ -48,13 +49,33 @@ public class MypageController {
 	
 	// 마이페이지 메인
 	@GetMapping("mypagemain") 
-	public ModelAndView mypagemain(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView mypagemain(ModelAndView mav) {
 		
-		String userid = member_vo.getMember_user_id();
+		String userid = member_vo.getMember_user_id(); // 회원아이디
+		String member_name = member_vo.getMember_name(); // 회원이름
+		String member_role = member_vo.getMember_role(); // 회원등급
+		String member_point = member_vo.getMember_point(); // 회원의 포인트
+		String role_color; // 회원등급별 색상을 주기 위한 것.
+		if("0".equals(member_role)) {
+			member_role = "브론즈";
+			role_color = "#b87333";
+		} else if("1".equals(member_role)) {
+			member_role = "실버";
+			role_color = "#c0c0c0";
+		} else {
+			member_role = "골드";
+			role_color = "#ffd700";
+		}
 		
 		mav.addObject("userid", userid);
-	//	mav.addObject("category_detail_list", category_detail_list);
+		mav.addObject("member_role", member_role);
+		mav.addObject("role_color", role_color);
+		mav.addObject("member_name", member_name);
+		mav.addObject("member_point", member_point);
+		
 		mav.addObject("kakao_api_key", kakao_api_key);
+
+		//	mav.addObject("category_detail_list", category_detail_list);
 		mav.setViewName("mypage/mypage");
 		
 		member_vo = get_member_detail.MemberDetail();
@@ -65,40 +86,76 @@ public class MypageController {
 	
 	// 포인트 충전
 	@GetMapping("pointcharge")
-	public ModelAndView pointcharge(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView pointcharge(ModelAndView mav) {
+		String member_user_id = member_vo.getMember_user_id(); // 회원아이디
+		String pk_member_no = member_vo.getPk_member_no(); 	// 회원번호
+		String member_role = member_vo.getMember_role(); 	// 회원등급
+		String charge_commission;							// 회원의 수수료
 		
-	//	int n  = service.pointcharge(); // 결제하기를 눌렀을 경우 회원의 포인트 업데이트
+		if("0".equals(member_role)) { 			// 브론즈일 때 수수료
+			charge_commission = "5";
+		} else if("1".equals(member_role)) { 	// 실버일 때 수수료
+			charge_commission = "4";
+		} else { 								// 골드일 때 수수료
+			charge_commission = "3";
+		}
 		
-	//	mav.addObject("n", n);
+		mav.addObject("member_user_id", member_user_id);
+		mav.addObject("pk_member_no", pk_member_no);
+		mav.addObject("charge_commission", charge_commission);
 		mav.addObject("pointcharge_chargekey", pointcharge_chargekey);
 		mav.setViewName("mypage/pointcharge");
 		return mav;
 	}
 	
+	@PostMapping("point_update")
+	@ResponseBody
+	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
+		
+	//	String member_no = member_vo.getPk_member_no();
+		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
+		String charge_price = chargevo.getCharge_price(); // 충전금액
+		String charge_commission = chargevo.getCharge_commission(); // 수수료
+
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fk_member_no", fk_member_no);
+		paraMap.put("charge_price", charge_price);
+		paraMap.put("charge_commission", charge_commission);
+		
+		int n  = service.pointcharge(paraMap); // 결제하기를 눌렀을 경우 회원의 포인트 업데이트
+		
+		
+		Map<String, Integer> response = new HashMap<>();
+		response.put("n", n);
+		
+		return response;
+	}
+	
 	// 판매내역
 	@GetMapping("sell_list")
-	public ModelAndView sellList(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView sellList(ModelAndView mav) {
 		mav.setViewName("mypage/sellList");
 		return mav;
 	}
 	
 	// 구매내역
 	@GetMapping("buy_list")
-	public ModelAndView buyList(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView buyList(ModelAndView mav) {
 		mav.setViewName("mypage/buyList");
 		return mav;
 	}
 	
 	// 계좌관리
 	@GetMapping("mybank")
-	public ModelAndView myBank(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView myBank(ModelAndView mav) {
 		mav.setViewName("mypage/myBank");
 		return mav;
 	}
 	
 	// 탈퇴뷰단
 	@GetMapping("member_delete")
-	public ModelAndView memberDelete(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView memberDelete(ModelAndView mav) {
 		String pk_member_no = member_vo.getPk_member_no();
 		mav.addObject("pk_member_no", pk_member_no);
 		mav.setViewName("mypage/memberDelete");
@@ -146,7 +203,7 @@ public class MypageController {
 	}
 
 	@GetMapping("mybank_list")
-	public ModelAndView mybank_list(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView mybank_list(ModelAndView mav) {
 		mav.setViewName("mypage/mybank_list");
 		return mav;
 	}
