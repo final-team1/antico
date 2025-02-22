@@ -26,6 +26,11 @@ public class MypageService_imple implements MypageService {
 		if(n == 1) {
 			m = mypagedao.pointupdate(paraMap); // 회원의 포인트 update
 		}
-		return n*m;
+		int x = 0;
+		if(m == 1) {
+			x = mypagedao.point_history(paraMap); // 포인트가 충전되면 포인트내역 테이블에 insert
+		}
+		
+		return n*m*x;
 	}
 }

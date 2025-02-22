@@ -16,4 +16,7 @@ public interface MypageDAO {
 	// 회원의 포인트를 업데이트
 	int pointupdate(Map<String, String> paraMap);
 
+	// 포인트가 충전되면 포인트내역 테이블에 insert
+	int point_history(Map<String, String> paraMap);
+
 }

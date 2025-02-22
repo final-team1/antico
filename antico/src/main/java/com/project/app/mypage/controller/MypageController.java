@@ -116,19 +116,21 @@ public class MypageController {
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
 		String charge_commission = chargevo.getCharge_commission(); // 수수료
-		
+		String point_history_reason = "포인트충전"; // 포인트내역 테이블 상세내역
+		String member_point = member_vo.getMember_point(); // 회원의 현재 포인트
 		int point_pct = (int) (Integer.parseInt(charge_price) * (Integer.parseInt(charge_commission)/100.0));
 		
-		int point_insert = Integer.parseInt(charge_price) - point_pct;
+		int point_insert = Integer.parseInt(charge_price) - point_pct; // 수수료를 제외한 실제 충전금액
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("fk_member_no", fk_member_no);
 		paraMap.put("charge_price", charge_price);
 		paraMap.put("charge_commission", charge_commission);
 		paraMap.put("point_insert", String.valueOf(point_insert));
+		paraMap.put("point_history_reason", point_history_reason);
+		paraMap.put("member_point", member_point);
 		
 		int n  = service.pointcharge(paraMap); // 결제하기를 눌렀을 경우 회원의 포인트 업데이트
-		
 		
 		Map<String, Integer> response = new HashMap<>();
 		response.put("n", n);

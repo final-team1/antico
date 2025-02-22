@@ -17,10 +17,17 @@
 		values (cha_no.nextval, #{fk_member_no}, #{charge_price}, sysdate, #{charge_commission})
 	</insert>
 	
+	<!-- 회원이 충전한 포인트를 업데이트 -->
 	<update id="pointupdate" parameterType="Map">
 		update tbl_member set member_point = member_point + #{point_insert}
 		where pk_member_no = #{fk_member_no}
 	</update>
+	
+	<!-- 충전한 포인트의 내역을 insert -->
+	<insert id="point_history" parameterType="Map">
+		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
+		values (point_history_seq.nextval, #{fk_member_no}, #{point_history_reason}, #{point_insert}, #{member_point}, #{point_insert}+#{member_point}, sysdate)
+	</insert>
 </mapper>
 
 
