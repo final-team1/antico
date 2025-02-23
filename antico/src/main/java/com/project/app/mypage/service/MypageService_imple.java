@@ -1,5 +1,6 @@
 package com.project.app.mypage.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,24 @@ public class MypageService_imple implements MypageService {
 		}
 		
 		return n*m*x;
+	}
+
+	// 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
+	@Override
+	public int point_sum(String pk_member_no) {
+		int n = mypagedao.point_sum(pk_member_no);
+		String rank = "0";
+	//	System.out.println("n확인"+n);
+
+		if(n >= 1000000) { // 회원의 총 충전금액이 100만원이 넘을 경우
+			rank = "1";
+		} else if(n >= 2000000) { // 회원의 총 충전금액이 200만원이 넘을 경우
+			rank = "2";
+		}
+		int m = mypagedao.role_update(pk_member_no, rank); // 총 충전금액이 일정금액 이상이면 등급을 올려준다
+		
+	//	System.out.println("m확인"+m);
+		
+		return n;
 	}
 }
