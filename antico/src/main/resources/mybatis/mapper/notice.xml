@@ -5,16 +5,28 @@
 
 <mapper namespace="com.project.app.notice.model.NoticeDAO">
 	
-	<!-- 공지사항 조회 -->
 	<select id="notice_list" resultType="NoticeVO" parameterType="HashMap">
-		select pk_notice_no, fk_member_no, notice_title, notice_content
-	       , notice_filename, notice_orgfilename, notice_fileSize, notice_views, to_char(notice_date, 'yyyy-mm-dd hh24:mi:ss') AS notice_date
-	       , to_char(notice_update_date, 'yyyy-mm-dd hh24:mi:ss') AS notice_update_date
-	  	from tbl_notice
-	  	<if test='searchWord != ""'>
-          where lower(notice_title) like '%' || lower(#{searchWord}) || '%'
-        </if>
-	  	order by pk_notice_no desc
+	    SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	           , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	           , notice_date
+	           , notice_update_date
+	    FROM 
+	        ( 
+	        SELECT rownum AS rnum, a.*
+	        FROM 
+	            ( 
+	                SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	                       , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	                       , TO_CHAR(notice_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_date
+	                       , TO_CHAR(notice_update_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_update_date
+	                FROM tbl_notice
+	                <if test='searchWord != ""'>
+	                    WHERE LOWER(notice_title) LIKE '%' || LOWER(#{searchWord}) || '%'
+	                </if>
+	                ORDER BY pk_notice_no DESC
+	            ) a
+	        )
+	    WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
 	</select>
 
 	<!-- 검색어 입력시 자동글 완성하기 -->
@@ -22,10 +34,34 @@
 		select notice_title
 		from tbl_notice
 		<if test='searchWord != ""'>
-		where lower(notice_title) like '%'||lower(#{searchWord})||'%'
+			where lower(notice_title) like '%'||lower(#{searchWord})||'%'
 		</if>
 		order by notice_date desc
 	</select>
+	
+	<!-- 공지사항 총 개수 -->
+	<select id="getNoticeCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_notice
+		<if test='searchWord != ""'>
+        	where lower(notice_title) like '%' || lower(#{searchWord}) || '%'
+        </if>
+	</select>
+	
+	<!-- 파일다운로드를 위한 조회 -->
+	<select id="getnotice_file" resultType="NoticeVO" parameterType="HashMap">
+		SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	                       , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	                       , TO_CHAR(notice_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_date
+	                       , TO_CHAR(notice_update_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_update_date
+        FROM tbl_notice
+        <if test='searchWord != ""'>
+            WHERE LOWER(notice_title) LIKE '%' || LOWER(#{searchWord}) || '%'
+        </if>
+        where pk_notice_no = #{notice_no}
+        ORDER BY pk_notice_no DESC
+	</select>
+	
 </mapper>
 
 

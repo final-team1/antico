@@ -8,15 +8,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.project.app.common.FileManager;
+import com.project.app.common.PagingDTO;
 import com.project.app.notice.domain.NoticeVO;
 import com.project.app.notice.service.NoticeService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping(value="notice/*")
@@ -25,27 +32,53 @@ public class NoticeController {
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private NoticeService service;
 
-	// 공지사항 조회
+	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
+	private FileManager fileManager;
+	
 	@GetMapping("notice_list")
-	public ModelAndView list(ModelAndView mav, HttpServletRequest request, 
-			                 @RequestParam(defaultValue = "") String searchWord,
-			                 @RequestParam(defaultValue = "1") String currentShowPageNo) {
-		
-		List<NoticeVO> notice_list = null;
+	public ModelAndView list(ModelAndView mav,
+	                         @RequestParam(defaultValue = "") String searchWord,
+	                         @RequestParam(defaultValue = "1") int cur_page) {
 
-		searchWord = searchWord.trim();
-		
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("searchWord", searchWord);
-		
-		notice_list = service.notice_list(paraMap);
-		
-		mav.addObject("notice_list", notice_list);
-		
-		mav.setViewName("notice/notice_list");
-		
-		return mav;
+	    List<NoticeVO> notice_list = null;
+
+	    // 공백 제거
+	    searchWord = searchWord.trim();
+
+	    Map<String, Object> paraMap = new HashMap<>();
+	    paraMap.put("searchWord", searchWord);
+
+	    // 공지사항 총 개수
+	    int notice_count = service.getNoticeCount(paraMap);
+	    
+	    // System.out.println(notice_count);
+	    
+	    PagingDTO paging_dto = PagingDTO.builder()
+	            .cur_page(cur_page)
+	            .row_size_per_page(5)  
+	            .page_size(5)  
+	            .total_row_count(notice_count)
+	            .build();
+
+	    // 페이징 정보 계산
+	    paging_dto.pageSetting();
+	    
+	    paraMap.put("paging_dto", paging_dto);
+	    
+	    // 공지사항 목록 조회
+	    notice_list = service.notice_list(paraMap);
+
+	    // 모델에 데이터 추가
+	    mav.addObject("notice_count", notice_count);
+	    mav.addObject("paging_dto", paging_dto);
+	    mav.addObject("notice_list", notice_list);
+
+	    // 뷰 이름 설정
+	    mav.setViewName("notice/notice_list");
+
+	    return mav;
 	}
+
 	
 	// 검색어 입력시 자동글 완성하기
 	@GetMapping("notice_searchshow")
@@ -66,4 +99,55 @@ public class NoticeController {
 		
 		return searchshow_mapList;
 	}
+	
+	// 첨부파일 다운로드
+	@GetMapping("notice_download")
+	public void notice_download(HttpServletRequest request, HttpServletResponse response) {
+
+		String notice_no = request.getParameter("notice_no");
+
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("notice_no", notice_no);
+		paraMap.put("searchType", "");
+		paraMap.put("searchWord", "");
+
+		// **** 웹브라우저에 출력하기**** //
+		response.setContentType("text/html; charset=UTF-8");
+
+		PrintWriter out = null;
+		// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+
+		NoticeVO noticeVO = service.getnotice_file(paraMap);
+		
+		String fileName = noticeVO.getNotice_filename();
+
+		String orgFilename = noticeVO.getNotice_orgfilename();
+
+		HttpSession session = request.getSession();
+		String root = session.getServletContext().getRealPath("/");
+
+		String path = root + "resources" + File.separator + "files";
+
+		// 파일다운로드
+		boolean flag = false;
+		flag = fileManager.doFileDownload(fileName, orgFilename, path, response);
+
+		if (!flag) {
+			try {
+				out = response.getWriter();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			// out 은 웹브라우저에 기술하는 대상체
+
+			out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+		}
+
+	}
+				
+
+			
+		
+	
+	
 }

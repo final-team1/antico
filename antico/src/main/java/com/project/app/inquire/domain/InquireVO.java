@@ -23,4 +23,6 @@ public class InquireVO {
 	private String inquire_secret;          // 문의 공개여부 (0:공개 1:비공개)
 	private String inquire_regdate;         // 문의 날짜
 	private MultipartFile attach;
+	
+	private String member_name; // 유저이름
 }

@@ -41,8 +41,6 @@
     	</tr>
 	</table>
 	
-	
-	
 	<div class="btns">
 		<div class="toggle-btn" onclick="toggleVisibility()">
 	        <i id="toggle-icon" class="fa-solid fa-toggle-off"></i>
@@ -55,21 +53,21 @@
 
 <script type="text/javascript">
 
-	let isPublic = true;
+	let isPublic = true; // 공개/비공개 상태
 
 	// 파일 선택 후 미리보기
 	function displayFilePreview() {
-	    var fileInput = $("#file-upload")[0];
-	    var fileNameDisplay = $("#file-name");
-	    var previewContainer = $("#file-preview-container");
-	    var previewImage = $("#file-preview");
+	    const fileInput = $("#file-upload")[0];
+	    const fileNameDisplay = $("#file-name");
+	    const previewContainer = $("#file-preview-container");
+	    const previewImage = $("#file-preview");
 	    
 	    if (fileInput.files.length > 0) {
-	        var file = fileInput.files[0];
+	        const file = fileInput.files[0];
 	        fileNameDisplay.text(file.name);
 	        
 	        if (file.type.startsWith("image/")) {
-	            var fileReader = new FileReader();
+	            const fileReader = new FileReader();
 	            fileReader.onload = function(e) {
 	                previewImage.attr("src", e.target.result);
 	                previewContainer.show();
@@ -87,6 +85,7 @@
 	    }
 	}
 
+	// 공개/비공개 상태 토글
 	function toggleVisibility() {
 	    const icon = $("#toggle-icon");
 	    const text = $("#toggle-text");
@@ -106,18 +105,18 @@
 	}
 
 	$(document).ready(function(){
-		// 글쓰기 버튼
+		// 제출 버튼 클릭 시
 		$("button.inquire-add-btn").click(function(){
 			// === 글제목 유효성 검사 === 
 	        const title = $("input[name='inquire_title']").val().trim();	  
-	        if(title == "") {
+	        if(title === "") {
 	    	    alert("글제목을 입력하세요!!");
 	    	    $("input[name='inquire_title']").val("");
 	    	    return; // 종료
 	        }
 	        
 	        const content = $("textarea[name='inquire_content']").val().trim();
-	        if(content.length == 0) {
+	        if(content.length === 0) {
 	    	    alert("글내용을 입력하세요!!");
 	    	    return; // 종료
 	        }
@@ -130,7 +129,6 @@
 		});
 	});
 </script>
-
 
 <style>
 	th {
@@ -199,4 +197,3 @@
         border: 1px solid #ccc;
     }
 </style>
-
