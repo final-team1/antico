@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.project.app.comment.domain.CommentVO;
 import com.project.app.comment.service.CommentService;
 import com.project.app.common.FileManager;
-import com.project.app.common.GetMemberDetail;
+import com.project.app.component.GetMemberDetail;
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.service.InquireService;
 import com.project.app.member.domain.MemberVO;

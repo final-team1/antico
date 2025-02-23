@@ -632,9 +632,9 @@ hr {
 					<div class="stat_box score_level mt-2">
 						<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
 						<div class="trust_bar">
-							<div class="trust_progress" style="width: ${requestScope.rank}%; background-color:${requestScope.role_color};"></div>
+							<div class="trust_progress" style="width: ${requestScope.data/10}%; background-color:${requestScope.role_color};"></div>
 						</div>
-						<span>${requestScope.rank}%</span>
+						<span>${requestScope.data}</span>
 					</div>
 
 					<!-- auto-register -->
