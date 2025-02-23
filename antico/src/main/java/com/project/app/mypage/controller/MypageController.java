@@ -32,8 +32,10 @@ public class MypageController {
 	@Autowired
 	private MemberVO member_vo;
 	
-	@Autowired
-	private ProductVO prod_vo;
+//	@Autowired
+//	private ProductVO prod_vo;
+	
+//	private final ProductVO prod_vo = new ProductVO();
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -229,7 +231,7 @@ public class MypageController {
 	@GetMapping("sellerpage")
 	public ModelAndView sellerpage(ModelAndView mav) {
 
-		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
+//		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
 		mav.setViewName("mypage/sellerpage");
 		return mav;
 	}
