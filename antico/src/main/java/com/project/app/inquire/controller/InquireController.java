@@ -67,7 +67,7 @@ public class InquireController {
 	
 	// 문의 작성
 	@PostMapping("inquire_add")
-	public ModelAndView inquirewrite(Map<String, String> paraMap, ModelAndView mav,
+	public ModelAndView inquirewrite(ModelAndView mav,
 			                        InquireVO inquirevo, MultipartHttpServletRequest mrequest) {
 		
 		member_vo = getMemberDetail.MemberDetail();

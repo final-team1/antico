@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.project.app.admin.model.AdminDAO;
+import com.project.app.common.FileManager;
 import com.project.app.notice.domain.NoticeVO;
 
 @Service
@@ -15,6 +16,9 @@ public class AdminService_imple implements AdminService {
 	@Autowired
 	private AdminDAO dao;
 
+	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
+	private FileManager fileManager;
+	
 	// 파일첨부가 없는 공지사항 작성
 	@Override
 	public int add(NoticeVO noticevo) {
@@ -35,5 +39,57 @@ public class AdminService_imple implements AdminService {
 		List<Map<String, String>> uninquire_list = dao.uninquire_list();	
 		return uninquire_list;
 	}
+	
+	// 공지사항 총개수
+	@Override
+	public int getNoticeCount() {
+		int NoticeCount = dao.getNoticeCount();
+		return NoticeCount;
+	}
+
+	// 공지사항 조회
+	@Override
+	public List<NoticeVO> notice_list(Map<String, Object> paraMap) {
+		List<NoticeVO> notice_list = dao.notice_list(paraMap); 
+		return notice_list;
+	}
+
+	// 공지사항 파일삭제
+	@Override
+	public NoticeVO getView_delete(String pk_notice_no) {
+		NoticeVO notice_VO = dao.getView_delete(pk_notice_no);
+		return notice_VO;
+	}
+	
+	// 공지사항 삭제
+	@Override
+	public int notice_delete(Map<String, String> paraMap) {
+		int n = dao.notice_delete(paraMap.get("pk_notice_no"));
+		
+		String filepath = paraMap.get("filepath");
+		String filename = paraMap.get("filename");
+		
+		if(filename != null && !"".equals(filename.trim())) {
+			try {
+				fileManager.doFileDelete(filename, filepath);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return n;
+	}
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

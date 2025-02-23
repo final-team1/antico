@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.comment.domain.CommentVO;
-import com.project.app.comment.service.CommentService;
 import com.project.app.common.FileManager;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.inquire.domain.InquireVO;
@@ -38,8 +37,6 @@ public class CommentController {
 	@PostMapping("comment_add")
 	public ModelAndView comment_write(Map<String, String> paraMap, ModelAndView mav,
 			                        CommentVO commentvo, MultipartHttpServletRequest mrequest) {
-		
-		MemberVO member_VO = getMemberDetail.MemberDetail();
 
 		MultipartFile attach = commentvo.getAttach();
 		
