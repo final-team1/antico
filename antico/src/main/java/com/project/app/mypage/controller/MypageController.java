@@ -1,8 +1,6 @@
 package com.project.app.mypage.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.JsonObject;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
-import com.project.app.mypage.domain.LoginHistoryVO;
 import com.project.app.mypage.service.MypageService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import com.project.app.product.domain.ProductVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +31,9 @@ public class MypageController {
 	
 	@Autowired
 	private MemberVO member_vo;
+	
+	@Autowired
+	private ProductVO prod_vo;
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -228,5 +226,12 @@ public class MypageController {
 		return mav;
 	}
 	
+	@GetMapping("sellerpage")
+	public ModelAndView sellerpage(ModelAndView mav) {
+
+		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
+		mav.setViewName("mypage/sellerpage");
+		return mav;
+	}
 	
 }
