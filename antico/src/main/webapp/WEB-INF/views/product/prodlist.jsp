@@ -51,10 +51,6 @@ tr.tr_title {
 	border-top: solid 2px black;
 }
 
-tr.tr_second {
-	/* display: none; */
-}
-
 tr.region_tr {
 	border-bottom: solid 1px #dee2e6; /* 부트 스트랩 테두리 색상과 맞추기 */
 }
@@ -346,7 +342,7 @@ div#is_no_product {
 		</div>
 	
 		<!-- 상품 현재 시세 --> 
-		<c:if test="${not empty requestScope.product_list_cnt and not empty requestScope.search_prod}">
+		<c:if test="${not empty requestScope.product_list and not empty requestScope.search_prod}">
 		<div id="current_price" class="row">
 			<div class="col-sm-4" id="average_price">
 				<span class="sort">평균가격</span>
@@ -432,8 +428,9 @@ div#is_no_product {
 
 
 	$(document).ready(function(){
+	
+		$("tr.tr_second").hide(); // 처음에 하위 카테고리 테이블 숨기기
 		
-
 		// 상품 등록일자 계산 해주기
 	    $("span.product_time").each(function() {
 	        const product_reg_date = $(this).attr('data-date'); // 등록일
@@ -509,12 +506,14 @@ div#is_no_product {
 	        $("li.category_detail[data-parent-no='" + category_no + "']").show();  // 해당 상위 카테고리의 하위 카테고리만 보이기
 	    	
 	        $("li.category").hide(); // 상위 카테고리들 숨기기
+	        $("tr.tr_second").show(); // 하위 카테고리 테이블 보여주기
 	    }
 
 	    // 하위 카테고리 상태 복원
 	    if (category_detail_no) {
 	        const category_detail_name = $("li.category_detail[data-categorydetail-no='" + category_detail_no + "']").text();  	   // 하위 카테고리명
 	        $("span.selected_category_detail").text(" > " + category_detail_name).data("category-detail-no", category_detail_no);  // 하위 카테고리명 표시 및 하위 카테고리 번호 데이터 넣어주기
+	        $("tr.tr_second").show(); // 하위 카테고리 테이블 보여주기
 	    }
 	    
 	    
