@@ -61,31 +61,26 @@ public class MypageController {
 		int point_sum = service.point_sum(pk_member_no); // 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
 	//	System.out.println("point_sum 체크"+point_sum);
 		
-		int role_pct; // 멤버 등급이 실버이상일 때 퍼센티지 구하는 용도
-		double rank; // 최종 퍼센티지
-		
+		int rank = point_sum / 1000; // 충전 포인트의 지수를 나타내기 위함
+		int data = 0;
 		String member_role = member_vo.getMember_role(); // 회원등급
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
 			member_role = "브론즈";
 			role_color = "#b87333";
-			rank = Math.round((point_sum / 10000.0) * 10) / 10.0; // 브론즈일 때의 막대 퍼센트
+			data = rank;
 		} else if("1".equals(member_role)) {
 			member_role = "실버";
 			role_color = "#c0c0c0";
-			role_pct = point_sum - 1000000;
-			rank = Math.round((role_pct / 10000.0) * 10) / 10.0; // 실버일 때의 막대 퍼센트
+			data = rank - 1000;
+			data = Math.min(700, data); // 나머지 30은 신뢰지수와 합산
+		//	System.out.println(data+"data 확인");
 		} else {
 			member_role = "골드";
 			role_color = "#ffd700";
-			role_pct = point_sum - 2000000;
-			rank = Math.round((role_pct / 10000.0) * 10) / 10.0; // 골드일 때의 막대 퍼센트
-			if(rank == 100) {
-				member_role = "VIP";
-			}
 		}
 		
-		mav.addObject("rank", rank);
+		mav.addObject("data", data);
 		mav.addObject("userid", userid);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);

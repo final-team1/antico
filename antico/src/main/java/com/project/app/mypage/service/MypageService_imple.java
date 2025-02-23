@@ -44,9 +44,12 @@ public class MypageService_imple implements MypageService {
 
 		if(n >= 1000000) { // 회원의 총 충전금액이 100만원이 넘을 경우
 			rank = "1";
-		} else if(n >= 2000000) { // 회원의 총 충전금액이 200만원이 넘을 경우
-			rank = "2";
 		}
+		
+		// "여기부터 진성이가 작성할 것" 골드부분
+	//  else if (n >= 1000000 && "여기부터 진성이가 작성할 것") { // 골드
+	//		rank = "2";
+	//  }
 		int m = mypagedao.role_update(pk_member_no, rank); // 총 충전금액이 일정금액 이상이면 등급을 올려준다
 		
 	//	System.out.println("m확인"+m);
