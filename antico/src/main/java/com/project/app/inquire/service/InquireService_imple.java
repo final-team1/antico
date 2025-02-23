@@ -47,6 +47,8 @@ public class InquireService_imple implements InquireService {
 		return inquirevo;
 	}
 
+	
+
 
 
 }
