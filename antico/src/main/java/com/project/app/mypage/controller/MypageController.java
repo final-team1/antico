@@ -1,5 +1,6 @@
 package com.project.app.mypage.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,23 +51,41 @@ public class MypageController {
 	// 마이페이지 메인
 	@GetMapping("mypagemain") 
 	public ModelAndView mypagemain(ModelAndView mav) {
-		
+		member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
 		String member_name = member_vo.getMember_name(); // 회원이름
-		String member_role = member_vo.getMember_role(); // 회원등급
+		
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
+		
+		int point_sum = service.point_sum(pk_member_no); // 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
+	//	System.out.println("point_sum 체크"+point_sum);
+		
+		int role_pct; // 멤버 등급이 실버이상일 때 퍼센티지 구하는 용도
+		double rank; // 최종 퍼센티지
+		
+		String member_role = member_vo.getMember_role(); // 회원등급
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
 			member_role = "브론즈";
 			role_color = "#b87333";
+			rank = Math.round((point_sum / 10000.0) * 10) / 10.0; // 브론즈일 때의 막대 퍼센트
 		} else if("1".equals(member_role)) {
 			member_role = "실버";
 			role_color = "#c0c0c0";
+			role_pct = point_sum - 1000000;
+			rank = Math.round((role_pct / 10000.0) * 10) / 10.0; // 실버일 때의 막대 퍼센트
 		} else {
 			member_role = "골드";
 			role_color = "#ffd700";
+			role_pct = point_sum - 2000000;
+			rank = Math.round((role_pct / 10000.0) * 10) / 10.0; // 골드일 때의 막대 퍼센트
+			if(rank == 100) {
+				member_role = "VIP";
+			}
 		}
 		
+		mav.addObject("rank", rank);
 		mav.addObject("userid", userid);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);
@@ -78,7 +97,7 @@ public class MypageController {
 		//	mav.addObject("category_detail_list", category_detail_list);
 		mav.setViewName("mypage/mypage");
 		
-		member_vo = get_member_detail.MemberDetail();
+		
 		
 		
 		return mav;
@@ -111,7 +130,7 @@ public class MypageController {
 	@PostMapping("point_update")
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
-		System.out.println("point_update방문");
+	//	System.out.println("point_update방문");
 	//	String member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
