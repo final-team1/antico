@@ -10,7 +10,8 @@ from tbl_product;
 delete from tbl_member
 where pk_mem_no = 6;
 
-
+select *
+from TBL_REGION
 
 commit;
 
