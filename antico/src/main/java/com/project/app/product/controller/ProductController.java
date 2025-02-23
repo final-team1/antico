@@ -39,10 +39,10 @@ public class ProductController {
 	@GetMapping("add")
 	public ModelAndView add(ModelAndView mav) {
 
-		// 상품등록 form 페이지에 상위 카테고리명 보여주기
+		// 상위 카테고리 정보 가져오기
 		List<CategoryVO> category_list = service.getCategory();
 
-		// 상품등록 form 페이지에 하위 카테고리명 보여주기
+		// 하위 카테고리 정보 가져오기
 		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
 
 		mav.addObject("category_list", category_list);
@@ -94,7 +94,7 @@ public class ProductController {
 	// 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기
 	@GetMapping("region_search")
 	@ResponseBody
-	public List<Map<String, String>> region_search(@RequestParam Map<String, String> paraMap) {
+	public List<Map<String, String>> regionSearch(@RequestParam Map<String, String> paraMap) {
 
 		List<Map<String, Object>> region_list = service.regionSearch(paraMap);
 
@@ -114,13 +114,73 @@ public class ProductController {
 		return map_list;
 	}
 
-	// 상품 목록 조회해오기
+	
+	
+	
+	
+	// 상품 목록 조회해오기 (검색어, 카테고리번호 포함)
 	@GetMapping("prodlist")
-	public ModelAndView prodlist(ModelAndView mav) {
+	public ModelAndView prodlist(ModelAndView mav, 
+								@RequestParam(defaultValue = "") String search_prod,
+								@RequestParam(defaultValue = "") String pk_category_no,
+								@RequestParam(defaultValue = "") String pk_category_detail_no) {
 
-		mav.setViewName("product/prodlist");
+		// View 페이지 출력을 위한 정보 가져오기 시작 //
+		// 상위 카테고리 정보 가져오기
+		List<CategoryVO> category_list = service.getCategory();	
+			
+		// 하위 카테고리 정보 가져오기
+		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
+		
+        mav.addObject("category_list", category_list); 			 	 // 상위 카테고리 정보 전달
+        mav.addObject("category_detail_list", category_detail_list); // 하위 카테고리 정보 전달
+		
+		/*
+		// 지역 정보 가져오기
+		List<Map<String, String>> region_list = service.getRegion();
+		
+		mav.addObject("category_detail_list", category_detail_list);
+		mav.addObject("region_list", region_list);	
+		// View 페이지 출력을 위한 정보 가져오기 끝 //
+		*/
+		       
+		search_prod = search_prod.trim(); // 검색어 공백 없애주기
+		
+		// 상품 개수 가져오기 (검색어, 카테고리번호 포함)
+        int product_list_cnt = service.getProductCnt(search_prod, pk_category_no, pk_category_detail_no);
+        
+        // 상품 가격 정보 가져오기 (검색어, 카테고리번호 포함)
+        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, pk_category_no, pk_category_detail_no);
+        
+        mav.addObject("product_list_cnt", product_list_cnt); 	     // 총 개수 전달
+        mav.addObject("prodcut_price_info", prodcut_price_info);     // 가격 정보 전달 
+        mav.addObject("search_prod", search_prod); 	 		 	     // 검색어 전달
+        
+        
+        if(product_list_cnt > 0) { // 상품이 존재한다면
+        	      
+        	// 모든 상품 및 이미지 정보 가져오기 (검색어, 카테고리번호 포함)
+            List<Map<String, String>> product_list = service.getProduct(search_prod, pk_category_no, pk_category_detail_no);  
+            mav.addObject("product_list", product_list); // 상품 정보 전달	   
+        }
+               
+        mav.setViewName("product/prodlist");
+        
+		return mav;
+	}
+
+
+	
+	// 상품 상세 페이지 조회 (진행중)
+	@GetMapping("prod_deatil")
+	public ModelAndView prodDeatil(ModelAndView mav) {
+
+		mav.setViewName("product/prod_deatil");
 		return mav;
 
 	}
+	
+	
+	
 
 } // end of public class ProductController
