@@ -20,41 +20,8 @@ div.container {
 
 .main {
   display: flex;
-  width: 70%;   
+  width: 100%;   
   margin: 0 auto;
-}
-
-.sidebar {
-	width: 230px;
-	padding: 20px;
-	border-radius: 8px;
-}
-
-.sidebar h2, .sidebar h3 {
-	margin-bottom: 10px;
-}
-
-.sidebar ul {
-	list-style: none;
-	padding: 0;
-	font-size: 13px;
-	letter-spacing: -0.5px;
-}
-
-.sidebar ul li {
-	margin-bottom: 10px;
-	padding-top: 2px;
-}
-
-.sidebar ul li a {
-	text-decoration: none;
-	color: #333;
-}
-
-.sidebar ul li:hover {
-    transform: translateX(5px); /* 오른쪽으로 5px 이동 */
-    transition: transform 0.2s ease-in-out; /* 부드러운 애니메이션 */
-    font-weight: bold;
 }
 
 .content {
@@ -125,14 +92,6 @@ div.container {
 	color: green;
 }
 
-.point {
-	background: white;
-	padding: 5px 0 0 0;
-	height: 100px;
-	margin-top: 28px;
-	border-radius: 5px;
-	border: solid 1px #eee;
-}
 
 
 hr {
@@ -411,114 +370,6 @@ hr {
 
 
 <script>
-	// 판매내역 클릭시
-	function sellList() {
-		const tabTitle = "판매내역";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/sell_list",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
-	}
-
-	// 구매내역 클릭시
-	function buyList() {
-		const tabTitle = "구매내역";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/buy_list",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
-	}
-	
-	// 찜한 상품 클릭시
-	function wishList() {
-		const tabTitle = "찜한 상품";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/buy_list",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
-	}
-	
-	// 계좌 관리 클릭시
-	function myBank() {
-		const tabTitle = "계좌 관리";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/mybank",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
-	}
-	
-	// 계좌 후기 클릭시
-	function myreview() {
-		const tabTitle = "거래 후기";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/mybank",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
-	}
-	
-	
-	// 탈퇴하기 클릭시
-	function memberDelete() {
-		const tabTitle = "탈퇴하기";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/member_delete",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
-	}
 	
 	//모달 열기
 	function openShareModal() {
@@ -571,25 +422,6 @@ hr {
 <jsp:include page=".././header/header.jsp" />
 
 <div class="container" style="display: flex;">
-	<!-- 사이드바 -->
-	<aside class="sidebar">
-		<h4 style="font-weight: bold;">마이 페이지</h4>
-		<br>
-		<h5 style="font-weight: bold;">거래 정보</h5>
-		<ul>
-			<li><a href="#" onclick="sellList()">판매내역</a></li>
-			<li><a href="#" onclick="buyList()">구매내역</a></li>
-			<li><a href="#" onclick="wishList()">찜한 상품</a></li>
-		</ul>
-		<hr>
-		<h5 style="font-weight: bold;">내 정보</h5>
-		<ul>
-			<li><a href="#" onclick="myBank()">계좌 관리</a></li>
-			<li><a href="javascript:pointcharge('<%= ctx_Path%>')">포인트 충전</a></li>
-			<li><a href="#" onclick="myreview()">거래 후기</a></li>
-			<li><a href="#" onclick="memberDelete()">탈퇴하기</a></li>
-		</ul>
-	</aside>
 
 	<!-- 메인 콘텐츠 -->
 	<div class="main">
@@ -636,14 +468,6 @@ hr {
 						</div>
 						<span>${requestScope.data}</span>
 					</div>
-
-					<!-- auto-register -->
-					<section class="point" style=" text-align: right;">
-						<h5 style="font-weight: bold; text-align: left; padding-left: 10px; padding-top: 5px;">내 포인트</h5>
-						<button class="btn" onclick="myBank()">
-						    <span style="font-size: 16pt; font-weight: bold;"><fmt:formatNumber value="${requestScope.member_point}" type="number" pattern="#,###"/></span><span style="font-size: 22pt; font-weight: bold; color: #7A9E23;"> P</span>
-						</button>
-					</section>
 				</div>
 			</div>
 

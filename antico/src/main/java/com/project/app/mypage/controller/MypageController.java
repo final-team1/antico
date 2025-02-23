@@ -1,7 +1,6 @@
 package com.project.app.mypage.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.JsonObject;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
-import com.project.app.mypage.domain.LoginHistoryVO;
 import com.project.app.mypage.service.MypageService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import com.project.app.product.domain.ProductVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +32,9 @@ public class MypageController {
 	@Autowired
 	private MemberVO member_vo;
 	
+	@Autowired
+	private ProductVO prod_vo;
+	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
 	private String kakao_api_key;
@@ -50,23 +49,36 @@ public class MypageController {
 	// 마이페이지 메인
 	@GetMapping("mypagemain") 
 	public ModelAndView mypagemain(ModelAndView mav) {
-		
+		member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
 		String member_name = member_vo.getMember_name(); // 회원이름
-		String member_role = member_vo.getMember_role(); // 회원등급
+		
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
+		
+		int point_sum = service.point_sum(pk_member_no); // 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
+	//	System.out.println("point_sum 체크"+point_sum);
+		
+		int rank = point_sum / 1000; // 충전 포인트의 지수를 나타내기 위함
+		int data = 0;
+		String member_role = member_vo.getMember_role(); // 회원등급
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
 			member_role = "브론즈";
 			role_color = "#b87333";
+			data = rank;
 		} else if("1".equals(member_role)) {
 			member_role = "실버";
 			role_color = "#c0c0c0";
+			data = rank - 1000;
+			data = Math.min(700, data); // 나머지 30은 신뢰지수와 합산
+		//	System.out.println(data+"data 확인");
 		} else {
 			member_role = "골드";
 			role_color = "#ffd700";
 		}
 		
+		mav.addObject("data", data);
 		mav.addObject("userid", userid);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);
@@ -78,7 +90,7 @@ public class MypageController {
 		//	mav.addObject("category_detail_list", category_detail_list);
 		mav.setViewName("mypage/mypage");
 		
-		member_vo = get_member_detail.MemberDetail();
+		
 		
 		
 		return mav;
@@ -111,7 +123,7 @@ public class MypageController {
 	@PostMapping("point_update")
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
-		System.out.println("point_update방문");
+	//	System.out.println("point_update방문");
 	//	String member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
@@ -214,5 +226,12 @@ public class MypageController {
 		return mav;
 	}
 	
+	@GetMapping("sellerpage")
+	public ModelAndView sellerpage(ModelAndView mav) {
+
+		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
+		mav.setViewName("mypage/sellerpage");
+		return mav;
+	}
 	
 }

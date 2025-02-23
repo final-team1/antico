@@ -28,6 +28,20 @@
 		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
 		values (point_history_seq.nextval, #{fk_member_no}, #{point_history_reason}, #{point_insert}, #{member_point}, #{point_insert}+#{member_point}, sysdate)
 	</insert>
+	
+	<!-- 회원의 총 충전금액을 알아오기 위한 용도 (등급때매) -->
+	<select id="point_sum" resultType="int" parameterType="String">
+		select sum(charge_price)
+		from tbl_charge
+		where fk_member_no = #{pk_member_no}
+	</select>
+	
+	<!-- 총 충전금액이 일정금액 이상이면 등급을 올려준다 -->
+	<update id="role_update" parameterType="String">
+		update tbl_member set member_role = #{rank}
+		where pk_member_no = #{pk_member_no}
+	</update>
+	
 </mapper>
 
 
