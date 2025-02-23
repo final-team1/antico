@@ -71,7 +71,7 @@
 	/* 전체 컨테이너 */
 	.main-container {
 		display: flex;
-		width: 80%;
+		width: 70%;
 		margin: 0 auto;
 	}
 

@@ -19,4 +19,17 @@ public interface AdminDAO {
 	// 미답변 1:1문의 리스트
 	List<Map<String, String>> uninquire_list();
 
+	// 공지사항 총개수
+	int getNoticeCount();
+
+	// 공지사항 조회
+	List<NoticeVO> notice_list(Map<String, Object> paraMap);
+
+	// 공지사항 파일삭제
+	NoticeVO getView_delete(String pk_notice_no);
+
+	// 공지사항 삭제
+	int notice_delete(String string);
+
+
 }

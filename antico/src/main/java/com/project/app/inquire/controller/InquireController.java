@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.common.FileManager;
-import com.project.app.common.GetMemberDetail;
+import com.project.app.component.GetMemberDetail;
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.service.InquireService;
 import com.project.app.member.domain.MemberVO;
@@ -67,7 +67,7 @@ public class InquireController {
 	
 	// 문의 작성
 	@PostMapping("inquire_add")
-	public ModelAndView inquirewrite(Map<String, String> paraMap, ModelAndView mav,
+	public ModelAndView inquirewrite(ModelAndView mav,
 			                        InquireVO inquirevo, MultipartHttpServletRequest mrequest) {
 		
 		member_vo = getMemberDetail.MemberDetail();

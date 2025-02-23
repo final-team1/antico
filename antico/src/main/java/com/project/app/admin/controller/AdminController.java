@@ -1,6 +1,7 @@
 package com.project.app.admin.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,15 +11,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.admin.service.AdminService;
 import com.project.app.common.FileManager;
+import com.project.app.common.PagingDTO;
+import com.project.app.component.GetMemberDetail;
+import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 @RequestMapping("/admin/*")
@@ -26,6 +34,12 @@ public class AdminController {
 	
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private AdminService service;
+	
+	@Autowired
+	private GetMemberDetail getMemberDetail;
+	
+	@Autowired
+	private MemberVO member_vo;
 	
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private FileManager fileManager;
@@ -44,9 +58,50 @@ public class AdminController {
 		return mav;
 	}
 	
+	// 공지사항 삭제폼
+	@GetMapping("admin_notice_delete")
+	public ModelAndView notice_delete(ModelAndView mav, @RequestParam(defaultValue = "1") int cur_page) {		
+		
+		List<NoticeVO> notice_list = null;
+
+	    // 공지사항 총 개수
+	    int notice_count = service.getNoticeCount();
+	    
+	    PagingDTO paging_dto = PagingDTO.builder()
+	            .cur_page(cur_page)
+	            .row_size_per_page(5)  
+	            .page_size(5)  
+	            .total_row_count(notice_count)
+	            .build();
+
+	    // 페이징 정보 계산
+	    paging_dto.pageSetting();
+	    
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    paraMap.put("paging_dto", paging_dto);
+	    
+	    // 공지사항 목록 조회
+	    notice_list = service.notice_list(paraMap);
+
+	    // 모델에 데이터 추가
+	    mav.addObject("notice_count", notice_count);
+	    mav.addObject("paging_dto", paging_dto);
+	    mav.addObject("notice_list", notice_list);
+		
+		mav.setViewName("admin/admin_notice_delete");
+		return mav;
+	}
+	
 	// 공지사항 작성
 	@PostMapping("admin_notice_write")
 	public ModelAndView notice_write(ModelAndView mav, NoticeVO noticevo, MultipartHttpServletRequest mrequest) {
+		
+		member_vo = getMemberDetail.MemberDetail();
+		
+		String pk_member_no = member_vo.getPk_member_no();
+		
+		noticevo.setFk_member_no(pk_member_no);
 		
 		MultipartFile attach = noticevo.getAttach();
 		
@@ -120,7 +175,45 @@ public class AdminController {
 		return mav;
 	}
 
+	// 공지사항 삭제
+	@PostMapping("admin_notice_delete")
+	@ResponseBody
+	public Map<String, Integer> admin_notice_delete(@RequestParam Map<String, String> paraMap, HttpServletRequest request) {
+		System.out.println("Dddddd");
+		String pk_notice_no = request.getParameter("pk_notice_no");
 		
+		System.out.println("pk_notice_no: " + pk_notice_no);
+		
+		NoticeVO notice_vo = service.getView_delete(pk_notice_no);
+
+        String filename = notice_vo.getNotice_filename();
+        
+        if(filename != null && !"".equals(filename.trim())) {
+
+           HttpSession session = request.getSession(); 
+		   String root = session.getServletContext().getRealPath("/");
+		   
+		   String filepath = root+"resources"+File.separator+"files";
+        	
+		   paraMap.put("filepath", filepath);
+           paraMap.put("filename", filename);
+        }
+		
+	    int n=0;
+				
+		try {
+		  n = service.notice_delete(paraMap);
+		} catch(Throwable e) {
+			e.printStackTrace();
+		}
+		
+		Map<String, Integer> map = new HashMap<>();
+		map.put("n", n);
+		
+		return map;
+	}
+	
+	
 		
 		
 		
