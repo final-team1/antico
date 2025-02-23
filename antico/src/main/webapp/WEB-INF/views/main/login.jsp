@@ -44,7 +44,7 @@
 		<div style="width:100%; text-align: center; padding-bottom: 3%;">
 			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
 		</div>			
-		<div style="padding:1% 2% 1% 2%;"">
+		<div style="padding:1% 2% 1% 2%;">
 			<button type="button" class="BtnStyle" onclick="location.href='${pageContext.request.contextPath}/member/register'">회원가입하기</button>
 		</div>
 		
@@ -114,16 +114,11 @@ $(document).ready(function(){
 	
 	$("img#kakaoImg").bind("click", function(){
 		
-		Kakao.Auth.authorize({
-			redirectUri: 'http://localhost/antico/member/login',
-			
-		});
-		
-		console.log(getAccessToken());
+		location.href='${location}';
 		
 	});
 	
-	loginBtn.onClick(function(){
+	$("#loginBtn").bind("click",function(){
 		
 		submit();
 		
@@ -131,19 +126,6 @@ $(document).ready(function(){
 	
 });
 
-function requestUserInfo() {
-    Kakao.API.request({
-      url: '/v2/user/me',
-    })
-      .then(function(res) {
-        alert(JSON.stringify(res));
-      })
-      .catch(function(err) {
-        alert(
-          'failed to request user information: ' + JSON.stringify(err)
-        );
-      });
-  }
 </script>
 
 <jsp:include page=".././footer/footer.jsp" />

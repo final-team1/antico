@@ -80,3 +80,7 @@ kakao:
 # 포인트 충전하기 api
 pointcharge:
   chargekey: ENC(5kDANTybdoAQAvmPxAVioZZy60aWlvGu)
+
+kakaologin:
+  client_id: 2fc45348c1f277afbb09c75d902df014
+  redirect_uri: http://localhost/antico/kakaologin/callback
