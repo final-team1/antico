@@ -338,9 +338,13 @@ img.main_logo {
 		</div>
 		<div class="flex-fill">
 			<div>
-				<div class="inputContainer" style="">
-		        	<input type="text" class="searchBar">
-		        </div>
+				<%-- 상품 검색 시작 --%>
+				<form name="searchFrm">
+					<div class="inputContainer" style="">
+			        	<input type="text" name="search_prod" class="searchBar">
+			        	<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>  
+			        </div>
+		        </form>
 		        <div class="searchBest mt-1 he-3 d-inline-block w-100" style="display:inline;">
 		        		<button type="button" class="btnBest mr-1"><span style="font-size: 8pt; vertical-align: middle;">&lt;</span></button>
 		        		<button type="button" class="btnBest mr-1"><span style="font-size: 8pt;">&gt;</span></button>
@@ -506,6 +510,16 @@ function closeNav() {
   document.getElementById("mySidenav").style.width = "0";
 }
 
+
+// 상품 검색하는 함수
+function goSearch() {
+	   const frm = document.searchFrm;
+       frm.method = "get";
+	   frm.action = "<%= ctxPath%>/product/prodlist";
+	   frm.submit();
+} // end of function goSearch()
+
+
 $(document).ready(function(){
 	
 	
@@ -525,6 +539,15 @@ $(document).ready(function(){
 		}
 		
 	});
+	
+	
+	// 상품 검색 창 엔터를 친 경우 검색하러 간다.
+   	$("input:text[name='search_prod']").bind("keyup", function(e){
+	   	if(e.keyCode == 13){ // 엔터를 했을 경우
+		   	goSearch();
+	   	}
+	});
+	
 	
 	
 });
