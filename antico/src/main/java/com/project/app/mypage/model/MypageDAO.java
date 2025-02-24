@@ -24,7 +24,10 @@ public interface MypageDAO {
 	int point_sum(String pk_member_no);
 
 	// 총 충전금액이 일정금액 이상이면 등급을 올려준다
-	int role_update(String pk_member_no, String rank);
+	int score_update(String pk_member_no, String charge_price);
+
+	// 총 충전금액이 일정금액 이상이면 등급을 올려준다
+	void role_update(String role, String pk_member_no);
 
 	// 마이페이지 내상품 조회
 	List<Map<String, String>> myproduct(String pk_member_no);

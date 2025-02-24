@@ -36,9 +36,15 @@
 		where fk_member_no = #{pk_member_no}
 	</select>
 	
-	<!-- 총 충전금액이 일정금액 이상이면 등급을 올려준다 -->
+	<!-- 총 충전금액 최대 1700만큼 스코어를 올려준다 -->
+	<update id="score_update" parameterType="String">
+		update tbl_member set member_score = member_score + #{charge_price}
+		where pk_member_no = #{pk_member_no}
+	</update>
+	
+	<!-- 스코어가 일정수치 이상일 때 등급을 올려준다 -->
 	<update id="role_update" parameterType="String">
-		update tbl_member set member_role = #{rank}
+		update tbl_member set member_role = #{role}
 		where pk_member_no = #{pk_member_no}
 	</update>
 	
