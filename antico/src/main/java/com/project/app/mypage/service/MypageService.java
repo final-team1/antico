@@ -1,11 +1,18 @@
 package com.project.app.mypage.service;
 
-import com.project.app.mypage.domain.LeaveVO;
+import java.util.Map;
+
 
 public interface MypageService {
-    // 탈퇴 신청 로직
-    int deletesubmit(LeaveVO lvo);
 
-    // 로그인 시 탈퇴 신청 확인 및 취소 로직
-    int cancelLeaveRequest(int memberNo);
+    // 탈퇴테이블 insert
+	int delete_submit(Map<String, String> paraMap);
+
+	// 결제하기를 눌렀을 경우 회원의 포인트 업데이트
+	int pointcharge(Map<String, String> paraMap);
+
+	// 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
+	int point_sum(String pk_member_no);
+
+
 }

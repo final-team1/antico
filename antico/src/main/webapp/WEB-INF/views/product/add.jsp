@@ -22,11 +22,12 @@
 }
 
 
-/* div 전체 틀 */
+/* div 전체 틀 */ 
 div#container {
 	width: 50%;
 	margin: 0 auto;
 }
+
 
 /* 상품이미지 */
 div#prod_img_container {
@@ -167,7 +168,7 @@ div.button {
 }
 
 /* 상품상태, 판매유형, 희망지역 버튼*/
-input.used {
+input.used, input.general {
 	border: none;
 	border-radius: 6px;
 	color: white;
@@ -178,7 +179,7 @@ input.used {
 	font-size: 10pt;
 }
 
-input.new {
+input.new, input.action {
 	border: solid 1px black;
 	border-radius: 6px;
 	margin-left: 10px;
@@ -230,6 +231,36 @@ button.add {
 	font-size: 10pt;
 }
 
+
+/* 경매 날짜 필드 관련 */
+input[type='date'] {
+    width: 150px;
+   	height: 40px;
+    background-color: white;
+    border: solid 1px #cccccc;
+	border-radius: 6px;
+    padding: 5px;
+    margin-left: 10px;
+    font-size: 10pt;
+    visibility: hidden;
+    position: relative; /* position을 relative로 설정 */
+    z-index: 1; /* 날짜 입력 필드가 위로 오도록 설정 */
+}
+
+
+/* placehodler 넣어주기 
+input[type='date']::before {
+    color: #444444;
+    content: attr(placeholder);
+    position: absolute;
+    top: 50%; /* 수 직 중앙 정렬 
+    left: 10px; /* 왼쪽 여백 
+    transform: translateY(-50%); /* 정확한 수직 중앙 정렬 
+    pointer-events: none; /* 텍스트가 클릭되지 않도록 
+    z-index: 0; /* ::before 텍스트가 아래에 오도록 설정 
+}
+*/
+
 </style>
 
 
@@ -239,7 +270,7 @@ button.add {
 	<!-- 상품 등록 시작 -->
 	<form name="prod_add_frm" enctype="multipart/form-data">	
 		
-		<input type="hidden" name="fk_member_no" value="${sessionScope.loginuser.pk_member_no}" />
+		<%-- <input type="hidden" name="fk_member_no" value="${sessionScope.loginuser.pk_member_no}" /> --%>
 		
 		<!-- 상품 이미지  -->
 		<div id="prod_img_container">
@@ -288,7 +319,7 @@ button.add {
 		<!-- 상품 가격 -->
 		<div id="prod_price" class="cm_margin_top">
 		  	<span id="won">₩</span>
-		  	<input id="prod_price" name="product_price" type="text" maxlength="10" placeholder="판매가격" />
+		  	<input id="prod_price" name="product_price" type="text" maxlength="10" placeholder="상품가격" required />
 		</div>
 		
 		<!-- 상품 내용 -->
@@ -308,6 +339,20 @@ button.add {
 				<input type="button" class="used" value="중고" data-value="0" />
 				<input type="button" class="new" value="새상품" data-value="1" />
 				<input type="hidden" id="prod_status_value" name="product_status" value="" />
+			</div>
+		</div>
+		
+		
+		<!-- 판매 유형 -->
+		<div id="prod_sale_type" class="cm_margin_top">
+			<span class="cm_span_title">판매 유형</span>
+			<div class="button">
+				<input type="button" class="general" value="일반판매" data-value="0" />
+				<input type="button" class="action" value="경매" data-value="1" />
+				<input type="hidden" id="prod_sale_type_value" name="product_sale_type" value="" />
+				
+				<input type="date" class="action_end_date" name="auction_enddate" placeholder="경매 마감 날짜" required />
+				
 			</div>
 		</div>
 		
@@ -334,14 +379,12 @@ button.add {
 </div>
 
 
-<jsp:include page="../tab/tab.jsp">
-	<jsp:param name="tabTitle" value="" />
-</jsp:include>
-
-
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
 
+<jsp:include page="../tab/tab.jsp">
+	<jsp:param name="tabTitle" value="" />
+</jsp:include>
 
 
 <script>
@@ -504,20 +547,21 @@ $(document).ready(function(){
  	
    
     
-    // 페이지 로딩 시 상품상태 초기값으로 중고값을 넣어준다.
+    // 페이지 로딩 시 상품상태와 판매유형에 초기값으로 중고값과 일반판매값을 넣어준다.
     $("#prod_status_value").val($("input.used").attr("data-value"));
+    $("#prod_sale_type_value").val($("input.general").attr("data-value"));
     
     // 중고 버튼 클릭 시
     $("input.used").click(function(){
 		
-    	// 중고버튼 활성화 (초록색 배경, 흰색 글씨)
+    	// 중고버튼 스타일 (초록색 배경, 흰색 글씨)
         $(this).css({
             "color": "white",
             "background-color": "#0dcc5a",
             "border": "none"
         });
 
-        // 새상품 버튼 비활성화 (흰색 배경, 검은색 글씨)
+        // 새상품 버튼 스타일 (흰색 배경, 검은색 글씨)
         $("input.new").css({
             "color": "black",
             "background-color": "white",
@@ -535,14 +579,14 @@ $(document).ready(function(){
     // 새상품 버튼 클릭 시
     $("input.new").click(function () {
     	
-        // 새상품 버튼 활성화 (초록색 배경, 흰색 글씨)
+        // 새상품 버튼 스타일 (초록색 배경, 흰색 글씨)
         $(this).css({
             "color": "white",
             "background-color": "#0dcc5a",
             "border": "none"
         });
 
-        // 중고 버튼 비활성화 (흰색 배경, 검은색 글씨)
+        // 중고 버튼 스타일 (흰색 배경, 검은색 글씨)
         $("input.used").css({
             "color": "black",
             "background-color": "white",
@@ -555,6 +599,63 @@ $(document).ready(function(){
         // console.log($("#prod_status_value").val());
         
     }); // end of $("input.new").click(function ()
+    		
+    		
+    // 일반판매 버튼 클릭 시
+    $("input.general").click(function(){
+    	
+    	// 일반버튼 스타일 (초록색 배경, 흰색 글씨)
+        $(this).css({
+            "color": "white",
+            "background-color": "#0dcc5a",
+            "border": "none"
+        });
+
+        // 경매 버튼 스타일 (흰색 배경, 검은색 글씨)
+        $("input.action").css({
+            "color": "black",
+            "background-color": "white",
+            "border": "1px solid black"
+        });
+        
+        // 경매 종료 날짜 숨기기
+        $("input.action_end_date").css({"visibility": "hidden"});
+        
+        // 선택한 상품 상태 값 변경
+        $("#prod_sale_type_value").val($(this).data("value"));
+        
+        // console.log($("#prod_sale_type_value").val());
+    
+    }); // end of $("input.general").click(function()
+    		
+    		
+    // 경매 버튼 클릭 시
+    $("input.action").click(function(){
+		
+    	// 경매 버튼 스타일 (초록색 배경, 흰색 글씨)
+        $(this).css({
+            "color": "white",
+            "background-color": "#0dcc5a",
+            "border": "none"
+        });
+    	
+        // 경매 종료 날짜 보이기
+        $("input.action_end_date").css({"visibility" : "visible"});
+
+        // 일반 판매 버튼 스타일 (흰색 배경, 검은색 글씨)
+        $("input.general").css({
+            "color": "black",
+            "background-color": "white",
+            "border": "1px solid black"
+        });
+        
+        // 선택한 상품 상태 값 변경
+        $("#prod_sale_type_value").val($(this).data("value"));
+        
+        // console.log($("#prod_sale_type_value").val());
+    
+    }); // end of $("input.action").click(function()			
+    		
     				
     
    	// 희망 거래 지역 '선택' 버튼 클릭 시
@@ -629,6 +730,16 @@ $(document).ready(function(){
     		prod_infoData_OK = false;
     		return false;
     	}
+    	
+    	
+    	// 판매 유형 유효성 검사
+    	const prod_sale_type_value = $("input#prod_sale_type_value").val();
+    	if(prod_sale_type_value == "") {
+    		showAlert('error', '판매유형은 필수 선택사항입니다.');
+    		prod_infoData_OK = false;
+    		return false;
+    	}
+    	
     	
     	// 희망 거래 동네 유효성 검사
     	const fk_region_no = $("input#fk_region_no").val();

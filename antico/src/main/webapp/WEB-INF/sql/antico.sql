@@ -5,7 +5,24 @@ select *
 from tbl_member;
 
 delete from tbl_member
+where pk_member_no = 101;
+
+commit;
+
+desc tbl_member;
+
+select *
+from tbl_member
+where member_user_id = ' ' and member_passwd = 'kakao';
+
+select *
+from tbl_product;
+
+delete from tbl_member
 where pk_mem_no = 6;
+
+select *
+from TBL_REGION
 
 commit;
 
@@ -37,6 +54,7 @@ CONSTRAINT mem_ck_mem_status check(mem_status in(0,1,2)) -- 0 : 탈퇴, 1 : 활�
 );
 
 CREATE SEQUENCE mem_seq;
+
 
 
 select *

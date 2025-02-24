@@ -65,7 +65,6 @@ div#sidetab_content {
 </div>
 
 
-
 <script type="text/javascript">
 
 $(document).ready(function(){

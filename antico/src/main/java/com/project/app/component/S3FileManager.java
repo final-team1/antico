@@ -2,6 +2,7 @@ package com.project.app.component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,21 @@ public class S3FileManager {
 		catch (IOException e) {
 			throw new S3Exception(ExceptionCode.PUT_OBJECT_EXCEPTION);
 		}
+	}
+	
+	/*
+	 * 다중 파일 검증 후 S3 업로드 요청
+	 */
+	public List<Map<String, String>> upload(List<MultipartFile> file_list, String dir_name, FileType file_type) {
+		List<Map<String, String>> map_list = new ArrayList<>(); // 파일명, 원본 파일명 목록 반환 리스트
+		
+		// 반복문을 통해 파일 업로드 후 파일명, 원본 파일명 목록 반환 리스트 반환
+		for(MultipartFile file : file_list) {
+			Map<String, String> map = upload(file, dir_name, file_type);
+			map_list.add(map);
+		}
+		
+		return map_list;
 	}
 
 	/*

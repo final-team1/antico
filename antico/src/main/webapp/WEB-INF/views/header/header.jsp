@@ -12,6 +12,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Antico</title>
+  <%-- 스포카 한 산스 네오 폰트 적용 --%>
+  <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+
   <!-- Required meta tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -36,6 +39,7 @@
   <script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
   <script type="text/javascript" src="<%=ctxPath%>/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
 
+
 	<%-- 카카오 api --%>
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
 
@@ -49,13 +53,21 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
   <script src="<%=ctxPath%>/js/custom_toast.js"></script>
   <link rel="stylesheet" href="<%=ctxPath%>/css/custom_toast.css">
+  <script type="text/javascript" src="<%=ctxPath%>/js/member/cookie.js"></script>
 
+  <%-- SockJS 라이브러리 CDN --%>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.4.0/dist/sockjs.min.js"></script>
 
-  <%-- font cdn --%>
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+  <%-- stomp --%>
+  <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/browsertests/qunit.min.css" rel="stylesheet">
+  
+  <%-- 웹소켓 연결 관리 모듈 JS --%>
+  <script type="text/javascript" src="<%=ctxPath%>/js/chat/Chat.js"></script>
+  
 <style>
 *{
-font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 }
 
 .fixed {
@@ -133,6 +145,7 @@ input.searchBar {
 /* 서치바 끝 */
 
 #userManu{
+	position: relative;
 	list-style-type: none;
 	
 }
@@ -299,6 +312,45 @@ img.main_logo {
 	cursor : pointer;
 }
 
+
+.my_header{
+	position: absolute;
+	list-style: none;
+	height: 50px; 
+    width: 70px;
+    left: 114px;
+    top: 30px;
+    padding: 0;
+    text-align: center;
+    border: solid 1px #F1F4F6;
+    border-radius: 5px;
+    font-size: 12px;
+    display:none;
+}
+
+div.chat_icon {
+	position : relative;
+	display : inline-block;
+}
+
+span.chat_badge {
+	position: absolute;
+    top: -5px;  
+    right: -5px; 
+    background-color: #0DCC5A;
+    color: black;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 2px;
+    border-radius: 50%;
+    min-width: 20px;
+    text-align: center;
+}
+
+li#chat {
+	cursor : pointer;
+}
+
 </style>
 
 </head>
@@ -319,9 +371,13 @@ img.main_logo {
 		</div>
 		<div class="flex-fill">
 			<div>
-				<div class="inputContainer" style="">
-		        	<input type="text" class="searchBar">
-		        </div>
+				<%-- 상품 검색 시작 --%>
+				<form name="searchFrm">
+					<div class="inputContainer" style="">
+			        	<input type="text" name="search_prod" class="searchBar">
+			        	<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>  
+			        </div>
+		        </form>
 		        <div class="searchBest mt-1 he-3 d-inline-block w-100" style="display:inline;">
 		        		<button type="button" class="btnBest mr-1"><span style="font-size: 8pt; vertical-align: middle;">&lt;</span></button>
 		        		<button type="button" class="btnBest mr-1"><span style="font-size: 8pt;">&gt;</span></button>
@@ -339,17 +395,28 @@ img.main_logo {
 		<div class="" style="display: flex; align-items: center; height: 80px; margin-left:auto;">
 			<div style="">
 				<ul id="userManu" class="" style="padding-inline-start: 0px; margin-block-end: 0em;">
-					<li class="">채팅하기</li>
+					<li id="chat" class="">
+						<div class="chat_icon"> 
+							<img src="<%=ctxPath%>/images/icon/chat.svg" height=28>
+							<span class="chat_badge">20</span>
+						</div> 
+						채팅하기
+					</li>
 					<li style="color: gray" class="">|</li>
 					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
 					<li class="">
+						
+						<c:if test="${pageContext.request.userPrincipal.name == null}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
+						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
 					
-
-					<a href="<%=ctxPath%>/member/login">마이</a>
-						<c:if test="${empty pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
-						<c:if test="${empty not pageContext.request.userPrincipal.name}"><a href="<%=ctxPath%>/mypage/mypagemain">마이</a></c:if>
+					<ul class="my_header">
 					
+						<li style="margin-top:2px;"><a href="<%=ctxPath%>/mypage/mypagemain">마이페이지</a></li>
+						<li><hr style="margin: 4px;"></li>
+						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+						
+					</ul>
 					</li>	
 				</ul>
 			</div>
@@ -482,12 +549,57 @@ function closeNav() {
   document.getElementById("mySidenav").style.width = "0";
 }
 
+
+// 상품 검색하는 함수
+function goSearch() {
+	   const frm = document.searchFrm;
+       frm.method = "get";
+	   frm.action = "<%= ctxPath%>/product/prodlist";
+	   frm.submit();
+} // end of function goSearch()
+
+
 $(document).ready(function(){
+	
+	
+	$("ul.my_header").css("display", "none");
 	
 	$("img.main_logo").click(function(e){
 		location.href = "<%=ctxPath%>/index";
 	});	
 	
+	
+	$("p.my_manu").bind("click", function(){
+		
+		if($("ul.my_header").css("display") == "none"){
+			$("ul.my_header").css("display", "block");
+		}else{
+			$("ul.my_header").css("display", "none");
+		}
+		
+	});
+	
+	// 상품 검색 창 엔터를 친 경우 검색하러 간다.
+   	$("input:text[name='search_prod']").bind("keyup", function(e){
+	   	if(e.keyCode == 13){ // 엔터를 했을 경우
+		   	goSearch();
+	   	}
+	});
+	
+	
+	// 채팅 버튼 클릭 시 채팅 페이지 표시
+	$(document).on("click", "li#chat", function() {
+		$.ajax({
+			url : "<%=ctxPath%>/chat/main",
+			success : function(html) {
+				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
+				openSideTab(html, "채팅방 목록");
+			},
+			 error: function(request, status, error){
+				 errorHandler(request, status, error);
+			}
+		});
+	});
 });
 
 </script>

@@ -11,11 +11,12 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
     hikari: #커넥션풀 
       connection-timeout : 30000 #클라이언트가 pool에 connection을 요청하는데 기다리는 최대시간을 설정 30초
       maximum-pool-size : 10 #최대 커넥션 개수 설정
-      max-lifetime: 1800000  #커넥션 풀에서 살아있을 수 있는 커넥션의 최대 수명시간 1,800초(30분)    
+      max-lifetime: 1800000  #커넥션 풀에서 살아있을 수 있는 커넥션의 최대 수명시간 1,800초(30분)
 
-  #data:
-    #mongodb:
-      #uri: mongodb://devuser:qwer1234$@localhost:27017/mydb
+  # mongodb+srv://final_mongouser1:gclass@clusterantico.ihfo0.mongodb.net/?retryWrites=true&w=majority&appName=ClusterAntico
+  data:
+    mongodb:
+      uri: ENC(0sX0JRnyjrndUJBkloJnMwHkzLVPaKnUH/+jdaqPTVN6VHyvvJdRpTdLrY7SKoGqiAmAbNh0rkCGdbGlV09mxgHBKqHWAku4c6LkeFTzmW8creJJ8k1JVw1+H0pTCxbeqN+wHGXwU1UJ3vGVY8/FVtvyjD0TGYkZAUsV/WAwOHc7XMz0vrh4EA==)
       
   messages: #메시지(파일이 여러개일 경우 ,로 구분)
     basename: messages.validation
@@ -80,3 +81,7 @@ kakao:
 # 포인트 충전하기 api
 pointcharge:
   chargekey: ENC(5kDANTybdoAQAvmPxAVioZZy60aWlvGu)
+
+kakaologin:
+  client_id: 2fc45348c1f277afbb09c75d902df014
+  redirect_uri: http://localhost/antico/kakaologin/callback

@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<c:set var="ctxPath" value="${pageContext.request.contextPath}" />
+<c:set var="ctx_path" value="${pageContext.request.contextPath}" />
     
 <jsp:include page=".././header/header.jsp" />    
 
@@ -19,14 +19,24 @@
 			<span class="block">중고나라에 오신 것을</span>
 			<span>환영합니다.</span>
 		</div>
-		<form action="${ctxPath}/auth/login" method="post">
+		<form action="${ctx_path}/auth/login" method="post" id="login_form">
 		<div style="padding:8% 2% 1% 2%; width:100%;">
 			
-			<input type="text" name="member_user_id" class="textbox" placeholder="아이디"/>
+			<c:if test="${not empty member_user_id}">
+			<input type="text" name="member_user_id" class="textbox" placeholder="아이디" value="${member_user_id}"/>
+			</c:if>
+			<c:if test="${empty member_user_id}">
+			<input type="text" name="member_user_id" class="textbox" placeholder="아이디" "/>
+			</c:if>
 				
 		</div>
 		<div style="padding:1% 2% 1% 2%;">
+			<c:if test="${not empty member_passwd}">
+				<input type="text" name="member_passwd" class="textbox" placeholder="비밀번호" value="${member_passwd}"/>
+			</c:if>
+			<c:if test="${empty member_passwd}">
 				<input type="text" name="member_passwd" class="textbox" placeholder="비밀번호"/>
+			</c:if>
 		</div>		
 		
 				
@@ -44,7 +54,7 @@
 		<div style="width:100%; text-align: center; padding-bottom: 3%;">
 			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
 		</div>			
-		<div style="padding:1% 2% 1% 2%;"">
+		<div style="padding:1% 2% 1% 2%;">
 			<button type="button" class="BtnStyle" onclick="location.href='${pageContext.request.contextPath}/member/register'">회원가입하기</button>
 		</div>
 		
@@ -112,18 +122,21 @@ Kakao.init('61202bdbe397ec06765ee5a7cb40b414');
 <script type="text/javascript">
 $(document).ready(function(){
 	
+	if(${not empty member_user_id}){
+		
+		const frm = $("#login_form")[0];
+		
+		frm.submit();
+		
+	}
+	
 	$("img#kakaoImg").bind("click", function(){
 		
-		Kakao.Auth.authorize({
-			redirectUri: 'http://localhost/antico/member/login',
-			
-		});
-		
-		console.log(getAccessToken());
+		location.href='${location}';
 		
 	});
 	
-	loginBtn.onClick(function(){
+	$("#loginBtn").bind("click",function(){
 		
 		submit();
 		
@@ -131,19 +144,6 @@ $(document).ready(function(){
 	
 });
 
-function requestUserInfo() {
-    Kakao.API.request({
-      url: '/v2/user/me',
-    })
-      .then(function(res) {
-        alert(JSON.stringify(res));
-      })
-      .catch(function(err) {
-        alert(
-          'failed to request user information: ' + JSON.stringify(err)
-        );
-      });
-  }
 </script>
 
 <jsp:include page=".././footer/footer.jsp" />

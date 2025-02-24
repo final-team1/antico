@@ -3,29 +3,222 @@
 <!-- ==== mapper 기본설정 ==== -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.project.app.product.model.ProductMapper">
+<mapper namespace="com.project.app.product.model.ProductDAO">
 	
-	<!-- 상품등록 form 페이지에 상위 카테고리명 보여주기 -->
+	<!-- 상품 개수 가져오기 (검색어, 카테고리번호 포함) -->
+	<select id="getProductCnt" parameterType="HashMap" resultType="int">
+		select COUNT(*) AS prod_count
+		from tbl_product P 
+		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+		where I.prod_img_is_thumbnail = 1
+		<!-- 검색어가 있는 경우 -->
+		<if test='search_prod != null and search_prod != ""'>
+        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
+      	</if>
+      	<!-- 상위 카테고리 번호가 있는 경우 -->
+		<if test='pk_category_no != null and pk_category_no != ""'>
+        	and P.fk_category_no = #{pk_category_no}
+      	</if>
+      	<!-- 하위 카테고리 번호가 있는 경우 -->
+		<if test='pk_category_detail_no != null and pk_category_detail_no != ""'>
+        	and P.fk_category_detail_no = #{pk_category_detail_no}
+      	</if>
+		order by P.product_regdate desc
+	</select>	
+	
+	
+	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호 포함) -->
+	<resultMap id="getProductPriceMap" type="HashMap" >
+	    <result property="avg_price" 	column="avg_price"  	javaType="String" />
+	    <result property="max_price" 	column="max_price"  	javaType="String" />
+	    <result property="min_price" 	column="min_price"  	javaType="String" />
+    </resultMap>
+	<select id="getProductPrice" parameterType="HashMap" resultMap="getProductPriceMap">
+		SELECT TRUNC(AVG(TO_NUMBER(P.product_price))) AS avg_price, 
+		       TRUNC(MAX(TO_NUMBER(P.product_price))) AS max_price, 
+		       TRUNC(MIN(TO_NUMBER(P.product_price))) AS min_price
+		FROM tbl_product P 
+		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+		JOIN tbl_region R ON P.fk_region_no = R.pk_region_no
+		WHERE I.prod_img_is_thumbnail = 1
+		<!-- 검색어가 있는 경우 -->
+		<if test='search_prod != null and search_prod != ""'>
+        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
+      	</if>
+      	<!-- 상위 카테고리 번호가 있는 경우 -->
+		<if test='pk_category_no != null and pk_category_no != ""'>
+        	and P.fk_category_no = #{pk_category_no}
+      	</if>
+      	<!-- 하위 카테고리 번호가 있는 경우 -->
+		<if test='pk_category_detail_no != null and pk_category_detail_no != ""'>
+        	and P.fk_category_detail_no = #{pk_category_detail_no}
+      	</if>      	
+	</select>
+	
+	
+
+	<!-- 모든 상품 및 이미지 정보 가져오기 (검색어, 카테고리번호 포함) -->
+	<resultMap id="getProductMap" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="fk_region_no" 			column="fk_region_no" 			javaType="String"/>
+	    <result property="fk_category_no" 			column="fk_category_no" 		javaType="String"/>
+	    <result property="fk_category_detail_no" 	column="fk_category_detail_no" 	javaType="String"/>  
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="product_views" 			column="product_views" 			javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	    <result property="pk_region_no" 			column="pk_region_no" 			javaType="String"/>
+	    <result property="region_state" 			column="region_state" 			javaType="String"/>
+	    <result property="region_city" 				column="region_city" 			javaType="String"/>
+	    <result property="region_town" 				column="region_town" 			javaType="String"/>
+	    <result property="region_lat" 				column="region_lat" 			javaType="String"/>
+	    <result property="region_lng" 				column="region_lng" 			javaType="String"/>
+	</resultMap>
+	<select id="getProduct" parameterType="HashMap" resultMap="getProductMap">
+		select P.pk_product_no, 
+		       P.fk_member_no, 
+		       P.fk_region_no, 
+		       P.fk_category_no, 
+		       P.fk_category_detail_no, 
+		       P.product_title, 
+		       P.product_contents, 
+		       P.product_price, 
+		       P.product_status, 
+		       P.product_sale_status, 
+		       P.product_regdate, 
+		       P.product_update_date, 
+		       P.product_sale_type, 
+		       P.product_views,
+		       I.pk_prod_img_no,
+		       I.prod_img_name,
+		       I.prod_img_org_name,
+		       I.prod_img_is_thumbnail,
+		       R.pk_region_no,
+		       R.region_state,
+		       R.region_city,
+		       R.region_town,
+		       R.region_lat,
+		       R.region_lng
+		from tbl_product P 
+		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+		where I.prod_img_is_thumbnail = 1
+		<!-- 검색어가 있는 경우 -->
+		<if test='search_prod != null and search_prod != ""'>
+        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
+      	</if>
+      	<!-- 상위 카테고리 번호가 있는 경우 -->
+		<if test='pk_category_no != null and pk_category_no != ""'>
+        	and P.fk_category_no = #{pk_category_no}
+      	</if>
+      	<!-- 하위 카테고리 번호가 있는 경우 -->
+		<if test='pk_category_detail_no != null and pk_category_detail_no != ""'>
+        	and P.fk_category_detail_no = #{pk_category_detail_no}
+      	</if>      	
+		order by P.product_regdate desc
+	</select>
+	
+
+	<!-- 특정 상품에 대한 상품 및 대표이미지 정보 가져오기 -->
+	<resultMap id="getProductInfoMap" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="fk_region_no" 			column="fk_region_no" 			javaType="String"/>
+	    <result property="fk_category_no" 			column="fk_category_no" 		javaType="String"/>
+	    <result property="fk_category_detail_no" 	column="fk_category_detail_no" 	javaType="String"/>  
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="product_views" 			column="product_views" 			javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 		javaType="String"/>
+	    <result property="member_name" 				column="member_name" 			javaType="String"/>
+	</resultMap>
+	<select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
+	   select P.pk_product_no, 
+		      P.fk_member_no, 
+		      P.fk_region_no, 
+		      P.fk_category_no, 
+		      P.fk_category_detail_no, 
+	          P.product_title, 
+		      P.product_contents, 
+		      P.product_price, 
+		      P.product_status, 
+		      P.product_sale_status, 
+		      P.product_regdate, 
+		      P.product_update_date, 
+		      P.product_sale_type, 
+		      P.product_views,
+		      I.pk_prod_img_no,
+		      I.prod_img_org_name,
+		      I.prod_img_name,
+		      I.prod_img_is_thumbnail
+		from tbl_product P JOIN tbl_prod_img I
+		ON P.pk_product_no = I.fk_product_no
+		where P.pk_product_no = #{pk_product_no}
+		and   I.prod_img_is_thumbnail = 1
+	</select>
+
+	<!-- 상위 카테고리 정보 가져오기 -->
 	<select id="getCategory" resultType="CategoryVO">
 		select pk_category_no, category_name
 		from tbl_category
 	</select>
 	
 	
-	<!-- 상품등록 form 페이지에 하위 카테고리명 보여주기 -->
+	<!-- 하위 카테고리 정보 가져오기 -->
 	<select id="getCategoryDetail" resultType="CategoryDetailVO">
 		select pk_category_detail_no, fk_category_no, category_detail_name
 		from tbl_category_detail
 	</select>
 	
 	
+	<!-- 지역 정보 가져오기 -->
+	<resultMap id="getRegionMap" type="HashMap">
+	    <result property="pk_region_no" column="pk_region_no" 	javaType="String"/>
+	    <result property="region_state" column="region_state"	javaType="String"/>
+	    <result property="region_city"  column="region_city"	javaType="String"/>
+	    <result property="region_town" 	column="region_town"	javaType="String"/>
+	    <result property="region_lat" 	column="region_lat"		javaType="String"/>
+	    <result property="region_lng" 	column="region_lng"		javaType="String"/>
+	</resultMap>
+	<select id="getRegion" parameterType="HashMap" resultMap="getRegionMap">
+		select pk_region_no
+		     , region_state
+		     , region_city
+		     , region_town
+		     , region_lat
+		     , region_lng
+		from tbl_region
+		order by pk_region_no
+	</select>
+	
+	
 	<!-- 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기 -->
 	<resultMap id="RegionResultMap" type="HashMap">
-	    <result property="pk_region_no" column="pk_region_no"/>
-	    <result property="full_address" column="FULL_ADDRESS"/>
-	    <result property="region_town" column="region_town"/>
-	    <result property="region_lat" column="region_lat"/>
-	    <result property="region_lng" column="region_lng"/>
+	    <result property="pk_region_no" column="pk_region_no" 	javaType="String"/>
+	    <result property="full_address" column="full_address"	javaType="String"/>
+	    <result property="region_town" 	column="region_town"	javaType="String"/>
+	    <result property="region_lat" 	column="region_lat"		javaType="String"/>
+	    <result property="region_lng" 	column="region_lng"		javaType="String"/>
 	</resultMap>
 	
 	<select id="regionSearch" parameterType="HashMap" resultMap="RegionResultMap">
@@ -48,18 +241,50 @@
 
 	<!-- 상품 테이블에 상품 정보 저장  -->
 	<insert id="addProduct" parameterType="ProductVO">
-	insert into tbl_product (pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title
-	                       , product_contents, product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views)
-		    		  values(#{pk_product_no}, 3, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
-		    		       , #{product_contents}, #{product_price}, #{product_status}, default, default, default, default, default)
+		<!-- 판매 유형이 일반 판매인 경우 => 판매중/일반판매로 insert -->
+		<if test="product_sale_type == 0"> 
+		insert into tbl_product (pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title
+		                       , product_contents, product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views)
+			    		  values(#{pk_product_no}, #{fk_member_no}, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
+			    		       , #{product_contents}, #{product_price}, #{product_status}, 0, default, default, #{product_sale_type}, default)
+		</if>
+		
+		<!-- 판매 유형이 경매인 경우 => 경매시작전/경매로 insert -->
+		<if test="product_sale_type == 1">
+		insert into tbl_product (pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title
+		                       , product_contents, product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views)
+			    		  values(#{pk_product_no}, #{fk_member_no}, #{fk_region_no}, #{fk_category_no}, #{fk_category_detail_no}, #{product_title}
+			    		       , #{product_contents}, #{product_price}, #{product_status}, 3, default, default, #{product_sale_type}, default)	
+		</if>
 	</insert>
-	
-	
+
+
     <!-- 이미지 테이블에 파일 넣어주기 -->
 	<insert id="addImage" parameterType="ProductImageVO">
 	insert into tbl_prod_img(pk_prod_img_no, fk_product_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail)  
 					 values (pi_seq.NEXTVAL, #{fk_product_no}, #{prod_img_name}, #{prod_img_org_name}, #{prod_img_is_thumbnail})
 	</insert>
+	
+	
+	<resultMap type="HashMap" id="productSummaryMap">
+	 	<result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 		javaType="String"/>
+	</resultMap>
+	
+	
+	<!-- 상품 요약 정보 목록 조회 (이미지명 포함) -->
+	<select id="selectProductSummaryList" resultMap="productSummaryMap">
+		select p.pk_product_no, p.product_title, p.product_price, pi.prod_img_name
+		from tbl_product p join tbl_prod_img pi on p.pk_product_no = pi.fk_product_no
+		where pi.prod_img_is_thumbnail = 1
+		and p.pk_product_no in
+		<foreach collection="list" item="pk_product_no" open="(" separator="," close=")">
+			#{pk_product_no}
+		</foreach> 
+		order by pk_product_no
+	</select>
 	
 	
 </mapper>

@@ -7,6 +7,9 @@
 <title>포인트 충전</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script type="text/javascript" src="<%= ctx_Path%>/js/pointcharge.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <style>
     body {
@@ -79,14 +82,12 @@
     }
 </style>
 
-
-
 </head>
 <body>
 
     <div class="charge-container">
         <div class="charge-title">포인트 충전</div>
-        <div class="user-info">회원 ID: <strong><%= ctx_Path %></strong></div>
+        <div class="user-info">회원 ID: <strong>${requestScope.member_user_id}</strong></div>
 
         <form action="charge_process.jsp" method="post">
             <label for="amount" class="form-label">충전 금액 선택</label>
@@ -98,8 +99,9 @@
                 <button type="button" onclick="increaseAmount(50000)">50,000원</button>
                 <button type="button" onclick="increaseAmount(100000)">100,000원</button>
             </div>
-
             <input type="hidden" name="member_user_id" value="<%= ctx_Path %>">
+            <input type="hidden" name="pk_member_no" value="${requestScope.pk_member_no}">
+            <input type="hidden" name="charge_commission" value="${requestScope.charge_commission}">
 
             <button type="submit" class="charge-btn mt-3">충전하기</button>
         </form>
@@ -132,99 +134,109 @@
                     </tr>
                 </tbody>
             </table>
+            <span style="font-size: 12pt; padding-top: 5px; color: red;">현재 회원님이 해당하는 수수료는 ${requestScope.charge_commission}% 입니다.</span>
         </div>
     </div>
 
 </body>
 
-    <script>
-        function increaseAmount(value) {
-            var amountInput = document.getElementById('amount');
-            var currentAmount = parseInt(amountInput.value) || 0;  // 입력된 값이 없으면 0으로 처리
-            var newAmount = currentAmount + value;
-            amountInput.value = newAmount;  // 새로운 금액을 입력란에 설정
-            updateCommissionAmounts();  // 수수료 계산 후 표시
-        }
+<script>
 
-        function updateCommissionAmounts() {
-            var amountInput = document.getElementById('amount');
-            var amount = parseInt(amountInput.value) || 0;
+const ctx_Path = "<%= ctx_Path %>";
 
-            // 각 등급별 수수료를 적용한 금액 계산
-            var goldAmount = amount - (amount * 0.03);  // 3% 수수료
-            var silverAmount = amount - (amount * 0.04);  // 4% 수수료
-            var bronzeAmount = amount - (amount * 0.05);  // 5% 수수료
 
-            // 계산된 금액을 표시
-            document.getElementById('gold-amount').textContent = goldAmount + '원';
-            document.getElementById('silver-amount').textContent = silverAmount + '원';
-            document.getElementById('bronze-amount').textContent = bronzeAmount + '원';
-        }
-        
-        
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelector(".charge-btn").addEventListener("click", function (event) {
-                event.preventDefault(); // 기본 폼 제출 방지
+    function increaseAmount(value) {
+        var amountInput = document.getElementById('amount');
+        var currentAmount = parseInt(amountInput.value) || 0;  // 입력된 값이 없으면 0으로 처리
+        var newAmount = currentAmount + value;
+        amountInput.value = newAmount;  // 새로운 금액을 입력란에 설정
+        updateCommissionAmounts();  // 수수료 계산 후 표시
+    }
 
-                const IMP = window.IMP;
-                IMP.init("${requestScope.pointcharge_chargekey}"); // 가맹점 식별코드
+    function updateCommissionAmounts() {
+        var amountInput = document.getElementById('amount');
+        var amount = parseInt(amountInput.value) || 0;
 
-                const productName = "포인트 충전";
-                const amountInput = document.getElementById("amount");
-                const chargeAmount = parseInt(amountInput.value, 10); // 충전 금액
-                const memberUserId = document.querySelector('input[name="member_user_id"]').value; // 회원 ID 가져오기
+        // 각 등급별 수수료를 적용한 금액 계산
+        var goldAmount = amount - (amount * 0.03);  // 3% 수수료
+        var silverAmount = amount - (amount * 0.04);  // 4% 수수료
+        var bronzeAmount = amount - (amount * 0.05);  // 5% 수수료
 
-                if (!chargeAmount || chargeAmount < 1000) {
-                    alert("충전 금액을 1000원 이상 입력해주세요.");
-                    return;
-                }
+        // 계산된 금액을 표시
+        document.getElementById('gold-amount').textContent = goldAmount + '원';
+        document.getElementById('silver-amount').textContent = silverAmount + '원';
+        document.getElementById('bronze-amount').textContent = bronzeAmount + '원';
+    }
 
-                IMP.request_pay(
-                    {
-                        pg: "html5_inicis", // PG사 선택
-                        pay_method: "card", // 결제 방식 (카드, 계좌이체 등)
-                        merchant_uid: "merchant_" + new Date().getTime(), // 주문번호 (고유값)
-                        name: productName, // 주문명
-                        amount: chargeAmount, // 결제 금액
-                        buyer_name: memberUserId, // 구매자 이름 (회원 ID)
-                        buyer_tel: "", // 구매자 전화번호 (필요시 추가)
-                        buyer_addr: "", // 구매자 주소 (필요시 추가)
-                        buyer_postcode: "" // 구매자 우편번호 (필요시 추가)
-                    },
-                    function (rsp) {
-                        if (rsp.success) {
-                            // 결제 성공 시 서버로 데이터 전송
-                            fetch("<%= ctx_Path %>/mypage/chargeComplete", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    memberUserId: memberUserId,
-                                    chargeAmount: chargeAmount,
-                                    imp_uid: rsp.imp_uid, // 결제 고유번호
-                                    merchant_uid: rsp.merchant_uid // 주문번호
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert("충전이 완료되었습니다.");
-                                    window.location.href = "<%= ctx_Path %>/mypage"; // 마이페이지로 이동
-                                } else {
-                                    alert("충전은 완료되었으나 서버 처리에 실패했습니다. 고객센터로 문의해주세요.");
-                                }
-                            })
-                            .catch(error => {
-                                alert("충전 처리 중 오류가 발생했습니다.");
-                                console.error("Error:", error);
-                            });
-                        } else {
-                            alert(`결제에 실패하였습니다: ${rsp.error_msg}`);
-                        }
+	document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".charge-btn").addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const IMP = window.IMP;
+            IMP.init("${requestScope.pointcharge_chargekey}");
+
+            const productName = "포인트 충전";
+            const amountInput = document.getElementById("amount");
+            const chargeAmount = parseInt(amountInput.value, 10);
+            const memberUserId = document.querySelector('input[name="member_user_id"]').value;
+            const pk_member_no = document.querySelector('input[name="pk_member_no"]').value;
+            const charge_commission = "${requestScope.charge_commission}";
+
+            if (!chargeAmount || chargeAmount < 1000) {
+                alert("충전 금액을 1000원 이상 입력해주세요.");
+                return;
+            }
+
+            console.log("결제 요청 시작:", chargeAmount);
+
+            IMP.request_pay(
+                {
+                    pg: "html5_inicis",
+                    pay_method: "card",
+                    merchant_uid: "merchant_" + new Date().getTime(),
+                    name: productName,
+                    amount: chargeAmount,
+                },
+                function (rsp) {
+                    console.log("결제 응답:", rsp);
+                    if (rsp.success) {
+                        goCoinUpdate(ctx_Path, pk_member_no, chargeAmount, charge_commission, true);
+                    } else {
+                        alert("결제 실패: " + rsp.error_msg);
                     }
-                );
-            });
+                }
+            );
         });
-
-    </script>
+    });
+    
+	// goCoinUpdate 함수 수정 (팝업 닫기 기능 추가)
+	function goCoinUpdate(ctx_Path, fkMemberNo, chargeAmount, chargeCommission, closePopup = false) {
+	    $.ajax({
+	        url: ctx_Path + "/mypage/point_update",
+	        type: "POST",
+	        contentType: "application/json",
+	        data: JSON.stringify({
+	            "fk_member_no": fkMemberNo,
+	            "charge_commission": chargeCommission,
+	            "charge_price": chargeAmount
+	        }),
+	        dataType: "json",
+	        success: function (json) {
+	            if (json.n == 1) {
+	                alert("충전이 완료되었습니다.");
+	                if (closePopup) {
+	                    window.open('', '_self').close(); // 팝업 닫기
+	                } else {
+	                    location.href = ctx_Path + "/mypage/mypagemain";
+	                }
+	            } else {
+	                alert("json.n == 0");
+	            }
+	        },
+	        error: function (request, status, error) {
+	            alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	        }
+	    });
+	}
+</script>
+</html>

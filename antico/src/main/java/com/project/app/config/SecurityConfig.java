@@ -19,9 +19,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
-import com.project.app.member.service.CustomAccessHandler;
-import com.project.app.member.service.CustomEntryPoint;
-import com.project.app.member.service.LoginFailureHandler;
+import com.project.app.security.CustomAccessHandler;
+import com.project.app.security.CustomEntryPoint;
+import com.project.app.security.LoginFailureHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,6 +66,9 @@ public class SecurityConfig {
     	  request -> request
     	  
     	  .requestMatchers("/product/**").authenticated()
+    	  
+    	  .requestMatchers("/mypage/**").authenticated()
+    	  
           .requestMatchers("/**").permitAll()
              
           .anyRequest().authenticated()
@@ -77,15 +80,19 @@ public class SecurityConfig {
     .csrf(AbstractHttpConfigurer::disable)
     .formLogin((formLogin) ->
       	formLogin
-	      		.loginPage("/member/login")
-	      		.loginProcessingUrl("/auth/login")
-	      		.usernameParameter("member_user_id")
-	      		.passwordParameter("member_passwd")
-	      		.defaultSuccessUrl("/index", true)
-	      		.failureHandler(login_failure_handler)
+	      	.loginPage("/member/login")
+	      	.loginProcessingUrl("/auth/login")
+	      	.usernameParameter("member_user_id")
+	      	.passwordParameter("member_passwd")
+	      	.defaultSuccessUrl("/index", true)
+	      	.failureHandler(login_failure_handler)
       		.permitAll()
-    		);
-     
+    	)
+     .logout(logout -> logout
+    		 .logoutUrl("/logout")
+    		 .logoutSuccessUrl("/index")
+    		 .clearAuthentication(true)
+    		 );
      
      return http.build();
      }

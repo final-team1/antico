@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <%
     String ctx_Path = request.getContextPath();
 %>
@@ -327,7 +329,6 @@ hr {
 
 .trust_progress {
 	height: 100%;
-	background-color: #4CAF50; /* 초록색 */
 	border-radius: 4px;
 }
 
@@ -412,10 +413,10 @@ hr {
 <script>
 	// 판매내역 클릭시
 	function sellList() {
-		var tabTitle = "판매내역";
+		const tabTitle = "판매내역";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/sellList",
+	         url : "<%=ctx_Path%>/mypage/sell_list",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -430,10 +431,10 @@ hr {
 
 	// 구매내역 클릭시
 	function buyList() {
-		var tabTitle = "구매내역";
+		const tabTitle = "구매내역";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/buyList",
+	         url : "<%=ctx_Path%>/mypage/buy_list",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -448,10 +449,10 @@ hr {
 	
 	// 찜한 상품 클릭시
 	function wishList() {
-		var tabTitle = "찜한 상품";
+		const tabTitle = "찜한 상품";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/buyList",
+	         url : "<%=ctx_Path%>/mypage/buy_list",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -466,10 +467,10 @@ hr {
 	
 	// 계좌 관리 클릭시
 	function myBank() {
-		var tabTitle = "계좌 관리";
+		const tabTitle = "계좌 관리";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/myBank",
+	         url : "<%=ctx_Path%>/mypage/mybank",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -484,10 +485,10 @@ hr {
 	
 	// 계좌 후기 클릭시
 	function myreview() {
-		var tabTitle = "거래 후기";
+		const tabTitle = "거래 후기";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/myBank",
+	         url : "<%=ctx_Path%>/mypage/mybank",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -503,10 +504,10 @@ hr {
 	
 	// 탈퇴하기 클릭시
 	function memberDelete() {
-		var tabTitle = "탈퇴하기";
+		const tabTitle = "탈퇴하기";
 	      
 	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/memberDelete",
+	         url : "<%=ctx_Path%>/mypage/member_delete",
 	         success : function(html) {
 	            openSideTab(html, tabTitle);
 	         },
@@ -531,8 +532,8 @@ hr {
 	
 	// URL 복사
 	function copyUrl() {
-		var url = '';
-		var textarea = document.createElement("textarea");
+		let url = '';
+		let textarea = document.createElement("textarea");
 		document.body.appendChild(textarea);
 		url = window.document.location.href;
 		textarea.value = url;
@@ -553,7 +554,7 @@ hr {
     console.log(Kakao.isInitialized()); // 초기화 확인
 
     function shareToKakao() {
-        var currentURL = window.location.href; // 현재 페이지 URL 가져오기
+        let currentURL = window.location.href; // 현재 페이지 URL 가져오기
 
         Kakao.Link.sendDefault({
             objectType: 'text', // 텍스트 형식
@@ -600,7 +601,7 @@ hr {
 				<!-- 왼쪽 profile_section -->
 				<section class="profile_section" style="flex: 1;">
 					<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-						<h4 class="name" style="font-weight: bold;">닉네임</h4>
+						<h4 class="name" style="font-weight: bold;">${requestScope.member_name}</h4>
 						<button class="share_btn_arrow" onclick="openShareModal()">
 							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
@@ -629,19 +630,18 @@ hr {
 
 					<!-- 점수 막대기 -->
 					<div class="stat_box score_level mt-2">
-						<p style="font-weight: bold;">스코어</p>
+						<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
 						<div class="trust_bar">
-							<div class="trust_progress" style="width: 75%;"></div>
+							<div class="trust_progress" style="width: ${requestScope.data/10}%; background-color:${requestScope.role_color};"></div>
 						</div>
-						<span>75%</span>
-						<!-- 예시 퍼센트 -->
+						<span>${requestScope.data}</span>
 					</div>
 
 					<!-- auto-register -->
 					<section class="point" style=" text-align: right;">
 						<h5 style="font-weight: bold; text-align: left; padding-left: 10px; padding-top: 5px;">내 포인트</h5>
-						<button class="btn">
-						    <fmt:formatNumber value="${pointValue}" pattern="#,###" style="text-align:right;"/>포인트 들어올거임<span style="font-size: 22pt; font-weight: bold; color: #7A9E23;"> P</span>
+						<button class="btn" onclick="myBank()">
+						    <span style="font-size: 16pt; font-weight: bold;"><fmt:formatNumber value="${requestScope.member_point}" type="number" pattern="#,###"/></span><span style="font-size: 22pt; font-weight: bold; color: #7A9E23;"> P</span>
 						</button>
 					</section>
 				</div>

@@ -5,24 +5,43 @@
 
 <mapper namespace="com.project.app.mypage.model.MypageDAO">
 
-    <!-- 탈퇴 신청 삽입 -->
-    <insert id="insertLeaveRequest">
-        insert into leave (fk_member_no, leave_reason, leave_date)
-        values (#{fk_member_no}, #{leave_reason}, sysdate)
-    </insert>
+	<!-- 탈퇴 신청시 탈퇴테이블에 insert -->
+    <insert id="delete_submit" parameterType="Map">
+	    insert into tbl_leave sets(pk_leave_no, fk_member_no, leave_reason, leave_date)
+	    values (leave_seq.nextval, to_number(#{fk_member_no}), #{leave_reason}, sysdate)
+	</insert>
 
-    <!-- 회원번호로 탈퇴 신청 조회 -->
-    <select id="getLeaveRequestByMemberNo" resultType="com.project.app.mypage.domain.LeaveVO">
-        select * from leave 
-        where fk_member_no = #{memberno} 
-        and leave_date >= sysdate - interval '72' hour
-    </select>
-
-    <!-- 탈퇴 신청 삭제 -->
-    <delete id="deleteLeaveRequest">
-        delete from leave where fk_member_no = #{memberno}
-    </delete>
-
+	<!-- 탈퇴 신청시 탈퇴테이블에 insert -->
+    <insert id="pointcharge" parameterType="Map">
+	    insert into tbl_charge sets(pk_charge_no, fk_member_no, charge_price, charge_regdate, charge_commission)
+		values (cha_no.nextval, #{fk_member_no}, #{charge_price}, sysdate, #{charge_commission})
+	</insert>
+	
+	<!-- 회원이 충전한 포인트를 업데이트 -->
+	<update id="pointupdate" parameterType="Map">
+		update tbl_member set member_point = member_point + #{point_insert}
+		where pk_member_no = #{fk_member_no}
+	</update>
+	
+	<!-- 충전한 포인트의 내역을 insert -->
+	<insert id="point_history" parameterType="Map">
+		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
+		values (point_history_seq.nextval, #{fk_member_no}, #{point_history_reason}, #{point_insert}, #{member_point}, #{point_insert}+#{member_point}, sysdate)
+	</insert>
+	
+	<!-- 회원의 총 충전금액을 알아오기 위한 용도 (등급때매) -->
+	<select id="point_sum" resultType="int" parameterType="String">
+		select nvl(sum(charge_price), 0)
+		from tbl_charge
+		where fk_member_no = #{pk_member_no}
+	</select>
+	
+	<!-- 총 충전금액이 일정금액 이상이면 등급을 올려준다 -->
+	<update id="role_update" parameterType="String">
+		update tbl_member set member_role = #{rank}
+		where pk_member_no = #{pk_member_no}
+	</update>
+	
 </mapper>
 
 

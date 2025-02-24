@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.admin.model.AdminDAO">
+	
+	<!-- 파일첨부가 없는 경우의 공지사항작성 -->
+	<insert id="add" parameterType="NoticeVO">
+		insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date)
+        values(notice_seq.nextval, #{fk_member_no}, #{notice_title}, #{notice_content}, default)
+	</insert>
+
+	<!-- 파일첨부가 있는 경우의 공지사항작성 -->
+	<insert id="add_withFile" parameterType="NoticeVO">
+		insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date,
+							    notice_orgfilename, notice_filename, notice_filesize)  
+        values(notice_seq.nextval, #{fk_member_no}, #{notice_title}, #{notice_content}, default, #{notice_orgfilename}, #{notice_filename}, #{notice_filesize})
+	</insert>
+	
+	<resultMap id="InquireResultMap" type="HashMap">
+	    <result property="pk_inquire_no" column="pk_inquire_no"/>
+	    <result property="fk_member_no" column="fk_member_no"/>
+	    <result property="inquire_title" column="inquire_title"/>
+	    <result property="inquire_content" column="inquire_content"/>
+	    <result property="inquire_filename" column="inquire_filename"/>
+	    <result property="inquire_orgfilename" column="inquire_orgfilename"/>
+	    <result property="inquire_file_size" column="inquire_file_size"/>
+	    <result property="inquire_status" column="inquire_status"/>
+	    <result property="inquire_secret" column="inquire_secret"/>
+	    <result property="inquire_regdate" column="inquire_regdate"/>
+	    <result property="member_name" column="member_name"/>
+	</resultMap>
+	
+	<!-- 미답변 1:1문의 내역 조회 -->
+	<select id="uninquire_list" resultMap="InquireResultMap">
+		SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
+				, member_name, inquire_orgfilename, inquire_filename
+		FROM tbl_inquire i join tbl_member m
+        on i.fk_member_no = m.pk_member_no
+		order by pk_inquire_no desc
+	</select>
+	
+	<!-- 공지사항 조회 -->
+	<select id="notice_list" resultType="NoticeVO">
+	    SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	           , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	           , notice_date
+	           , notice_update_date
+	    FROM 
+	        ( 
+	        SELECT rownum AS rnum, a.*
+	        FROM 
+	            ( 
+	                SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	                       , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	                       , TO_CHAR(notice_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_date
+	                       , TO_CHAR(notice_update_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_update_date
+	                FROM tbl_notice
+	                ORDER BY pk_notice_no DESC
+	            ) a
+	        )
+	    WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
+	</select>
+	
+	<!-- 공지사항 총 개수 -->
+	<select id="getNoticeCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_notice
+	</select>
+
+	<!-- 삭제시 파일 조회 -->
+    <select id="getView_delete" parameterType="String" resultType="NoticeVO">
+       select nvl(notice_filename, ' ') AS notice_filename
+            , nvl(notice_orgfilename, ' ') AS notice_orgfilename
+       from tbl_notice
+       where pk_notice_no = #{pk_notice_no}
+    </select>  
+	
+	<!-- 공지삭제 -->
+	<delete id="notice_delete" parameterType="String">
+       delete from tbl_notice
+       where pk_notice_no = to_number(#{pk_notice_no})
+    </delete>
+	
+	
+	
+	
+</mapper>
+
+

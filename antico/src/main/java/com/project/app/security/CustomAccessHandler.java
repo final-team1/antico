@@ -1,13 +1,14 @@
-package com.project.app.member.service;
+package com.project.app.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -24,11 +25,7 @@ public class CustomAccessHandler implements AccessDeniedHandler {
 		String ctx_path = request.getContextPath();
 		
 		
-		if(request_url.startsWith(ctx_path+"/product")) {
-			
-			response.sendRedirect(ctx_path+"/index");
-			System.out.println("AccessDeniedHandler");
-		}
+		
 		
 
 	}

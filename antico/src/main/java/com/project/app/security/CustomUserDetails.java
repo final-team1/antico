@@ -1,4 +1,4 @@
-	package com.project.app.member.service;
+	package com.project.app.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,16 +16,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 	
-	private final String pk_member_no;
-	private final String member_passwd;
-	private final String member_user_id;
-	private final String member_regdate;
-	private final String member_tel;
-	private final String member_passwd_change_date;
-	private final String member_role;
-	private final String member_point;
-	private final String member_score;
-	private final String member_status;
+	private final MemberVO member_vo;
 	
 
 	@Override
@@ -35,7 +26,7 @@ public class CustomUserDetails implements UserDetails {
 		
 		String role = "";
 		
-		switch (member_role) {
+		switch (member_vo.getMember_role()) {
 		case "0":
 			role = "ROLE_USER_1";
 			break;
@@ -87,12 +78,12 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return member_passwd;
+		return member_vo.getMember_passwd();
 	}
 
 	@Override
 	public String getUsername() {
-		return member_user_id;
+		return member_vo.getMember_user_id();
 	}
 	
 
