@@ -1,5 +1,6 @@
 package com.project.app.mypage.service;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -13,6 +14,13 @@ public interface MypageService {
 
 	// 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
 	int point_sum(String pk_member_no);
+
+	// 판매자 정보 불러오기
+	List<Map<String, String>> myproduct(String pk_member_no);
+
+	// 판매자 정보 불러오기
+	Map<String, String> sellerList(String n);
+
 
 
 }

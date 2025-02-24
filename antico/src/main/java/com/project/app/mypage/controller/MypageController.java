@@ -1,6 +1,7 @@
 package com.project.app.mypage.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,7 @@ public class MypageController {
 	@Autowired
 	private MemberVO member_vo;
 	
-//	@Autowired
-//	private ProductVO prod_vo;
+	private ProductVO prod_vo = new ProductVO();
 	
 //	private final ProductVO prod_vo = new ProductVO();
 	
@@ -55,7 +55,7 @@ public class MypageController {
 		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
 		String member_name = member_vo.getMember_name(); // 회원이름
-		
+		String member_score = member_vo.getMember_score(); // 신뢰점수
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
 		
 		int point_sum = service.point_sum(pk_member_no); // 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
@@ -80,6 +80,9 @@ public class MypageController {
 			role_color = "#ffd700";
 		}
 		
+		List<Map<String, String>> myproduct = service.myproduct(pk_member_no); // 마이페이지에서 내상품 조회하기
+		
+		mav.addObject("myproduct", myproduct);
 		mav.addObject("data", data);
 		mav.addObject("userid", userid);
 		mav.addObject("member_role", member_role);
@@ -215,6 +218,32 @@ public class MypageController {
 	public ModelAndView sellerpage(ModelAndView mav) {
 
 //		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
+//		System.out.println("fk_member_no 체크"+fk_member_no);
+		String n = "63"; // 테스트용
+		Map<String, String> seller_info = service.sellerList(n); // 판매자 정보 불러오기
+		System.out.println("seller_info 테스트" + seller_info);
+		
+		String member_role = String.valueOf(seller_info.get("member_role"));
+		String member_name = String.valueOf(seller_info.get("member_name"));
+		String member_score = String.valueOf(seller_info.get("member_score"));
+		String role_color; // 회원등급별 색상을 주기 위한 것.
+		if("0".equals(member_role)) {
+			member_role = "브론즈";
+			role_color = "#b87333";
+		} else if("1".equals(member_role)) {
+			member_role = "실버";
+			role_color = "#c0c0c0";
+		//	System.out.println(data+"data 확인");
+		} else {
+			member_role = "골드";
+			role_color = "#ffd700";
+		}
+		
+		mav.addObject("member_name", member_name);
+		mav.addObject("member_role", member_role);
+		mav.addObject("member_score", member_score);
+		mav.addObject("role_color", role_color);
+		mav.addObject("seller_info", seller_info);
 		mav.setViewName("mypage/sellerpage");
 		return mav;
 	}
