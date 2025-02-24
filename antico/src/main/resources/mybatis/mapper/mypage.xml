@@ -42,6 +42,47 @@
 		where pk_member_no = #{pk_member_no}
 	</update>
 	
+	
+	<resultMap id="myproduct" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	</resultMap>
+	
+	<!-- 마이페이지에서 내상품 -->
+	<select id="myproduct" parameterType="String" resultMap="myproduct">
+		select pk_product_no, fk_member_no, product_title, product_contents, product_price, product_status, product_regdate
+		     , product_sale_type, pk_prod_img_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail
+		from tbl_product p join tbl_prod_img i
+		on p.pk_product_no = i.fk_product_no
+		where p.fk_member_no = #{pk_member_no}
+		and   i.prod_img_is_thumbnail = 1
+	</select>
+	
+	<resultMap id="seller_info" type="HashMap">
+	    <result property="pk_member_no" 			column="pk_member_no"			javaType="String"/>
+	    <result property="member_name" 				column="member_name" 			javaType="String"/>
+	    <result property="member_score" 			column="member_score" 			javaType="String"/>
+	    <result property="member_role" 				column="member_role" 			javaType="String"/>
+	</resultMap>
+	
+	<select id="sellerList" parameterType="String" resultMap="seller_info">
+		select distinct m.pk_member_no, m.member_name, m.member_score, m.member_role
+		from tbl_member m join tbl_product p
+		on m.pk_member_no = p.fk_member_no
+		where m.pk_member_no = #{n}
+	</select>
+	
 </mapper>
 
 

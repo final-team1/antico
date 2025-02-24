@@ -1,5 +1,6 @@
 package com.project.app.mypage.model;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -24,6 +25,12 @@ public interface MypageDAO {
 
 	// 총 충전금액이 일정금액 이상이면 등급을 올려준다
 	int role_update(String pk_member_no, String rank);
+
+	// 마이페이지 내상품 조회
+	List<Map<String, String>> myproduct(String pk_member_no);
+
+	// 판매자 정보 불러오기
+	Map<String, String> sellerList(String n);
 
 
 }
