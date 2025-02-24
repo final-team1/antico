@@ -41,7 +41,8 @@ public interface ProductService {
 	String getNo(); // 상품번호 채번해오기
 	int addProduct(ProductVO productvo, ProductImageVO product_imgvo, List<MultipartFile> attach_list); // 상품 등록 완료 후 상품 테이블 및 이미지 테이블에 상품 정보 저장
 	
-
+	// 상품 요약 정보 목록 조회
+	List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list);
 
 
 

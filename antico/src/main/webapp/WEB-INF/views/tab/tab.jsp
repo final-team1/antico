@@ -88,7 +88,6 @@
 <div id="overlay"></div>
 
 <script type="text/javascript">
-
 	let historyStack = [];
 	
 	$(document).ready(function(){
@@ -97,22 +96,30 @@
 	});
 	
 	// 사이드 네비게이션 열기
-	function openSideTab(html, tabTitle) {
-		// 반응형 사이드 네비게이션 처리
-		// 브라우저 너비가 1024px (FHD 화면 기준)보다 이하인 경우 반응형 처리
-		const width = document.body.clientWidth > 1024 ? "700px" : "100vw";
+	function openSideTab(html, tabTitle) {	
+		
+		const lastHistory = historyStack[historyStack.length - 1];
+		
+	 	if (lastHistory && lastHistory.html === html) {
+	        return;
+	 	}
 		
 		// historyStack에 페이지 저장
-		historyStack.push(html);
-		
-		console.log(historyStack.length);
+		historyStack.push({html, tabTitle});
+	
+		$("div#sidetab_content").empty().find("*").off();
+		$("div#sidetab_content").html("").find("script").remove(); // 스크립트 제거 추가
 		
 		// 사이드 탭에 HTML 요소 삽입
 		$("div#sidetab_content").html(html);
 		
 		// 탭 제목 동적으로 설정
-		$("span#sidetab_title").text(tabTitle);
+		$("span#sidetab_title").html(tabTitle);
 		
+		// 반응형 사이드 네비게이션 처리
+		// 브라우저 너비가 1024px (FHD 화면 기준)보다 이하인 경우 반응형 처리
+		const width = document.body.clientWidth > 1024 ? "700px" : "100vw";
+	
 		$("div#sidetab_container")
 		.css("display", "block")
 		.animate({
@@ -129,11 +136,23 @@
 		// 후기 페이지의 변수 제거
 		delete cur_page;
 		
+		$("div#sidetab_content").empty().find("*").off();
+		$("div#sidetab_content").html("").find("script").remove(); // 스크립트 제거 추가
+		
+		if(WebSocketManager.isConnected) {
+			WebSocketManager.disconnect();
+		}
+		
 		if(historyStack.length > 1) {
+			console.log(historyStack.length);
 			historyStack.pop();
 			let previousPage = historyStack[historyStack.length - 1];
+						
+			$("span#sidetab_title").text(previousPage.tabTitle);
+			$("div#sidetab_content").html(previousPage.html);
 			
-			$("div#sidetab_content").html(previousPage);
+			console.log("간다 " + previousPage.html);
+			
 		}
 		
 		else {
