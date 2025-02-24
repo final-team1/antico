@@ -20,7 +20,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 			AuthenticationException e) throws IOException, ServletException {
 		
 		String ctx_path = request.getContextPath();
-		System.out.println("AuthenticationEntryPoint");
 		
 		Cookie cookie = new Cookie("message", URLEncoder.encode("로그인에&nbsp;실패했습니다.&nbsp;아이디,&nbsp;비밀번호를&nbsp;확인해주세요.", "UTF-8"));
 		

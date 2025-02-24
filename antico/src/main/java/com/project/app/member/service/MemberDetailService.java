@@ -137,7 +137,7 @@ public class MemberDetailService implements UserDetailsService{
 				}
 			}
 		}
-		
+		System.out.println("들어오나?");
 		return User.withUserDetails(user_detail).build();		
 	}
 

@@ -4,6 +4,17 @@ select * from tab;
 select *
 from tbl_member;
 
+delete from tbl_member
+where pk_member_no = 101;
+
+commit;
+
+desc tbl_member;
+
+select *
+from tbl_member
+where member_user_id = ' ' and member_passwd = 'kakao';
+
 select *
 from tbl_product;
 
