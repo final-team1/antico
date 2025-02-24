@@ -31,7 +31,7 @@
 	
 	<!-- 회원의 총 충전금액을 알아오기 위한 용도 (등급때매) -->
 	<select id="point_sum" resultType="int" parameterType="String">
-		select sum(charge_price)
+		select nvl(sum(charge_price), 0)
 		from tbl_charge
 		where fk_member_no = #{pk_member_no}
 	</select>

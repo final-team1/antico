@@ -205,23 +205,6 @@ public class MypageController {
 	}
 
 	
-	
-	// 충전하기 결제
-	@PostMapping("/charge_complete")
-	@ResponseBody
-	public Map<String, Object> chargeComplete(@RequestBody Map<String, Object> requestData) {
-	    String memberUserId = (String) requestData.get("memberUserId");
-	    int chargeAmount = (int) requestData.get("chargeAmount");
-	    String impUid = (String) requestData.get("imp_uid");
-	    String merchantUid = (String) requestData.get("merchant_uid");
-
-	 //   int result = pointService.chargePoint(memberUserId, chargeAmount, impUid, merchantUid);
-	    
-	    Map<String, Object> response = new HashMap<>();
-	 //   response.put("success", result > 0);
-	    return response;
-	}
-
 	@GetMapping("mybank_list")
 	public ModelAndView mybank_list(ModelAndView mav) {
 		mav.setViewName("mypage/mybank_list");
