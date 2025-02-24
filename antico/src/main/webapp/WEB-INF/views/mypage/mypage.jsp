@@ -215,103 +215,6 @@ hr {
 	align-items: center;
 }
 
-/* 내 상품 */
-.cardcontainer {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	gap: calc(2vw);
-}
-
-.cardbox {
-	width: 100%;
-	height: auto;
-	/* background-color: #dbdbdb; */
-	transition: all 0.5s;
-}
-
-.cardbox:hover {
-	transform: translateY(-0.5208vw);
-}
-
-.cardimg {
-	width: 100%;
-	aspect-ratio: 1/1;
-	object-fit: cover;
-	background-color: #f1f1f1;
-}
-
-.cardname {
-	font-size: clamp(16px, 0.8333vw, 200px);
-	text-align: center;
-}
-
-.cardprice {
-	font-size: clamp(16px, 0.8333vw, 200px);
-	text-align: center;
-}
-
-.cartgo {
-	width: clamp(180px, 10.4167vw, 1000px);
-	height: clamp(50px, 3.1250vw, 1000px);
-	font-size: clamp(16px, 0.8333vw, 200px);
-	border-radius: 8px;
-	background-color: #000;
-	color: #fff;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: pointer;
-	box-sizing: border-box;
-	transition: all 0.5s;
-}
-
-.cartgo:hover {
-	border: 1px solid #000;
-	background-color: #fff;
-	color: #000;
-	box-sizing: border-box;
-}
-
-.cartbox {
-	width: 100%;
-	min-width: 600px;
-	height: auto;
-	border: 0px solid green;
-	margin: 5.2083vw auto;
-	display: flex;
-}
-
-.cartbox>div {
-	margin: auto;
-}
-
-.leftdiv {
-	display: block;
-	width: 16%;
-}
-
-@media ( max-width : 1279px) {
-	.cardcontainer {
-		grid-template-columns: 1fr 1fr;
-	}
-	.leftdiv {
-		display: none;
-	}
-	.cartbox {
-		width: 100%;
-	}
-	.cartbox>div:nth-child(2) {
-		width: 100%;
-		margin: auto;
-	}
-}
-
-@media ( min-width : 1280px) {
-	.cardcontainer {
-		grid-template-columns: 1fr;
-	}
-}
-
 /* 신뢰지수 막대기 */
 .score_level {
 	display: flex;
@@ -405,6 +308,10 @@ hr {
 .orderby button:first-child {
 	border: solid 0px;
 }
+
+
+
+
 
 </style>
 
@@ -634,7 +541,7 @@ hr {
 						<div class="trust_bar">
 							<div class="trust_progress" style="width: ${requestScope.data/10}%; background-color:${requestScope.role_color};"></div>
 						</div>
-						<span>${requestScope.data}</span>
+						<span>${requestScope.member_score}</span>
 					</div>
 
 					<!-- auto-register -->
@@ -660,12 +567,12 @@ hr {
 
 				<!-- 상품 목록 -->
 				<ul class="cardcontainer">
-					<c:if test="${not empty requestScope.pvoList}">
-						<c:forEach var="pvoList" items="${requestScope.pvoList}">
-							<li class="cardbox" style="width: 100%; list-style: none;">
-								<a href="/CLARETe/shop/prodView.cl?p_num=${pvoList.p_num}">
+					<c:if test="${not empty requestScope.myproduct_list}">
+						<c:forEach var="pvoList" items="${requestScope.myproduct_list}">
+							<li class="cardbox" style="list-style: none;">
+								<a href="${pvoList.pk_product_no}">
 									<div class="cardimg">
-										<img src="/CLARETe/images/${pvoList.p_image}" style="width: 100%; display: block;">
+										<img src="${pvoList.prod_img_name}" style="width: 100%; display: block;">
 									</div>
 									<div class="cardname">${pvoList.p_name}</div>
 									<div class="cardprice">
@@ -677,7 +584,7 @@ hr {
 					</c:if>
 				</ul>
 
-				<c:if test="${empty requestScope.pvoList}">
+				<c:if test="${empty requestScope.myproduct_list}">
 					<div class="mypage_contants_bottom">
 						<div class="none_product">
 							<div>선택된 조건에 해당하는 상품이 없습니다.</div>

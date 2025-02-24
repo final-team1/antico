@@ -13,13 +13,15 @@ public interface MypageService {
 	int pointcharge(Map<String, String> paraMap);
 
 	// 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
-	int point_sum(String pk_member_no);
+	int point_sum(String pk_member_no, String charge_price);
 
 	// 판매자 정보 불러오기
 	List<Map<String, String>> myproduct(String pk_member_no);
 
 	// 판매자 정보 불러오기
 	Map<String, String> sellerList(String n);
+
+	void role_update(String role, String pk_member_no);
 
 
 

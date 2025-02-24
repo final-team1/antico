@@ -55,35 +55,37 @@ public class MypageController {
 		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
 		String member_name = member_vo.getMember_name(); // 회원이름
-		String member_score = member_vo.getMember_score(); // 신뢰점수
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
+		String member_score = member_vo.getMember_score(); // 회원의 신뢰점수
 		
-		int point_sum = service.point_sum(pk_member_no); // 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
-	//	System.out.println("point_sum 체크"+point_sum);
+		if(Integer.parseInt(member_score) >= 1000) { // 신뢰지수가 1000이 넘으면서
+			String role = "";
+			if(Integer.parseInt(member_score) < 2000) { // 2000보다 작을 경우(즉, 실버라는 뜻.)
+				role = "1";
+			} else if(Integer.parseInt(member_score) <= 2000) { // 골드
+				role = "2";
+			}
+			service.role_update(role, pk_member_no); // 신뢰지수가 일정수치 이상이면 업데이트
+		}
 		
-		int rank = point_sum / 1000; // 충전 포인트의 지수를 나타내기 위함
-		int data = 0;
+		
 		String member_role = member_vo.getMember_role(); // 회원등급
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
 			member_role = "브론즈";
 			role_color = "#b87333";
-			data = rank;
 		} else if("1".equals(member_role)) {
 			member_role = "실버";
 			role_color = "#c0c0c0";
-			data = rank - 1000;
-			data = Math.min(700, data); // 나머지 30은 신뢰지수와 합산
-		//	System.out.println(data+"data 확인");
 		} else {
 			member_role = "골드";
 			role_color = "#ffd700";
 		}
 		
-		List<Map<String, String>> myproduct = service.myproduct(pk_member_no); // 마이페이지에서 내상품 조회하기
-		
-		mav.addObject("myproduct", myproduct);
-		mav.addObject("data", data);
+		List<Map<String, String>> myproduct_list = service.myproduct(pk_member_no); // 마이페이지에서 내상품 조회하기
+//		System.out.println("myproduct_list 췤"+myproduct_list);
+		mav.addObject("myproduct_list", myproduct_list);
+		mav.addObject("member_score", member_score);
 		mav.addObject("userid", userid);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);
@@ -129,15 +131,20 @@ public class MypageController {
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
 	//	System.out.println("point_update방문");
-	//	String member_no = member_vo.getPk_member_no();
+		String pk_member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
 		String charge_commission = chargevo.getCharge_commission(); // 수수료
 		String point_history_reason = "포인트충전"; // 포인트내역 테이블 상세내역
 		String member_point = member_vo.getMember_point(); // 회원의 현재 포인트
+		
+		
 		int point_pct = (int) (Integer.parseInt(charge_price) * (Integer.parseInt(charge_commission)/100.0));
 		
 		int point_insert = Integer.parseInt(charge_price) - point_pct; // 수수료를 제외한 실제 충전금액
+		
+		int point_sum = service.point_sum(pk_member_no, charge_price); // 회원의 총 충전금액을 알아오고 충전금액만큼 포인트충전하기
+		
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("fk_member_no", fk_member_no);
@@ -146,7 +153,6 @@ public class MypageController {
 		paraMap.put("point_insert", String.valueOf(point_insert));
 		paraMap.put("point_history_reason", point_history_reason);
 		paraMap.put("member_point", member_point);
-		
 		int n  = service.pointcharge(paraMap); // 결제하기를 눌렀을 경우 회원의 포인트 업데이트
 		
 		Map<String, Integer> response = new HashMap<>();

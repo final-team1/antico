@@ -20,6 +20,7 @@ public class MypageService_imple implements MypageService {
 		return n;
 	}
 
+	// 포인트 충전
 	@Override
 	public int pointcharge(Map<String, String> paraMap) {
 		int n = mypagedao.pointcharge(paraMap); // 충전테이블 insert
@@ -31,28 +32,18 @@ public class MypageService_imple implements MypageService {
 		if(m == 1) {
 			x = mypagedao.point_history(paraMap); // 포인트가 충전되면 포인트내역 테이블에 insert
 		}
-		
 		return n*m*x;
 	}
 
 	// 회원의 총 충전금액을 알아오기 위한 용도 (등급때매)
 	@Override
-	public int point_sum(String pk_member_no) {
+	public int point_sum(String pk_member_no, String charge_price) {
 		int n = mypagedao.point_sum(pk_member_no);
-		String rank = "0";
-	//	System.out.println("n확인"+n);
-
-		if(n >= 1000000) { // 회원의 총 충전금액이 100만원이 넘을 경우
-			rank = "1";
+		int x = n/1000;
+		if(x <= 1700) { // 회원의 총 충전금액이 170이하까지만 업데이트
+			int m = mypagedao.score_update(pk_member_no, String.valueOf(Integer.parseInt(charge_price)/1000));
 		}
 		
-		// "여기부터 진성이가 작성할 것" 골드부분
-	//  else if (n >= 1000000 && "여기부터 진성이가 작성할 것") { // 골드
-	//		rank = "2";
-	//  }
-		int m = mypagedao.role_update(pk_member_no, rank); // 총 충전금액이 일정금액 이상이면 등급을 올려준다
-		
-	//	System.out.println("m확인"+m);
 		
 		return n;
 	}
@@ -69,6 +60,11 @@ public class MypageService_imple implements MypageService {
 	public Map<String, String> sellerList(String n) {
 		Map<String, String> seller_list = mypagedao.sellerList(n);
 		return seller_list;
+	}
+
+	@Override
+	public void role_update(String role, String pk_member_no) {
+		mypagedao.role_update(role, pk_member_no);
 	}
 	
 }
