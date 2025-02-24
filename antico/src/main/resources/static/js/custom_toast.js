@@ -78,3 +78,17 @@ function showReviewModal(json, icon_url) {
 		showConfirmButton : false
 	});
 }
+
+// ajax 공통 에러 핸들러 함수 및 토스트 처리
+function errorHandler(request, status, error) {
+	console.log(request.responseText);
+
+	// 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+	let response = request.responseText;
+	let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+
+	showAlert("error", message);
+
+	// 사이드 탭 닫기
+	closeSideTab();
+}

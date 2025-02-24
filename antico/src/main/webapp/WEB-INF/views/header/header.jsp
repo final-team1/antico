@@ -12,6 +12,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Antico</title>
+  <%-- 스포카 한 산스 네오 폰트 적용 --%>
+  <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+
   <!-- Required meta tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,12 +55,19 @@
   <link rel="stylesheet" href="<%=ctxPath%>/css/custom_toast.css">
   <script type="text/javascript" src="<%=ctxPath%>/js/member/cookie.js"></script>
 
+  <%-- SockJS 라이브러리 CDN --%>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.4.0/dist/sockjs.min.js"></script>
 
-  <%-- font cdn --%>
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+  <%-- stomp --%>
+  <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/browsertests/qunit.min.css" rel="stylesheet">
+  
+  <%-- 웹소켓 연결 관리 모듈 JS --%>
+  <script type="text/javascript" src="<%=ctxPath%>/js/chat/Chat.js"></script>
+  
 <style>
 *{
-font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 }
 
 .fixed {
@@ -318,6 +328,29 @@ img.main_logo {
     display:none;
 }
 
+div.chat_icon {
+	position : relative;
+	display : inline-block;
+}
+
+span.chat_badge {
+	position: absolute;
+    top: -5px;  
+    right: -5px; 
+    background-color: #0DCC5A;
+    color: black;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 2px;
+    border-radius: 50%;
+    min-width: 20px;
+    text-align: center;
+}
+
+li#chat {
+	cursor : pointer;
+}
+
 </style>
 
 </head>
@@ -362,7 +395,13 @@ img.main_logo {
 		<div class="" style="display: flex; align-items: center; height: 80px; margin-left:auto;">
 			<div style="">
 				<ul id="userManu" class="" style="padding-inline-start: 0px; margin-block-end: 0em;">
-					<li class="">채팅하기</li>
+					<li id="chat" class="">
+						<div class="chat_icon"> 
+							<img src="<%=ctxPath%>/images/icon/chat.svg" height=28>
+							<span class="chat_badge">20</span>
+						</div> 
+						채팅하기
+					</li>
 					<li style="color: gray" class="">|</li>
 					<li class=""><a href="<%=ctxPath%>/product/add">판매하기</a></li>
 					<li style="color: gray" class="">|</li>
@@ -540,7 +579,6 @@ $(document).ready(function(){
 		
 	});
 	
-	
 	// 상품 검색 창 엔터를 친 경우 검색하러 간다.
    	$("input:text[name='search_prod']").bind("keyup", function(e){
 	   	if(e.keyCode == 13){ // 엔터를 했을 경우
@@ -549,7 +587,19 @@ $(document).ready(function(){
 	});
 	
 	
-	
+	// 채팅 버튼 클릭 시 채팅 페이지 표시
+	$(document).on("click", "li#chat", function() {
+		$.ajax({
+			url : "<%=ctxPath%>/chat/main",
+			success : function(html) {
+				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
+				openSideTab(html, "채팅방 목록");
+			},
+			 error: function(request, status, error){
+				 errorHandler(request, status, error);
+			}
+		});
+	});
 });
 
 </script>

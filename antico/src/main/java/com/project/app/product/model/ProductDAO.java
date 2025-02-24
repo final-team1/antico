@@ -43,5 +43,8 @@ public interface ProductDAO {
 	int addProduct(ProductVO productvo); // 상품 테이블에 상품 정보 저장
 	int addImage(ProductImageVO product_imgvo); // 이미지 테이블에 파일 넣어주기
 
+	// 상품 요약 정보 목록 조회
+	List<Map<String, String>> selectProductSummaryList(List<String> pk_product_no_list);
+
 	
 }

@@ -24,11 +24,10 @@ public class ProductService_imple implements ProductService {
 	@Autowired
 	private ProductDAO productDAO;
 	
-
 	@Autowired
 	private S3FileManager s3fileManager;
-	
-	
+		
+
 	// 상품 개수 가져오기 (검색어, 카테고리번호 포함)
 	@Override
 	public int getProductCnt(String search_prod, String pk_category_no, String pk_category_detail_no) {
@@ -61,7 +60,7 @@ public class ProductService_imple implements ProductService {
 		return product_info;
 	}
 
-
+	
 	// 상위 카테고리 정보 가져오기
 	@Override
 	public List<CategoryVO> getCategory() {
@@ -125,6 +124,7 @@ public class ProductService_imple implements ProductService {
 						// System.out.println(fileList.get(i).get("file_name")); 	 // 첨부파일 업로드되는 파일명 가져오기
 						
 						// 이미지 VO에 값 넣어주기
+
 						product_imgvo.setProd_img_name(fileList.get(i).get("file_name")); 		  // 저장된 파일명
 						product_imgvo.setProd_img_org_name(fileList.get(i).get("org_file_name")); // 원본 파일명
 						
@@ -150,6 +150,11 @@ public class ProductService_imple implements ProductService {
 	}
 
 	
-
-	
+	/*
+	 * 상품 요약 정보 목록 조회
+	 */
+	@Override
+	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
+		return productDAO.selectProductSummaryList(pk_product_no_list);
+	}
 }
