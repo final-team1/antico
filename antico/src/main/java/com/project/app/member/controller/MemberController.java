@@ -56,8 +56,6 @@ public class MemberController {
 			
 			redirectAttributes.addFlashAttribute("message", "이미 로그인 상태입니다.");
 			
-			System.out.println("로그인상태");
-			
 		}
 		
 		
