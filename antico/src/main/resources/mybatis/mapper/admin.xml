@@ -34,15 +34,25 @@
 	
 	<!-- 미답변 1:1문의 내역 조회 -->
 	<select id="uninquire_list" resultMap="InquireResultMap">
-		SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
-				, member_name, inquire_orgfilename, inquire_filename
-		FROM tbl_inquire i join tbl_member m
-        on i.fk_member_no = m.pk_member_no
-		order by pk_inquire_no desc
+		select pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
+			   , member_name, inquire_orgfilename, inquire_filename
+		from
+			(
+				SELECT rownum AS rnum, a.*
+				from
+					(
+						SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
+								, member_name, inquire_orgfilename, inquire_filename
+						FROM tbl_inquire i join tbl_member m
+				        on i.fk_member_no = m.pk_member_no
+						order by pk_inquire_no desc
+					) a
+			)
+		WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
 	</select>
 	
 	<!-- 공지사항 조회 -->
-	<select id="notice_list" resultType="NoticeVO">
+	<select id="notice_list" resultType="NoticeVO" parameterType="HashMap">
 	    SELECT pk_notice_no, fk_member_no, notice_title, notice_content
 	           , notice_filename, notice_orgfilename, notice_fileSize, notice_views
 	           , notice_date
@@ -64,7 +74,7 @@
 	</select>
 	
 	<!-- 공지사항 총 개수 -->
-	<select id="getNoticeCount" parameterType="HashMap" resultType="int">
+	<select id="getNoticeCount" resultType="int">
 		select count(*)
 		from tbl_notice
 	</select>
@@ -83,7 +93,24 @@
        where pk_notice_no = to_number(#{pk_notice_no})
     </delete>
 	
+	<!-- 1:1문의 총 개수 -->
+	<select id="getInquireCount" resultType="int">
+		select count(*)
+		from tbl_inquire
+	</select>
 	
+	<!-- 유저 조회 -->
+	<select id="admin_member_management" resultType="MemberVO">
+		select *
+		from tbl_member
+		order by member_regdate
+	</select>
+	
+	<update id="update_member_status" parameterType="HashMap">
+		update tbl_member
+	    set member_status = #{status}
+	    where pk_member_no = #{member_no}	
+	</update>
 	
 	
 </mapper>
