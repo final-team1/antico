@@ -3,6 +3,8 @@ package com.project.app.mypage.service;
 import java.util.List;
 import java.util.Map;
 
+import com.project.app.member.domain.MemberVO;
+
 
 public interface MypageService {
 
@@ -21,7 +23,12 @@ public interface MypageService {
 	// 판매자 정보 불러오기
 	Map<String, String> sellerList(String n);
 
+	// 회워의 등급 업데이트
 	void role_update(String role, String pk_member_no);
+
+	// 존재하는 회원인지 조회
+	String member_select(String member_no);
+
 
 
 
