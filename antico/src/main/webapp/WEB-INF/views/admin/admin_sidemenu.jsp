@@ -12,7 +12,9 @@
 	<h4 class="side">User</h4>
 	
 	<ul>
-		<li>사용자 관리</li>
+		<li>
+			<a href="<%= ctxPath %>/admin/admin_member_management">사용자 관리</a>
+		</li>
 		<li>상품 관리</li>
 	</ul>
 	

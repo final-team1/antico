@@ -50,9 +50,7 @@ public class NoticeController {
 
 	    // 공지사항 총 개수
 	    int notice_count = service.getNoticeCount(paraMap);
-	    
-	    // System.out.println(notice_count);
-	    
+
 	    PagingDTO paging_dto = PagingDTO.builder()
 	            .cur_page(cur_page)
 	            .row_size_per_page(5)  

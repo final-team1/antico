@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -10,37 +9,43 @@
 <jsp:include page=".././header/header.jsp" />
 
 <!-- 메인 콘텐츠 영역 -->
-<div class="main-container">
-	<jsp:include page=".././admin/admin_sidemenu.jsp" />
-	
-	<div class="content-container">
-		<c:if test="${not empty requestScope.uninquire_list}">
-			<div class="inquire-list">
-				<c:forEach var="InquireVO" items="${requestScope.uninquire_list}" varStatus="status">
-					<c:if test="${InquireVO.inquire_status == 0}">
-						<div class="inquire-card">
-							<div class="inquire-header">
-								<p class="inquire-title">제목 : ${InquireVO.inquire_title}</p>
-								<span class="inquire-info">
-									<span class="member-name">${InquireVO.member_name}</span>
-									<span class="inquire-date">${InquireVO.inquire_regdate}</span>
-									<span class="inquire-status">
-										<c:choose>
-										    <c:when test="${InquireVO.inquire_secret == 0}">공개</c:when>
-										    <c:when test="${InquireVO.inquire_secret == 1}">비공개</c:when>
-										</c:choose>
+<div class="main">
+	<div class="main-container">
+		<jsp:include page=".././admin/admin_sidemenu.jsp" />
+		
+		<div class="content-container">
+			<c:if test="${not empty requestScope.uninquire_list}">
+				<div class="inquire-list">
+					<c:forEach var="InquireVO" items="${requestScope.uninquire_list}" varStatus="status">
+						<c:if test="${InquireVO.inquire_status == 0}">
+							<div class="inquire-card">
+								<div class="inquire-header">
+									<p class="inquire-title">제목 : ${InquireVO.inquire_title}</p>
+									<span class="inquire-info">
+										<span class="member-name">${InquireVO.member_name}</span>
+										<span class="inquire-date">${InquireVO.inquire_regdate}</span>
+										<span class="inquire-status">
+											<c:choose>
+											    <c:when test="${InquireVO.inquire_secret == 0}">공개</c:when>
+											    <c:when test="${InquireVO.inquire_secret == 1}">비공개</c:when>
+											</c:choose>
+										</span>
 									</span>
-								</span>
+								</div>
+								<div class="detail-icon">
+									<i class="fa-solid fa-chevron-right" onclick="showinquiredetailTab('${InquireVO.pk_inquire_no}')"></i>                
+								</div>
 							</div>
-							<div class="detail-icon">
-								<i class="fa-solid fa-chevron-right" onclick="showinquiredetailTab('${InquireVO.pk_inquire_no}')"></i>                
-							</div>
-						</div>
-					</c:if>
-				</c:forEach>
-			</div>	
-		</c:if>
-   </div>
+						</c:if>
+					</c:forEach>
+				</div>	
+			</c:if>
+		</div>
+	</div>
+
+	<div class="paging">
+		<jsp:include page="../paging.jsp"></jsp:include>
+	</div>
 </div>
 
 <jsp:include page=".././footer/footer.jsp" />
@@ -64,74 +69,89 @@
 			}
 		});
 	}
+	
+	// 페이징 처리 버튼 이벤트
+    $(document).on("click", "a.page_button", function() {
+       const page = $(this).data("page");
+
+       location.href = "<%= ctxPath%>/admin/admin_uninquire_list?cur_page="+ page;
+    });
 </script>
 
-<!-- 스타일 -->
 <style>
-	/* 전체 컨테이너 */
-	.main-container {
-		display: flex;
-		width: 70%;
+	.main {
 		margin: 0 auto;
+		width: 70%;
 	}
 
-	/* 사이드 메뉴 */
+	.main-container {
+		display: flex;		
+	}
+
 	.content-container {
-		width: 80%;
-		margin-left: 5%;
+		flex: 1;
+		margin-left: 4%;
 	}
 
-	/* 문의 목록 */
 	.inquire-list {
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		margin-top: 20px;
 	}
 
-	/* 각 문의 항목 카드 */
 	.inquire-card {
 		display: flex;
-		justify-content: space-between;
-		background: #ffffff;
-		border-radius: 10px;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-		padding: 20px;
-		cursor: pointer;
+        justify-content: space-between;
+        align-items: center;
+        background-color: transparent;
+        border: 1px solid #ddd;
+        padding: 15px;
+        width: 100%;
+        text-align: left;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-bottom: 0.8%;
 	}
 
-	.inquire-card:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+	.inquire-header {
+		flex: 1;
 	}
 
-	/* 제목 */
 	.inquire-title {
-		font-size: 1.2rem;
+		font-size: 13pt;
 		font-weight: bold;
-		color: #333;
 	}
 
-	/* 세부 정보 영역 */
 	.inquire-info {
 		display: flex;
-		flex-direction: row;
 		gap: 10px;
-		color: #777;
-		font-size: 11pt;
+		font-size: 0.9rem;
+		color: #555;
+	}
+
+	.member-name {
+		font-weight: bold;
 	}
 
 	.inquire-status {
-		font-weight: 600;
 		color: #0DCC5A;
 	}
 
 	.detail-icon i {
 		font-size: 1.5rem;
-		color: #333;
-		transition: color 0.3s;
+		color: #0DCC5A;
+		cursor: pointer;
+		transition: color 0.2s;
 	}
 
 	.detail-icon i:hover {
-		color: #0DCC5A;
+		color: #0056b3;
 	}
+
+	.paging {
+		margin-left: 15%;
+		margin-top: 30px;
+	}
+
 </style>

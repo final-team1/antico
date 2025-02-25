@@ -25,7 +25,7 @@ import com.project.app.notice.domain.NoticeVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @Controller
@@ -41,7 +41,7 @@ public class AdminController {
 	@Autowired
 	private MemberVO member_vo;
 	
-	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
+	@Autowired
 	private FileManager fileManager;
 	
 	// 관리자 페이지
@@ -84,7 +84,6 @@ public class AdminController {
 	    // 공지사항 목록 조회
 	    notice_list = service.notice_list(paraMap);
 
-	    // 모델에 데이터 추가
 	    mav.addObject("notice_count", notice_count);
 	    mav.addObject("paging_dto", paging_dto);
 	    mav.addObject("notice_list", notice_list);
@@ -165,10 +164,29 @@ public class AdminController {
 	
 	// 1:1문의 미답변 리스트
 	@GetMapping("admin_uninquire_list")
-	public ModelAndView uninquire_list(ModelAndView mav) {
-
-		List<Map<String, String>> uninquire_list = service.uninquire_list();
+	public ModelAndView uninquire_list(ModelAndView mav, @RequestParam(defaultValue = "1") int cur_page) {
 		
+		// 1:1문의 총 개수
+	    int inquire_count = service.getInquireCount();
+	    
+	    PagingDTO paging_dto = PagingDTO.builder()
+	            .cur_page(cur_page)
+	            .row_size_per_page(5)  
+	            .page_size(5)  
+	            .total_row_count(inquire_count)
+	            .build();
+
+	    // 페이징 정보 계산
+	    paging_dto.pageSetting();
+	    
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    paraMap.put("paging_dto", paging_dto);
+		
+		List<Map<String, String>> uninquire_list = service.uninquire_list(paraMap);
+		
+	    mav.addObject("inquire_count", inquire_count);
+	    mav.addObject("paging_dto", paging_dto);
 		mav.addObject("uninquire_list", uninquire_list);
 		
 		mav.setViewName("admin/admin_uninquire_list");
@@ -179,10 +197,8 @@ public class AdminController {
 	@PostMapping("admin_notice_delete")
 	@ResponseBody
 	public Map<String, Integer> admin_notice_delete(@RequestParam Map<String, String> paraMap, HttpServletRequest request) {
-		System.out.println("Dddddd");
+
 		String pk_notice_no = request.getParameter("pk_notice_no");
-		
-		System.out.println("pk_notice_no: " + pk_notice_no);
 		
 		NoticeVO notice_vo = service.getView_delete(pk_notice_no);
 
@@ -213,9 +229,42 @@ public class AdminController {
 		return map;
 	}
 	
+	// 유저 관리
+	@GetMapping("admin_member_management")
+	public ModelAndView admin_member_management(ModelAndView mav) {
+		
+		List<MemberVO> member_list = service.admin_member_management();
+		
+		// 유저 조회
+		mav.addObject("member_list", member_list);
+		
+		mav.setViewName("admin/admin_member_management");
+		return mav;
+	}
+		
+	// 유저 상태 변경
+	@PostMapping("admin_member_status")
+	@ResponseBody
+	public Map<String, Integer> admin_member_status(@RequestParam Map<String, String> paraMap) {
+	    String member_no = paraMap.get("member_no");
+	    String new_status = paraMap.get("new_status");
+	    
+	    int status = Integer.parseInt(new_status);
+
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("member_no", member_no);
+	    paramMap.put("status", status);
+
+	    int update_status = service.update_member_status(paramMap);
+
+	    Map<String, Integer> map = new HashMap<>();
+	    map.put("success", update_status);  // 상태 변경 성공 여부 (1: 성공, 0: 실패)
+
+	    return map;
+	}
+
+
 	
-		
-		
 		
 		
 		

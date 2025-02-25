@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.project.app.common.PagingDTO;
 import com.project.app.notice.domain.NoticeVO;
 import com.project.app.notice.model.NoticeDAO;
 

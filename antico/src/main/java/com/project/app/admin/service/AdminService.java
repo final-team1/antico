@@ -3,6 +3,7 @@ package com.project.app.admin.service;
 import java.util.List;
 import java.util.Map;
 
+import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
 public interface AdminService {
@@ -14,7 +15,7 @@ public interface AdminService {
 	int add_withFile(NoticeVO noticevo);
 
 	// 미답변 1:1문의 리스트
-	List<Map<String, String>> uninquire_list();
+	List<Map<String, String>> uninquire_list(Map<String, Object> paraMap);
 
 	// 공지사항 총개수
 	int getNoticeCount();
@@ -25,6 +26,21 @@ public interface AdminService {
 	// 공지사항 삭제
 	NoticeVO getView_delete(String pk_notice_no);
 	int notice_delete(Map<String, String> paraMap);
+
+	// 1:1문의 총개수
+	int getInquireCount();
+
+	// 유저조회
+	List<MemberVO> admin_member_management();
+
+	// 유저 상태 변경
+	int update_member_status(Map<String, Object> paramMap);
+
+
+
+
+
+	
 
 	
 }
