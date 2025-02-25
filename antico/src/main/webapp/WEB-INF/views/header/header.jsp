@@ -351,6 +351,7 @@ li#chat {
 	cursor : pointer;
 }
 
+
 </style>
 
 </head>
@@ -411,8 +412,7 @@ li#chat {
 						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
 					
 					<ul class="my_header">
-					
-						<li style="margin-top:2px;"><a href="<%=ctxPath%>/mypage/mypagemain">마이페이지</a></li>
+						<li style="margin-top:2px;"><a href="#" onclick="myPage(); return false;">마이페이지</a></li>
 						<li><hr style="margin: 4px;"></li>
 						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
 						
@@ -601,6 +601,26 @@ $(document).ready(function(){
 		});
 	});
 });
+
+// 마이페이지 클릭시
+function myPage() {
+    $.ajax({
+        url: "<%=ctxPath%>/mypage/mypagecheck",
+        type: "GET",
+        dataType: "json",
+        success: function(json) {
+            if (json.pk_member_no) {
+                window.location.href = "<%=ctxPath%>/mypage/mypagemain/" + json.pk_member_no;
+            } else {
+                alert("회원 정보를 가져오지 못했습니다.");
+            }
+        },
+        error: function(e) {
+            console.error(e);
+            alert("서버 오류가 발생했습니다.");
+        }
+    });
+}
 
 </script>
 

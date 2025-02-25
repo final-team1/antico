@@ -18,9 +18,11 @@ import com.project.app.mypage.service.MypageService;
 import com.project.app.product.domain.ProductVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
+
 
 
 @Controller
@@ -48,9 +50,20 @@ public class MypageController {
 	@Autowired
 	private MypageService service;
 	
+	@GetMapping("/mypagecheck")
+	@ResponseBody
+	public Map<String, Object> myPageCheck() {
+		member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+	    Map<String, Object> result = new HashMap<>();
+        result.put("pk_member_no", pk_member_no);
+	    return result;
+	}
+	
 	// 마이페이지 메인
-	@GetMapping("mypagemain") 
-	public ModelAndView mypagemain(ModelAndView mav) {
+	@GetMapping("mypagemain/{member_no}")
+	@ResponseBody
+	public ModelAndView mypagemain(@PathVariable String member_no, ModelAndView mav) {
 		member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
@@ -58,6 +71,16 @@ public class MypageController {
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
 		String member_score = member_vo.getMember_score(); // 회원의 신뢰점수
 		
+		String mvo = service.member_select(member_no);
+		if (mvo == null) { 
+	        mav.setViewName("error/404"); // 없는 회원이면 404 페이지로 이동
+	        return mav;
+	    } else if (!pk_member_no.equals(mvo)){
+	    	mav.setViewName("mypage/sellerpage");
+	    	return mav;
+	    } 
+	    	
+	    
 		if(Integer.parseInt(member_score) >= 1000) { // 신뢰지수가 1000이 넘으면서
 			String role = "";
 			if(Integer.parseInt(member_score) < 2000) { // 2000보다 작을 경우(즉, 실버라는 뜻.)
@@ -83,14 +106,19 @@ public class MypageController {
 		}
 		
 		List<Map<String, String>> myproduct_list = service.myproduct(pk_member_no); // 마이페이지에서 내상품 조회하기
+		
+		int list_size = myproduct_list.size();
+		
 //		System.out.println("myproduct_list 췤"+myproduct_list);
 		mav.addObject("myproduct_list", myproduct_list);
 		mav.addObject("member_score", member_score);
 		mav.addObject("userid", userid);
+		mav.addObject("list_size", list_size);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);
 		mav.addObject("member_name", member_name);
 		mav.addObject("member_point", member_point);
+		mav.addObject("pk_member_no", pk_member_no);
 		
 		mav.addObject("kakao_api_key", kakao_api_key);
 
@@ -98,7 +126,7 @@ public class MypageController {
 		mav.setViewName("mypage/mypage");
 		
 		
-		
+	    
 		
 		return mav;
 	}
@@ -220,8 +248,8 @@ public class MypageController {
 		return mav;
 	}
 	
-	@GetMapping("sellerpage")
-	public ModelAndView sellerpage(ModelAndView mav) {
+	@GetMapping("sellerpage/{member_no}")
+	public ModelAndView sellerpage(@PathVariable String member_no, ModelAndView mav) {
 
 //		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
 //		System.out.println("fk_member_no 체크"+fk_member_no);

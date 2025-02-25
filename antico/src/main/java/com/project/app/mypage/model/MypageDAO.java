@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.project.app.member.domain.MemberVO;
+
 @Mapper
 public interface MypageDAO {
 
@@ -34,6 +36,9 @@ public interface MypageDAO {
 
 	// 판매자 정보 불러오기
 	Map<String, String> sellerList(String n);
+
+	// 존재하는 회원인지 조회
+	String member_select(String member_no);
 
 
 }

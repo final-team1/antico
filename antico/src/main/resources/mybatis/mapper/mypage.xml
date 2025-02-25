@@ -67,7 +67,7 @@
 	
 	<!-- 마이페이지에서 내상품 -->
 	<select id="myproduct" parameterType="String" resultMap="myproduct">
-		select pk_product_no, fk_member_no, product_title, product_contents, product_price, product_status, product_regdate
+		select pk_product_no, fk_member_no, product_title, product_contents, product_price, product_status, product_regdate, product_sale_status
 		     , product_sale_type, pk_prod_img_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail
 		from tbl_product p join tbl_prod_img i
 		on p.pk_product_no = i.fk_product_no
@@ -87,6 +87,12 @@
 		from tbl_member m join tbl_product p
 		on m.pk_member_no = p.fk_member_no
 		where m.pk_member_no = #{n}
+	</select>
+	
+	<select id="member_select" resultType="String" parameterType="String">
+		select *
+		from tbl_member
+		where pk_member_no = #{member_no}
 	</select>
 	
 </mapper>
