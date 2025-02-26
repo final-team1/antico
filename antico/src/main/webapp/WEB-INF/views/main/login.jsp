@@ -122,17 +122,9 @@ Kakao.init('61202bdbe397ec06765ee5a7cb40b414');
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	if(${not empty member_user_id}){
-		
-		const frm = $("#login_form")[0];
-		
-		frm.submit();
-		
-	}
-	
 	$("img#kakaoImg").bind("click", function(){
 		
-		location.href='${location}';
+		location.href='https://kauth.kakao.com/oauth/authorize?client_id=2fc45348c1f277afbb09c75d902df014&redirect_uri=http://localhost/antico/kakaologin/callback&response_type=code';
 		
 	});
 	
