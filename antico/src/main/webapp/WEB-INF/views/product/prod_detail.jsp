@@ -6,14 +6,16 @@
 
 <% String ctxPath = request.getContextPath(); %>
 
-<!-- <script src="https://developers.kakao.com/sdk/js/kakao.js"></script> -->
+
 
 <jsp:include page=".././header/header.jsp"></jsp:include>
+
+<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
 <style type="text/css">
 
 div#container {
-	width: 50%;
+	width: 60%;
 	margin: 0 auto;
 }
 
@@ -38,6 +40,7 @@ img#prod_img {
     top: 0;
     left: 0;
     display: block; /* 여백 제거 */
+    border-radius: 6px;
 }
 
 
@@ -61,6 +64,10 @@ div#category_info {
 
 span.prod_category {
 	cursor: pointer;
+	font-size: 10pt;
+}
+
+span.greater {
 	font-size: 10pt;
 }
 
@@ -120,7 +127,7 @@ li.status, li.region, li.sale_status {
 	flex-direction: column;
 	margin-right: 10px;
 	align-items: center;
-	width: 125px;
+	width: 120px;
 }
 
 li.bar {
@@ -284,7 +291,6 @@ span.seller_title {
 
 
 <div id="container">
-	<c:forEach var="prod_list" items="${requestScope.product_list}" varStatus="status">
 
 		<div id="prod_info_container" class="row">
 	
@@ -338,33 +344,33 @@ span.seller_title {
 			<div id="prod_info" class="col-md p-0">
 				<div id="category_info">
 					<span class="prod_category" onclick="location.href='<%= ctxPath%>/index'" >홈</span>
-					<span>　>　</span>
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${prod_list.fk_category_no}'">${prod_list.category_name}</span>
-					<span>　>　</span>
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_detail_no=${prod_list.fk_category_detail_no}'">${prod_list.category_detail_name}</span>
+					<span class="greater">　>　</span>
+					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${requestScope.product_list.fk_category_no}'">${requestScope.product_list.category_name}</span>
+					<span class="greater">　>　</span>
+					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_detail_no=${requestScope.product_list.fk_category_detail_no}'">${requestScope.product_list.category_detail_name}</span>
 				</div>
 				<div id="title_info">
-					<span id="product_title">${prod_list.product_title}</span>
+					<span id="product_title">${requestScope.product_list.product_title}</span>
 					<!-- 공유 아이콘 -->
 					<span><i id="share" class="fa-solid fa-arrow-up-right-from-square" onclick="openShareModal()"></i></span>
 				</div>
 				<div id="price_info">	
-					<span><fmt:formatNumber value="${prod_list.product_price}" pattern="#,###" /> 원</span>
+					<span><fmt:formatNumber value="${requestScope.product_list.product_price}" pattern="#,###" /> 원</span>
 				</div>
 				<div id="time_view_info">
-					<span class="product_time" data-date="${prod_list.product_regdate}"></span>
+					<span class="product_time" data-date="${requestScope.product_list.product_regdate}"></span>
 					<span>·</span>
 					<span>조회 1</span>
 				</div>
 				<div id="status_region_info">
 					<ul id="status_region_info_ul">
-						<li class="status" ">
+						<li class="status">
 							<span class="status_title">제품상태</span>
-							<c:if test="${prod_list.product_status == 0}">
+							<c:if test="${requestScope.product_list.product_status == 0}">
 								<span class="status">중고</span>
 							</c:if>
-							<c:if test="${prod_list.product_status == 1}">
-							<span class="status">새상품</span>
+							<c:if test="${requestScope.product_list.product_status == 1}">
+								<span class="status">새상품</span>
 							</c:if>
 						</li>
 						
@@ -372,20 +378,20 @@ span.seller_title {
 						
 						<li class="region">
 							<span class="region_title">희망거래동네</span>
-							<span class="region">${prod_list.region_town}</span>
+							<span class="region">${requestScope.product_list.region_town}</span>
 						</li>
 						
 						<li class="bar"></li>
 						
 						<li class="sale_status">
 							<span class="sale_status_title">판매상태</span>
-							<c:if test="${prod_list.product_sale_status == 0}">
+							<c:if test="${requestScope.product_list.product_sale_status == 0}">
 								<span class="sale_status">판매중</span>
 							</c:if>
-							<c:if test="${prod_list.product_sale_status == 1}">
+							<c:if test="${requestScope.product_list.product_sale_status == 1}">
 								<span class="sale_status">예약중</span>
 							</c:if>
-							<c:if test="${prod_list.product_sale_status == 2}">
+							<c:if test="${requestScope.product_list.product_sale_status == 2}">
 								<span class="sale_status">판매완료</span>
 							</c:if>
 						</li>
@@ -397,7 +403,7 @@ span.seller_title {
 					<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
 					<c:if test="${not empty requestScope.wish_list}">
 						<c:forEach var="wish_list" items="${requestScope.wish_list}">
-							<c:if test="${wish_list.fk_member_no == requestScope.fk_member_no and wish_list.fk_product_no == prod_list.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
+							<c:if test="${wish_list.fk_member_no == requestScope.fk_member_no and wish_list.fk_product_no == requestScope.product_list.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
 								<c:set var="heartCheck" value="true"/>
 							</c:if>
 						</c:forEach>
@@ -407,13 +413,13 @@ span.seller_title {
 				    <c:choose>
 						 <c:when test="${heartCheck eq 'true'}">
 						     <span>
-						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${requestScope.product_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
 						     </span>
 						 </c:when>
 					<c:otherwise>
 					<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
 					     <span>
-					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${requestScope.product_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
 					     </span>
 					</c:otherwise>
 					</c:choose>
@@ -434,7 +440,7 @@ span.seller_title {
 				</div>
 				
 				<div id="prod_contents">
-					<p class="contents">${prod_list.product_contents}</p>
+					<p class="contents">${requestScope.product_list.product_contents}</p>
 				</div>
 			</div>
 			
@@ -446,7 +452,6 @@ span.seller_title {
 			</div>
 		</div>
 
-	</c:forEach>
 </div>
 
 
@@ -589,6 +594,24 @@ span.seller_title {
 	function shareToInsta() {
 		window.open("https://www.instagram.com/accounts/login/", "_blank");
 	}
+	
+	
+	// 카카오톡 공유하기 openApi 
+    Kakao.init('${requestScope.kakao_api_key}');
+    console.log(Kakao.isInitialized()); // 초기화 확인
+
+    function shareToKakao() {
+        let currentURL = window.location.href; // 현재 페이지 URL 가져오기
+
+        Kakao.Link.sendDefault({
+            objectType: 'text', // 텍스트 형식
+            text: '이 링크를 확인해 보세요!\n' + currentURL, // 공유할 URL
+            link: {
+                mobileWebUrl: currentURL,
+                webUrl: currentURL
+            },
+        });
+    }
 	
 
 	

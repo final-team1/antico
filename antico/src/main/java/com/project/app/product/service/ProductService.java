@@ -51,7 +51,7 @@ public interface ProductService {
 	List<ProductImageVO> getProductImg(String pk_product_no);
 	
 	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
-	List<Map<String, String>> getProductDetail(String pk_product_no);
+	Map<String, String> getProductDetail(String pk_product_no);
 	
 	// 상품 요약 정보 목록 조회
 	List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list);
