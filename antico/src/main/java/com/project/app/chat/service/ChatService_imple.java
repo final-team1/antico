@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.project.app.chat.domain.Chat;
@@ -20,10 +24,12 @@ import com.project.app.member.service.MemberService;
 import com.project.app.product.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * 채팅 비즈니스 로직 처리 서비스
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService_imple implements ChatService {
@@ -35,6 +41,8 @@ public class ChatService_imple implements ChatService {
 	private final MemberService memberService;
 	
 	private final ProductService productService;
+	
+	private final MongoTemplate mongoTemplate;
 
 	/*
 	 * 채팅방 목록 불러오기
@@ -141,7 +149,7 @@ public class ChatService_imple implements ChatService {
 		// 판매자는 채팅방 개설 불가능
 		if(login_member_no.equalsIgnoreCase(seller_no)) {
 			// TODO 예외처리
-			System.out.println("채팅방 개설자가 판매자");
+			log.error("채팅방 개설자가 판매자");
 		}
 		
 		// 해당 상품에 이미 채팅이 존재하는지 확인
@@ -179,6 +187,24 @@ public class ChatService_imple implements ChatService {
 	@Override
 	public List<Chat> loadChatHistory(String roomId) {
 		return chatRepository.findChatByRoomId(roomId);
+	}
+
+	/*
+	 * 사용자 별 최근 읽은 메시지 식별자 변경
+	 */
+	@Override
+	public void updateLastReadChat(String roomId, Participant participant) {
+		String memberNo = participant.getMemberNo();
+		String lastReadChatId = participant.getLastReadChatId();
+		updateLastReadChatIdByRoomId(roomId, memberNo, lastReadChatId);
+	}
+	
+	
+	private void updateLastReadChatIdByRoomId(String roomId, String memberNo, String lastReadChatId) {
+		Query query = new Query( Criteria.where("_id").is(roomId)
+										 .and("participants.memberNo").is(memberNo));
+		Update update = new Update().set("participants.$.lastReadChatId", lastReadChatId);
+		mongoTemplate.updateFirst(query, update, ChatRoom.class);
 	}
 
 }

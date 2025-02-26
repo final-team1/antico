@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.project.app.chat.domain.Chat;
 import com.project.app.chat.domain.ChatRoom;
+import com.project.app.chat.domain.Participant;
 import com.project.app.member.domain.MemberVO;
 
 public interface ChatService {
@@ -23,5 +24,8 @@ public interface ChatService {
 
 	// 채팅방 조회
 	ChatRoom getChatRoom(String room_id);
+
+	// 사용자 별 최근 읽은 메시지 식별자 변경
+	void updateLastReadChat(String roomId, Participant participant);
 
 }
