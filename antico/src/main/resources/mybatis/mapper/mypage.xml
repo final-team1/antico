@@ -71,7 +71,7 @@
 		     , product_sale_type, pk_prod_img_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail
 		from tbl_product p join tbl_prod_img i
 		on p.pk_product_no = i.fk_product_no
-		where p.fk_member_no = #{pk_member_no}
+		where p.fk_member_no = #{mvo}
 		and   i.prod_img_is_thumbnail = 1
 	</select>
 	
@@ -86,7 +86,7 @@
 		select distinct m.pk_member_no, m.member_name, m.member_score, m.member_role
 		from tbl_member m join tbl_product p
 		on m.pk_member_no = p.fk_member_no
-		where m.pk_member_no = #{n}
+		where m.pk_member_no = #{mvo}
 	</select>
 	
 	<select id="member_select" resultType="String" parameterType="String">

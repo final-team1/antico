@@ -18,10 +18,10 @@ public interface MypageService {
 	int point_sum(String pk_member_no, String charge_price);
 
 	// 판매자 정보 불러오기
-	List<Map<String, String>> myproduct(String pk_member_no);
+	List<Map<String, String>> myproduct(String mvo);
 
 	// 판매자 정보 불러오기
-	Map<String, String> sellerList(String n);
+	Map<String, String> sellerList(String mvo);
 
 	// 회워의 등급 업데이트
 	void role_update(String role, String pk_member_no);
