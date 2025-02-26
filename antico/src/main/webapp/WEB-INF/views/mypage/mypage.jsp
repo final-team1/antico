@@ -641,7 +641,7 @@ hr {
 				        <ul class="product_list">
 				            <c:forEach var="pvoList" items="${requestScope.myproduct_list}">
 				                <li class="product_item" value="">
-				                    <a href="${pvoList.pk_product_no}" class="product_link">
+				                    <a href="<%= ctx_Path%>/product/prod_detail/${pvoList.pk_product_no}" class="product_link">
 				                        <div class="cardimg">
 				                            <img src="${pvoList.prod_img_name}" alt="상품 이미지" class="product_img">
 				                        </div>

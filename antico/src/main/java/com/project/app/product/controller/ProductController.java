@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,6 +36,10 @@ public class ProductController {
 
 	@Autowired
 	private GetMemberDetail get_member_detail;
+	
+	// 카카오 api키
+	@Value("${kakao.apikey}")
+	private String kakao_api_key;
 
 	// 상품등록 form 페이지 요청
 	@GetMapping("add")
@@ -74,6 +80,9 @@ public class ProductController {
 	      int n = service.addProduct(productvo, product_imgvo, attach_list);
 
 	      if (n > 0) { // 저장이 성공한 경우 성공 페이지로 이동한다.
+	    	  
+	    	 String pk_product_no = productvo.getPk_product_no();
+	    	 mav.addObject("pk_product_no", pk_product_no); // 상품 번호 전달
 	         mav.setViewName("product/add_success"); // 상품 등록 완료 페이지
 
 	      } // end of if(n > 0)
@@ -198,14 +207,43 @@ public class ProductController {
 	}
 	
 
+	// 상품 상세 페이지 조회
+	@GetMapping("prod_detail/{pk_product_no}")
+	public ModelAndView prodDeatil(ModelAndView mav,
+								   @PathVariable String pk_product_no) {
+		
+		
+	    // pk_product_no가 favicon.ico일 경우 처리하지 않도록 조건 추가
+	    if ("favicon.ico".equals(pk_product_no)) {
+	    	// System.out.println("favicon.ico 요청을 필터링했습니다.");
+	        return mav; // 빈 mav 반환
+	    }
+		
+	    //System.out.println("1111 pk_product_no " + pk_product_no);
+	    //System.out.println("2222 pk_product_no " + pk_product_no);
 	
-	// 상품 상세 페이지 조회 (진행중)
-	@GetMapping("prod_deatil")
-	public ModelAndView prodDeatil(ModelAndView mav) {
-
-		mav.setViewName("product/prod_deatil");
+		// 로그인한 회원의 회원번호 값 가져오기
+		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		mav.addObject("fk_member_no", fk_member_no);
+		
+		// 좋아요 정보 가져오기
+		List<Map<String, String>> wish_list = service.getWish();
+		mav.addObject("wish_list", wish_list);
+		
+		// 특정 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
+		mav.addObject("product_img_list", product_img_list);
+		
+		// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+		Map<String, String> product_list = service.getProductDetail(pk_product_no);
+		mav.addObject("product_list", product_list);
+		
+		// 카카오 api key 전달
+		mav.addObject("kakao_api_key", kakao_api_key);
+	
+		mav.setViewName("product/prod_detail");
+		
 		return mav;
-
 	}
 	
 	

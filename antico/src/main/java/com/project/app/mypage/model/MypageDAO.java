@@ -32,10 +32,10 @@ public interface MypageDAO {
 	void role_update(String role, String pk_member_no);
 
 	// 마이페이지 내상품 조회
-	List<Map<String, String>> myproduct(String pk_member_no);
+	List<Map<String, String>> myproduct(String mvo);
 
 	// 판매자 정보 불러오기
-	Map<String, String> sellerList(String n);
+	Map<String, String> sellerList(String mvo);
 
 	// 존재하는 회원인지 조회
 	String member_select(String member_no);

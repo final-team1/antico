@@ -52,15 +52,15 @@ public class MypageService_imple implements MypageService {
 
 	// 마이페이지 내상품 조회하기
 	@Override
-	public List<Map<String, String>> myproduct(String pk_member_no) {
-		List<Map<String, String>> myproduct_list = mypagedao.myproduct(pk_member_no);
+	public List<Map<String, String>> myproduct(String mvo) {
+		List<Map<String, String>> myproduct_list = mypagedao.myproduct(mvo);
 		return myproduct_list;
 	}
 	
 	// 판매자 정보 불러오기
 	@Override
-	public Map<String, String> sellerList(String n) {
-		Map<String, String> seller_list = mypagedao.sellerList(n);
+	public Map<String, String> sellerList(String mvo) {
+		Map<String, String> seller_list = mypagedao.sellerList(mvo);
 		return seller_list;
 	}
 

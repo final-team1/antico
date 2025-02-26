@@ -75,12 +75,8 @@ public class MypageController {
 		if (mvo == null) { 
 	        mav.setViewName("error/404"); // 없는 회원이면 404 페이지로 이동
 	        return mav;
-	    } else if (!pk_member_no.equals(mvo)){
-	    	mav.setViewName("mypage/sellerpage");
-	    	return mav;
-	    } 
+	    }
 	    	
-	    
 		if(Integer.parseInt(member_score) >= 1000) { // 신뢰지수가 1000이 넘으면서
 			String role = "";
 			if(Integer.parseInt(member_score) < 2000) { // 2000보다 작을 경우(즉, 실버라는 뜻.)
@@ -105,11 +101,26 @@ public class MypageController {
 			role_color = "#ffd700";
 		}
 		
-		List<Map<String, String>> myproduct_list = service.myproduct(pk_member_no); // 마이페이지에서 내상품 조회하기
-		
+		List<Map<String, String>> myproduct_list = service.myproduct(mvo); // 마이페이지에서 내상품 조회하기
+		Map<String, String> seller_info = service.sellerList(mvo); // 판매자 정보 불러오기
 		int list_size = myproduct_list.size();
+		String seller_role = seller_info.get("member_role");
+		String seller_role_color = "";
+		if("0".equals(seller_role)) {
+			seller_role = "브론즈";
+			seller_role_color = "#b87333";
+		} else if("1".equals(seller_role)) {
+			seller_role = "실버";
+			seller_role_color = "#c0c0c0";
+		} else {
+			seller_role = "골드";
+			seller_role_color = "#ffd700";
+		}
 		
 //		System.out.println("myproduct_list 췤"+myproduct_list);
+		mav.addObject("seller_role_color", seller_role_color);
+		mav.addObject("seller_role", seller_role);	
+		mav.addObject("seller_info", seller_info);
 		mav.addObject("myproduct_list", myproduct_list);
 		mav.addObject("member_score", member_score);
 		mav.addObject("userid", userid);
@@ -123,14 +134,14 @@ public class MypageController {
 		mav.addObject("kakao_api_key", kakao_api_key);
 
 		//	mav.addObject("category_detail_list", category_detail_list);
-		mav.setViewName("mypage/mypage");
-		
-		
-	    
+		if (!pk_member_no.equals(mvo)){
+	    	mav.setViewName("mypage/sellerpage");
+	    } else {
+	    	mav.setViewName("mypage/mypage");
+	    }
 		
 		return mav;
 	}
-	
 	// 포인트 충전
 	@GetMapping("pointcharge")
 	public ModelAndView pointcharge(ModelAndView mav) {
@@ -248,38 +259,5 @@ public class MypageController {
 		return mav;
 	}
 	
-	@GetMapping("sellerpage/{member_no}")
-	public ModelAndView sellerpage(@PathVariable String member_no, ModelAndView mav) {
-
-//		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
-//		System.out.println("fk_member_no 체크"+fk_member_no);
-		String n = "63"; // 테스트용
-		Map<String, String> seller_info = service.sellerList(n); // 판매자 정보 불러오기
-		System.out.println("seller_info 테스트" + seller_info);
-		
-		String member_role = String.valueOf(seller_info.get("member_role"));
-		String member_name = String.valueOf(seller_info.get("member_name"));
-		String member_score = String.valueOf(seller_info.get("member_score"));
-		String role_color; // 회원등급별 색상을 주기 위한 것.
-		if("0".equals(member_role)) {
-			member_role = "브론즈";
-			role_color = "#b87333";
-		} else if("1".equals(member_role)) {
-			member_role = "실버";
-			role_color = "#c0c0c0";
-		//	System.out.println(data+"data 확인");
-		} else {
-			member_role = "골드";
-			role_color = "#ffd700";
-		}
-		
-		mav.addObject("member_name", member_name);
-		mav.addObject("member_role", member_role);
-		mav.addObject("member_score", member_score);
-		mav.addObject("role_color", role_color);
-		mav.addObject("seller_info", seller_info);
-		mav.setViewName("mypage/sellerpage");
-		return mav;
-	}
 	
 }

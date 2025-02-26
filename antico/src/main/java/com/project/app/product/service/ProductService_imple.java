@@ -178,6 +178,25 @@ public class ProductService_imple implements ProductService {
 		
 		return result;	
 	}
+	
+	
+	// 특정 상품에 대한 이미지 정보 가져오기
+	@Override
+	public List<ProductImageVO> getProductImg(String pk_product_no) {
+		List<ProductImageVO> product_img_list = productDAO.getProductImg(pk_product_no);
+		return product_img_list;
+	}
+
+	
+	
+	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+	@Override
+	public Map<String, String> getProductDetail(String pk_product_no) {
+
+		Map<String, String> product_list = productDAO.getProductDetail(pk_product_no);
+		
+		return product_list;
+	}
 
 	
 	/*
@@ -187,4 +206,8 @@ public class ProductService_imple implements ProductService {
 	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+	
+	
+
+
 }
