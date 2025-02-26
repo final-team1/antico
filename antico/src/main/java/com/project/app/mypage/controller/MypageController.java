@@ -117,7 +117,6 @@ public class MypageController {
 			seller_role_color = "#ffd700";
 		}
 		
-//		System.out.println("myproduct_list 췤"+myproduct_list);
 		mav.addObject("seller_role_color", seller_role_color);
 		mav.addObject("seller_role", seller_role);	
 		mav.addObject("seller_info", seller_info);
@@ -169,7 +168,6 @@ public class MypageController {
 	@PostMapping("point_update")
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
-	//	System.out.println("point_update방문");
 		String pk_member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
@@ -236,15 +234,12 @@ public class MypageController {
 	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo) {
 		String fk_member_no = lvo.getFk_member_no();
 	    String leave_reason = lvo.getLeave_reason();
-	    System.out.println("lvo 회원번호: " + fk_member_no);
-	    System.out.println("lvo 탈퇴 사유: " + leave_reason);
 
 	    Map<String, String> paraMap = new HashMap<>();
 	    paraMap.put("fk_member_no", fk_member_no);
 	    paraMap.put("leave_reason", leave_reason);
 
 	    int n = service.delete_submit(paraMap);
-	    System.out.println(n + "delete_submit 확인");
 
 	    Map<String, Integer> response = new HashMap<>();
 	    response.put("n", n);
@@ -258,6 +253,5 @@ public class MypageController {
 		mav.setViewName("mypage/mybank_list");
 		return mav;
 	}
-	
 	
 }

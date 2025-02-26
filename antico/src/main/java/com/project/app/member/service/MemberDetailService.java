@@ -58,8 +58,6 @@ public class MemberDetailService implements UserDetailsService{
 		String leave_member_no = member_dao.leaveCheck(member_user_id);
 		
 		
-	//	System.out.println("탈퇴신청을 한 회원인지 체크"+leave_member_no);
-	
 		Cookie cookie;
 
 		// 로그인시 회원상태가 1인것만 로그인 가능하도록
@@ -137,7 +135,6 @@ public class MemberDetailService implements UserDetailsService{
 				}
 			}
 		}
-	//	System.out.println("들어오나?");
 		return User.withUserDetails(user_detail).build();		
 	}
 
