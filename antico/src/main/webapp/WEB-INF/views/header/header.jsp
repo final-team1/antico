@@ -351,6 +351,10 @@ li#chat {
 	cursor : pointer;
 }
 
+form.search {
+	margin-bottom: 0px;
+}
+
 
 </style>
 
@@ -373,7 +377,7 @@ li#chat {
 		<div class="flex-fill">
 			<div>
 				<%-- 상품 검색 시작 --%>
-				<form name="searchFrm">
+				<form name="searchFrm" class="search">
 					<div class="inputContainer" style="">
 			        	<input type="text" name="search_prod" class="searchBar">
 			        	<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>  
@@ -536,6 +540,7 @@ li#chat {
 </div>
 
 
+<jsp:include page="../tab/tab.jsp" />
 
 <script type="text/javascript">
 

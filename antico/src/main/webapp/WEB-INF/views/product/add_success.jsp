@@ -79,11 +79,11 @@ button.main_btn, button.check_btn {
 		</div>
 		
 		<div id="main_back">
-			<button class="main_btn" onclick="window.location.href='<%= ctxPath%>/index'">메인 페이지</button>	
+			<button class="main_btn" onclick="location.href='<%= ctxPath%>/index'">메인 페이지</button>	
 		</div>
 		
 		<div id="check_product">
-			<button class="check_btn" onclick="">등록 상품 확인</button>	
+			<button class="check_btn" onclick="location.href='<%= ctxPath%>/product/prod_detail/' + '${requestScope.pk_product_no}';">등록 상품 확인</button>	
 		</div>
 	</div>
 

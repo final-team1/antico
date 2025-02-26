@@ -13,11 +13,22 @@ public class Participant {
 	
 	private String memberName; // 사용자 이름
 	
+	private String lastReadChatId; // 마지막으로 읽은 메시지 식별자
+
 	// Participant 생성 정적 팩토리 메소드
 	public static Participant createParticipant(String memberNo, String memberName) {
 		return Participant.builder()
 				.memberNo(memberNo)
 				.memberName(memberName)
+				.build();
+	}
+	
+	// Participant 생성 정적 팩토리 메소드
+	public static Participant createParticipant(String memberNo, String memberName, String lastReadChatId) {
+		return Participant.builder()
+				.memberNo(memberNo)
+				.memberName(memberName)
+				.lastReadChatId(lastReadChatId)
 				.build();
 	}
 	

@@ -260,7 +260,12 @@
 			<artifactId>log4jdbc-remix</artifactId>
 			<version>0.2.7</version>
 		</dependency>
-		
+
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		</dependency>
 		
 		<!-- 이미지 썸네일 생성 라이브러리인 Thumbnailator 라이브러리 추가하기 -->
 		<dependency>
