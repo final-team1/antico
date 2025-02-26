@@ -520,6 +520,9 @@ div#is_no_product {
 			const category_no = $(this).data("parent-no")				  // 클릭한 하위 카테고리 번호에 대한 상위 카테고리 번호 가져오기
 			getProductByfilter(category_no, category_datail_no); 		  // 카테고리에 따른 상품 출력
 			
+		    console.log("category_no:", category_no);
+		    console.log("category_detail_no:", category_detail_no);
+			
 		}); // end of category_detail_li.click(function()
 		
 				
@@ -555,13 +558,35 @@ div#is_no_product {
 		// 검색 필터에 값들 유지시키기 위한 //		
 	    // URL에서 카테고리 파라미터를 가져오기
 	    const url_params = new URLSearchParams(window.location.search);
-	    const category_no = url_params.get('category_no'); 				 // 상위 카테고리 번호
+	    let category_no = url_params.get('category_no'); 				 // 상위 카테고리 번호
 	    const category_detail_no = url_params.get('category_detail_no'); // 하위 카테고리 번호
 	
 	    const min_price = url_params.get('min_price');					 // 최소가격
 	    const max_price = url_params.get('max_price');					 // 최대가격
 
 	    const sort_type = url_params.get('sort_type');					 // 정렬 방식
+	    
+	    
+	    // url 하위 카테고리 번호만 치고 들어올 경우 상위 카테고리 번호 추가하기
+	    if (category_detail_no && !category_no) {
+	        category_no = $("li.category_detail[data-categorydetail-no='" + category_detail_no + "']").data("parent-no");
+
+	     	// URL에 category_no 추가하기
+	        if (category_no) {
+	            url_params.set('category_no', category_no);
+
+	            // ategory_no를 가장 앞에 배치하여 URL 문자열 직접 생성
+	            let new_url = window.location.pathname + '?category_no=' + category_no;
+
+	            // 다른 기존 파라미터 추가
+	            url_params.delete('category_no'); // 기존 category_no 제거 (중복 방지)
+	            if (url_params.toString()) {
+	                new_url += '&' + url_params.toString();
+	            }
+
+	            history.replaceState(null, '', new_url); // URL 변경
+	        }
+	    }    
 	    
 	    // 상위 카테고리 상태 복원
 	    if (category_no) {
@@ -631,7 +656,7 @@ div#is_no_product {
 	        is_first_param = false;
 	    }
 			
-	    // 각 필터 값이 있으면 url 추가 없으면 공백 처리
+	    // 각 필터 값이 있으면 url 추가, 없으면 공백 처리
 	    if (category_no) {
 	        url += (is_first_param ? '?' : '&') + "category_no=" + category_no;
 	        is_first_param = false;
