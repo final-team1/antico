@@ -36,6 +36,10 @@ public class ProductController {
 
 	@Autowired
 	private GetMemberDetail get_member_detail;
+	
+	// 카카오 api키
+	@Value("${kakao.apikey}")
+	private String kakao_api_key;
 
 	// 상품등록 form 페이지 요청
 	@GetMapping("add")
@@ -215,6 +219,8 @@ public class ProductController {
 	        return mav; // 빈 mav 반환
 	    }
 		
+	    //System.out.println("1111 pk_product_no " + pk_product_no);
+	    //System.out.println("2222 pk_product_no " + pk_product_no);
 	
 		// 로그인한 회원의 회원번호 값 가져오기
 		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
@@ -229,9 +235,11 @@ public class ProductController {
 		mav.addObject("product_img_list", product_img_list);
 		
 		// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
-		List<Map<String, String>> product_list = service.getProductDetail(pk_product_no);
+		Map<String, String> product_list = service.getProductDetail(pk_product_no);
 		mav.addObject("product_list", product_list);
 		
+		// 카카오 api key 전달
+		mav.addObject("kakao_api_key", kakao_api_key);
 	
 		mav.setViewName("product/prod_detail");
 		

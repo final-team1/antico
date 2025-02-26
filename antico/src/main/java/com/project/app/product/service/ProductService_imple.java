@@ -191,9 +191,9 @@ public class ProductService_imple implements ProductService {
 	
 	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
 	@Override
-	public List<Map<String, String>> getProductDetail(String pk_product_no) {
+	public Map<String, String> getProductDetail(String pk_product_no) {
 
-		List<Map<String, String>> product_list = productDAO.getProductDetail(pk_product_no);
+		Map<String, String> product_list = productDAO.getProductDetail(pk_product_no);
 		
 		return product_list;
 	}
