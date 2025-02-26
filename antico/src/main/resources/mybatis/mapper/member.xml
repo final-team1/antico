@@ -27,10 +27,10 @@
 		where member_user_id = #{member_user_id} and member_passwd = 'kakao'
 	</select>
 	
-	<select id="selectMemberByMemberNo" parameterType="MemberVO" resultType="MemberVO">
+	<select id="selectMemberByMemberUserId" parameterType="MemberVO" resultType="MemberVO">
 		select *
 		from tbl_member
-		where pk_member_no = #{pk_member_no} and member_status = 1
+		where member_user_id = #{member_user_id} and member_status = 1
 	</select>
 	
 	<!-- 탈퇴신청을 한 회원인지 체크 -->
