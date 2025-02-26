@@ -5,7 +5,7 @@
 
 <mapper namespace="com.project.app.product.model.ProductDAO">
 	
-	<!-- 상품 개수 가져오기 (검색어, 카테고리번호 포함) -->
+	<!-- 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함) -->
 	<select id="getProductCnt" parameterType="HashMap" resultType="int">
 		select COUNT(*) AS prod_count
 		from tbl_product P 
@@ -17,18 +17,38 @@
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
       	</if>
       	<!-- 상위 카테고리 번호가 있는 경우 -->
-		<if test='pk_category_no != null and pk_category_no != ""'>
-        	and P.fk_category_no = #{pk_category_no}
+		<if test='category_no != null and category_no != ""'>
+        	and P.fk_category_no = #{category_no}
       	</if>
       	<!-- 하위 카테고리 번호가 있는 경우 -->
-		<if test='pk_category_detail_no != null and pk_category_detail_no != ""'>
-        	and P.fk_category_detail_no = #{pk_category_detail_no}
+		<if test='category_detail_no != null and category_detail_no != ""'>
+        	and P.fk_category_detail_no = #{category_detail_no}
       	</if>
-		order by P.product_regdate desc
+      	<!-- 최소가격 및 최대가격 설정 하는 경우  -->
+      	<if test='min_price != null and min_price != ""'>
+        	and P.product_price &gt;= to_number(#{min_price})
+	    </if>
+	    <if test='max_price != null and max_price != ""'>
+	    	and P.product_price &lt;= to_number(#{max_price})
+	    </if>
+	    <!-- 정렬 설정  -->
+		<if test="sort_type != null and sort_type != ''">
+	    <choose>
+	        <when test="sort_type == 'recent'">
+	            order by P.product_regdate desc
+	        </when>
+	        <when test="sort_type == 'high'">
+	            order by P.product_price desc
+	        </when>
+	        <when test="sort_type == 'low'">
+	            order by P.product_price asc
+	        </when>
+	    </choose>	    
+		</if>
 	</select>	
 	
 	
-	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호 포함) -->
+	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함) -->
 	<resultMap id="getProductPriceMap" type="HashMap" >
 	    <result property="avg_price" 	column="avg_price"  	javaType="String" />
 	    <result property="max_price" 	column="max_price"  	javaType="String" />
@@ -47,18 +67,39 @@
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
       	</if>
       	<!-- 상위 카테고리 번호가 있는 경우 -->
-		<if test='pk_category_no != null and pk_category_no != ""'>
-        	and P.fk_category_no = #{pk_category_no}
+		<if test='category_no != null and category_no != ""'>
+        	and P.fk_category_no = #{category_no}
       	</if>
       	<!-- 하위 카테고리 번호가 있는 경우 -->
-		<if test='pk_category_detail_no != null and pk_category_detail_no != ""'>
-        	and P.fk_category_detail_no = #{pk_category_detail_no}
-      	</if>      	
+		<if test='category_detail_no != null and category_detail_no != ""'>
+        	and P.fk_category_detail_no = #{category_detail_no}
+      	</if>
+      	<!-- 최소가격 및 최대가격 설정 하는 경우  -->
+      	<if test='min_price != null and min_price != ""'>
+        	and P.product_price &gt;= to_number(#{min_price})
+	    </if>
+	    <if test='max_price != null and max_price != ""'>
+	    	and P.product_price &lt;= to_number(#{max_price})
+	    </if>
+	    <!-- 정렬 설정  -->
+		<if test="sort_type != null and sort_type != ''">
+	    <choose>
+	        <when test="sort_type == 'recent'">
+	            order by P.product_regdate desc
+	        </when>
+	        <when test="sort_type == 'high'">
+	            order by P.product_price desc
+	        </when>
+	        <when test="sort_type == 'low'">
+	            order by P.product_price asc
+	        </when>
+	    </choose>	    
+		</if> 	
 	</select>
 	
 	
 
-	<!-- 모든 상품 및 이미지 정보 가져오기 (검색어, 카테고리번호 포함) -->
+	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함) -->
 	<resultMap id="getProductMap" type="HashMap">
 	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
@@ -119,14 +160,39 @@
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
       	</if>
       	<!-- 상위 카테고리 번호가 있는 경우 -->
-		<if test='pk_category_no != null and pk_category_no != ""'>
-        	and P.fk_category_no = #{pk_category_no}
+		<if test='category_no != null and category_no != ""'>
+        	and P.fk_category_no = #{category_no}
       	</if>
       	<!-- 하위 카테고리 번호가 있는 경우 -->
-		<if test='pk_category_detail_no != null and pk_category_detail_no != ""'>
-        	and P.fk_category_detail_no = #{pk_category_detail_no}
-      	</if>      	
-		order by P.product_regdate desc
+		<if test='category_detail_no != null and category_detail_no != ""'>
+        	and P.fk_category_detail_no = #{category_detail_no}
+      	</if>     	
+		<!-- 최소가격 및 최대가격 설정 하는 경우  -->
+      	<if test='min_price != null and min_price != ""'>
+        	and P.product_price &gt;= to_number(#{min_price})
+	    </if>
+	    <if test='max_price != null and max_price != ""'>
+	    	and P.product_price &lt;= to_number(#{max_price})
+	    </if>       	
+		
+		<!-- 정렬 설정  -->
+		<if test="sort_type != null and sort_type != ''">
+	    <choose>
+	        <when test="sort_type == 'recent'">
+	            order by P.product_regdate desc
+	        </when>
+	        <when test="sort_type == 'high'">
+	            order by P.product_price desc
+	        </when>
+	        <when test="sort_type == 'low'">
+	            order by P.product_price asc
+	        </when>
+	    </choose>	    
+		</if>
+		<!-- 정렬 기본값 -->
+	    <if test="sort_type == null or sort_type == ''">
+	        order by P.product_regdate desc 
+	    </if>
 	</select>
 	
 
@@ -211,6 +277,18 @@
 		order by pk_region_no
 	</select>
 	
+	<!-- 좋아요 정보 가져오기 -->
+	<resultMap id="getWishMap" type="HashMap">
+	    <result property="pk_wish_no" 	 column="pk_wish_no" 	javaType="String"/>
+	    <result property="fk_product_no" column="fk_product_no"	javaType="String"/>
+	    <result property="fk_member_no"  column="fk_member_no"	javaType="String"/>
+	</resultMap>
+	<select id="getWish" parameterType="HashMap" resultMap="getWishMap">
+		select pk_wish_no, fk_product_no, fk_member_no
+		from tbl_wish
+	</select>
+	
+	
 	
 	<!-- 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기 -->
 	<resultMap id="RegionResultMap" type="HashMap">
@@ -266,14 +344,41 @@
 	</insert>
 	
 	
+	<!-- 관심상품에 이미 상품이 존재하는지 확인하기 --> 
+	<select id="getWishCheck" parameterType="String">
+	select pk_wish_no
+	from tbl_wish
+	where fk_product_no = to_number(#{fk_product_no}) 
+	and fk_member_no = to_number(#{fk_member_no})
+	</select>
+	
+	
+	<!-- 관심 상품에서 상품 삭제하기 -->
+	<delete id="wishDelete" parameterType="String">
+	delete 
+	from tbl_wish
+	where fk_product_no =  to_number(#{fk_product_no}) 
+	and fk_member_no = to_number(#{fk_member_no})
+	</delete>
+	
+	
+	<!-- 관심상품에 상품 추가하기 -->
+	<insert id="wishInsert" parameterType="String">
+	insert into tbl_wish(pk_wish_no, fk_product_no, fk_member_no)
+				  values(wish_seq.NEXTVAL, to_number(#{fk_product_no}), to_number(#{fk_member_no}))
+	</insert>
+	
+	
+	
+	
+	
+	
 	<resultMap type="HashMap" id="productSummaryMap">
 	 	<result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="product_title" 			column="product_title" 			javaType="String"/>
 	    <result property="product_price" 			column="product_price" 			javaType="String"/>
 	    <result property="prod_img_name" 			column="prod_img_name" 		javaType="String"/>
 	</resultMap>
-	
-	
 	<!-- 상품 요약 정보 목록 조회 (이미지명 포함) -->
 	<select id="selectProductSummaryList" resultMap="productSummaryMap">
 		select p.pk_product_no, p.product_title, p.product_price, pi.prod_img_name

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
 @Mapper
@@ -17,7 +18,7 @@ public interface AdminDAO {
 	int add_withFile(NoticeVO noticevo);
 
 	// 미답변 1:1문의 리스트
-	List<Map<String, String>> uninquire_list();
+	List<Map<String, String>> uninquire_list(Map<String, Object> paraMap);
 
 	// 공지사항 총개수
 	int getNoticeCount();
@@ -29,7 +30,19 @@ public interface AdminDAO {
 	NoticeVO getView_delete(String pk_notice_no);
 
 	// 공지사항 삭제
-	int notice_delete(String string);
+	int notice_delete(String pk_notice_no);
+
+	// 1:1문의 총개수
+	int getInquireCount();
+
+	// 멤버조회
+	List<MemberVO> admin_member_management();
+
+	// 유저 상태 변경
+	int update_member_status(Map<String, Object> paramMap);
+
+
+	
 
 
 }

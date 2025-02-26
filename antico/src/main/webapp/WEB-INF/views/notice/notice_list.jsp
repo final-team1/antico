@@ -81,7 +81,7 @@
 <script>
   $(document).ready(function() {
   	
-	// 페이징 처리 버튼 이벤트
+	  // 페이징 처리 버튼 이벤트
       $(document).on("click", "a.page_button", function() {
          const page = $(this).data("page");
          const searchWord = $("input[name='searchWord']").val();
@@ -92,7 +92,7 @@
 	  
      $(".noticelist").click(function() {
 
-         var $replyList = $(this).next(".replylist");
+         const $replyList = $(this).next(".replylist");
 
          $(".replylist").not($replyList).slideUp();
 

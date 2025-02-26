@@ -39,8 +39,9 @@
             </ul>
         </c:if>
 
-        <!-- 페이징 처리 -->
-        <jsp:include page="../paging.jsp"></jsp:include>
+        <div class="paging">
+			<jsp:include page="../paging.jsp"></jsp:include>
+		</div>
     </section>
 </div>
 
@@ -150,4 +151,7 @@
         width: 80%;
         margin-left: 5%;
     }
+    .paging {
+		margin-top: 3%;
+	}
 </style>

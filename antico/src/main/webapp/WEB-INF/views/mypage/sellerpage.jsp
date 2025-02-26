@@ -365,6 +365,10 @@ hr {
 	border: solid 0px;
 }
 
+
+
+
+
 </style>
 
 
@@ -428,49 +432,47 @@ hr {
 		<!-- div1 -->
 		<div style="width: 100%;">
 			<!-- div2 -->
-			<div
-				style="display: flex; justify-content: space-between; width: 100%;">
-				<!-- 왼쪽 profile_section -->
-				<section class="profile_section" style="flex: 1;">
-					<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-						<h4 class="name" style="font-weight: bold;">${requestScope.member_name}</h4>
-						<button class="share_btn_arrow" onclick="openShareModal()">
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
-                            </svg>
-						</button>
-					</div>
-					<p style="font-size: 13px; color: gray; padding-top: 12px; letter-spacing: -0.5px;">
-						앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>
-					<section class="stats_section">
-						<div class="stat_box">
-							<p>안전거래</p>
-							<span>1</span>
+				<div style="display: flex; justify-content: space-between; width: 100%;">
+					<!-- 왼쪽 profile_section -->
+					<section class="profile_section" style="flex: 1;">
+						<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+							<h4 class="name" style="font-weight: bold;">${requestScope.member_name}</h4>
+							<button class="share_btn_arrow" onclick="openShareModal()">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+	                                <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
+	                            </svg>
+							</button>
 						</div>
-						<div class="stat_box">
-							<p>거래후기</p>
-							<a href="#" onclick="myreview()" style="text-decoration: underline;">1</a>
-						</div>
-						<div class="stat_box">
-							<p>단골</p>
-							<span>0</span>
-						</div>
+						<p style="font-size: 13px; color: gray; padding-top: 12px; letter-spacing: -0.5px;">
+							앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>
+						<section class="stats_section">
+							<div class="stat_box">
+								<p>안전거래</p>
+								<span>1</span>
+							</div>
+							<div class="stat_box">
+								<p>거래후기</p>
+								<a href="#" onclick="myreview()" style="text-decoration: underline;">1</a>
+							</div>
+							<div class="stat_box">
+								<p>단골</p>
+								<span>0</span>
+							</div>
+						</section>
 					</section>
-				</section>
-
-				<div style="flex: 1; padding-left: 20px;">
-
-					<!-- 점수 막대기 -->
-					<div class="stat_box score_level mt-2">
-						<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
-						<div class="trust_bar">
-							<div class="trust_progress" style="width: ${requestScope.data/10}%; background-color:${requestScope.role_color};"></div>
+	
+					<div style="flex: 1; padding-left: 20px;">
+	
+						<!-- 점수 막대기 -->
+						<div class="stat_box score_level mt-2">
+							<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
+							<div class="trust_bar">
+								<div class="trust_progress" style="width: ${requestScope.member_score/10}%; background-color:${requestScope.role_color};"></div>
+							</div>
+							<span>${requestScope.member_score}</span>
 						</div>
-						<span>${requestScope.data}</span>
 					</div>
 				</div>
-			</div>
-
 			<!-- div2 아래, div1 내부 -->
 			<div>
 				<section class="my_products mt-5">

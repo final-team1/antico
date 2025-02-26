@@ -215,103 +215,6 @@ hr {
 	align-items: center;
 }
 
-/* 내 상품 */
-.cardcontainer {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	gap: calc(2vw);
-}
-
-.cardbox {
-	width: 100%;
-	height: auto;
-	/* background-color: #dbdbdb; */
-	transition: all 0.5s;
-}
-
-.cardbox:hover {
-	transform: translateY(-0.5208vw);
-}
-
-.cardimg {
-	width: 100%;
-	aspect-ratio: 1/1;
-	object-fit: cover;
-	background-color: #f1f1f1;
-}
-
-.cardname {
-	font-size: clamp(16px, 0.8333vw, 200px);
-	text-align: center;
-}
-
-.cardprice {
-	font-size: clamp(16px, 0.8333vw, 200px);
-	text-align: center;
-}
-
-.cartgo {
-	width: clamp(180px, 10.4167vw, 1000px);
-	height: clamp(50px, 3.1250vw, 1000px);
-	font-size: clamp(16px, 0.8333vw, 200px);
-	border-radius: 8px;
-	background-color: #000;
-	color: #fff;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: pointer;
-	box-sizing: border-box;
-	transition: all 0.5s;
-}
-
-.cartgo:hover {
-	border: 1px solid #000;
-	background-color: #fff;
-	color: #000;
-	box-sizing: border-box;
-}
-
-.cartbox {
-	width: 100%;
-	min-width: 600px;
-	height: auto;
-	border: 0px solid green;
-	margin: 5.2083vw auto;
-	display: flex;
-}
-
-.cartbox>div {
-	margin: auto;
-}
-
-.leftdiv {
-	display: block;
-	width: 16%;
-}
-
-@media ( max-width : 1279px) {
-	.cardcontainer {
-		grid-template-columns: 1fr 1fr;
-	}
-	.leftdiv {
-		display: none;
-	}
-	.cartbox {
-		width: 100%;
-	}
-	.cartbox>div:nth-child(2) {
-		width: 100%;
-		margin: auto;
-	}
-}
-
-@media ( min-width : 1280px) {
-	.cardcontainer {
-		grid-template-columns: 1fr;
-	}
-}
-
 /* 신뢰지수 막대기 */
 .score_level {
 	display: flex;
@@ -406,6 +309,46 @@ hr {
 	border: solid 0px;
 }
 
+
+.product_list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+ }
+ .product_item {
+     width: calc(25% - 10px);
+     box-sizing: border-box;
+ }
+ .product_link {
+     color: black;
+     text-decoration: none;
+     display: block;
+     padding: 8px;
+ }
+ .cardimg {
+     width: 100%;
+     height: 50%;
+     overflow: hidden;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+ }
+ .cardimg:hover {
+ 	transform: scale(1.05);
+ }
+ .product_img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+     display: block;
+ }
+ .product_date {
+     font-size: 10pt;
+     color: #aaa;
+ }
 </style>
 
 
@@ -566,6 +509,37 @@ hr {
         });
     }
 	
+    function filterProducts(status) {
+        const productItems = document.querySelectorAll('.product_item');
+        
+        productItems.forEach(item => {
+            const saleStatus = item.querySelector('input[type="hidden"]').value;
+            
+            // 전체 버튼(0)은 모든 항목을 보여줌
+            if (status == 0) {
+                item.style.display = 'block';
+            }
+            // 판매중 버튼(0)일 경우, sale_status가 0인 항목만 표시
+            else if (status == 0 && saleStatus == 0) {
+                item.style.display = 'block';
+            }
+            // 예약중 버튼(1)일 경우, sale_status가 1인 항목만 표시
+            else if (status == 1 && saleStatus == 1) {
+                item.style.display = 'block';
+            }
+            // 판매완료 버튼(2)일 경우, sale_status가 2인 항목만 표시
+            else if (status == 2 && saleStatus == 2) {
+                item.style.display = 'block';
+            }
+            // 조건에 맞지 않으면 숨김
+            else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    
+    
 </script>
 
 <jsp:include page=".././header/header.jsp" />
@@ -632,9 +606,9 @@ hr {
 					<div class="stat_box score_level mt-2">
 						<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
 						<div class="trust_bar">
-							<div class="trust_progress" style="width: ${requestScope.data/10}%; background-color:${requestScope.role_color};"></div>
+							<div class="trust_progress" style="width: ${requestScope.member_score/10}%; background-color:${requestScope.role_color};"></div>
 						</div>
-						<span>${requestScope.data}</span>
+						<span>${requestScope.member_score}</span>
 					</div>
 
 					<!-- auto-register -->
@@ -652,32 +626,39 @@ hr {
 				<section class="my_products mt-5">
 					<h4 style="font-weight: bold;">내 상품</h4>
 					<nav class="product_nav">
-						<button>전체</button> <button>판매중</button> <button>예약중</button><button>판매완료</button>
+						<button class="all_prod" onclick="filterProducts(0)">전체</button>
+						<button class="on_sale" onclick="filterProducts(0)">판매중</button>
+						<button class="reservation" onclick="filterProducts(1)">예약중</button>
+						<button class="soldout" onclick="filterProducts(2)">판매완료</button>
 					</nav>
 					<br>
-					<span>총 2개</span><span class="orderby"><button>최신순</button><button>낮은가격순</button><button>높은가격순</button></span>
+					<span>총 ${requestScope.list_size}개</span><span class="orderby"><button>최신순</button><button>낮은가격순</button><button>높은가격순</button></span>
 				</section>
 
 				<!-- 상품 목록 -->
-				<ul class="cardcontainer">
-					<c:if test="${not empty requestScope.pvoList}">
-						<c:forEach var="pvoList" items="${requestScope.pvoList}">
-							<li class="cardbox" style="width: 100%; list-style: none;">
-								<a href="/CLARETe/shop/prodView.cl?p_num=${pvoList.p_num}">
-									<div class="cardimg">
-										<img src="/CLARETe/images/${pvoList.p_image}" style="width: 100%; display: block;">
-									</div>
-									<div class="cardname">${pvoList.p_name}</div>
-									<div class="cardprice">
-										<span><fmt:formatNumber value="${pvoList.p_price}" type="number" groupingUsed="true"></fmt:formatNumber> </span><span>원</span>
-									</div>
-								</a>
-							</li>
-						</c:forEach>
-					</c:if>
-				</ul>
-
-				<c:if test="${empty requestScope.pvoList}">
+				<div style="width: 100%;">
+				    <c:if test="${not empty requestScope.myproduct_list}">
+				        <ul class="product_list">
+				            <c:forEach var="pvoList" items="${requestScope.myproduct_list}">
+				                <li class="product_item" value="">
+				                    <a href="${pvoList.pk_product_no}" class="product_link">
+				                        <div class="cardimg">
+				                            <img src="${pvoList.prod_img_name}" alt="상품 이미지" class="product_img">
+				                        </div>
+				                        <div class="cardname">${pvoList.product_title}</div>
+				                        <div class="cardprice">
+				                            <span><fmt:formatNumber value="${pvoList.product_price}" type="number" groupingUsed="true"/></span>
+				                            <span>원</span>
+				                        </div>
+				                        <span class="product_date">${pvoList.product_regdate}</span>
+				                        <input type="hidden" value="${pvoList.product_sale_status}"/>
+				                    </a>
+				                </li>
+				            </c:forEach>
+				        </ul>
+				    </c:if>
+				</div>
+				<c:if test="${empty requestScope.myproduct_list}">
 					<div class="mypage_contants_bottom">
 						<div class="none_product">
 							<div>선택된 조건에 해당하는 상품이 없습니다.</div>

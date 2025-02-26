@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.app.admin.model.AdminDAO;
 import com.project.app.common.FileManager;
+import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
 @Service
@@ -35,8 +36,8 @@ public class AdminService_imple implements AdminService {
 
 	// 미답변 1:1문의 리스트
 	@Override
-	public List<Map<String, String>> uninquire_list() {
-		List<Map<String, String>> uninquire_list = dao.uninquire_list();	
+	public List<Map<String, String>> uninquire_list(Map<String, Object> paraMap) {
+		List<Map<String, String>> uninquire_list = dao.uninquire_list(paraMap);	
 		return uninquire_list;
 	}
 	
@@ -79,6 +80,30 @@ public class AdminService_imple implements AdminService {
 		
 		return n;
 	}
+
+	// 1:1문의 총개수
+	@Override
+	public int getInquireCount() {
+		int Inquire_Count = dao.getInquireCount();
+		return Inquire_Count;
+	}
+
+	// 유저조회
+	@Override
+	public List<MemberVO> admin_member_management() {
+		List<MemberVO> member_list = dao.admin_member_management(); 
+		return member_list;
+	}
+
+	// 유저 상태 변경
+	@Override
+	public int update_member_status(Map<String, Object> paramMap) {
+		int update_member_status = dao.update_member_status(paramMap);
+		return update_member_status;
+	}
+
+
+
 
 
 	

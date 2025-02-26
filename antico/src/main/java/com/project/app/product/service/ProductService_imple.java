@@ -28,27 +28,27 @@ public class ProductService_imple implements ProductService {
 	private S3FileManager s3fileManager;
 		
 
-	// 상품 개수 가져오기 (검색어, 카테고리번호 포함)
+	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
 	@Override
-	public int getProductCnt(String search_prod, String pk_category_no, String pk_category_detail_no) {
-		int product_list_cnt = productDAO.getProductCnt(search_prod, pk_category_no, pk_category_detail_no);
+	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
+		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
 		return product_list_cnt;
 	}
 		
 	
-	// 상품 가격 정보 가져오기 (검색어, 카테고리번호 포함)
+	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
 	@Override
-	public Map<String, String> getProductPrice(String search_prod, String pk_category_no, String pk_category_detail_no) {
-		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, pk_category_no, pk_category_detail_no);
+	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
+		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
 		return prodcut_price_info;
 	}
 
 
 
-	// 모든 상품 및 이미지 정보 가져오기 (검색어, 카테고리번호 포함)
+	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
 	@Override
-	public List<Map<String, String>> getProduct(String search_prod, String pk_category_no, String pk_category_detail_no) {
-		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, pk_category_no, pk_category_detail_no);
+	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
+		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
 		return product_list;
 	}
 	
@@ -60,7 +60,7 @@ public class ProductService_imple implements ProductService {
 		return product_info;
 	}
 
-	
+
 	// 상위 카테고리 정보 가져오기
 	@Override
 	public List<CategoryVO> getCategory() {
@@ -74,6 +74,14 @@ public class ProductService_imple implements ProductService {
 	public List<CategoryDetailVO> getCategoryDetail() {
 		 List<CategoryDetailVO> category_detail_list = productDAO.getCategoryDetail();
 		return category_detail_list;
+	}
+	
+	
+	// 좋아요 정보 가져오기
+	@Override
+	public List<Map<String, String>> getWish() {
+		List<Map<String, String>> wish_list = productDAO.getWish();
+		return wish_list;
 	}
 	
 	
@@ -124,7 +132,6 @@ public class ProductService_imple implements ProductService {
 						// System.out.println(fileList.get(i).get("file_name")); 	 // 첨부파일 업로드되는 파일명 가져오기
 						
 						// 이미지 VO에 값 넣어주기
-
 						product_imgvo.setProd_img_name(fileList.get(i).get("file_name")); 		  // 저장된 파일명
 						product_imgvo.setProd_img_org_name(fileList.get(i).get("org_file_name")); // 원본 파일명
 						
@@ -147,6 +154,29 @@ public class ProductService_imple implements ProductService {
 		} // end of if (n > 0 ) { // 상품 저장이 성공한 경우면
 		
 	    return result;
+	}
+
+	
+	// 관심상품에 상품 추가하기
+	@Override
+	public int wishInsert(String fk_product_no, String fk_member_no) {
+		
+		int result = 0;
+		
+		// #1. 관심상품에 이미 상품이 존재하는지 확인하기
+		Map<String, String> wish_check_list = productDAO.getWishCheck(fk_product_no, fk_member_no);
+		
+		if(wish_check_list != null) { // 관심상품에 이미 상품이 존재한다면
+			// #2. 관심 상품에서 상품 삭제하기
+			result = productDAO.wishDelete(fk_product_no, fk_member_no);
+		}
+		else { // 관심 상품에 상품이 없다면
+			// #3. 관심 상품에 상품 추가하기
+			result = productDAO.wishInsert(fk_product_no, fk_member_no);
+
+		}
+		
+		return result;	
 	}
 
 	

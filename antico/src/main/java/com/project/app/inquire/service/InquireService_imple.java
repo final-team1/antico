@@ -22,7 +22,7 @@ public class InquireService_imple implements InquireService {
 	// 문의 내역 조회
 	@Override
 	public List<InquireVO> inquire_list() {
-		List<InquireVO> inquire_list = dao.inquire_list();		
+		List<InquireVO> inquire_list = dao.inquire_list();
 		return inquire_list;
 	}
 	

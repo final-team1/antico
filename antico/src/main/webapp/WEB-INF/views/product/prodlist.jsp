@@ -111,6 +111,16 @@ li.category, li.category_detail {
 	font-size: 10pt;
 }
 
+button.choice_region {
+	border: none;
+	border-radius: 6px;
+	font-size: 10pt;
+	background-color: #f1f4f6;
+	width: 60px;
+	height: 30px;
+	color: #5a5a5a;
+}
+
 
 /* 상품 시세 관련 */
 div#current_price {
@@ -261,6 +271,7 @@ div#is_no_product {
 }
 
 
+
 </style>
 
 <div id="container">
@@ -326,15 +337,22 @@ div#is_no_product {
 								<span>가격</span>
 							</td>
 							<td>
-								<input type="text" class="price_range" placeholder="최소 가격"/>
+								<input type="text" class="price_range min_price" placeholder="최소 가격"/>
 								<span>~</span>
-								<input type="text" class="price_range" placeholder="최대 가격"/>
-								<button class="price_range_button">적용</button>
+								<input type="text" class="price_range max_price" placeholder="최대 가격"/>
+								<button 
+								class="price_range_button" 
+								onclick="getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'))">적용</button>
 							</td>
 						</tr>
 						<tr class="region_tr">
-							<td class="td_title">근처동네</td>
-							<td>서교동</td>
+							<td class="td_title">동네</td>
+							<td>
+							<button class="choice_region" onclick="showRegionSearchTab()">선택</button>
+							<input type="text" class="town_name"/>
+							<input type="text" class="lat"/>
+							<input type="text" class="lng"/>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -359,31 +377,57 @@ div#is_no_product {
 		</div>
 		</c:if>
 	
-		<c:if test="${not empty requestScope.product_list}">
+		
 		<!-- 상품 정렬 방식 -->
 		<div id="product_sort">
 			<ul class="sort">
 				<li class="sort">
-					<button class="recent_sort">최신순</button>
+					<button class="recent_sort sort" data-sort-type="recent">최신순</button>
 				</li>
 				<li class="sort">
-					<button class="high_sort">높은가격순</button>
+					<button class="high_sort sort" data-sort-type="high">높은가격순</button>
 				</li>
 				<li class="sort">
-					<button class="low_sort">낮은가격순</button>
+					<button class="low_sort sort" data-sort-type="low">낮은가격순</button>
 				</li>
 			</ul> 
 		</div>
 	
-	
+		<c:if test="${not empty requestScope.product_list}">
 		<!-- 상품 리스트  -->
 		<div id="product_list" class="row">
 		<c:forEach var="prod_list" items="${requestScope.product_list}" varStatus="status">
 				<div id="card_wrap" class="col-md-6 col-lg-3">
 					<div class="card">
-						<!-- 상품 이미지 및 하트 아이콘 -->
+						<!-- 상품 이미지 -->
 						<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top mb-3"/>
-						<span><i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this)" ></i></span>
+						
+						
+						<!-- 하트아이콘 -->
+						<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
+						<c:if test="${not empty requestScope.wish_list}">
+							<c:forEach var="wish_list" items="${requestScope.wish_list}">
+								<c:if test="${wish_list.fk_member_no == requestScope.fk_member_no and wish_list.fk_product_no == prod_list.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
+									<c:set var="heartCheck" value="true"/>
+								</c:if>
+							</c:forEach>
+						</c:if>		
+						
+						<!-- 좋아요 체크된 경우 (채워진 하트) -->				
+					    <c:choose>
+							 <c:when test="${heartCheck eq 'true'}">
+							     <span>
+							         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+							     </span>
+							 </c:when>
+						<c:otherwise>
+						<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
+						     <span>
+						         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+						     </span>
+						</c:otherwise>
+						</c:choose>
+						
 						
 						<div class="card-body">
 							<!-- 상품 제목 -->
@@ -420,15 +464,20 @@ div#is_no_product {
 </div>
 
 
+<jsp:include page="../tab/tab.jsp">
+	<jsp:param name="tabTitle" value="" />
+</jsp:include>
+
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
 
 
 <script>
-
-
 	$(document).ready(function(){
-	
+		
+		$("div.region_modal").hide();
+		
+		
 		$("tr.tr_second").hide(); // 처음에 하위 카테고리 테이블 숨기기
 		
 		// 상품 등록일자 계산 해주기
@@ -489,14 +538,31 @@ div#is_no_product {
 			getProductByfilter(category_no, category_detail_no);				    // 카테고리에 따른 상품 출력	
 		});	
 		
+		
+	    
+	    $("button.sort").click(function() {
+	        // 모든 버튼에서 'selected' 클래스 제거
+	        $("button.sort").removeClass("selected");
+
+	        // 클릭된 버튼에 'selected' 클래스 추가
+	        $(this).addClass("selected");
+
+	        // 필터 함수 호출
+	        getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
+	    });
 				
 								
-		// 카테고리 클릭 시 검색 필터에 값들 유지시키기 위한 //		
+		// 검색 필터에 값들 유지시키기 위한 //		
 	    // URL에서 카테고리 파라미터를 가져오기
 	    const url_params = new URLSearchParams(window.location.search);
-	    const category_no = url_params.get('pk_category_no'); 				 // 상위 카테고리 번호
-	    const category_detail_no = url_params.get('pk_category_detail_no');  // 하위 카테고리 번호
+	    const category_no = url_params.get('category_no'); 				 // 상위 카테고리 번호
+	    const category_detail_no = url_params.get('category_detail_no'); // 하위 카테고리 번호
+	
+	    const min_price = url_params.get('min_price');					 // 최소가격
+	    const max_price = url_params.get('max_price');					 // 최대가격
 
+	    const sort_type = url_params.get('sort_type');					 // 정렬 방식
+	    
 	    // 상위 카테고리 상태 복원
 	    if (category_no) {
 	        const category_name = $("li.category[data-category-no='" + category_no + "']").text();  	// 상위 카테고리명
@@ -507,6 +573,7 @@ div#is_no_product {
 	    	
 	        $("li.category").hide(); // 상위 카테고리들 숨기기
 	        $("tr.tr_second").show(); // 하위 카테고리 테이블 보여주기
+	        $("i.plus_minus").removeClass("fa-plus").addClass("fa-minus"); // 아이콘 - 유지
 	    }
 
 	    // 하위 카테고리 상태 복원
@@ -514,13 +581,27 @@ div#is_no_product {
 	        const category_detail_name = $("li.category_detail[data-categorydetail-no='" + category_detail_no + "']").text();  	   // 하위 카테고리명
 	        $("span.selected_category_detail").text(" > " + category_detail_name).data("category-detail-no", category_detail_no);  // 하위 카테고리명 표시 및 하위 카테고리 번호 데이터 넣어주기
 	        $("tr.tr_second").show(); // 하위 카테고리 테이블 보여주기
+	        $("i.plus_minus").removeClass("fa-plus").addClass("fa-minus"); // 아이콘 - 유지
 	    }
 	    
 	    
-
+	    // 최소 가격 
+	    if (min_price) {
+	        $("input.min_price").val(decodeURIComponent(min_price));
+	    }
+	    // 최대 가격
+	    if (max_price) {
+	        $("input.max_price").val(decodeURIComponent(max_price));
+	    }
 	    
-				
-		
+	    // 정렬 방식
+	    if (sort_type) {
+	        // 기존에 선택된 버튼을 제거하고, 새로 선택된 버튼에 클래스를 추가
+	        $("button[data-sort-type]").removeClass("selected");
+	        $("button[data-sort-type='" + sort_type + "']").addClass("selected");
+	    }
+	    
+	    	
 	}); // end of $(document).ready(function(){
 
 		
@@ -528,26 +609,82 @@ div#is_no_product {
 	// Function Declaration---------------------------------
 	
 	
- 	// 상위카테고리 및 하위카테고리 클릭 시 해당 상품 조회해오기 (검색어포함)
+ 	// 필터로 해당 상품 조회해오기 (검색어포함)
 	function getProductByfilter(category_no, category_detail_no) {
 		
-	    let search_prod = encodeURIComponent("${requestScope.search_prod}"); 
-	    let url = "<%= ctxPath %>/product/prodlist?search_prod=" + search_prod + "&pk_category_no=" + category_no + "&pk_category_detail_no=" + category_detail_no;
+	    let search_prod = encodeURIComponent("${requestScope.search_prod}");     // 검색어
+	    let min_price = encodeURIComponent($("input.min_price").val().trim());   // 최소가격
+	    let max_price = encodeURIComponent($("input.max_price").val().trim());   // 최소가격
+	    
+	    let sort_type = $("button.selected").data("sort-type"); 				 // 클릭한 정렬 유형의 값 가져오기
+
+	    
+	    let url = "<%= ctxPath %>/product/prodlist";
+	   	// + search_prod + "&category_no=" + category_no + "&category_detail_no=" + category_detail_no +"&min_price=" + min_price + "&max_price=" + max_price;
+	 	
+	   	// 첫 번째 파라미터는 ?로 시작
+		let isFirstParam = true;
+	   	
+	   	// 검색어가 있을 때만 URL에 추가
+	    if (search_prod) {
+	        url += "?search_prod=" + search_prod;
+	        isFirstParam = false;
+	    }
+			
+	    // 각 필터 값이 있으면 url 추가 없으면 공백 처리
+	    if (category_no) {
+	        url += (isFirstParam ? '?' : '&') + "category_no=" + category_no;
+	        isFirstParam = false;
+	    }
+	    if (category_detail_no) {
+	        url += (isFirstParam ? '?' : '&') + "category_detail_no=" + category_detail_no;
+	        isFirstParam = false;
+	    }
+	    if (min_price) {
+    		url += (isFirstParam ? '?' : '&') + "min_price=" + min_price;
+    		isFirstParam = false;
+		} 
+	    if (max_price) {
+	        url += (isFirstParam ? '?' : '&') + "max_price=" + max_price;
+	        isFirstParam = false;
+	    }
+	    if (sort_type) {
+	        url += (isFirstParam ? '?' : '&') + "sort_type=" + sort_type;
+	        isFirstParam = false;
+	    }
 	    
 	    location.href = url;
 	    
 	} // end of function getProductByCategory(category_no, category_detail_no)
+
 	
 
 	// 하트 모양(좋아요) 클릭한 경우
-	function wishInsert(e) {
-		if($(e).hasClass("fa-regular")) {
-	        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
-	        alert("찜 추가");
+	function wishInsert(e, product_no, member_no) {
+		
+		if(member_no) { // 로그인한 경우라면
+			$.ajax({
+				url:"<%= ctxPath %>/product/wish_insert",
+				type:"post",
+				data: {"fk_product_no": product_no,
+					   "fk_member_no": member_no},
+				success:function(response) {
+					if($(e).hasClass("fa-regular")) {
+				        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
+				        showAlert('success', '관심상품에 추가하였습니다.');
+					} 
+					else {
+						$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
+						showAlert('error', '관심상품에서 삭제하였습니다.');
+					}	
+				},
+				error: function(request, status, error){ 
+	                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }	
+			}); 
 		} 
 		else {
-			$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
-			alert("찜 제거");
+			showAlert('error', '로그인 후 이용 가능합니다.');
 		}
 		
 	} // end of function wishInsert()
@@ -583,6 +720,32 @@ div#is_no_product {
 	        return "오래 전";
 	    }
 	} // end of function timeAgo(reg_date)
+	
+	
+	
+	// 지역 선택 창 불러오기
+	function showRegionSearchTab() {
+		$.ajax({
+			url : "<%=ctxPath%>/product/regionlist_lat_lng",
+			type : "get",
+			success : function(html) {
+				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
+				openSideTab(html);
+			},
+			 error: function(request, status, error){
+				 console.log(request.responseText);
+				 
+				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+				 let response = request.responseText;
+				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+				 
+			     showAlert("error", message);
+			     
+			     // 사이드 탭 닫기
+			     closeSideTab();
+			}
+		});
+	}
 	
 	
 	
