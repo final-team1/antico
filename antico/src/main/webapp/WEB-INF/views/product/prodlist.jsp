@@ -400,7 +400,7 @@ div#is_no_product {
 				<div id="card_wrap" class="col-md-6 col-lg-3">
 					<div class="card">
 						<!-- 상품 이미지 -->
-						<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top mb-3"/>
+						<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top mb-3" onclick="goProductDetail(${prod_list.pk_product_no})" />
 						
 						
 						<!-- 하트아이콘 -->
@@ -429,7 +429,7 @@ div#is_no_product {
 						</c:choose>
 						
 						
-						<div class="card-body">
+						<div class="card-body" onclick="goProductDetail(${prod_list.pk_product_no})">
 							<!-- 상품 제목 -->
 							<div class="product_title">
 								<span class="product_title">${prod_list.product_title}</span>
@@ -464,6 +464,8 @@ div#is_no_product {
 </div>
 
 
+
+
 <jsp:include page="../tab/tab.jsp">
 	<jsp:param name="tabTitle" value="" />
 </jsp:include>
@@ -474,8 +476,6 @@ div#is_no_product {
 
 <script>
 	$(document).ready(function(){
-		
-		$("div.region_modal").hide();
 		
 		
 		$("tr.tr_second").hide(); // 처음에 하위 카테고리 테이블 숨기기
@@ -656,6 +656,14 @@ div#is_no_product {
 	    location.href = url;
 	    
 	} // end of function getProductByCategory(category_no, category_detail_no)
+	
+	
+	
+	// 상품 상세 페이지로 이동
+	function goProductDetail(pk_product_no) {
+		location.href = "<%= ctxPath%>/product/prod_detail/" + pk_product_no;
+	}
+	
 
 	
 

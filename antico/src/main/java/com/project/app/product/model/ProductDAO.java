@@ -50,9 +50,16 @@ public interface ProductDAO {
 	Map<String, String> getWishCheck(String fk_product_no, String fk_member_no); // 관심상품에 이미 상품이 존재하는지 확인하기
 	int wishDelete(String fk_product_no, String fk_member_no); // 관심 상품에서 상품 삭제하기
 	int wishInsert(String fk_product_no, String fk_member_no); // 관심상품에 상품 추가하기
+	
+	// 특정 상품에 대한 이미지 정보 가져오기
+	List<ProductImageVO> getProductImg(String pk_product_no);
 
+	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+	List<Map<String, String>> getProductDetail(String pk_product_no);
+	
 	// 상품 요약 정보 목록 조회
 	List<Map<String, String>> selectProductSummaryList(List<String> pk_product_no_list);
+
 
 	
 }
