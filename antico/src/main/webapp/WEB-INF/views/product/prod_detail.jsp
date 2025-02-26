@@ -6,7 +6,14 @@
 
 <% String ctxPath = request.getContextPath(); %>
 
+<%-- context path --%>
+<c:set var="ctx_path" value="${pageContext.request.contextPath}" />
 
+<%-- 상품 map --%>
+<c:set var="product_map" value="${requestScope.product_list}" />
+
+<%-- 현재 로그인 사용자 일련번호 --%>
+<c:set var="fk_member_no" value="${requestScope.fk_member_no}" />
 
 <jsp:include page=".././header/header.jsp"></jsp:include>
 
@@ -492,7 +499,35 @@ span.seller_title {
 	        const product_reg_date = $(this).attr('data-date'); // 등록일
 	        const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
 	        $(this).text(time);								    // 텍스트로 출력
-	    }); // end of $("span.product_time").each(function()		
+	    }); // end of $("span.product_time").each(function()	
+	    		
+	    		
+	   	// 채팅 버튼 이벤트 등록
+	   	$("button#chat").click(function() {
+	   		const pk_product_no = "${product_map.pk_product_no}";
+	   			
+   			// 삭제 예정
+   			if(pk_product_no == ""){
+   				showAlert("error", "상품이 존재하지 않습니다.");
+   				return;
+   			}
+   			
+   			// 채팅방 생성 및 입장
+   			$.ajax({
+   				url : "${ctx_path}/chat/chatroom",
+   				type : "post",
+   				data : {
+   					"pk_product_no" : pk_product_no
+   				},
+   				success : function(html) {
+   					// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
+   					openSideTab(html, "${product_map.member_name}");
+   				},
+   				error: function(request, status, error){
+   					errorHandler(request, status, error);
+   				}
+   			});
+	   	});
 		
 		
 	}); // end of $(document).ready(function()

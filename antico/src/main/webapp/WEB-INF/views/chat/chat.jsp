@@ -18,6 +18,15 @@
 <%-- 현재 로그인 사용자 --%>
 <c:set var="login_member_no" value="${requestScope.login_member_no}" />
 
+<%-- 상대방 채팅 참여자 --%>
+<c:if test="${login_member_no ne participants[0].memberNo}">
+	<c:set var="other_participant" value="${participants[0]}" />
+</c:if>
+
+<c:if test="${login_member_no ne participants[1].memberNo}">
+	<c:set var="other_participant" value="${participants[1]}" />
+</c:if>
+
 <style>
 div#chat_container {
 	width: 100%;
@@ -77,8 +86,8 @@ div.chatting p, div.chatting_own p {
 	word-wrap: break-word;
 	font-size: 14px;
 	line-height: 1.5;
-    width: auto;                  /* 💡 너비 자동 조정 */
-    max-width: 85%;               /* 💡 최대 너비 설정하여 줄 바꿈 허용 */
+    width: auto;               
+    max-width: 85%;
     margin: 0;    
 }
 
@@ -104,6 +113,10 @@ div.chatting_own span.send_date, div.chatting span.send_date {
     font-size: 7pt;
     margin: 0 10px;
     white-space: nowrap;
+}
+
+span.read_status {
+	font-size: 7pt;
 }
 
 #message {
@@ -163,9 +176,6 @@ div.input-container {
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		console.log("${chat_room.roomId}");
-		
-		
 		// 엔터키 입력시 채팅 전송 처리
 		$("input#message").keydown(function(e) {
 			if (e.keyCode == 13){
@@ -208,8 +218,12 @@ div.input-container {
 		    });
 			
 			// 채팅방에 구독 처리 후 메시지 수신 시 채팅 내역에 보여주기
-			WebSocketManager.subscribe("/room/" + roomId, function(message) {
+			WebSocketManager.subscribeMessage("/room/" + roomId, function(message) {
 				showChat(message);
+			});
+			
+			WebSocketManager.subscribeReadStatus("/room/" + roomId + "/read/", function(participants) {
+				updateReadStatus(participants);
 			});
 		});
 	});
@@ -243,6 +257,25 @@ div.input-container {
 	    }
 	}
 	
+	// 채팅 송신
+	function sendReadStatus() {
+	    const roomId = "${chat_room.roomId}";
+	    const loginMemberNo = "${login_member_no}";
+	   
+	    // 채팅방 및 사용자 식별자가 존재하지 않을 경우
+	    if (roomId == "" || loginMemberNo == "") {
+	    	console.log("error", "읽음 상태 전송을 실패했습니다.");
+	        return;
+	    }
+
+    	WebSocketManager.sendReadStatus("/send/read/" + roomId,
+            {
+                'lastReadChatId': $("div#chatting > div").last().data("chat_id"),
+                'memberNo' : loginMemberNo
+            });
+	       
+	}
+	
 	// 채팅 내역 보여주기
 	function showChat(chat) {
 	    if (chat && chat.message) {
@@ -256,7 +289,8 @@ div.input-container {
 	        // 년/월/일 형태 문자열 추출
         	const sendDate = chat.sendDate.substring(11, 16);
         	
-        	const chatDiv = $("<div>")
+        	const chatDiv = $(`<div data-chat_id = \${chat.id}>`)
+
         	// 자신이 보낸 메시지인지 상대가 보낸 메시지인지 확인
             .addClass(chat.senderId == loginMemberNo ? 'chatting_own' : 'chatting')
             .append(
@@ -269,7 +303,9 @@ div.input-container {
         	
         	// 스크롤을 하단으로 내리기
         	scrollToBottom();
-        	
+
+            sendReadStatus();
+
 	    } else {
 	    	showAlert("error", "채팅 내역을 불러오는데 실패했습니다.");
 	    }
@@ -288,6 +324,7 @@ div.input-container {
 	    	
 	    	// 각 채팅의 송신날짜 년/월/일을 채팅 상단에 띄우기 위한 임시 저장값
 	    	let current_date = "";
+			const lastReadChatId = "${other_participant.lastReadChatId}";
 	    	
 	        for (let chat of chatList) {
 	            if (chat && chat.message) {
@@ -305,14 +342,15 @@ div.input-container {
 	            		current_date = chat.sendDate.substring(0, 10);
 	            	}
 	            	
-	            	const chatDiv = $("<div>")
+	            	const chatDiv = $(`<div data-chat_id = \${chat.id}>`)
 	            		// 자신이 보낸 메시지인지 상대가 보낸 메시지인지 확인
 		                .addClass(chat.senderId == loginMemberNo ? 'chatting_own' : 'chatting')
 		                .append(
 		                    $("<div>").addClass("message-wrapper")
+		                    .append((lastReadChatId != "" && chat.senderId == loginMemberNo && lastReadChatId >= chat.id) ? $("<span class='read_status'>").text("읽음") : null)
 		                    .append(chat.senderId == loginMemberNo ? $("<span class='send_date'>").text(sendDate) : $("<p>").text(chat.message))
 		                    .append(chat.senderId == loginMemberNo ? $("<p>").text(chat.message) : $("<span class='send_date'>").text(sendDate))
-	                	);
+	                	);	            
 	            	
 	            	$("#chatting").append(chatDiv);
 	            	
@@ -322,6 +360,8 @@ div.input-container {
 	            	showAlert("error", "채팅 내역을 불러오는데 실패했습니다.");
 	            }
 	        }
+	        
+	        sendReadStatus();
 	    }
 	}
 	
@@ -329,6 +369,26 @@ div.input-container {
 	function scrollToBottom() {
 	    const chatContainer = $("div#chatting");
 	    chatContainer.scrollTop(chatContainer.prop("scrollHeight"));
+	}
+	
+	// 사용자 읽음 상태수정
+	function updateReadStatus(participants) {
+		
+		const loginMemberNo = "${login_member_no}";
+		if(participants.memberNo != loginMemberNo) {
+	 		$("div.chatting_own").each(function(index, item){
+	 			
+				// 최근 읽은 채팅 메시지 식별자 포함 이전 식별자를 가진 메시지에는 읽음 상태 추가
+				if($(item).data("chat_id") <= participants.lastReadChatId) {	
+					
+					// 이미 읽음 처리가 안된 요소라면
+					if(!$(item).find("span").hasClass("read_status")) {
+						$(item).find("div.message-wrapper").prepend($("<span class='read_status'>").text("읽음"));
+					}
+				}
+	 			
+			});
+		}
 	}
 
 </script>
