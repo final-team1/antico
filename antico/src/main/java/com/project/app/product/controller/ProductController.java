@@ -235,8 +235,8 @@ public class ProductController {
 		mav.addObject("product_img_list", product_img_list);
 		
 		// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
-		Map<String, String> product_list = service.getProductDetail(pk_product_no);
-		mav.addObject("product_list", product_list);
+		Map<String, String> product_map = service.getProductDetail(pk_product_no);
+		mav.addObject("product_map", product_map);
 		
 		// 카카오 api key 전달
 		mav.addObject("kakao_api_key", kakao_api_key);

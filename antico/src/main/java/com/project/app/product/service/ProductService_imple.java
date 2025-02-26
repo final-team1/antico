@@ -193,9 +193,9 @@ public class ProductService_imple implements ProductService {
 	@Override
 	public Map<String, String> getProductDetail(String pk_product_no) {
 
-		Map<String, String> product_list = productDAO.getProductDetail(pk_product_no);
+		Map<String, String> product_map = productDAO.getProductDetail(pk_product_no);
 		
-		return product_list;
+		return product_map;
 	}
 
 	

@@ -10,7 +10,7 @@
 <c:set var="ctx_path" value="${pageContext.request.contextPath}" />
 
 <%-- 상품 map --%>
-<c:set var="product_map" value="${requestScope.product_list}" />
+<c:set var="product_map" value="${requestScope.product_map}" />
 
 <%-- 현재 로그인 사용자 일련번호 --%>
 <c:set var="fk_member_no" value="${requestScope.fk_member_no}" />
@@ -111,7 +111,8 @@ div#time_view_info {
 	color: #999999;
 }
 
-div#status_region_info {
+div#status_region_info,
+div#buyer_setting {
 	margin-top: 20px;
 	height: 80px;
 	border: solid 1px #dee2e6;
@@ -121,20 +122,21 @@ div#status_region_info {
     justify-content: center;
 }
 
-
-ul#status_region_info_ul {
+ul#status_region_info_ul,
+ul#buyer_setting_ul {
 	list-style-type: none;
 	padding-left: 0px;
 	margin-bottom: 0px;
 	display: flex;
 }
 
-li.status, li.region, li.sale_status {
+li.status, li.region, li.sale_status,
+li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete {
 	display: flex; 
 	flex-direction: column;
 	margin-right: 10px;
 	align-items: center;
-	width: 120px;
+	width: 100px;
 }
 
 li.bar {
@@ -146,7 +148,13 @@ span.status_title, span.region_title, span.sale_status_title {
 	color: #999999;
 }
 
-span.status, span.region, span.sale_status {
+span.reg_update_title, span.prod_upate_title, span.sale_status_upate_title, span.prod_delete_title {
+	font-size: 10pt;
+	color: #999999;
+}
+
+span.status, span.region, span.sale_status,
+span.reg_update, span.prod_upate, span.sale_status_upate, span.prod_delete {
 	font-size: 10pt;
 	font-weight: bold;
 }
@@ -352,20 +360,20 @@ span.seller_title {
 				<div id="category_info">
 					<span class="prod_category" onclick="location.href='<%= ctxPath%>/index'" >홈</span>
 					<span class="greater">　>　</span>
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${requestScope.product_list.fk_category_no}'">${requestScope.product_list.category_name}</span>
+					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${product_map.fk_category_no}'">${product_map.category_name}</span>
 					<span class="greater">　>　</span>
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_detail_no=${requestScope.product_list.fk_category_detail_no}'">${requestScope.product_list.category_detail_name}</span>
+					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${product_map.fk_category_no}&category_detail_no=${product_map.fk_category_detail_no}'">${product_map.category_detail_name}</span>
 				</div>
 				<div id="title_info">
-					<span id="product_title">${requestScope.product_list.product_title}</span>
+					<span id="product_title">${product_map.product_title}</span>
 					<!-- 공유 아이콘 -->
 					<span><i id="share" class="fa-solid fa-arrow-up-right-from-square" onclick="openShareModal()"></i></span>
 				</div>
 				<div id="price_info">	
-					<span><fmt:formatNumber value="${requestScope.product_list.product_price}" pattern="#,###" /> 원</span>
+					<span><fmt:formatNumber value="${product_map.product_price}" pattern="#,###" /> 원</span>
 				</div>
 				<div id="time_view_info">
-					<span class="product_time" data-date="${requestScope.product_list.product_regdate}"></span>
+					<span class="product_time" data-date="${product_map.product_regdate}"></span>
 					<span>·</span>
 					<span>조회 1</span>
 				</div>
@@ -373,10 +381,10 @@ span.seller_title {
 					<ul id="status_region_info_ul">
 						<li class="status">
 							<span class="status_title">제품상태</span>
-							<c:if test="${requestScope.product_list.product_status == 0}">
+							<c:if test="${product_map.product_status == 0}">
 								<span class="status">중고</span>
 							</c:if>
-							<c:if test="${requestScope.product_list.product_status == 1}">
+							<c:if test="${product_map.product_status == 1}">
 								<span class="status">새상품</span>
 							</c:if>
 						</li>
@@ -385,20 +393,20 @@ span.seller_title {
 						
 						<li class="region">
 							<span class="region_title">희망거래동네</span>
-							<span class="region">${requestScope.product_list.region_town}</span>
+							<span class="region">${product_map.region_town}</span>
 						</li>
 						
 						<li class="bar"></li>
 						
 						<li class="sale_status">
 							<span class="sale_status_title">판매상태</span>
-							<c:if test="${requestScope.product_list.product_sale_status == 0}">
+							<c:if test="${product_map.product_sale_status == 0}">
 								<span class="sale_status">판매중</span>
 							</c:if>
-							<c:if test="${requestScope.product_list.product_sale_status == 1}">
+							<c:if test="${product_map.product_sale_status == 1}">
 								<span class="sale_status">예약중</span>
 							</c:if>
-							<c:if test="${requestScope.product_list.product_sale_status == 2}">
+							<c:if test="${product_map.product_sale_status == 2}">
 								<span class="sale_status">판매완료</span>
 							</c:if>
 						</li>
@@ -406,11 +414,46 @@ span.seller_title {
 						
 					</ul>
 				</div>
+				
+				
+				<!-- 판매자 본인의 상품일 경우  -->
+				<div id="buyer_setting">
+					<ul id="buyer_setting_ul">
+						<li class="reg_update">
+							<span class="reg_update_title"><i class="fa-solid fa-turn-up"></i></span>
+							<span class="reg_update">위로올리기</span>
+						</li>
+						
+						<li class="bar"></li>
+						
+						<li class="prod_upate">
+							<span class="prod_upate_title">상품수정</span>
+							<span class="prod_upate">아이콘</span>
+						</li>
+						
+						<li class="bar"></li>
+						
+						<li class="sale_status_upate">
+							<span class="sale_status_upate_title">상태변경</span>
+							<span class="sale_status_upate">아이콘</span>
+						</li>
+						
+						<li class="bar"></li>
+						
+						<li class="prod_delete">
+							<span class="prod_delete_title">상품삭제</span>
+							<span class="prod_delete">아이콘</span>
+						</li>
+						
+					</ul>
+				</div>				
+				
+				
 				<div id="button">
 					<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
 					<c:if test="${not empty requestScope.wish_list}">
 						<c:forEach var="wish_list" items="${requestScope.wish_list}">
-							<c:if test="${wish_list.fk_member_no == requestScope.fk_member_no and wish_list.fk_product_no == requestScope.product_list.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
+							<c:if test="${wish_list.fk_member_no == fk_member_no and wish_list.fk_product_no == product_map.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
 								<c:set var="heartCheck" value="true"/>
 							</c:if>
 						</c:forEach>
@@ -420,18 +463,16 @@ span.seller_title {
 				    <c:choose>
 						 <c:when test="${heartCheck eq 'true'}">
 						     <span>
-						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${requestScope.product_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${fk_member_no})"></i>
 						     </span>
 						 </c:when>
 					<c:otherwise>
 					<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
 					     <span>
-					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${requestScope.product_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${fk_member_no})"></i>
 					     </span>
 					</c:otherwise>
 					</c:choose>
-					
-					
 					
 					<button id="chat">채팅하기</button>
 					<button id="buy">구매하기</button>
@@ -447,7 +488,7 @@ span.seller_title {
 				</div>
 				
 				<div id="prod_contents">
-					<p class="contents">${requestScope.product_list.product_contents}</p>
+					<p class="contents">${product_map.product_contents}</p>
 				</div>
 			</div>
 			
@@ -458,7 +499,6 @@ span.seller_title {
 				</div>
 			</div>
 		</div>
-
 </div>
 
 
@@ -648,8 +688,4 @@ span.seller_title {
         });
     }
 	
-
-	
-
 </script>
-
