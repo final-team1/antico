@@ -248,5 +248,15 @@ public class ProductController {
 	
 	
 	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	@PostMapping("reg_update")
+	@ResponseBody
+	public int regDateUpdate(@RequestParam(defaultValue = "") String pk_product_no) {
+		int result = service.regDateUpdate(pk_product_no);
+		return result;
+	}
+	
+	
+	
 
 } // end of public class ProductController

@@ -139,6 +139,10 @@ li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete {
 	width: 100px;
 }
 
+li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete {
+	cursor: pointer;
+}
+
 li.bar {
 	border: solid 1px #dee2e6;
 }
@@ -416,37 +420,39 @@ span.seller_title {
 				</div>
 				
 				
-				<!-- 판매자 본인의 상품일 경우  -->
+				<!-- 판매자 본인의 상품일 경우에만 보여진다.  -->
+				<c:if test="${product_map.fk_member_no == fk_member_no}">
 				<div id="buyer_setting">
 					<ul id="buyer_setting_ul">
-						<li class="reg_update">
+						<li class="reg_update" onclick="regUpdate('${product_map.pk_product_no}')">
 							<span class="reg_update_title"><i class="fa-solid fa-turn-up"></i></span>
 							<span class="reg_update">위로올리기</span>
 						</li>
 						
 						<li class="bar"></li>
 						
-						<li class="prod_upate">
-							<span class="prod_upate_title">상품수정</span>
-							<span class="prod_upate">아이콘</span>
+						<li class="sale_status_upate">
+							<span class="sale_status_upate_title"><i class="fa-regular fa-circle-check"></i></span>
+							<span class="sale_status_upate">상태변경</span>
 						</li>
 						
 						<li class="bar"></li>
 						
-						<li class="sale_status_upate">
-							<span class="sale_status_upate_title">상태변경</span>
-							<span class="sale_status_upate">아이콘</span>
+						<li class="prod_upate">
+							<span class="prod_upate_title"><i class="fa-solid fa-pen-to-square"></i></span>
+							<span class="prod_upate">상품수정</span>
 						</li>
 						
 						<li class="bar"></li>
 						
 						<li class="prod_delete">
-							<span class="prod_delete_title">상품삭제</span>
-							<span class="prod_delete">아이콘</span>
+							<span class="prod_delete_title"><i class="fa-regular fa-trash-can"></i></span>
+							<span class="prod_delete">상품삭제</span>
 						</li>
 						
 					</ul>
-				</div>				
+				</div>
+				</c:if>				
 				
 				
 				<div id="button">
@@ -638,6 +644,23 @@ span.seller_title {
 		
 	} // end of function wishInsert()
 	
+	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	function regUpdate(product_no) {
+		$.ajax({
+			url:"<%= ctxPath %>/product/reg_update",
+			type:"post",
+			data: {"pk_product_no": product_no},
+			success:function(response) {
+			    
+				showAlert('success', '해당 상품의 등록일이 업데이트 되었습니다.');
+
+			},
+			error: function(request, status, error){ 
+                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }	
+		}); 		
+	}
 	
 	
 	

@@ -437,6 +437,13 @@
 	</select>
 	
 	
+	<!-- "위로올리기" 클릭 시 상품 등록일자 업데이트 하기 -->
+	<update id="regDateUpdate" parameterType="String">
+		update tbl_product 
+		set product_regdate = SYSDATE  
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
 	
 	<resultMap type="HashMap" id="productSummaryMap">
 	 	<result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>

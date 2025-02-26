@@ -57,8 +57,13 @@ public interface ProductDAO {
 	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
 	Map<String, String> getProductDetail(String pk_product_no);
 	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	int regDateUpdate(String pk_product_no);
+	
 	// 상품 요약 정보 목록 조회
 	List<Map<String, String>> selectProductSummaryList(List<String> pk_product_no_list);
+	
+
 
 
 	

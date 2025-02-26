@@ -199,6 +199,16 @@ public class ProductService_imple implements ProductService {
 	}
 
 	
+	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	@Override
+	public int regDateUpdate(String pk_product_no) {
+		int result = productDAO.regDateUpdate(pk_product_no);
+		return result;
+	}
+	
+		
+	
 	/*
 	 * 상품 요약 정보 목록 조회
 	 */
@@ -206,7 +216,9 @@ public class ProductService_imple implements ProductService {
 	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+
 	
+
 	
 
 
