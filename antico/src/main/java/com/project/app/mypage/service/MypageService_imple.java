@@ -77,5 +77,6 @@ public class MypageService_imple implements MypageService {
 		return mvo;
 	}
 
+
 	
 }
