@@ -143,23 +143,12 @@ hr {
 }
 
 
-/* 공유 버튼 스타일 */
-.share-btn {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 16px;
-	border: 1px solid #ccc;
-	border-radius: 25px;
-	background: white;
-	font-weight: 600;
+/* 공유 아이콘 스타일 */
+i#share {
 	cursor: pointer;
-	transition: background 0.3s;
 }
 
-.share-btn:hover {
-	background: #f0f0f0;
-}
+
 
 /* 모달 스타일 */
 .modal {
@@ -183,21 +172,6 @@ hr {
 	text-align: center;
 }
 
-.share_btn_arrow {
-	justify-content: center;
-	align-items: center;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 8px;
-	background: white;
-	cursor: pointer;
-	font-size: 16px;
-	transition: background 0.3s;
-}
-
-.share_btn_arrow:hover {
-	background: #f0f0f0;
-}
 
 .share_option {
 	border: solid 0px red;
@@ -699,11 +673,7 @@ hr {
 				<section class="profile_section" style="flex: 1;">
 					<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
 						<h4 class="name" style="font-weight: bold;">${requestScope.member_name}</h4>
-						<button class="share_btn_arrow" onclick="openShareModal()">
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
-                            </svg>
-						</button>
+						<i id="share" class="fa-solid fa-arrow-up-right-from-square" onclick="openShareModal()"></i>
 					</div>
 					<p style="font-size: 13px; color: gray; padding-top: 12px; letter-spacing: -0.5px;">
 						앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>

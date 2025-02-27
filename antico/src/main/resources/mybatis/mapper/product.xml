@@ -447,6 +447,24 @@
 	</update>
 	
 	
+	<!-- "상태변경" 클릭 시 상품 상태 업데이트 하기 -->
+	<update id="saleStatusUpdate" parameterType="String">
+		update tbl_product 
+		set product_sale_status = #{sale_status_no} 
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
+	
+	<!-- "상품삭제" 클릭 시 상품 삭제하기 -->
+	<delete id="delete" parameterType="String">
+		delete tbl_product
+		where pk_product_no = #{pk_product_no}
+	</delete>
+	
+	
+	
+	
+	
 	<resultMap type="HashMap" id="productSummaryMap">
 	 	<result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="product_title" 			column="product_title" 			javaType="String"/>

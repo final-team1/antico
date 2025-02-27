@@ -150,7 +150,7 @@ $(document).ready(function(){
 	        	$("input#fk_region_no").val(fk_region_no);
 	        },
 	        error: function(request, status, error) {
-	        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        	errorHandler(request, status, error);
 	        }
 	    });
     	

@@ -382,11 +382,6 @@ input[type='date']::before {
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
 
-<jsp:include page="../tab/tab.jsp">
-	<jsp:param name="tabTitle" value="" />
-</jsp:include>
-
-
 <script>
 
 
@@ -859,16 +854,13 @@ function showRegionSearchTab() {
 		type : "get",
 		success : function(html) {
 			// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-			openSideTab(html);
+			openSideTab(html, "");
 		},
 		 error: function(request, status, error){
 			 console.log(request.responseText);
 			 
 			 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-			 let response = request.responseText;
-			 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-			 
-		     showAlert("error", message);
+			 errorHandler(request, status, error); 
 		     
 		     // 사이드 탭 닫기
 		     closeSideTab();
