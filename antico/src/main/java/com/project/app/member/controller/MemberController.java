@@ -28,19 +28,11 @@ public class MemberController {
 	@Autowired
 	private GetMemberDetail get_member_detail;
 	
-	@Value("${kakaologin.client_id}")
-    private String client_id;
-
-    @Value("${kakaologin.redirect_uri}")
-    private String redirect_uri;
-	
 	@GetMapping("login")
 	public ModelAndView showLoginPage(
 			 			ModelAndView mav,
 			 			RedirectAttributes redirectAttributes){
 		
-		String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+client_id+"&redirect_uri="+redirect_uri;
-		mav.addObject("location", location);
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		

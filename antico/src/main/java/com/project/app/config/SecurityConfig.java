@@ -1,31 +1,35 @@
 package com.project.app.config;
 
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
+import com.project.app.member.service.KAuthCustomUserInfoService;
 import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
 import com.project.app.security.LoginFailureHandler;
+import com.project.app.security.OauthFailer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,7 +47,18 @@ public class SecurityConfig {
 	
 	private final LoginFailureHandler login_failure_handler;
 	
+	
+	private final KAuthCustomUserInfoService kauth_custom_user_info;
+	
+	
+	private final OAuth2AuthorizedClientRepository client_registration_repository;
+	
+	
+    private final OauthFailer oauth_failer;
     
+    
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
+	
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -91,6 +106,12 @@ public class SecurityConfig {
     	 .accessDeniedHandler(custom_handler)
     	 .authenticationEntryPoint(custom_entry_point)
     	 )
+    .oauth2Login(oauth2Configurer -> oauth2Configurer
+            .loginPage("/member/login")
+            .authorizedClientRepository(client_registration_repository)
+            .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService))
+            )
     .csrf(AbstractHttpConfigurer::disable)
     .formLogin((formLogin) ->
       	formLogin
@@ -101,17 +122,17 @@ public class SecurityConfig {
 	      	.defaultSuccessUrl("/index", true)
 	      	.failureHandler(login_failure_handler)
       		.permitAll()
-    	)
+     )
+     
      .logout(logout -> logout
     		 .logoutUrl("/logout")
     		 .logoutSuccessUrl("/index")
     		 .clearAuthentication(true)
     		 );
-     
+    
      return http.build();
      }
 
-	
 	
 	
 }
