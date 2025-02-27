@@ -223,6 +223,40 @@ img#prod_img {
 }
 
 
+
+/* 구매완료 관련 overlay */
+.img_div {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+div.sold_out_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* 반투명한 검은색 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 5; 	 				/* 다른 요소보다 위에 배치 */
+    max-width: 100%; 				/* 최대 크기 제한 */
+    border-radius: 6px;
+    padding: 0;
+}
+
+span.sold_out_text {
+    padding: 10px 20px;
+    font-size: 14pt;
+    font-weight: bold;
+    color: white;
+
+}
+
+
 /* 하트아이콘 */
 i#wish {
 	 position: absolute; 
@@ -340,9 +374,9 @@ div#is_no_product {
 								<input type="text" class="price_range min_price" placeholder="최소 가격"/>
 								<span>~</span>
 								<input type="text" class="price_range max_price" placeholder="최대 가격"/>
-								<button 
-								class="price_range_button" 
-								onclick="getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'))">적용</button>
+								<button class="price_range_button" onclick="getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'))">
+									적용
+								</button>
 							</td>
 						</tr>
 						<tr class="region_tr">
@@ -400,8 +434,17 @@ div#is_no_product {
 				<div id="card_wrap" class="col-md-6 col-lg-3">
 					<div class="card">
 						<!-- 상품 이미지 -->
-						<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top mb-3" onclick="goProductDetail('${prod_list.pk_product_no}')" />
 						
+						<div class="img_div">
+							<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top" onclick="goProductDetail('${prod_list.pk_product_no}')" />
+	
+						    <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 2}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">판매완료</span>
+	                            </div>
+	                        </c:if>
+						</div>
 						
 						<!-- 하트아이콘 -->
 						<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
@@ -417,13 +460,13 @@ div#is_no_product {
 					    <c:choose>
 							 <c:when test="${heartCheck eq 'true'}">
 							     <span>
-							         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+							         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${prod_list.fk_member_no}, ${requestScope.fk_member_no})"></i>
 							     </span>
 							 </c:when>
 						<c:otherwise>
 						<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
 						     <span>
-						         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+						         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${prod_list.fk_member_no}, ${requestScope.fk_member_no})"></i>
 						     </span>
 						</c:otherwise>
 						</c:choose>
@@ -465,10 +508,6 @@ div#is_no_product {
 
 
 
-
-<jsp:include page="../tab/tab.jsp">
-	<jsp:param name="tabTitle" value="" />
-</jsp:include>
 
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
@@ -693,30 +732,36 @@ div#is_no_product {
 	
 
 	// 하트 모양(좋아요) 클릭한 경우
-	function wishInsert(e, product_no, member_no) {
+	function wishInsert(e, product_no, fk_member_no, member_no) {
 		
 		if(member_no) { // 로그인한 경우라면
-			$.ajax({
-				url:"<%= ctxPath %>/product/wish_insert",
-				type:"post",
-				data: {"fk_product_no": product_no,
-					   "fk_member_no": member_no},
-				success:function(response) {
-					if($(e).hasClass("fa-regular")) {
-				        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
-				        showAlert('success', '관심상품에 추가하였습니다.');
-					} 
-					else {
-						$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
-						showAlert('error', '관심상품에서 삭제하였습니다.');
-					}	
-				},
-				error: function(request, status, error){ 
-	                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }	
-			}); 
+				
+			if(fk_member_no != member_no) { // 본인이 등록한 상품이 아닌 경우
+				$.ajax({
+					url:"<%= ctxPath %>/product/wish_insert",
+					type:"post",
+					data: {"fk_product_no": product_no,
+						   "fk_member_no": member_no},
+					success:function(response) {
+						if($(e).hasClass("fa-regular")) {
+					        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
+					        showAlert('success', '관심상품에 추가하였습니다.');
+						} 
+						else {
+							$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
+							showAlert('error', '관심상품에서 삭제하였습니다.');
+						}	
+					},
+					error: function(request, status, error){ 
+						errorHandler(request, status, error);
+		            }	
+				});
+			}
+			else { // 본인이 등록한 상품인 경우
+				showAlert('error', '본인이 등록한 상품은 불가합니다.');
+			}
 		} 
-		else {
+		else { // 로그인 하지 않은 경우
 			showAlert('error', '로그인 후 이용 가능합니다.');
 		}
 		
@@ -763,16 +808,13 @@ div#is_no_product {
 			type : "get",
 			success : function(html) {
 				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-				openSideTab(html);
+				openSideTab(html, "");
 			},
 			 error: function(request, status, error){
 				 console.log(request.responseText);
 				 
 				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-			     showAlert("error", message);
+				 errorHandler(request, status, error);
 			     
 			     // 사이드 탭 닫기
 			     closeSideTab();

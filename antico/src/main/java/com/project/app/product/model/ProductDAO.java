@@ -60,8 +60,17 @@ public interface ProductDAO {
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
 	int regDateUpdate(String pk_product_no);
 	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	int saleStatusUpdate(String pk_product_no, String sale_status_no);
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	int delete(String pk_product_no);
+	
 	// 상품 요약 정보 목록 조회
-	List<Map<String, String>> selectProductSummaryList(List<String> pk_product_no_list);
+	List<Map<String, String>> selectProductSummaryList(List<String> pk_product_no_list);	
+
+	
+
 	
 
 

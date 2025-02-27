@@ -24,7 +24,7 @@
 div#container {
 	width: 60%;
 	margin: 0 auto;
-}
+} 
 
 div#prod_info_container {
 	text-align: center;
@@ -114,6 +114,7 @@ div#time_view_info {
 div#status_region_info,
 div#buyer_setting {
 	margin-top: 20px;
+	width: 100%;
 	height: 80px;
 	border: solid 1px #dee2e6;
 	border-radius: 6px;
@@ -130,17 +131,20 @@ ul#buyer_setting_ul {
 	display: flex;
 }
 
-li.status, li.region, li.sale_status,
+li.status, li.region, li.sale_status, li.extra,
 li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete {
 	display: flex; 
 	flex-direction: column;
-	margin-right: 10px;
 	align-items: center;
-	width: 100px;
+	width: 100%;
 }
 
 li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete {
 	cursor: pointer;
+}
+
+li.sale_status_upate {
+	position: relative;
 }
 
 li.bar {
@@ -248,6 +252,66 @@ span.seller_title {
 
 
 
+/* 상태변경 dropdown 관련 부분 */
+ul.sale_status_dropdown {
+ 	display: none;
+    position: absolute;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 0px 10px;
+    list-style: none;
+	min-width: 100%;
+    margin-top: 50px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+li.sale_status_update {
+	position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+}
+
+li.sale_status_upate_li {
+    padding: 8px;
+    cursor: pointer;
+    width: 100%;
+}
+
+li.sale_status_upate_li:hover {
+    background: #f0f0f0;
+}
+
+
+/* 구매완료 관련 overlay */
+div.sold_out_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* 반투명한 검은색 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 5; 	 				/* 다른 요소보다 위에 배치 */
+    max-width: 100%; 				/* 최대 크기 제한 */
+    border-radius: 6px;
+}
+
+span.sold_out_text {
+    padding: 10px 20px;
+}
+
+
+
 
 /* 모달 관련 부분  */
 /* 모달 스타일 */
@@ -306,6 +370,12 @@ span.seller_title {
 
 
 
+
+
+
+
+
+
 </style>
 
 
@@ -313,7 +383,7 @@ span.seller_title {
 
 		<div id="prod_info_container" class="row">
 	
-			<div class="col-md p-0">
+			<div id="sale_stauts_update_data" class="col-md p-0">
 				<c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) > 1}">
 				   <div id="carouselExampleIndicators" class="carousel slide">
 				        <div class="carousel-inner">
@@ -323,8 +393,16 @@ span.seller_title {
 				                <c:choose>
 				                    <%-- 대표 이미지 (첫 번째 슬라이드) --%>
 				                    <c:when test="${img_list.prod_img_is_thumbnail == 1}">
-				                        <div class="carousel-item active  img_div" >
+				                        <div class="carousel-item active img_div" >
 				                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
+				                            				                            
+				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+					                        <c:if test="${product_map.product_sale_status == 2}">
+					                            <div class="sold-out_overlay">
+					                                <span class="soldout_text">판매완료</span>
+					                            </div>
+					                        </c:if>
+									                            
 				                        </div>
 				                        <c:set var="is_first_image" value="true"/>
 				                    </c:when>
@@ -333,6 +411,15 @@ span.seller_title {
 				                    <c:when test="${img_list.prod_img_is_thumbnail == 0}">
 				                        <div class="carousel-item ${is_first_image ? '' : 'active'} img_div">
 				                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
+				                            
+				                            
+				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+					                        <c:if test="${product_map.product_sale_status == 2}">
+					                            <div class="sold_out_overlay">
+					                                <span class="sold_out_text">판매완료</span>
+					                            </div>
+					                        </c:if>
+				                            
 				                        </div>
 				                        <c:set var="is_first_image" value="true"/>
 				                    </c:when>
@@ -354,6 +441,14 @@ span.seller_title {
 			    <c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) == 1}">
 			    	<div class="img_div">
 			       		<img src="${requestScope.product_img_list[0].prod_img_name}" class="d-block" id="prod_img"/>
+			       		
+     					<%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+                        <c:if test="${product_map.product_sale_status == 2}">
+                            <div class="sold_out_overlay">
+                                <span class="sold_out_text">판매완료</span>
+                            </div>
+                        </c:if>
+			       		
 			        </div>
 			    </c:if> 
 			</div>
@@ -402,7 +497,7 @@ span.seller_title {
 						
 						<li class="bar"></li>
 						
-						<li class="sale_status">
+						<li id="sale_stauts_update_data2" class="sale_status">
 							<span class="sale_status_title">판매상태</span>
 							<c:if test="${product_map.product_sale_status == 0}">
 								<span class="sale_status">판매중</span>
@@ -414,7 +509,13 @@ span.seller_title {
 								<span class="sale_status">판매완료</span>
 							</c:if>
 						</li>
-	
+						
+						<li class="bar"></li>
+						
+						<li class="extra" >
+							<span class="extra"></span>
+							<span class="extra"></span>
+						</li>
 						
 					</ul>
 				</div>
@@ -431,10 +532,19 @@ span.seller_title {
 						
 						<li class="bar"></li>
 						
-						<li class="sale_status_upate">
+						<li class="sale_status_upate dropbtn">
 							<span class="sale_status_upate_title"><i class="fa-regular fa-circle-check"></i></span>
-							<span class="sale_status_upate">상태변경</span>
+							<span class="sale_status_upate sale_status_text">상태변경</span>
+							
+							<!-- 드롭다운 메뉴 -->
+					        <ul class="sale_status_dropdown">
+					            <li id="on_sale" class="sale_status_upate_li" data-status="0">판매중</li>
+					            <li id="booking" class="sale_status_upate_li" data-status="1">예약중</li>
+					            <li id="sold_out" class="sale_status_upate_li" data-status="2">판매완료</li>
+					        </ul>
+							
 						</li>
+						
 						
 						<li class="bar"></li>
 						
@@ -445,7 +555,7 @@ span.seller_title {
 						
 						<li class="bar"></li>
 						
-						<li class="prod_delete">
+						<li class="prod_delete" onclick="prodDelete('${product_map.pk_product_no}')">
 							<span class="prod_delete_title"><i class="fa-regular fa-trash-can"></i></span>
 							<span class="prod_delete">상품삭제</span>
 						</li>
@@ -454,6 +564,8 @@ span.seller_title {
 				</div>
 				</c:if>				
 				
+				<!-- 판매자 본인 상품 또는 구매완료된 상품이라면 좋아요 및 채팅, 구매하기 버튼 안보여주기 -->
+				<c:if test="${(product_map.fk_member_no ne fk_member_no) and product_map.product_sale_status != 2}">
 				
 				<div id="button">
 					<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
@@ -469,20 +581,22 @@ span.seller_title {
 				    <c:choose>
 						 <c:when test="${heartCheck eq 'true'}">
 						     <span>
-						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${fk_member_no})"></i>
+						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${product_map.fk_member_no}, ${fk_member_no})"></i>
 						     </span>
 						 </c:when>
 					<c:otherwise>
 					<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
 					     <span>
-					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${fk_member_no})"></i>
+					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${product_map.fk_member_no}, ${fk_member_no})"></i>
 					     </span>
 					</c:otherwise>
 					</c:choose>
 					
 					<button id="chat">채팅하기</button>
 					<button id="buy">구매하기</button>
+
 				</div>
+				</c:if>
 			</div>	
 		</div>	
 		
@@ -546,6 +660,49 @@ span.seller_title {
 	        const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
 	        $(this).text(time);								    // 텍스트로 출력
 	    }); // end of $("span.product_time").each(function()	
+	    		
+	    		
+	    // 상태 변경 dropdown 보여주기 관련 시작	
+	    $("li.dropbtn").click(function(e) {
+	        $("ul.sale_status_dropdown").toggle();  // 토글 기능
+	        e.stopPropagation();  					// 이벤트 버블링 방지
+	    });
+
+	    $(document).click(function() {
+	        $("ul.sale_status_dropdown").hide();  // 다른 곳 클릭 시 닫기
+	    });
+	 	// 상태 변경 dropdown 보여주기 관련 끝			
+	    		
+	    
+	 	// 상태변경 dropdown 목록 클릭하는 경우
+	 	$("li.sale_status_upate_li").click(function(){
+	 		let sale_status_no = $(this).data("status"); // data-status 값 가져오기
+	 		const pk_product_no ="${product_map.pk_product_no}";
+	 		
+			$.ajax({
+				url:"<%= ctxPath %>/product/sale_status_update",
+				type:"post",
+				dataType: "json",
+				data: {"sale_status_no": sale_status_no,
+					   "pk_product_no": pk_product_no},
+				success:function(response) {
+					
+					showAlert('success', '상품 상태가 업데이트 되었습니다.');
+					// 해당 id 값 부분만 새로고침
+					$('#sale_stauts_update_data').load(location.href + " #sale_stauts_update_data"); 
+					$('#sale_stauts_update_data2').load(location.href + " #sale_stauts_update_data2");			    
+	
+				},
+				error: function(request, status, error){ 
+					errorHandler(request, status, error); 
+	            },
+			}); 
+	 		
+	        // $("span.sale_status_text").text($(this).text());  // 선택한 값 반영
+	        // $("ul.sale_status_dropdown").hide();
+	        
+	    }); // end of $("li.sale_status_upate_li").click(function()
+	    		
 	    		
 	    		
 	   	// 채팅 버튼 이벤트 등록
@@ -615,30 +772,36 @@ span.seller_title {
 	
 	
 	// 하트 모양(좋아요) 클릭한 경우
-	function wishInsert(e, product_no, member_no) {
+	function wishInsert(e, product_no, fk_member_no, member_no) {
 		
 		if(member_no) { // 로그인한 경우라면
-			$.ajax({
-				url:"<%= ctxPath %>/product/wish_insert",
-				type:"post",
-				data: {"fk_product_no": product_no,
-					   "fk_member_no": member_no},
-				success:function(response) {
-					if($(e).hasClass("fa-regular")) {
-				        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
-				        showAlert('success', '관심상품에 추가하였습니다.');
-					} 
-					else {
-						$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
-						showAlert('error', '관심상품에서 삭제하였습니다.');
-					}	
-				},
-				error: function(request, status, error){ 
-	                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }	
-			}); 
+			
+			if(fk_member_no != member_no) { // 본인이 등록한 상품이 아닌 경우
+				$.ajax({
+					url:"<%= ctxPath %>/product/wish_insert",
+					type:"post",
+					data: {"fk_product_no": product_no,
+						   "fk_member_no": member_no},
+					success:function(response) {
+						if($(e).hasClass("fa-regular")) {
+					        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
+					        showAlert('success', '관심상품에 추가하였습니다.');
+						} 
+						else {
+							$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
+							showAlert('error', '관심상품에서 삭제하였습니다.');
+						}	
+					},
+					error: function(request, status, error){ 
+						errorHandler(request, status, error); 
+		            }	
+				}); 
+			}
+			else { // 본인이 등록한 상품인 경우
+				showAlert('error', '본인이 등록한 상품은 불가합니다.');
+			}
 		} 
-		else {
+		else { // 로그인 하지 않은 경우
 			showAlert('error', '로그인 후 이용 가능합니다.');
 		}
 		
@@ -647,20 +810,62 @@ span.seller_title {
 	
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
 	function regUpdate(product_no) {
-		$.ajax({
-			url:"<%= ctxPath %>/product/reg_update",
-			type:"post",
-			data: {"pk_product_no": product_no},
-			success:function(response) {
-			    
-				showAlert('success', '해당 상품의 등록일이 업데이트 되었습니다.');
-
-			},
-			error: function(request, status, error){ 
-                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-            }	
-		}); 		
-	}
+		
+		const prodcut_sale_status_no ="${product_map.product_sale_status}"; // 상품 상태값 가져오기
+		
+		if(prodcut_sale_status_no != 2) { // 구매완료된 상품이 아닌 경우만 위로올리기 가능함
+			$.ajax({
+				url:"<%= ctxPath %>/product/reg_update",
+				type:"post",
+				data: {"pk_product_no": product_no},
+				success:function(response) {
+				    
+					showAlert('success', '해당 상품의 등록일이 업데이트 되었습니다.');
+	
+				},
+				error: function(request, status, error){ 
+					errorHandler(request, status, error); 
+	            }	
+			}); 
+		} else {
+			showAlert('error', '해당 상품은 이미 구매 완료된 상품입니다.');
+		}
+		
+	} // end of function regUpdate(product_no)
+	
+	
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	function prodDelete(product_no) {
+	    Swal.fire({
+	        title: "해당 상품을 정말로 삭제하시겠습니까?",
+	        text: "상품이 삭제됩니다.",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "확인",
+	        cancelButtonText: "취소"
+	    }).then((result) => {
+		        if (result.isConfirmed) {
+					$.ajax({
+						url:"<%= ctxPath %>/product/delete",
+						type:"post",
+						data: {"pk_product_no": product_no},
+						success:function(response) {
+							showAlert('success', '해당 상품이 삭제되었습니다.');
+							
+							// 3초(3000ms) 후 메인 페이지로 이동
+				            setTimeout(function() {
+				                location.href = "${ctx_path}/index";
+				            }, 3000);
+							
+						},
+						error: function(request, status, error){ 
+							 errorHandler(request, status, error); 	
+			            }	
+					});
+		     	}
+	    	});  
+	} // end of function prodDelete(product_no)
 	
 	
 	
@@ -696,7 +901,7 @@ span.seller_title {
 	
 	// 카카오톡 공유하기 openApi 
     Kakao.init('${requestScope.kakao_api_key}');
-    console.log(Kakao.isInitialized()); // 초기화 확인
+    // console.log(Kakao.isInitialized()); // 초기화 확인
 
     function shareToKakao() {
         let currentURL = window.location.href; // 현재 페이지 URL 가져오기
