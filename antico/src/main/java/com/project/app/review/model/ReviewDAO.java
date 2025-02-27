@@ -7,10 +7,10 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.project.app.common.PagingDTO;
-import com.project.app.mypage.domain.TradeVO;
 import com.project.app.review.domain.BlacklistVO;
 import com.project.app.review.domain.ReviewVO;
 import com.project.app.review.domain.SurveyVO;
+import com.project.app.trade.domain.TradeVO;
 
 @Mapper
 public interface ReviewDAO {

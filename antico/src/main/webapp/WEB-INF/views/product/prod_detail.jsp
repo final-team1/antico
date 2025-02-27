@@ -593,7 +593,7 @@ span.sold_out_text {
 					</c:choose>
 					
 					<button id="chat">채팅하기</button>
-					<button id="buy">구매하기</button>
+					<button id="buy" onclick="payment()">구매하기</button>
 
 				</div>
 				</c:if>
@@ -916,4 +916,41 @@ span.sold_out_text {
         });
     }
 	
+    
+    
+ 	// 구매하기 클릭시
+	function payment() {
+		
+ 		const pk_product_no = "${product_map.pk_product_no}";
+ 		const fk_member_no = "${fk_member_no}";
+ 		
+ 		// 로그인 한 회원이 아닌 경우
+ 		if(fk_member_no == "") {
+ 			showAlert('error', '구매하기는 로그인 후 이용가능합니다.');
+ 			return;
+ 		}
+ 		
+ 		// 상품이 존재하지 않는 경우
+ 		if(pk_product_no == "") {
+ 			showAlert('error', '해당 상품이 존재하지 않습니다.');
+ 			return;
+ 		}
+ 		
+		const tabTitle = "구매하기";
+	      $.ajax({
+	         url : "<%=ctxPath%>/trade/show_payment",
+	         type: "post",
+ 			 data: {"pk_product_no":pk_product_no},
+	         success : function(html) {
+	            openSideTab(html, tabTitle);
+	         },
+	         error : function(request, status, error) {
+	        	errorHandler(request, status, error);
+	         }
+	      });
+		
+ 			
+ 		
+	}
+    
 </script>
