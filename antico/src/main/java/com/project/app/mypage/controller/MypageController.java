@@ -32,10 +32,6 @@ public class MypageController {
 	@Autowired
 	private GetMemberDetail get_member_detail;
 	
-	@Autowired
-	private MemberVO member_vo;
-	
-	private ProductVO prod_vo = new ProductVO();
 	
 //	private final ProductVO prod_vo = new ProductVO();
 	
@@ -53,7 +49,7 @@ public class MypageController {
 	@GetMapping("/mypagecheck")
 	@ResponseBody
 	public Map<String, Object> myPageCheck() {
-		member_vo = get_member_detail.MemberDetail();
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 	    Map<String, Object> result = new HashMap<>();
         result.put("pk_member_no", pk_member_no);
@@ -63,8 +59,8 @@ public class MypageController {
 	// 마이페이지 메인
 	@GetMapping("mypagemain/{member_no}")
 	@ResponseBody
-	public ModelAndView mypagemain(@PathVariable String member_no, ModelAndView mav) {
-		member_vo = get_member_detail.MemberDetail();
+	public ModelAndView mypagemain(@PathVariable String member_no, ModelAndView mav) { // requestParam써보기
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
 		String member_name = member_vo.getMember_name(); // 회원이름
@@ -131,9 +127,8 @@ public class MypageController {
 		mav.addObject("pk_member_no", pk_member_no);
 		
 		mav.addObject("kakao_api_key", kakao_api_key);
-
 		//	mav.addObject("category_detail_list", category_detail_list);
-		if (!pk_member_no.equals(mvo)){
+		if (!pk_member_no.equals(mvo) || member_no == null){ // 이거는 재혁이가 풀어줄거임
 	    	mav.setViewName("mypage/sellerpage");
 	    } else {
 	    	mav.setViewName("mypage/mypage");
@@ -144,6 +139,7 @@ public class MypageController {
 	// 포인트 충전
 	@GetMapping("pointcharge")
 	public ModelAndView pointcharge(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String member_user_id = member_vo.getMember_user_id(); // 회원아이디
 		String pk_member_no = member_vo.getPk_member_no(); 	// 회원번호
 		String member_role = member_vo.getMember_role(); 	// 회원등급
@@ -168,6 +164,7 @@ public class MypageController {
 	@PostMapping("point_update")
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
@@ -222,6 +219,7 @@ public class MypageController {
 	// 탈퇴뷰단
 	@GetMapping("member_delete")
 	public ModelAndView memberDelete(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		mav.addObject("pk_member_no", pk_member_no);
 		mav.setViewName("mypage/memberDelete");
