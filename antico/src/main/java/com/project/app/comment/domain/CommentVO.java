@@ -1,5 +1,7 @@
 package com.project.app.comment.domain;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Getter;
@@ -23,6 +25,9 @@ public class CommentVO {
 	private String comment_filename;         // 답변 첨부파일명
 	private String comment_orgfilename;      // 답변 원본첨부파일명
 	private String comment_filesize;         // 답변 첨부파일크기
-	private MultipartFile attach;
+	
+	private String member_name; // 유저이름
+	
+	List<MultipartFile> attach;
 
 }
