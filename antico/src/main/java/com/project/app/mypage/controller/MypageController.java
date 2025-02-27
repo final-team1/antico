@@ -18,9 +18,11 @@ import com.project.app.mypage.service.MypageService;
 import com.project.app.product.domain.ProductVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
+
 
 
 @Controller
@@ -30,10 +32,6 @@ public class MypageController {
 	@Autowired
 	private GetMemberDetail get_member_detail;
 	
-	@Autowired
-	private MemberVO member_vo;
-	
-	private ProductVO prod_vo = new ProductVO();
 	
 //	private final ProductVO prod_vo = new ProductVO();
 	
@@ -48,16 +46,33 @@ public class MypageController {
 	@Autowired
 	private MypageService service;
 	
+	@GetMapping("/mypagecheck")
+	@ResponseBody
+	public Map<String, Object> myPageCheck() {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+	    Map<String, Object> result = new HashMap<>();
+        result.put("pk_member_no", pk_member_no);
+	    return result;
+	}
+	
 	// 마이페이지 메인
-	@GetMapping("mypagemain") 
-	public ModelAndView mypagemain(ModelAndView mav) {
-		member_vo = get_member_detail.MemberDetail();
+	@GetMapping("mypagemain/{member_no}")
+	@ResponseBody
+	public ModelAndView mypagemain(@PathVariable String member_no, ModelAndView mav) { // requestParam써보기
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String userid = member_vo.getMember_user_id(); // 회원아이디
 		String member_name = member_vo.getMember_name(); // 회원이름
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
 		String member_score = member_vo.getMember_score(); // 회원의 신뢰점수
 		
+		String mvo = service.member_select(member_no);
+		if (mvo == null) { 
+	        mav.setViewName("error/404"); // 없는 회원이면 404 페이지로 이동
+	        return mav;
+	    }
+	    	
 		if(Integer.parseInt(member_score) >= 1000) { // 신뢰지수가 1000이 넘으면서
 			String role = "";
 			if(Integer.parseInt(member_score) < 2000) { // 2000보다 작을 경우(즉, 실버라는 뜻.)
@@ -82,30 +97,49 @@ public class MypageController {
 			role_color = "#ffd700";
 		}
 		
-		List<Map<String, String>> myproduct_list = service.myproduct(pk_member_no); // 마이페이지에서 내상품 조회하기
-//		System.out.println("myproduct_list 췤"+myproduct_list);
+		List<Map<String, String>> myproduct_list = service.myproduct(mvo); // 마이페이지에서 내상품 조회하기
+		Map<String, String> seller_info = service.sellerList(mvo); // 판매자 정보 불러오기
+		int list_size = myproduct_list.size();
+		String seller_role = seller_info.get("member_role");
+		String seller_role_color = "";
+		if("0".equals(seller_role)) {
+			seller_role = "브론즈";
+			seller_role_color = "#b87333";
+		} else if("1".equals(seller_role)) {
+			seller_role = "실버";
+			seller_role_color = "#c0c0c0";
+		} else {
+			seller_role = "골드";
+			seller_role_color = "#ffd700";
+		}
+		
+		mav.addObject("seller_role_color", seller_role_color);
+		mav.addObject("seller_role", seller_role);	
+		mav.addObject("seller_info", seller_info);
 		mav.addObject("myproduct_list", myproduct_list);
 		mav.addObject("member_score", member_score);
 		mav.addObject("userid", userid);
+		mav.addObject("list_size", list_size);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);
 		mav.addObject("member_name", member_name);
 		mav.addObject("member_point", member_point);
+		mav.addObject("pk_member_no", pk_member_no);
 		
 		mav.addObject("kakao_api_key", kakao_api_key);
-
 		//	mav.addObject("category_detail_list", category_detail_list);
-		mav.setViewName("mypage/mypage");
-		
-		
-		
+		if (!pk_member_no.equals(mvo) || member_no == null){ // 이거는 재혁이가 풀어줄거임
+	    	mav.setViewName("mypage/sellerpage");
+	    } else {
+	    	mav.setViewName("mypage/mypage");
+	    }
 		
 		return mav;
 	}
-	
 	// 포인트 충전
 	@GetMapping("pointcharge")
 	public ModelAndView pointcharge(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String member_user_id = member_vo.getMember_user_id(); // 회원아이디
 		String pk_member_no = member_vo.getPk_member_no(); 	// 회원번호
 		String member_role = member_vo.getMember_role(); 	// 회원등급
@@ -130,7 +164,7 @@ public class MypageController {
 	@PostMapping("point_update")
 	@ResponseBody
 	public Map<String, Integer> point_update(@RequestBody ChargeVO chargevo) {
-	//	System.out.println("point_update방문");
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String fk_member_no = chargevo.getFk_member_no(); // 회원번호
 		String charge_price = chargevo.getCharge_price(); // 충전금액
@@ -185,6 +219,7 @@ public class MypageController {
 	// 탈퇴뷰단
 	@GetMapping("member_delete")
 	public ModelAndView memberDelete(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		mav.addObject("pk_member_no", pk_member_no);
 		mav.setViewName("mypage/memberDelete");
@@ -197,15 +232,12 @@ public class MypageController {
 	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo) {
 		String fk_member_no = lvo.getFk_member_no();
 	    String leave_reason = lvo.getLeave_reason();
-	    System.out.println("lvo 회원번호: " + fk_member_no);
-	    System.out.println("lvo 탈퇴 사유: " + leave_reason);
 
 	    Map<String, String> paraMap = new HashMap<>();
 	    paraMap.put("fk_member_no", fk_member_no);
 	    paraMap.put("leave_reason", leave_reason);
 
 	    int n = service.delete_submit(paraMap);
-	    System.out.println(n + "delete_submit 확인");
 
 	    Map<String, Integer> response = new HashMap<>();
 	    response.put("n", n);
@@ -217,40 +249,6 @@ public class MypageController {
 	@GetMapping("mybank_list")
 	public ModelAndView mybank_list(ModelAndView mav) {
 		mav.setViewName("mypage/mybank_list");
-		return mav;
-	}
-	
-	@GetMapping("sellerpage")
-	public ModelAndView sellerpage(ModelAndView mav) {
-
-//		String fk_member_no = prod_vo.getFk_member_no(); // 판매자 회원번호
-//		System.out.println("fk_member_no 체크"+fk_member_no);
-		String n = "63"; // 테스트용
-		Map<String, String> seller_info = service.sellerList(n); // 판매자 정보 불러오기
-		System.out.println("seller_info 테스트" + seller_info);
-		
-		String member_role = String.valueOf(seller_info.get("member_role"));
-		String member_name = String.valueOf(seller_info.get("member_name"));
-		String member_score = String.valueOf(seller_info.get("member_score"));
-		String role_color; // 회원등급별 색상을 주기 위한 것.
-		if("0".equals(member_role)) {
-			member_role = "브론즈";
-			role_color = "#b87333";
-		} else if("1".equals(member_role)) {
-			member_role = "실버";
-			role_color = "#c0c0c0";
-		//	System.out.println(data+"data 확인");
-		} else {
-			member_role = "골드";
-			role_color = "#ffd700";
-		}
-		
-		mav.addObject("member_name", member_name);
-		mav.addObject("member_role", member_role);
-		mav.addObject("member_score", member_score);
-		mav.addObject("role_color", role_color);
-		mav.addObject("seller_info", seller_info);
-		mav.setViewName("mypage/sellerpage");
 		return mav;
 	}
 	

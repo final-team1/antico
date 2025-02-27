@@ -45,9 +45,19 @@ window.WebSocketManager = (() => {
                 console.log("websocket not connected");
             }
         },
+		
+		// 채팅 읽음 상태 전송 함수 (전송 주소, 데이터)
+		sendReadStatus: function (url, message) {
+		    if (stompClient && stompClient.connected) {
+		        stompClient.send(url, {}, JSON.stringify(message));
+		    }
+		    else {
+		        console.log("websocket not connected");
+		    }
+		},
 
-		// 채팅방을 기준으로 구독 요청 (구독 주소, 콜백 함수)
-        subscribe: function (url, callback) {
+		// 채팅방을 기준으로 메시지 구독 요청 (구독 주소, 콜백 함수)
+        subscribeMessage: function (url, callback) {
             if (stompClient && stompClient.connected) {
 				// 구독 대상에게 수신 메시지가 들어오면 JSON 객체로 변경 후 콜백함수로 전달
                 stompClient.subscribe(url, function (message) {
@@ -58,6 +68,19 @@ window.WebSocketManager = (() => {
                 console.log("websocket not connected");
             }
         },
+		
+		// 채팅방을 기준으로 읽음 상태 구독 요청 (구독 주소, 콜백 함수)
+		subscribeReadStatus: function (url, callback) {
+		    if (stompClient && stompClient.connected) {
+				// 구독 대상에게 수신 메시지가 들어오면 JSON 객체로 변경 후 콜백함수로 전달
+		        stompClient.subscribe(url, function (message) {
+		            callback(JSON.parse(message.body));
+		        });
+		    }
+		    else {
+		        console.log("websocket not connected");
+		    }
+		},		
 
 		// 웹소켓으로 이미 연결되었는지 확인하는 함수
         isConnected: function () {

@@ -351,6 +351,11 @@ li#chat {
 	cursor : pointer;
 }
 
+form.search {
+	margin-bottom: 0px;
+}
+
+
 </style>
 
 </head>
@@ -372,7 +377,7 @@ li#chat {
 		<div class="flex-fill">
 			<div>
 				<%-- 상품 검색 시작 --%>
-				<form name="searchFrm">
+				<form name="searchFrm" class="search">
 					<div class="inputContainer" style="">
 			        	<input type="text" name="search_prod" class="searchBar">
 			        	<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>  
@@ -411,8 +416,7 @@ li#chat {
 						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
 					
 					<ul class="my_header">
-					
-						<li style="margin-top:2px;"><a href="<%=ctxPath%>/mypage/mypagemain">마이페이지</a></li>
+						<li style="margin-top:2px;"><a href="#" onclick="myPage(); return false;">마이페이지</a></li>
 						<li><hr style="margin: 4px;"></li>
 						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
 						
@@ -536,6 +540,7 @@ li#chat {
 </div>
 
 
+<jsp:include page="../tab/tab.jsp" />
 
 <script type="text/javascript">
 
@@ -601,6 +606,26 @@ $(document).ready(function(){
 		});
 	});
 });
+
+// 마이페이지 클릭시
+function myPage() {
+    $.ajax({
+        url: "<%=ctxPath%>/mypage/mypagecheck",
+        type: "GET",
+        dataType: "json",
+        success: function(json) {
+            if (json.pk_member_no) {
+                window.location.href = "<%=ctxPath%>/mypage/mypagemain/" + json.pk_member_no;
+            } else {
+                alert("회원 정보를 가져오지 못했습니다.");
+            }
+        },
+        error: function(e) {
+            console.error(e);
+            alert("서버 오류가 발생했습니다.");
+        }
+    });
+}
 
 </script>
 

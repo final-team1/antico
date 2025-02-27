@@ -92,10 +92,6 @@
 	</c:forEach>
 </div>
 
-<input type="text" id="pk_product_no" />
-
-<button id="create" onclick="createChatRoom()">채팅방 생성</button>
-
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -110,33 +106,6 @@ $(document).ready(function(){
 		
 	});
 });
-
-// 채팅 버튼 클릭 시 채팅 페이지 표시
-function createChatRoom() {
-	const pk_product_no = $("input#pk_product_no").val();
-	
-	// 삭제 예정
-	if(pk_product_no == ""){
-		showAlert("warning", "상품번호 입력");
-		return;
-	}
-	
-	// 채팅방 생성 및 입장
-	$.ajax({
-		url : "${ctx_path}/chat/chatroom",
-		type : "post",
-		data : {
-			"pk_product_no" : pk_product_no
-		},
-		success : function(html) {
-			// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-			openSideTab(html, "채팅");
-		},
-		error: function(request, status, error){
-			errorHandler(request, status, error);
-		}
-	});
-}
 
 // 기존에 참여하던 채팅방 입장
 function goChatRoom(room_id, sender_name) {

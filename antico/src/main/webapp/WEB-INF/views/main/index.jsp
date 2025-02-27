@@ -96,8 +96,6 @@
 <!-- 사이트 탭 테스트용  -->
 <button onclick="showReviewTab()">후기확인</button>
 <button onclick="showReviewRegisterTab()">후기 등록 확인</button>
-
-<button onclick="showAlert('success', '테스트')">토스트 테스트</button>
 	
 <!-- Slider main container -->
 <div class="mainImgContainer">
@@ -203,27 +201,27 @@
 	            </tr>
 	            <tr>
 	                <th scope="row">국</th>
-	                <td>순두부찌개</td>
-	                <td>미역국<br>김치짜글이(꽁치?)</td>
-	                <td>스팸 부대찌개</td>
-	                <td>콩나물국</td>
-	                <td>하이라이스<br>유부미소국</td>
+	                <td>시금치된장국</td>
+	                <td>된장찌개</td>
+	                <td>계란탕</td>
+	                <td>어묵탕</td>
+	                <td>육개장</td>
 	            </tr>
 	            <tr>
 	                <th scope="row">메인메뉴</th>
-	                <td>마파두푸<br>생선까스<br>계란말이</td>
-	                <td>닭강정<br>연근조림<br>청포묵무침</td>
-	                <td>동파육<br>김말이튀김<br>야채 볶음</td>
-	                <td>김치참치볶음<br>해물매운볶음<br>두부조림<br>계란곤약장조림</td>
-	                <td>돈까스<br>타꼬야끼<br>어묵볶음</td>
+	                <td>소불고기<br>중식해물볶음<br>베이컨감자채볶음<br>미나리볶음</td>
+	                <td>닭갈비<br>소세지야채볶음<br>오징어튀김</td>
+	                <td>유산슬<br>너비아니구이<br>잡채<br>군만두</td>
+	                <td>언양불고기<br>떡볶이<br>모둠튀김(오징어, 김말이, 만두)<br>계란곤약장조림</td>
+	                <td>제육볶음<br>조기튀김</td>
 	            </tr>
 	            <tr>
 	                <th scope="row">반찬</th>
-	                <td>콩나물무침<br>미역줄기볶음<br>도라지무침<br>콩자반</td>
-	                <td>오징어젓갈<br>멸치볶음<br>조미김</td>
-	                <td>단무지무침<br>오이고추된장무침<br>조미김</td>
+	                <td>도토리묵무침<br>오징어젓갈<br>쌈<br>쌈장</td>
+	                <td>콩나물무침<br>고사리무침<br>마카로니 샐러드</td>
+	                <td>단무지무침<br>부추무침<br>조미김</td>
 	                <td>깻잎지<br>조미김</td>
-	                <td>고추장아찌<br>브로콜리<br>조미김</td>
+	                <td>콩나물무침<br>멸치몪음<br>쌈<br>고추장아찌<br>조미김</td>
 	            </tr>
 	        </tbody>
 	    </table>
@@ -366,8 +364,4 @@ breakpoints: {
 
 
 <jsp:include page=".././footer/footer.jsp" />
-
-<jsp:include page="../tab/tab.jsp">
-	<jsp:param name="tabTitle" value="후기" />
-</jsp:include>
 

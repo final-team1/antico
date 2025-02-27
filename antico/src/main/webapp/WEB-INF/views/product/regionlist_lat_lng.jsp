@@ -67,10 +67,13 @@ div#sidetab_content {
 
 <script type="text/javascript">
 
+
+
 $(document).ready(function(){
 
 	// 지역 검색 입력 시 자동글 완성하기 시작 //
 	$("div#search_result").hide();
+
 
 	$("input[name='search_word']").on("keyup", function(){
 		
@@ -101,13 +104,15 @@ $(document).ready(function(){
 						   const word = item.word;				   // 검색어
 						   const fk_region_no = item.fk_region_no; // 지역 번호 가져오기
 						   const region_town = item.region_town;   // 읍면동 가져오기
-
+						   const region_lat = item.region_lat; 	   // 위도 값 가져오기 
+						   const region_lng = item.region_lng;	   // 경도 값 가져오기
+						   
 						   const idx = word.indexOf($("input[name='search_word']").val());
 						   const len = $("input[name='search_word']").val().length;
 			               
 						   const result = word.substring(0, idx) + "<span style='color:#0dcc5a;'>"+ word.substring(idx, idx+len)+"</span>" + word.substring(idx+len);
 						   
-			               v_html += `<span style='cursor:pointer;' class='result' data-region-no='\${fk_region_no}' data-region-town='\${region_town}' >\${result}</span><br>`;
+			               v_html += `<span style='cursor:pointer;' class='result' data-region-no='\${fk_region_no}' data-region-town='\${region_town}' data-region-lat='\${region_lat}' data-region-lng='\${region_lng}' >\${result}</span><br>`;
 
 						});
   					   
@@ -123,7 +128,7 @@ $(document).ready(function(){
 				} 
 	    		
 	    	}); // end of $.ajax
-	    	
+
 	    }
 
 	}); // end of $("input[name='search_region']").on("keyup", function()
@@ -134,33 +139,37 @@ $(document).ready(function(){
     $(document).on("click", "span.result", function(e){
 		
     	let fk_region_no = $(this).data("region-no");   // 'data-region-no' 값 가져오기
-		// alert(fk_region_no);
     	let region_town = $(this).data("region-town");; // 'data-region-town' 값 가져오기
+    	let region_lat = $(this).data("region-lat");; // 'data-region-lat' 값 가져오기
+    	let region_lng = $(this).data("region-lng");; // 'data-region-lng' 값 가져오기
+    		
     	
-	    // AJAX를 사용하여 부모 페이지(add)로 fk_region_no를 전송
+    	// ajax 데이터 prodlist로 전달
 	    $.ajax({
-	        url: "<%= ctxPath %>/product/add",
+	        url: "<%= ctxPath %>/product/prodlist",
 	        type: "get",
 	        data: { "fk_region_no": fk_region_no,
-	        	    "region_town":region_town},
+	        	    "region_town": region_town,
+	        	    "region_lat" : region_lat,
+	        	    "region_lng" : region_lng},
 	        success: function(response) {
 	        	// console.log("성공: ", response);
-	        	$("input.town_name").css({"visibility":"visible"});
+	        	$("button.choice_region").text(region_town);
 	        	$("input.town_name").val(region_town);
-	        	$("input#fk_region_no").val(fk_region_no);
+	        	$("input.lat").val(region_lat);
+	        	$("input.lng").val(region_lng);
+	        	// $("input.town_name").css({"visibility":"visible"});
+	        	// $("input.town_name").val(region_town);
+	        	// $("input#fk_region_no").val(fk_region_no);
 	        },
 	        error: function(request, status, error) {
 	        	errorHandler(request, status, error);
 	        }
 	    });
-    	
 	    
 	    closeSideTab(); // 사이드바 닫기
 	   	
     });
-	
-	
 
-}); // end of $(document).ready(function()
-
+});
 </script>

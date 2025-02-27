@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.mybatis.logging.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -18,17 +20,21 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.chat.domain.Chat;
 import com.project.app.chat.domain.ChatRoom;
+import com.project.app.chat.domain.Participant;
 import com.project.app.chat.service.ChatService;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.product.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * 채팅 컨트롤러
  */
 
+@Slf4j
 @Controller
 @RequestMapping("/chat/*")
 @RequiredArgsConstructor
@@ -47,6 +53,7 @@ public class ChatController {
 	@ResponseBody
 	public ModelAndView showChatMainPage(ModelAndView mav) {
 		MemberVO login_member_vo = detail.MemberDetail(); // 현재 사용자 VO
+		
 		String pk_member_no = login_member_vo.getPk_member_no(); // 현재 로그인 사용자 일련번호
 		
 		// 현재 로그인 사용자가 참여하고 있는 채팅방 목록 불러오기
@@ -70,7 +77,7 @@ public class ChatController {
 		// TODO 상품 일련번호 불러오기 (상품 상세 페이지에서)
 		// TODO 숫자인지 확인
 		if(!NumberUtils.isDigits(pk_product_no)) {
-			pk_product_no = "3";	
+			log.error("상품 번호가 유효하지 않습니다.");
 		}
 		
 		// 채팅 주제 상품 정보
@@ -82,7 +89,7 @@ public class ChatController {
 		// 채팅방 개설 실패 시
 		if(chat_room == null) {
 			// TODO 예외처리
-			System.out.println("채팅방 개설 실패");
+			log.error("채팅방 개설 실패");
 		}
 		
 		mav.addObject("login_member_no", login_member_vo.getPk_member_no()); // 로그인 회원 정보
@@ -106,7 +113,7 @@ public class ChatController {
 		// 채팅방 조회 실패
 		if(chat_room == null) {
 			// TODO 예외처리
-			System.out.println("채팅방 개설 실패지 뭐");
+			log.error("채팅방 조회 실패");
 		}
 		
 		// 채팅방의 주제 상품 정보 조회
@@ -130,6 +137,17 @@ public class ChatController {
 		// 채팅 메시지 저장 및 반환
 		Chat chat_message = chatService.createChat(roomId, chat.getSenderId(), chat.getMessage());
 		return chat_message;
+	}
+	
+	/*
+	 * 웹소켓 구독 및 채팅 전송 
+	 */
+	@MessageMapping("/read/{roomId}") // 해당 url 요청은 구독처리
+	@SendTo("/room/{roomId}/read/") // 해당 url 요청은 구독자에게 전송 및 채팅 저장
+	public Participant chat(@DestinationVariable String roomId, Participant participant) {
+		// 채팅 메시지 저장 및 반환
+		chatService.updateLastReadChat(roomId, participant);
+		return participant;
 	}
 	
 	/*

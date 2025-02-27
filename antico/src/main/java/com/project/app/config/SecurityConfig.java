@@ -1,11 +1,15 @@
 package com.project.app.config;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
-import org.apache.poi.util.Beta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,7 +42,13 @@ public class SecurityConfig {
 	
 	
 	private final LoginFailureHandler login_failure_handler;
+	
+    
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 	
 
 	/* 
@@ -60,15 +70,19 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     
+	
 		
     http.authorizeHttpRequests(
     		
     	  request -> request
+    	  .requestMatchers("/chat/**").authenticated()
     	  
     	  .requestMatchers("/product/**").authenticated()
     	  
     	  .requestMatchers("/mypage/**").authenticated()
     	  
+          .requestMatchers("/kakaologin/**").permitAll()
+          
           .requestMatchers("/**").permitAll()
              
           .anyRequest().authenticated()
