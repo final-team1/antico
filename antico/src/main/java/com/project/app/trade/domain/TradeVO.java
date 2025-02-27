@@ -1,4 +1,4 @@
-package com.project.app.mypage.domain;
+package com.project.app.trade.domain;
 
 import lombok.Getter;
 import lombok.Setter;
