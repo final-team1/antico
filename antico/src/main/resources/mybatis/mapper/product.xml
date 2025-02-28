@@ -218,30 +218,32 @@
 	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
 	    <result property="member_name" 				column="member_name" 			javaType="String"/>
 	</resultMap>
-	<select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
-	   select P.pk_product_no, 
-		      P.fk_member_no, 
-		      P.fk_region_no, 
-		      P.fk_category_no, 
-		      P.fk_category_detail_no, 
-	          P.product_title, 
-		      P.product_contents, 
-		      P.product_price, 
-		      P.product_status, 
-		      P.product_sale_status, 
-		      P.product_regdate, 
-		      P.product_update_date, 
-		      P.product_sale_type, 
-		      P.product_views,
-		      I.pk_prod_img_no,
-		      I.prod_img_org_name,
-		      I.prod_img_name,
-		      I.prod_img_is_thumbnail
-		from tbl_product P JOIN tbl_prod_img I
-		ON P.pk_product_no = I.fk_product_no
-		where P.pk_product_no = #{pk_product_no}
-		and   I.prod_img_is_thumbnail = 1
-	</select>
+	   <select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
+      select P.pk_product_no, 
+            P.fk_member_no, 
+            P.fk_region_no, 
+            P.fk_category_no, 
+            P.fk_category_detail_no, 
+             P.product_title, 
+            P.product_contents, 
+            P.product_price, 
+            P.product_status, 
+            P.product_sale_status, 
+            P.product_regdate, 
+            P.product_update_date, 
+            P.product_sale_type, 
+            P.product_views,
+            I.pk_prod_img_no,
+            I.prod_img_org_name,
+            I.prod_img_name,
+            I.prod_img_is_thumbnail,
+            M.member_name
+      from tbl_product P JOIN tbl_prod_img I
+      ON P.pk_product_no = I.fk_product_no
+      JOIN tbl_member M ON M.pk_member_no = P.fk_member_no
+      where P.pk_product_no = #{pk_product_no}
+      and   I.prod_img_is_thumbnail = 1
+   </select>
 
 	<!-- 상위 카테고리 정보 가져오기 -->
 	<select id="getCategory" resultType="CategoryVO">
@@ -443,6 +445,24 @@
 		set product_regdate = SYSDATE  
 		where pk_product_no = #{pk_product_no}
 	</update>
+	
+	
+	<!-- "상태변경" 클릭 시 상품 상태 업데이트 하기 -->
+	<update id="saleStatusUpdate" parameterType="String">
+		update tbl_product 
+		set product_sale_status = #{sale_status_no} 
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
+	
+	<!-- "상품삭제" 클릭 시 상품 삭제하기 -->
+	<delete id="delete" parameterType="String">
+		delete tbl_product
+		where pk_product_no = #{pk_product_no}
+	</delete>
+	
+	
+	
 	
 	
 	<resultMap type="HashMap" id="productSummaryMap">

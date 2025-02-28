@@ -257,6 +257,25 @@ public class ProductController {
 	}
 	
 	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	@PostMapping("sale_status_update")
+	@ResponseBody
+	public int saleStatusUpdate(@RequestParam(defaultValue = "") String pk_product_no,
+								@RequestParam(defaultValue = "") String sale_status_no) {
+		int result = service.saleStatusUpdate(pk_product_no, sale_status_no);
+		return result;
+	}
+	
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	@PostMapping("delete")
+	@ResponseBody
+	public int delete(@RequestParam(defaultValue = "") String pk_product_no) {
+		int result = service.delete(pk_product_no);
+		return result;
+	}
+	
+	
 	
 
 } // end of public class ProductController

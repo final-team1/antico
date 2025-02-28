@@ -126,7 +126,7 @@ public class ProductService_imple implements ProductService {
 				for (int i=0; i < attach_list.size(); i++) {	
 					if (!attach_list.get(i).isEmpty()) { // 이미지 리스트에 파일이 존재하는 경우라면
 						
-						// S3에 첨부파일 업로드 하기
+						// #2. S3에 첨부파일 업로드 하기
 						List<Map<String, String>> fileList = s3fileManager.upload(attach_list, "product", FileType.IMAGE);
 						// System.out.println(fileList.get(i).get("org_file_name")); // 첨부파일 원본 파일명 가져오기
 						// System.out.println(fileList.get(i).get("file_name")); 	 // 첨부파일 업로드되는 파일명 가져오기
@@ -142,7 +142,7 @@ public class ProductService_imple implements ProductService {
 						product_imgvo.setFk_product_no(productvo.getPk_product_no());
 						// System.out.println(productvo.getPk_product_no());	
 						
-						// #2. 이미지 테이블에 이미지 정보 저장
+						// #3. 이미지 테이블에 이미지 정보 저장
 						result = productDAO.addImage(product_imgvo);
 		
 						index++; // 첫 번째 이미지 이후는 일반 사진으로 설정
@@ -207,6 +207,39 @@ public class ProductService_imple implements ProductService {
 		return result;
 	}
 	
+	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	@Override
+	public int saleStatusUpdate(String pk_product_no, String sale_status_no) {
+		int result = productDAO.saleStatusUpdate(pk_product_no, sale_status_no);
+		return result;
+	}
+	
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	@Override
+	public int delete(String pk_product_no) {
+		
+		int n = 0;
+
+		// 해당 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = productDAO.getProductImg(pk_product_no);
+		
+		for (int i=0; i < product_img_list.size(); i++) {
+			String file_name = product_img_list.get(i).getProd_img_name(); // 이미지 S3 업로드명 가져오기
+			
+			System.out.println("file_name : " + file_name);
+			
+			// #1. S3에서 이미지 삭제하기
+			s3fileManager.deleteImageFromS3(file_name);
+		}
+		// #2. 해당 상품 삭제하기 (외래키 설정으로 이미지 테이블 같이 삭제됨)
+		// int result = productDAO.delete(pk_product_no);
+		
+		return n;
+	}
+
+	
 		
 	
 	/*
@@ -216,6 +249,9 @@ public class ProductService_imple implements ProductService {
 	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+
+
+	
 
 	
 

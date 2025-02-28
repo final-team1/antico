@@ -672,7 +672,7 @@ hr {
 			<!-- div2 아래, div1 내부 -->
 			<div>
 				<section class="my_products mt-5">
-					<h4 style="font-weight: bold;">내 상품</h4>
+					<h4 style="font-weight: bold;">판매상품</h4>
 					<nav class="product_nav">
 						<button class="all_prod" onclick="filterProducts(0)">전체</button>
 						<button class="on_sale" onclick="filterProducts(0)">판매중</button>

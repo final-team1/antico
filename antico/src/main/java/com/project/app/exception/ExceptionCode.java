@@ -31,8 +31,16 @@ public enum ExceptionCode {
 	
 	IO_EXCEPTION_FILE_DELETE(500, "파일 삭제 요청 중 I/O 작업 오류"), // 파일 I/O 오류일 경우
 	
-	SERVER_ERROR(500, "오류가 발생했습니다. 나중에 다시 시도하여 주십시오");
+	SERVER_ERROR(500, "오류가 발생했습니다. 나중에 다시 시도하여 주십시오"),
 
+	
+	
+	PAYMENT_LOAD_FAILD(400, "결제창을 불러올 수 없습니다."), // 결제창 불러오기 예외
+
+	MYPRODUCT_PAY_FAILD(400, "본인의 상품은 구매할 수 없습니다."), // 결제창 불러오기 예외
+	
+	RPODUCT_NOT_ON_SALE(400, "판매중인 상품이 아닙니다."); // 결제창 불러오기 예외
+	
 	private final int status;
 	
 	private final String message;

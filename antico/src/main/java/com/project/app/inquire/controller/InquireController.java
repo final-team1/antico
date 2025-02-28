@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.project.app.comment.domain.CommentVO;
 import com.project.app.common.FileManager;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.inquire.domain.InquireVO;
@@ -22,6 +23,9 @@ import com.project.app.member.domain.MemberVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @Controller
 @RequestMapping("/inquire/*")
@@ -138,26 +142,32 @@ public class InquireController {
 	
 	// 문의 상세보기
 	@GetMapping("inquire_detail")
-	public ModelAndView inquiredetail(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView inquireDetail(ModelAndView mav, HttpServletRequest request) {
+	    String pk_inquire_no = request.getParameter("pk_inquire_no");
+	    
+	    Map<String, String> paraMap = new HashMap<>();
+	    paraMap.put("pk_inquire_no", pk_inquire_no);
+	    
+	    member_vo = getMemberDetail.MemberDetail();
 		
-		String pk_inquire_no = "";
+		String member_name = member_vo.getMember_name();
+	    String member_no = member_vo.getPk_member_no();
 		
-		pk_inquire_no = request.getParameter("pk_inquire_no");
-		
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("pk_inquire_no", pk_inquire_no);
-		
-		InquireVO inquirevo = null;
-
-		inquirevo = service.inquire_detail(paraMap);
-
-		mav.addObject("inquirevo", inquirevo);
-		
-		mav.setViewName("inquire/inquire_detail");
-		return mav;
+	    InquireVO inquirevo = service.inquire_detail(paraMap);
+	    List<CommentVO> comment_list = service.inquire_comment(pk_inquire_no);
+	    
+	    mav.addObject("inquirevo", inquirevo);
+	    mav.addObject("comment_list", comment_list);
+	    mav.addObject("member_name", member_name);
+	    mav.addObject("member_no", member_no);
+	    
+	    mav.setViewName("inquire/inquire_detail");
+	    return mav;
 	}
+
+
 	
-	
+
 	
 	
 	

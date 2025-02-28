@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.project.app.comment.domain.CommentVO;
 import com.project.app.inquire.domain.InquireVO;
 
 @Mapper
@@ -22,7 +23,8 @@ public interface InquireDAO {
 	// 문의 상세보기
 	InquireVO inquire_detail(Map<String, String> paraMap);
 
-	
+	// 답변조회
+	List<CommentVO> get_inquire_comment(String pk_inquire_no);
 
 	
 
