@@ -241,7 +241,7 @@ public class ProductController {
 		// 좋아요 정보 가져오기
 		List<Map<String, String>> wish_list = service.getWish();
 		mav.addObject("wish_list", wish_list);
-		
+	
 		// 특정 상품에 대한 이미지 정보 가져오기
 		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
 		mav.addObject("product_img_list", product_img_list);
@@ -250,7 +250,13 @@ public class ProductController {
 		Map<String, String> product_map = service.getProductDetail(pk_product_no);
 		mav.addObject("product_map", product_map);
 		
-		// 카카오 api key 전달
+		String fk_member_no2 = product_map.get("fk_member_no"); // 상품 올린 사람 회원번호 가져오기
+		
+		// 상품 올린 회원에 대한 다른 상품 정보 가져오기
+		List<Map<String, String>> product_list_one_member = service.getProdcutOneMember(fk_member_no2, pk_product_no);
+		mav.addObject("product_list_one_member", product_list_one_member);
+		
+		// 카카오 api key 전달 (페이지 공유를 위한)
 		mav.addObject("kakao_api_key", kakao_api_key);
 	
 		mav.setViewName("product/prod_detail");

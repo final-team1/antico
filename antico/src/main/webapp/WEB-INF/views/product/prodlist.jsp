@@ -443,6 +443,13 @@ div#is_no_product {
 	                                <span class="sold_out_text">판매완료</span>
 	                            </div>
 	                        </c:if>
+	                        <%-- 상품 상태가 예약중이면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 1}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">예약중</span>
+	                            </div>
+	                        </c:if>
+	                        
 						</div>
 						
 						<!-- 하트아이콘 -->
