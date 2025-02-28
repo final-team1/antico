@@ -72,9 +72,9 @@ public class MypageService_imple implements MypageService {
 
 	// 존재하는 회원인지 조회
 	@Override
-	public String member_select(String member_no) {
-		String mvo = mypagedao.member_select(member_no);
-		return mvo;
+	public Map<String, String> member_select(String member_no) {
+		Map<String, String> member_info = mypagedao.member_select(member_no);
+		return member_info;
 	}
 
 

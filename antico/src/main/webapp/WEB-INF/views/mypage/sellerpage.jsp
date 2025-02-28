@@ -632,7 +632,7 @@ hr {
 					<!-- 왼쪽 profile_section -->
 					<section class="profile_section" style="flex: 1;">
 						<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-							<h4 class="name" style="font-weight: bold;">${seller_info.member_name}</h4>
+							<h4 class="name" style="font-weight: bold;">${requestScope.seller_name}</h4>
 							<button class="share_btn_arrow" onclick="openShareModal()">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
 	                                <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
@@ -663,9 +663,9 @@ hr {
 						<div class="stat_box score_level mt-2">
 							<p style="font-weight: bold; color: ${requestScope.seller_role_color};">${requestScope.seller_role}</p>
 							<div class="trust_bar">
-								<div class="trust_progress" style="width: ${seller_info.member_score/10}%; background-color:${requestScope.seller_role_color};"></div>
+								<div class="trust_progress" style="width: ${member_info.member_score/10}%; background-color:${requestScope.seller_role_color};"></div>
 							</div>
-							<span>${seller_info.member_score}</span>
+							<span>${member_info.member_score}</span>
 						</div>
 					</div>
 				</div>
