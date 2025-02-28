@@ -133,6 +133,8 @@ public class ProductController {
 								@RequestParam(defaultValue = "") String category_detail_no,
 								@RequestParam(defaultValue = "") String min_price,
 								@RequestParam(defaultValue = "") String max_price,
+								@RequestParam(defaultValue = "") String region,
+								@RequestParam(defaultValue = "") String town,
 								@RequestParam(defaultValue = "") String sort_type) {
 
 		// View 페이지 출력을 위한 정보 가져오기 시작 //
@@ -162,11 +164,11 @@ public class ProductController {
 		       
 		search_prod = search_prod.trim(); // 검색어 공백 없애주기
 		
-		// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
-        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+		// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
         
-        // 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
-        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+        // 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
         
         mav.addObject("product_list_cnt", product_list_cnt); 	     // 총 개수 전달
         mav.addObject("prodcut_price_info", prodcut_price_info);     // 가격 정보 전달 
@@ -174,8 +176,8 @@ public class ProductController {
         
         if(product_list_cnt > 0) { // 상품이 존재한다면
         	
-        	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
-            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, sort_type); 
+        	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type); 
             
             mav.addObject("product_list", product_list); // 상품 정보 전달	   
         }
@@ -193,6 +195,16 @@ public class ProductController {
 		mav.setViewName("product/regionlist_lat_lng");
 		return mav;
 
+	}
+	
+	
+	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기 
+	@GetMapping("near_region")
+	@ResponseBody
+	public List<Map<String, Object>> nearRegion(@RequestParam(defaultValue = "") String current_lat,
+												@RequestParam(defaultValue = "") String current_lng) {
+		List<Map<String, Object>> near_region_list = service.nearRegion(current_lat, current_lng);
+		return near_region_list;
 	}
 	
 	

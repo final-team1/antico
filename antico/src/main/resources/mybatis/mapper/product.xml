@@ -31,6 +31,9 @@
 	    <if test='max_price != null and max_price != ""'>
 	    	and P.product_price &lt;= to_number(#{max_price})
 	    </if>
+	    <if test='region != null and region != ""'>
+	    	and P.fk_region_no = to_number(#{region})
+	    </if>
 	    <!-- 정렬 설정  -->
 		<if test="sort_type != null and sort_type != ''">
 	    <choose>
@@ -80,6 +83,9 @@
 	    </if>
 	    <if test='max_price != null and max_price != ""'>
 	    	and P.product_price &lt;= to_number(#{max_price})
+	    </if>
+	   	<if test='region != null and region != ""'>
+	    	and P.fk_region_no = to_number(#{region})
 	    </if>
 	    <!-- 정렬 설정  -->
 		<if test="sort_type != null and sort_type != ''">
@@ -173,7 +179,10 @@
 	    </if>
 	    <if test='max_price != null and max_price != ""'>
 	    	and P.product_price &lt;= to_number(#{max_price})
-	    </if>       	
+	    </if>   
+	    <if test='region != null and region != ""'>
+	    	and P.fk_region_no = to_number(#{region}) and R.region_town = #{town}
+	    </if>    	
 		
 		<!-- 정렬 설정  -->
 		<if test="sort_type != null and sort_type != ''">
@@ -195,6 +204,39 @@
 	    </if>
 	</select>
 	
+	
+	<!-- 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기 -->
+	<resultMap id="nearRegionMap" type="HashMap">
+	    <result property="pk_region_no" 	column="pk_region_no"		javaType="String"/>
+	    <result property="region_state" 	column="region_state" 		javaType="String"/>
+	    <result property="region_city" 		column="region_city" 		javaType="String"/>
+	    <result property="region_town" 		column="region_town" 		javaType="String"/>
+	    <result property="region_lat" 		column="region_lat" 		javaType="String"/>
+	    <result property="region_lng" 		column="region_lng" 		javaType="String"/>
+	    <result property="distance" 		column="distance" 		    javaType="String"/>   
+	</resultMap>
+	<select id="nearRegion" parameterType="HashMap" resultMap="nearRegionMap">
+	select pk_region_no, region_state, region_city, region_town, region_lat, region_lng, distance 
+	from (
+	    select pk_region_no, region_state, region_city, region_town, region_lat, region_lng, distance
+	    from (
+	        select 
+	            pk_region_no, region_state, region_city, region_town, region_lat, region_lng,
+	            (6371 * acos(least(1, greatest(-1,
+	                cos(region_lat * (acos(-1) / 180)) * cos(#{current_lat} * (acos(-1) / 180)) 
+	                * cos((region_lng - #{current_lng}) * (acos(-1) / 180)) 
+	                + sin(region_lat * (acos(-1) / 180)) * sin(#{current_lat} * (acos(-1) / 180))
+	            )))) as distance
+	        from tbl_region
+	        order by distance asc  
+	    )
+	    where rownum &lt;= 5  
+	)
+	order by region_city asc
+	</select>
+
+
+
 
 	<!-- 특정 상품에 대한 상품 및 대표이미지 정보 가져오기 -->
 	<resultMap id="getProductInfoMap" type="HashMap">
