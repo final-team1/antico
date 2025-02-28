@@ -67,7 +67,9 @@ public class MypageController {
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
 		String member_score = member_vo.getMember_score(); // 회원의 신뢰점수
 		
-		String mvo = service.member_select(member_no);
+		Map<String, String> member_info = service.member_select(member_no);
+		String mvo = member_info.get("pk_member_no");
+		String seller_name = member_info.get("member_name");
 		if (mvo == null) { 
 	        mav.setViewName("error/404"); // 없는 회원이면 404 페이지로 이동
 	        return mav;
@@ -98,28 +100,55 @@ public class MypageController {
 		}
 		
 		List<Map<String, String>> myproduct_list = service.myproduct(mvo); // 마이페이지에서 내상품 조회하기
-		Map<String, String> seller_info = service.sellerList(mvo); // 판매자 정보 불러오기
-		int list_size = myproduct_list.size();
-		String seller_role = seller_info.get("member_role");
-		String seller_role_color = "";
-		if("0".equals(seller_role)) {
-			seller_role = "브론즈";
-			seller_role_color = "#b87333";
-		} else if("1".equals(seller_role)) {
-			seller_role = "실버";
-			seller_role_color = "#c0c0c0";
-		} else {
-			seller_role = "골드";
-			seller_role_color = "#ffd700";
+		
+		try {
+			// 판매중인 상품이 있는 경우
+			Map<String, String> seller_info = service.sellerList(mvo); // 판매자 정보 불러오기
+			int list_size = myproduct_list.size();
+			String seller_role = seller_info.get("member_role");
+			String seller_role_color = "";
+			if("0".equals(seller_role)) {
+				seller_role = "브론즈";
+				seller_role_color = "#b87333";
+			} else if("1".equals(seller_role)) {
+				seller_role = "실버";
+				seller_role_color = "#c0c0c0";
+			} else {
+				seller_role = "골드";
+				seller_role_color = "#ffd700";
+			}
+			mav.addObject("seller_role_color", seller_role_color);
+			mav.addObject("seller_role", seller_role);	
+			mav.addObject("seller_info", seller_info);
+			mav.addObject("list_size", list_size);
+			
+		} catch (NullPointerException e) {
+			String seller_role = member_info.get("member_role");
+			String seller_role_color = "";
+			if("0".equals(seller_role)) {
+				seller_role = "브론즈";
+				seller_role_color = "#b87333";
+			} else if("1".equals(seller_role)) {
+				seller_role = "실버";
+				seller_role_color = "#c0c0c0";
+			} else {
+				seller_role = "골드";
+				seller_role_color = "#ffd700";
+			}
+			int list_size = myproduct_list.size();
+			mav.addObject("list_size", list_size);
+			mav.addObject("seller_name", seller_name);
+			mav.addObject("seller_role_color", seller_role_color);
+			mav.addObject("seller_role", seller_role);	
+			mav.addObject("member_info", member_info);
+			mav.setViewName("mypage/sellerpage");
+			return mav;
 		}
 		
-		mav.addObject("seller_role_color", seller_role_color);
-		mav.addObject("seller_role", seller_role);	
-		mav.addObject("seller_info", seller_info);
+		mav.addObject("seller_name", seller_name);
 		mav.addObject("myproduct_list", myproduct_list);
 		mav.addObject("member_score", member_score);
 		mav.addObject("userid", userid);
-		mav.addObject("list_size", list_size);
 		mav.addObject("member_role", member_role);
 		mav.addObject("role_color", role_color);
 		mav.addObject("member_name", member_name);
