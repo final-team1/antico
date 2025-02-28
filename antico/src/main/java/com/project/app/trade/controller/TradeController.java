@@ -61,4 +61,16 @@ public class TradeController {
 		mav.setViewName("trade/show_payment");
 		return mav;
 	}
+	
+	@PostMapping("purchase")
+	@ResponseBody
+	public int purchase(@RequestParam String pk_product_no, @RequestParam String member_no, @RequestParam String product_price) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		String member_point = member_vo.getMember_point();
+		// 구매를 하면 포인트를 차감 update, 상품상태를 예약중으로 변경 update, 포인트내역 insert, 거래 insert
+		int n = service.purchase(pk_product_no, member_no, pk_member_no, product_price, member_point);
+		
+		return n;
+	}
 }
