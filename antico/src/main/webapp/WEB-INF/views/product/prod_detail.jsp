@@ -314,11 +314,11 @@ div#other_product{
 }
 
 div#other_product_img_container {
+	width: 100%;
 	display: flex;
 }
 
 div#other_product_img_div {
-	width: 100%;
 	cursor: pointer;
 }
 
