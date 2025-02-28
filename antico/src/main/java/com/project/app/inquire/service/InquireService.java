@@ -3,6 +3,7 @@ package com.project.app.inquire.service;
 import java.util.List;
 import java.util.Map;
 
+import com.project.app.comment.domain.CommentVO;
 import com.project.app.inquire.domain.InquireVO;
 
 public interface InquireService {
@@ -19,8 +20,8 @@ public interface InquireService {
 	// 문의 상세보기
 	InquireVO inquire_detail(Map<String, String> paraMap);
 
-	
+	// 답변조회
+	List<CommentVO> inquire_comment(String pk_inquire_no);
 
-	
 
 }

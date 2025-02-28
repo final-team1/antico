@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.comment.model.CommentDAO">
+	
+	<!-- 파일첨부가 없는 경우의 1:1문의 답변 작성 -->
+	<insert id="add_comment" parameterType="CommentVO">
+	    insert into tbl_comment(pk_comment_no, fk_parent_no, fk_inquire_no, fk_member_no, comment_content, comment_regdate)
+	    values(comment_seq.nextval, #{fk_parent_no}, #{fk_inquire_no}, #{fk_member_no}, #{comment_content}, default)
+	</insert>
+	
+	<!-- 파일첨부가 있는 경우의 1:1문의 답변 작성 -->
+	<insert id="add_file_comment" parameterType="CommentVO">
+	    insert into tbl_comment(pk_comment_no, fk_parent_no, fk_inquire_no, fk_member_no, comment_content, comment_regdate
+	                            , comment_filename, comment_orgfilename)
+	    values(comment_seq.nextval, #{fk_parent_no}, #{fk_inquire_no}, #{fk_member_no}, #{comment_content}, default
+	           , #{comment_filename}, #{comment_orgfilename})
+	</insert>
+
+	<!-- tbl_comment 테이블에서 fk_parent_no 컬럼의 최대값 알아오기  -->
+	<select id="get_fk_parent_no" resultType="int" parameterType="String">
+	    select nvl(max(fk_parent_no), 0) 
+	    from tbl_comment
+	    where fk_inquire_no = #{pk_inquire_no}
+	</select>
+ 
+ 	<!-- 관리자가 답변할 시 답변완료로 업데이트 -->
+	<update id="update_inquire_status" parameterType="String">
+	    update tbl_inquire
+	    set inquire_status = 1
+	    where pk_inquire_no = #{pk_inquire_no}
+	</update>
+	
+	<!-- 유저가 답변할 시 미답변으로 업데이트 -->
+	<update id="update_inquire_status_member" parameterType="String">
+	    update tbl_inquire
+	    set inquire_status = 0
+	    where pk_inquire_no = #{pk_inquire_no}
+	</update>
+	
+</mapper>
+
+
