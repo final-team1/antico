@@ -63,15 +63,6 @@
 	</div>
 	
 	
-<%-- 	<form action="${ctxPath}/auth/login" method="post">
-		
-		<input type="text" name="mem_user_id"/>
-		
-		<input type="text" name="mem_passwd"/>
-		
-		<input type="submit"/>
-		
-	</form> --%>
 
 
 </div>
@@ -124,7 +115,7 @@ $(document).ready(function(){
 	
 	$("img#kakaoImg").bind("click", function(){
 		
-		location.href='https://kauth.kakao.com/oauth/authorize?client_id=2fc45348c1f277afbb09c75d902df014&redirect_uri=http://localhost/antico/kakaologin/callback&response_type=code';
+		location.href='${pageContext.request.contextPath}/oauth2/authorization/kakao';
 		
 	});
 	
