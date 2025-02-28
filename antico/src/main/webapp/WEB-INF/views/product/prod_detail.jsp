@@ -123,8 +123,20 @@ div#buyer_setting {
     justify-content: center;
 }
 
+div#review_container {
+	margin-top: 10px;
+	width: 100%;
+	height: 80px;
+	border: solid 1px #dee2e6;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+    justify-content: center;
+}
+
 ul#status_region_info_ul,
-ul#buyer_setting_ul {
+ul#buyer_setting_ul,
+ul#review_container_ul {
 	list-style-type: none;
 	padding-left: 0px;
 	margin-bottom: 0px;
@@ -132,7 +144,8 @@ ul#buyer_setting_ul {
 }
 
 li.status, li.region, li.sale_status, li.extra,
-li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete {
+li.reg_update, li.prod_upate, li.sale_status_upate, li.prod_delete,
+li.review_cnt {
 	display: flex; 
 	flex-direction: column;
 	align-items: center;
@@ -156,13 +169,15 @@ span.status_title, span.region_title, span.sale_status_title {
 	color: #999999;
 }
 
-span.reg_update_title, span.prod_upate_title, span.sale_status_upate_title, span.prod_delete_title {
+span.reg_update_title, span.prod_upate_title, span.sale_status_upate_title, span.prod_delete_title,
+span.review_cnt_title {
 	font-size: 10pt;
 	color: #999999;
 }
 
 span.status, span.region, span.sale_status,
-span.reg_update, span.prod_upate, span.sale_status_upate, span.prod_delete {
+span.reg_update, span.prod_upate, span.sale_status_upate, span.prod_delete,
+span.review_cnt {
 	font-size: 10pt;
 	font-weight: bold;
 }
@@ -170,6 +185,7 @@ span.reg_update, span.prod_upate, span.sale_status_upate, span.prod_delete {
 span.sale_status {
 	color: #0DCC5A;
 }
+
 
 div#button {
 	margin-top: 40px;
@@ -209,7 +225,7 @@ div#detail_info_container {
 	width: 100%;
 	margin-top: 80px;
 	display: flex;
-	gap: 20px; 
+	gap: 70px; 
 }
 
 
@@ -247,6 +263,81 @@ span.seller_title {
 	text-align: left;
 	font-size: 16pt;
 	font-weight: 500;
+}
+
+a#member_name {
+	text-decoration: none;
+	color: black;
+	font-size: 20pt;
+	font-weight: bold
+}
+
+/* 판매자 이름 및 등급 표시 부분 */
+div#member_name_role {
+	width: 100%; 
+	display: flex; 
+	justify-content: space-between; 
+	align-items: center;
+}
+
+span.member_role {
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+/* 등급 게이지 */
+div#bar {
+	width: 100%;
+	background-color: #ddd;
+	height: 8px;
+	border-radius: 4px;
+	margin: 5px 0;
+	text-align: right;
+}
+
+div#bar_guage {
+	height: 100%;
+	border-radius: 4px;
+	margin-bottom: 5px;
+}
+
+span#score {
+	font-size: 10pt;
+}
+
+/* 다른 상품 부분 */
+div#other_product{
+	width: 100%;
+	display: flex; 
+	margin-top: 20px; 
+	gap: 10px;
+}
+
+div#other_product_img_container {
+	display: flex;
+}
+
+div#other_product_img_div {
+	width: 100%;
+	cursor: pointer;
+}
+
+img#other_product_img {
+	obeject-fit: cover; 
+	width: 100%;
+	height: 150px;
+	border-radius: 6px;
+}
+
+div.ohter_product_title {
+	height: 50px; 
+	text-align: left;
+}
+
+div.ohter_product_price {
+	height: 50px; 
+	text-align: left;
+	font-weight: bold;
 }
 
 
@@ -370,12 +461,6 @@ span.sold_out_text {
 
 
 
-
-
-
-
-
-
 </style>
 
 
@@ -395,14 +480,21 @@ span.sold_out_text {
 				                    <c:when test="${img_list.prod_img_is_thumbnail == 1}">
 				                        <div class="carousel-item active img_div" >
 				                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
-				                            				                            
+				                            		
+					                        <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+					                        <c:if test="${product_map.product_sale_status == 1}">
+					                            <div class="sold_out_overlay">
+					                                <span class="sold_out_text">예약중</span>
+					                            </div>
+					                        </c:if>					                            		
+				                            						                            
 				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
 					                        <c:if test="${product_map.product_sale_status == 2}">
 					                            <div class="sold_out_overlay">
 					                                <span class="sold_out_text">판매완료</span>
 					                            </div>
 					                        </c:if>
-									                            
+					                        			                        									                            
 				                        </div>
 				                        <c:set var="is_first_image" value="true"/>
 				                    </c:when>
@@ -411,7 +503,13 @@ span.sold_out_text {
 				                    <c:when test="${img_list.prod_img_is_thumbnail == 0}">
 				                        <div class="carousel-item ${is_first_image ? '' : 'active'} img_div">
 				                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
-				                            
+
+				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+					                        <c:if test="${product_map.product_sale_status == 1}">
+					                            <div class="sold_out_overlay">
+					                                <span class="sold_out_text">예약중</span>
+					                            </div>
+					                        </c:if>	
 				                            
 				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
 					                        <c:if test="${product_map.product_sale_status == 2}">
@@ -441,6 +539,13 @@ span.sold_out_text {
 			    <c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) == 1}">
 			    	<div class="img_div">
 			       		<img src="${requestScope.product_img_list[0].prod_img_name}" class="d-block" id="prod_img"/>
+			       		
+                        <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+                        <c:if test="${product_map.product_sale_status == 1}">
+                            <div class="sold_out_overlay">
+                                <span class="sold_out_text">예약중</span>
+                            </div>
+                        </c:if>				       		
 			       		
      					<%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
                         <c:if test="${product_map.product_sale_status == 2}">
@@ -564,8 +669,8 @@ span.sold_out_text {
 				</div>
 				</c:if>				
 				
-				<!-- 판매자 본인 상품 또는 구매완료된 상품이라면 좋아요 및 채팅, 구매하기 버튼 안보여주기 -->
-				<c:if test="${(product_map.fk_member_no ne fk_member_no) and product_map.product_sale_status != 2}">
+				<!-- 판매자 본인 상품이거나 예약중 및 구매완료된 상품이라면 좋아요 및 채팅, 구매하기 버튼 안보여주기 -->
+				<c:if test="${(product_map.fk_member_no ne fk_member_no) and (product_map.product_sale_status != 1) and(product_map.product_sale_status != 2) }">
 				
 				<div id="button">
 					<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
@@ -617,6 +722,80 @@ span.sold_out_text {
 					<span class="seller_title">판매자 정보</span>
 					<hr>
 				</div>
+				<div id="member_name_role">
+					<%-- 판매자명 --%>
+					<a id="member_name" href="">${product_map.member_name}</a>
+					
+					<%-- 판매자 등급 --%>
+					<c:if test="${product_map.member_role == 0}">
+						<span class="member_role" style="color: #b87333;">브론즈</span>
+					</c:if>
+					<c:if test="${product_map.member_role == 1}">
+						<span class="member_role" style="color: #c0c0c0;">실버</span>
+					</c:if>
+					<c:if test="${product_map.member_role == 2}">
+						<span class="member_role" style="color: #ffd700;">골드</span>
+					</c:if>
+					<c:if test="${product_map.member_role == 3 or product_map.member_role ==4}">
+						<span class="member_role" style="color: red;" >관리자</span>
+					</c:if>						
+				</div>
+				
+				<%-- 게이지 --%>
+				<div id="bar">
+					<c:if test="${product_map.member_role == 0}">
+						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #b87333;"></div>
+					</c:if>
+					<c:if test="${product_map.member_role == 1}">
+						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #c0c0c0;"></div>
+					</c:if>
+					<c:if test="${product_map.member_role == 2}">
+						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #ffd700;"></div>
+					</c:if>
+					<c:if test="${product_map.member_role == 3 or product_map.member_role ==4}">
+						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: red"></div>
+					</c:if>
+					<div id="score">					
+						<span id="score">신뢰도 ${product_map.member_score}</span>
+					<div>
+				</div>
+				
+				<div id="review_container">
+					<ul id="review_container_ul">
+						<li class="review_cnt">
+							<span class="review_cnt_title">거래량</span>
+							<span class="review_cnt">1</span>
+						</li>
+						
+						<li class="bar"></li>	
+
+						<li class="review_cnt">
+							<span class="review_cnt_title">후기</span>
+							<span class="review_cnt">1</span>
+						</li>
+						
+						<li class="bar"></li>	
+						
+						<li class="review_cnt">
+							<span class="review_cnt_title">단골</span>
+							<span class="review_cnt">1</span>
+						</li>												
+						
+					</ul>
+				</div>
+				
+				<%-- 다른 상품 --%>
+				<div id="other_product">
+					<c:forEach var="prod_one_member" items="${requestScope.product_list_one_member}" varStatus="status" begin="0" end="1">
+						<div id="other_product_img_container">
+							<div id="other_product_img_div" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${prod_one_member.pk_product_no}'">
+								<img id="other_product_img" src="${prod_one_member.prod_img_name}">
+								<div class="ohter_product_title"><span>${prod_one_member.product_title}</span></div>
+								<div class="ohter_product_price"><span><fmt:formatNumber value="${prod_one_member.product_price}" pattern="#,###" /> 원</span></div>
+							</div>
+						</div>
+					</c:forEach>	
+				</div> 	
 			</div>
 		</div>
 </div>
