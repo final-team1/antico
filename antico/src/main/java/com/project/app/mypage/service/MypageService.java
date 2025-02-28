@@ -27,7 +27,7 @@ public interface MypageService {
 	void role_update(String role, String pk_member_no);
 
 	// 존재하는 회원인지 조회
-	String member_select(String member_no);
+	Map<String, String> member_select(String member_no);
 
 
 

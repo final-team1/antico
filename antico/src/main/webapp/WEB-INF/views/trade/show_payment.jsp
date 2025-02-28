@@ -82,6 +82,8 @@
 	$("span.not_enough").html(" "+(${show_payment_map.product_price}-${member_vo.member_point}).toLocaleString()+" P");
 	$("span.after").html(" "+(${member_vo.member_point}-${show_payment_map.product_price}).toLocaleString()+" P");
 	
+	
+	
 </script>
 
 <div class="purchase_container">
