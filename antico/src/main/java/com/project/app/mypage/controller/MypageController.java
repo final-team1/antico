@@ -1,5 +1,6 @@
 package com.project.app.mypage.controller;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,10 @@ public class MypageController {
 		String member_name = member_vo.getMember_name(); // 회원이름
 		String member_point = member_vo.getMember_point(); // 회원의 포인트
 		String member_score = member_vo.getMember_score(); // 회원의 신뢰점수
-		
+		if ("favicon.ico".equals(member_no)) {
+		    	// System.out.println("favicon.ico 요청을 필터링했습니다.");
+		        return mav; // 빈 mav 반환
+	    }
 		Map<String, String> member_info = service.member_select(member_no);
 		String mvo = member_info.get("pk_member_no");
 		String seller_name = member_info.get("member_name");
