@@ -116,7 +116,7 @@ button.choice_region {
 	border-radius: 6px;
 	font-size: 10pt;
 	background-color: #f1f4f6;
-	width: 60px;
+	width: 80px;
 	height: 30px;
 	color: #5a5a5a;
 }
@@ -383,9 +383,8 @@ div#is_no_product {
 							<td class="td_title">동네</td>
 							<td>
 							<button class="choice_region" onclick="showRegionSearchTab()">선택</button>
-							<input type="text" class="town_name"/>
-							<input type="text" class="lat"/>
-							<input type="text" class="lng"/>
+							<input type="hidden" class="fk_region_no" /> <%-- 지역번호 for search --%>
+							<input type="hidden" class="town" />		 <%-- 동네명 for param--%>
 							</td>
 						</tr>
 					</tbody>
@@ -581,7 +580,14 @@ div#is_no_product {
 		});	
 		
 		
-	    
+		// 동네명을 선택하는 경우  (button 태그 change 불가로 hidden 타입의 input에 동적으로 요소 값을 받아온다.)
+		$("input.fk_region_no").on("input", function(){
+
+			getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
+		});
+		
+		
+	    // 최신/가격 순 버튼 클릭 하는 경우
 	    $("button.sort").click(function() {
 	        // 모든 버튼에서 'selected' 클래스 제거
 	        $("button.sort").removeClass("selected");
@@ -594,15 +600,15 @@ div#is_no_product {
 	    });
 				
 								
-		// 검색 필터에 값들 유지시키기 위한 //		
+		// 검색 필터에 값들 유지시키기 시작 //		
 	    // URL에서 카테고리 파라미터를 가져오기
 	    const url_params = new URLSearchParams(window.location.search);
 	    let category_no = url_params.get('category_no'); 				 // 상위 카테고리 번호
 	    const category_detail_no = url_params.get('category_detail_no'); // 하위 카테고리 번호
-	
 	    const min_price = url_params.get('min_price');					 // 최소가격
 	    const max_price = url_params.get('max_price');					 // 최대가격
-
+	    let region = url_params.get('region');					 	 // 지역번호
+	    let town = url_params.get('town');					 		 // 동네명
 	    const sort_type = url_params.get('sort_type');					 // 정렬 방식
 	    
 	    
@@ -651,11 +657,22 @@ div#is_no_product {
 	    
 	    // 최소 가격 
 	    if (min_price) {
-	        $("input.min_price").val(decodeURIComponent(min_price));
+	        $("input.min_price").val(min_price);
 	    }
 	    // 최대 가격
 	    if (max_price) {
-	        $("input.max_price").val(decodeURIComponent(max_price));
+	        $("input.max_price").val(max_price);
+	    }
+	    
+	    // 지역번호 유지
+	    if (region) {
+	    	$("input.fk_region_no").val(region);
+	    }
+	    
+	    // 동네명 유지
+	    if (town) {
+	    	$("input.town").val(town);
+	    	$("button.choice_region").text(town);
 	    }
 	    
 	    // 정렬 방식
@@ -664,7 +681,7 @@ div#is_no_product {
 	        $("button[data-sort-type]").removeClass("selected");
 	        $("button[data-sort-type='" + sort_type + "']").addClass("selected");
 	    }
-	    
+	 	// 검색 필터에 값들 유지시키기 끝 //
 	    	
 	}); // end of $(document).ready(function(){
 
@@ -673,14 +690,17 @@ div#is_no_product {
 	// Function Declaration---------------------------------
 	
 	
- 	// 필터로 해당 상품 조회해오기 (검색어포함)
+ 	// 필터로 해당 상품 조회해오기 (검색어,카테고리,가격,정렬,지역)
 	function getProductByfilter(category_no, category_detail_no) {
 		
-	    let search_prod = encodeURIComponent("${requestScope.search_prod}");     // 검색어
-	    let min_price = encodeURIComponent($("input.min_price").val().trim());   // 최소가격
-	    let max_price = encodeURIComponent($("input.max_price").val().trim());   // 최소가격
+	    let search_prod = "${requestScope.search_prod}";      // 검색어
+	    let min_price = $("input.min_price").val().trim();    // 최소가격
+	    let max_price = $("input.max_price").val().trim();    // 최소가격
+	    let region = $("input.fk_region_no").val().trim(); 	  // 지역번호
+	    let town = $("input.town").val().trim();			  // 동네명
 	    
-	    let sort_type = $("button.selected").data("sort-type"); 				 // 클릭한 정렬 유형의 값 가져오기
+	    
+	    let sort_type = $("button.selected").data("sort-type");  // 클릭한 정렬 유형의 값 가져오기
 
 	    
 	    let url = "<%= ctxPath %>/product/prodlist";
@@ -710,6 +730,14 @@ div#is_no_product {
 		} 
 	    if (max_price) {
 	        url += (is_first_param ? '?' : '&') + "max_price=" + max_price;
+	        is_first_param = false;
+	    }
+	    if (region) {
+	        url += (is_first_param ? '?' : '&') + "region=" + region;
+	        is_first_param = false;
+	    }
+	    if (town) {
+	        url += (is_first_param ? '?' : '&') + "town=" + town;
 	        is_first_param = false;
 	    }
 	    if (sort_type) {

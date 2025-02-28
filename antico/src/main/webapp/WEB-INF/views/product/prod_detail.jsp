@@ -398,8 +398,8 @@ span.sold_out_text {
 				                            				                            
 				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
 					                        <c:if test="${product_map.product_sale_status == 2}">
-					                            <div class="sold-out_overlay">
-					                                <span class="soldout_text">판매완료</span>
+					                            <div class="sold_out_overlay">
+					                                <span class="sold_out_text">판매완료</span>
 					                            </div>
 					                        </c:if>
 									                            
@@ -697,9 +697,6 @@ span.sold_out_text {
 					errorHandler(request, status, error); 
 	            },
 			}); 
-	 		
-	        // $("span.sale_status_text").text($(this).text());  // 선택한 값 반영
-	        // $("ul.sale_status_dropdown").hide();
 	        
 	    }); // end of $("li.sale_status_upate_li").click(function()
 	    		
