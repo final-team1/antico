@@ -5,13 +5,14 @@
 
 <mapper namespace="com.project.app.product.model.ProductDAO">
 	
-	<!-- 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함) -->
+	<!-- 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역 정렬 포함) -->
 	<select id="getProductCnt" parameterType="HashMap" resultType="int">
 		select COUNT(*) AS prod_count
 		from tbl_product P 
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
 		where I.prod_img_is_thumbnail = 1
+		and P.product_sale_status IN (0, 1)
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -30,6 +31,9 @@
 	    </if>
 	    <if test='max_price != null and max_price != ""'>
 	    	and P.product_price &lt;= to_number(#{max_price})
+	    </if>
+	    <if test='region != null and region != ""'>
+	    	and P.fk_region_no = to_number(#{region})
 	    </if>
 	    <!-- 정렬 설정  -->
 		<if test="sort_type != null and sort_type != ''">
@@ -48,7 +52,7 @@
 	</select>	
 	
 	
-	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함) -->
+	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함) -->
 	<resultMap id="getProductPriceMap" type="HashMap" >
 	    <result property="avg_price" 	column="avg_price"  	javaType="String" />
 	    <result property="max_price" 	column="max_price"  	javaType="String" />
@@ -62,6 +66,7 @@
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_region_no
 		WHERE I.prod_img_is_thumbnail = 1
+		and P.product_sale_status IN (0, 1)
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -80,6 +85,9 @@
 	    </if>
 	    <if test='max_price != null and max_price != ""'>
 	    	and P.product_price &lt;= to_number(#{max_price})
+	    </if>
+	   	<if test='region != null and region != ""'>
+	    	and P.fk_region_no = to_number(#{region})
 	    </if>
 	    <!-- 정렬 설정  -->
 		<if test="sort_type != null and sort_type != ''">
@@ -99,7 +107,7 @@
 	
 	
 
-	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함) -->
+	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함) -->
 	<resultMap id="getProductMap" type="HashMap">
 	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
@@ -155,6 +163,7 @@
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
 		where I.prod_img_is_thumbnail = 1
+		and P.product_sale_status IN (0, 1)
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -173,7 +182,10 @@
 	    </if>
 	    <if test='max_price != null and max_price != ""'>
 	    	and P.product_price &lt;= to_number(#{max_price})
-	    </if>       	
+	    </if>   
+	    <if test='region != null and region != ""'>
+	    	and P.fk_region_no = to_number(#{region}) and R.region_town = #{town}
+	    </if>    	
 		
 		<!-- 정렬 설정  -->
 		<if test="sort_type != null and sort_type != ''">
@@ -195,6 +207,39 @@
 	    </if>
 	</select>
 	
+	
+	<!-- 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기 -->
+	<resultMap id="nearRegionMap" type="HashMap">
+	    <result property="pk_region_no" 	column="pk_region_no"		javaType="String"/>
+	    <result property="region_state" 	column="region_state" 		javaType="String"/>
+	    <result property="region_city" 		column="region_city" 		javaType="String"/>
+	    <result property="region_town" 		column="region_town" 		javaType="String"/>
+	    <result property="region_lat" 		column="region_lat" 		javaType="String"/>
+	    <result property="region_lng" 		column="region_lng" 		javaType="String"/>
+	    <result property="distance" 		column="distance" 		    javaType="String"/>   
+	</resultMap>
+	<select id="nearRegion" parameterType="HashMap" resultMap="nearRegionMap">
+	select pk_region_no, region_state, region_city, region_town, region_lat, region_lng, distance 
+	from (
+	    select pk_region_no, region_state, region_city, region_town, region_lat, region_lng, distance
+	    from (
+	        select 
+	            pk_region_no, region_state, region_city, region_town, region_lat, region_lng,
+	            (6371 * acos(least(1, greatest(-1,
+	                cos(region_lat * (acos(-1) / 180)) * cos(#{current_lat} * (acos(-1) / 180)) 
+	                * cos((region_lng - #{current_lng}) * (acos(-1) / 180)) 
+	                + sin(region_lat * (acos(-1) / 180)) * sin(#{current_lat} * (acos(-1) / 180))
+	            )))) as distance
+	        from tbl_region
+	        order by distance asc  
+	    )
+	    where rownum &lt;= 5  
+	)
+	order by region_city asc
+	</select>
+
+
+
 
 	<!-- 특정 상품에 대한 상품 및 대표이미지 정보 가져오기 -->
 	<resultMap id="getProductInfoMap" type="HashMap">
@@ -218,13 +263,13 @@
 	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
 	    <result property="member_name" 				column="member_name" 			javaType="String"/>
 	</resultMap>
-	   <select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
+	<select id="getProductInfo" parameterType="HashMap" resultMap="getProductInfoMap">
       select P.pk_product_no, 
             P.fk_member_no, 
             P.fk_region_no, 
             P.fk_category_no, 
             P.fk_category_detail_no, 
-             P.product_title, 
+            P.product_title, 
             P.product_contents, 
             P.product_price, 
             P.product_status, 
@@ -341,34 +386,87 @@
 
     <!-- 이미지 테이블에 파일 넣어주기 -->
 	<insert id="addImage" parameterType="ProductImageVO">
-	insert into tbl_prod_img(pk_prod_img_no, fk_product_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail)  
-					 values (pi_seq.NEXTVAL, #{fk_product_no}, #{prod_img_name}, #{prod_img_org_name}, #{prod_img_is_thumbnail})
+		insert into tbl_prod_img(pk_prod_img_no, fk_product_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail)  
+					 	 values (pi_seq.NEXTVAL, #{fk_product_no}, #{prod_img_name}, #{prod_img_org_name}, #{prod_img_is_thumbnail})
 	</insert>
 	
 	
 	<!-- 관심상품에 이미 상품이 존재하는지 확인하기 --> 
 	<select id="getWishCheck" parameterType="String">
-	select pk_wish_no
-	from tbl_wish
-	where fk_product_no = to_number(#{fk_product_no}) 
-	and fk_member_no = to_number(#{fk_member_no})
+		select pk_wish_no
+		from tbl_wish
+		where fk_product_no = to_number(#{fk_product_no}) 
+		and fk_member_no = to_number(#{fk_member_no})
 	</select>
 	
 	
 	<!-- 관심 상품에서 상품 삭제하기 -->
 	<delete id="wishDelete" parameterType="String">
-	delete 
-	from tbl_wish
-	where fk_product_no =  to_number(#{fk_product_no}) 
-	and fk_member_no = to_number(#{fk_member_no})
+		delete 
+		from tbl_wish
+		where fk_product_no =  to_number(#{fk_product_no}) 
+		and fk_member_no = to_number(#{fk_member_no})
 	</delete>
 	
 	
 	<!-- 관심상품에 상품 추가하기 -->
 	<insert id="wishInsert" parameterType="String">
-	insert into tbl_wish(pk_wish_no, fk_product_no, fk_member_no)
-				  values(wish_seq.NEXTVAL, to_number(#{fk_product_no}), to_number(#{fk_member_no}))
+		insert into tbl_wish(pk_wish_no, fk_product_no, fk_member_no)
+				  	  values(wish_seq.NEXTVAL, to_number(#{fk_product_no}), to_number(#{fk_member_no}))
 	</insert>
+	
+	
+	
+	<!-- 특정 회원에 대한 상품 정보 가져오기 -->
+	<resultMap id="getProdcutOneMemberMap" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="fk_region_no" 			column="fk_region_no" 			javaType="String"/>
+	    <result property="fk_category_no" 			column="fk_category_no" 		javaType="String"/>
+	    <result property="fk_category_detail_no" 	column="fk_category_detail_no" 	javaType="String"/>  
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="product_views" 			column="product_views" 			javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
+	    <result property="member_name" 				column="member_name" 			javaType="String"/>
+	</resultMap>
+	<select id="getProdcutOneMember" parameterType="HashMap" resultMap="getProdcutOneMemberMap">
+      	select P.pk_product_no, 
+        	   P.fk_member_no, 
+               P.fk_region_no, 
+               P.fk_category_no, 
+               P.fk_category_detail_no, 
+               P.product_title, 
+               P.product_contents, 
+               P.product_price, 
+               P.product_status, 
+               P.product_sale_status, 
+               P.product_regdate, 
+               P.product_update_date, 
+               P.product_sale_type, 
+               P.product_views,
+               I.pk_prod_img_no,
+               I.prod_img_org_name,
+               I.prod_img_name,
+               I.prod_img_is_thumbnail,
+               M.member_name
+      	from tbl_product P JOIN tbl_prod_img I
+     	ON P.pk_product_no = I.fk_product_no
+      	JOIN tbl_member M ON M.pk_member_no = P.fk_member_no
+      	where P.fk_member_no = #{fk_member_no2}
+      	and   I.prod_img_is_thumbnail = 1
+      	and   P.pk_product_no != #{pk_product_no}
+      	order by P.product_regdate
+	</select>
 	
 	
 	
@@ -403,6 +501,8 @@
 	    <result property="region_lat" 				column="region_lat" 			javaType="String"/>
 	    <result property="region_lng" 				column="region_lng" 			javaType="String"/>
 	    <result property="member_name" 				column="member_name" 			javaType="String"/>
+	    <result property="member_role" 				column="member_role" 			javaType="String"/>
+	    <result property="member_score" 			column="member_score" 			javaType="String"/>
 	    <result property="category_name" 			column="category_name" 			javaType="String"/>
 	    <result property="category_detail_name" 	column="category_detail_name" 	javaType="String"/>
 	</resultMap>
@@ -428,6 +528,8 @@
 		       R.region_lat,
 		       R.region_lng,
 		       M.member_name,
+		       M.member_role,
+		       M.member_score,
 		       C.category_name,
 		       D.category_detail_name
 		from tbl_product P 

@@ -87,7 +87,7 @@ public class MemberDetailService implements UserDetailsService{
 			if(leave_member_no != null) { // 탈퇴신청을 한 회원이라면
 				// 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회
 				String fk_member_no = member_dao.loginCheck(leave_member_no);
-				System.out.println("로그인시 탈퇴 신청후 72시간이 지난 회원이 있는지 확인"+fk_member_no);
+			//	System.out.println("로그인시 탈퇴 신청후 72시간이 지난 회원이 있는지 확인"+fk_member_no);
 				
 				if(fk_member_no != null) { // 탈퇴신청을 한 회원이면서 72시간이 지났다면
 					// 72시간이 지난 회원이 로그인을 할 때 회원상태 업데이트

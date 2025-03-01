@@ -28,29 +28,47 @@ public class ProductService_imple implements ProductService {
 	private S3FileManager s3fileManager;
 		
 
-	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
+	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
-		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
+		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
 		return product_list_cnt;
 	}
 		
 	
-	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
+	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
-		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
+		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
 		return prodcut_price_info;
 	}
 
 
 
-	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
+	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
-		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
+		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
 		return product_list;
 	}
+	
+	
+	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기
+	@Override
+	public List<Map<String, Object>> nearRegion(String current_lat, String current_lng) {
+		List<Map<String, Object>> near_region_list = productDAO.nearRegion(current_lat, current_lng);
+		return near_region_list;
+	}
+	
+	
+	// 특정 회원에 대한 다른 상품 정보 가져오기
+	@Override
+	public List<Map<String, String>> getProdcutOneMember(String fk_member_no2, String pk_product_no) {
+		List<Map<String, String>> product_list_one_member = productDAO.getProdcutOneMember(fk_member_no2, pk_product_no);
+		return product_list_one_member;
+	}
+
+	
 	
 	
 	// 특정 상품에 대한 상품 및 대표이미지 정보 가져오기
@@ -249,6 +267,8 @@ public class ProductService_imple implements ProductService {
 	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+
+
 
 
 	

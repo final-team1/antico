@@ -82,7 +82,47 @@
 	$("span.not_enough").html(" "+(${show_payment_map.product_price}-${member_vo.member_point}).toLocaleString()+" P");
 	$("span.after").html(" "+(${member_vo.member_point}-${show_payment_map.product_price}).toLocaleString()+" P");
 	
-	
+    $(document).ready(function() {
+        let productPrice = ${show_payment_map.product_price}; 
+        let memberPoint = ${member_vo.member_point};
+
+        // 부족한 포인트 계산
+        if (memberPoint < productPrice) {
+            $(".not_enough").text(" " + (productPrice - memberPoint).toLocaleString() + " P");
+        } else {
+            $(".after").text(" " + (memberPoint - productPrice).toLocaleString() + " P");
+        }
+
+        // 구매 버튼 클릭 이벤트
+        $("button.purchase_button").click(function() {
+            if ($(this).prop("disabled")) {
+                return;
+            }
+
+            $.ajax({
+                url: "<%=ctx_Path%>/trade/purchase",
+                type: "post",
+                data: {
+                    pk_product_no: "${show_payment_map.pk_product_no}",
+                    member_no: "${member_vo.pk_member_no}",
+                    product_price: "${show_payment_map.product_price}"
+                },
+                dataType: "json",
+                success: function(n) {
+                    if (n == 1) {
+                    	showAlert('success', '구매를 성공하였습니다.');
+                        closeSideTab();
+                    } else {
+                    	showAlert('error', '구매를 실패하였습니다.');
+                    }
+                },
+                error : function(request, status, error) {
+    	        	errorHandler(request, status, error);
+    	         }
+            });
+        });
+    });
+
 	
 </script>
 
@@ -99,6 +139,7 @@
         </div>
     </div>
     <input type="hidden" value="${show_payment_map.product_sale_status}"/>
+    <input type="hidden" value="${show_payment_map.pk_product_no}"/>
     
     <div class="purchase_point"> 보유 포인트: <span class="font_semibold">
             <fmt:formatNumber value="${member_vo.member_point}" type="number" pattern="#,###"/> P
