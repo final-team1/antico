@@ -46,10 +46,6 @@ public class TradeService_imple implements TradeService {
 		int b = tradedao.holdProduct(pk_product_no); // 상품상태를 예약중으로 변경하기
 		int c = tradedao.usePoint(pk_member_no, product_price, member_point); // 포인트내역에 사용정보 insert
 		int d = tradedao.trade(pk_product_no, member_no, pk_member_no); // 거래테이블에 거래정보들 insert
-		System.out.println("a"+a);
-		System.out.println("b"+a);
-		System.out.println("c"+a);
-		System.out.println("d"+a);
 		return a*b*c*d;
 	}
 	
