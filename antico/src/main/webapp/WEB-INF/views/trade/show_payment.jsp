@@ -111,7 +111,7 @@
                 success: function(n) {
                     if (n == 1) {
                     	showAlert('success', '구매를 성공하였습니다.');
-                     //   closeSideTab();
+                        closeSideTab();
                     } else {
                     	showAlert('error', '구매를 실패하였습니다.');
                     }
