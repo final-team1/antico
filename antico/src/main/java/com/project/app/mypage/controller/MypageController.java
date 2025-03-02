@@ -1,6 +1,5 @@
 package com.project.app.mypage.controller;
 
-import java.sql.SQLSyntaxErrorException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.app.component.GetMemberDetail;
@@ -16,7 +16,6 @@ import com.project.app.member.domain.MemberVO;
 import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.service.MypageService;
-import com.project.app.product.domain.ProductVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,9 +31,6 @@ public class MypageController {
 	
 	@Autowired
 	private GetMemberDetail get_member_detail;
-	
-	
-//	private final ProductVO prod_vo = new ProductVO();
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -220,14 +216,26 @@ public class MypageController {
 	
 	// 판매내역
 	@GetMapping("sell_list")
-	public ModelAndView sellList(ModelAndView mav) {
+	public ModelAndView sellList(ModelAndView mav, @RequestParam(defaultValue = "") String search_sell) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		String fk_seller_no = "fk_seller_no";
+		List<Map<String, String>> sell_list = service.sellList(pk_member_no, fk_seller_no, search_sell); // 로그인 한 회원의 판매확정된 판매내역들 가져오기
+		search_sell = search_sell.trim(); // 검색어 공백 없애주기
+		mav.addObject("search_sell", search_sell);  // 검색어 전달
+		mav.addObject("sell_list", sell_list);
 		mav.setViewName("mypage/sellList");
 		return mav;
 	}
 	
 	// 구매내역
 	@GetMapping("buy_list")
-	public ModelAndView buyList(ModelAndView mav) {
+	public ModelAndView buyList(ModelAndView mav, @RequestParam(defaultValue = "") String search_sell) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		String fk_consumer_no = "fk_consumer_no";
+		List<Map<String, String>> buy_list = service.sellList(pk_member_no, fk_consumer_no, search_sell);
+		mav.addObject("buy_list", buy_list);
 		mav.setViewName("mypage/buyList");
 		return mav;
 	}

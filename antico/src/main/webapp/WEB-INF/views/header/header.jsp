@@ -65,6 +65,8 @@
   <%-- 웹소켓 연결 관리 모듈 JS --%>
   <script type="text/javascript" src="<%=ctxPath%>/js/chat/Chat.js"></script>
   
+  <jsp:include page="../tab/tab.jsp"/>
+  
 <style>
 *{
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
