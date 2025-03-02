@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.app.common.FileType;
+import com.project.app.common.PagingDTO;
+import com.project.app.component.GetMemberDetail;
 import com.project.app.component.S3FileManager;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
@@ -26,6 +28,9 @@ public class ProductService_imple implements ProductService {
 	
 	@Autowired
 	private S3FileManager s3fileManager;
+	
+	@Autowired
+	private GetMemberDetail get_member_detail;
 		
 
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
@@ -45,10 +50,10 @@ public class ProductService_imple implements ProductService {
 
 
 
-	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 포함)
 	@Override
-	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
-		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
+	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, PagingDTO paging_dto) {
+		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, paging_dto);
 		return product_list;
 	}
 	
@@ -211,7 +216,23 @@ public class ProductService_imple implements ProductService {
 	@Override
 	public Map<String, String> getProductDetail(String pk_product_no) {
 
+		// #1. 특정 상품에 대한 정보 조회해오기
 		Map<String, String> product_map = productDAO.getProductDetail(pk_product_no);
+		
+		
+		String login_member_no = get_member_detail.MemberDetail().getPk_member_no(); // 로그인 한 유저번호 가져오기
+		
+		// 상품 조회수 증가는 로그인을 한 상태에서 다른 사람의 상품을 볼때만 증가하도록 한다.
+		if(login_member_no != null && !product_map.isEmpty() && !login_member_no.equals(product_map.get("fk_member_no"))) {
+			
+			// #2. 상품 조회수 증가하기 (DB)
+			int n = productDAO.increaseViewCount(pk_product_no);
+			
+		
+			if(n == 1) { // #3. 특정 상품 실제 정보에 업데이트 해주기 
+				 product_map.put("product_views", String.valueOf(Integer.parseInt(product_map.get("product_views")) +1 )); 
+			}
+		};
 		
 		return product_map;
 	}
@@ -258,6 +279,14 @@ public class ProductService_imple implements ProductService {
 	}
 
 	
+	
+	//모든 상품 조회 해오기(이미지, 지역)
+	@Override
+	public List<Map<String, String>> getProductList() {
+		List<Map<String, String>> product_list_reg_date = productDAO.getProductList();
+		return product_list_reg_date;
+	}
+	
 		
 	
 	/*
@@ -267,6 +296,8 @@ public class ProductService_imple implements ProductService {
 	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+
+
 
 
 

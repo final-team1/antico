@@ -6,6 +6,7 @@ nav.text-center {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin-top: 40px;
 }
 
 /* 페이징바 안의 요소들 */
@@ -15,6 +16,7 @@ ul.pagination {
 	align-items: center;
 	justify-content: center;
 	height: 40px;
+	margin-bottom: 0px;
 }
 
 /* 페이징바의 숫자를 감싸고 있는 박스 */
@@ -32,32 +34,32 @@ div#pageNo_box > li {
 }
 
 /* 페이징바의 숫자 요소들 (1 2 3 4 5) */
-a.pageNo {
-	font-size: 22px;
+/* 페이지바의 이동하는 버튼 (< << > >>) */
+a.pageNo, a.page_button {
+	font-size: 16px;
 	color: black;
 	text-decoration : none;
+	padding: 8px 16px;
 }
 
 .active a.pageNo {
-	border-bottom: solid 2px black;	
+	background-color: #0DCC5A;
+  	color: white;
+    border-radius: 5px;	
 }
 
-a.pageNo:hover {
-	border-bottom: solid 2px black;	
+a.page_button:hover {
+	background-color: #ddd;
+  	border-radius: 5px;
 }
 
 /* 페이징바의 버튼을 감싸고 있는 박스 */
 div.pageBtn_box {
 	display: flex;
-	width: 60	px;
 }
 
 div.pageBtn_box > li {
 	margin: 0 3%;
 }
 
-/* 페이지바의 이동하는 버튼 (< << > >>) */
-img.pageBtn {
-	width: 25px;
-	height: 30px;
-}
+

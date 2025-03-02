@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <% String ctxPath = request.getContextPath(); %>
 
@@ -42,12 +43,13 @@
 .swiperCategory {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .swiper-slide {
     text-align: center;
     font-size: 18px;
-     background: #fff;
+    background: #fff;
 
   /* Center slide text vertically */
     display: -webkit-box;
@@ -62,27 +64,87 @@
     -ms-flex-align: center;
     -webkit-align-items: center;
     align-items: center;
+/*     padding-bottom: 30px; */
 }
 
 .swiper-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+	display: block;
+	width: 100%;
+	object-fit: cover;
 }
+
+/* swiper 점 모양 */
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background-color: #0DCC5A;
+}
+
+
+.swiper-button-prev,
+.swiper-button-next {
+  padding: 15px 5px;
+  color: black;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 16pt;
+  font-weight: 900;
+}
+
+
 
 .mainImgContainer{
 	height:325px;
 }
 
 .menuImgContainer{
-	height:250px;
+	height: 325px;
 }
 
 .menuImg{
-	height: 100%;
 	border-radius: 10%;
+	aspect-ratio: 1/1;
 }
+
+div.index_prod_list {
+	padding-bottom: 30px;
+}
+
+div.index_prod_list span {
+	display: block;
+}
+
+div.prod_title {
+   	overflow: hidden;
+  	text-overflow: ellipsis;
+  	display: -webkit-box;
+  	-webkit-line-clamp: 2;
+  	-webkit-box-orient: vertical;
+  	height: 50px;
+}
+
+span.prod_title {
+	font-size: 12pt;
+}
+
+span.prod_price {
+	margin-top: 5px;
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+div.prod_town_time {
+	margin-top: 5px;
+	display: flex;
+	font-size: 10pt;
+	color: #999999;
+	justify-content: center;
+	gap: 3px;;
+}
+
+
 
 </style>
 
@@ -121,23 +183,41 @@
 
 </div>
 
-<h2 class="mb-4" style="margin-top:15%;">고객님 이런상품은 어때요?</h2>
-<div class="menuImgContainer container" style="height:200px;">
 
-	<div class="swiper swiperCategory">
 
+<div class="menuImgContainer container">
+ 	<h3 style="margin-top:15%;">방금 등록된 상품</h3>
+	<div class="swiper swiperCategory"> 
 	  <!-- Additional required wrapper -->
 	  <div class="swiper-wrapper">
+	  
 	    <!-- Slides -->
-	    <div class="swiper-slide menuImg"><img class="menuImg" src="https://img2.joongna.com/banner/1709792928336.webp"></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src="https://img2.joongna.com/banner/1737697998356.webp"></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
+	    <c:forEach var="reg_date_list" items="${requestScope.product_list_reg_date}" varStatus="status"  begin="0" end="6">
+	    <div class="swiper-slide menuImg">
+	    	
+	    	<div class="index_prod_list">
+	    		<img class="menuImg" src="${reg_date_list.prod_img_name}">
+	    		
+	    		<div class="prod_info">
+	    			<div class="prod_title">
+		    			<span class="prod_title">${reg_date_list.product_title}</span>
+		    		</div>
+		    		<div>
+		    			<span class="prod_price"><fmt:formatNumber value="${reg_date_list.product_price}" pattern="#,###" /> 원</span>
+		    		</div>
+		    		<div class="prod_town_time">
+						<span class="prod_town">${reg_date_list.region_town}</span>
+						<span class="bar">|</span>
+						<span class="prod_time" data-date="${reg_date_list.product_update_date}"></span>
+					</div>
+	    		</div>
+			</div>
+			
+	    </div>
+	    </c:forEach>
+	    
 	  </div>
+
 	  <!-- If we need pagination -->
 	  <div class="swiper-pagination"></div>
 	
@@ -146,27 +226,42 @@
 	  <div class="swiper-button-next"></div>
 	
 	</div>
-	
 </div>
 
 
-<h2 class="mb-4" style="margin-top:10%;">브랜드별 상품 이런상품은 어때요?</h2>
-<div class="menuImgContainer container" style="height:200px;">
-
-	<div class="swiper swiperCategory">
-
+<div class="menuImgContainer container">
+ 	<h3 style="margin-top:15%;">방금 등록된 상품</h3>
+	<div class="swiper swiperCategory"> 
 	  <!-- Additional required wrapper -->
 	  <div class="swiper-wrapper">
+	  
 	    <!-- Slides -->
-	    <div class="swiper-slide menuImg"><img class="menuImg" src="https://img2.joongna.com/banner/1709792928336.webp"></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src="https://img2.joongna.com/banner/1737697998356.webp"></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
-	    <div class="swiper-slide menuImg"><img class="menuImg" src=""></div>
+	    <c:forEach var="reg_date_list" items="${requestScope.product_list_reg_date}" varStatus="status"  begin="0" end="6">
+	    <div class="swiper-slide menuImg">
+	    	
+	    	<div class="index_prod_list">
+	    		<img class="menuImg" src="${reg_date_list.prod_img_name}">
+	    		
+	    		<div class="prod_info">
+	    			<div class="prod_title">
+		    			<span class="prod_title">${reg_date_list.product_title}</span>
+		    		</div>
+		    		<div>
+		    			<span class="prod_price"><fmt:formatNumber value="${reg_date_list.product_price}" pattern="#,###" /> 원</span>
+		    		</div>
+		    		<div class="prod_town_time">
+						<span class="prod_town">${reg_date_list.region_town}</span>
+						<span class="bar">|</span>
+						<span class="prod_time" data-date="${reg_date_list.product_update_date}"></span>
+					</div>
+	    		</div>
+			</div>
+			
+	    </div>
+	    </c:forEach>
+	    
 	  </div>
+
 	  <!-- If we need pagination -->
 	  <div class="swiper-pagination"></div>
 	
@@ -175,8 +270,14 @@
 	  <div class="swiper-button-next"></div>
 	
 	</div>
-	
 </div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 	<h2>대서리 점심메뉴</h2>
 	<div class="table-container">
 	    <table class="table">
@@ -304,6 +405,51 @@ breakpoints: {
 
 <script>
 
+$(document).ready(function(){
+	
+	// 상품 등록일자 계산 해주기
+	$("span.prod_time").each(function() {
+	    const prod_town_time = $(this).attr('data-date'); // 등록일
+	    const time = timeAgo(prod_town_time); 	  		   // 함수 통해 시간 형식 변환
+	    $(this).text(time);								       // 텍스트로 출력
+	}); // end of $("span.product_time").each(function()
+
+
+});
+
+	
+	
+	
+	// 등록일 계산 해주는 함수
+	function timeAgo(update_date) {
+	    const now = new Date(); 					 	   // 현재 시간
+	    const prod_town_time = new Date(update_date); 	   // 상품 등록일
+	
+	    const second = Math.floor((now - prod_town_time) / 1000); 	// 두 날짜 차이를 초 단위로 계산
+	    const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
+	    const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
+	    const day = Math.floor(hour / 24);					   		// 두 날짜 차이를 일 단위로 계산
+	
+	   
+	    if (minute < 1) {
+	        return "방금 전";
+	    } 
+	    else if (minute < 60) {
+	        return minute + "분 전";
+	    } 
+	    else if (hour < 24) {
+	        return hour + "시간 전";
+	    } 
+	    else if (day < 30) {
+	        return day +"일 전";
+	    } 
+	    else {
+	        return "오래 전";
+	    }
+	} // end of function timeAgo(reg_date)
+	
+	
+	
 
 	
 	//후기 확인 테스트 함수

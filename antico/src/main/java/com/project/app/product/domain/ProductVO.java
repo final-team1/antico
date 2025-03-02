@@ -20,6 +20,6 @@ public class ProductVO {
 	private String product_regdate;  		// 상품등록일
 	private String product_update_date;   	// 상품수정일
 	private String product_sale_type;  		// 판매유형 (0: 일반, 1: 경매)
-	private String product_views;    		// 조회수
+	private String product_views;    		// 조회수	
 	
 }

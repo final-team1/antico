@@ -210,7 +210,7 @@ div.card-body {
 	padding: 0px;
 	display: flex;
 	flex-direction: column; 		/* 세로 방향으로 정렬 */
-	justify-content: space-between; /* 항목들 간의 공간을 균등하게 배분 */
+	justify-content: flex-start;    /* 상단부터 채우도록 변경 */
     height: 100%; 					/* 카드 높이를 꽉 채우도록 설정 */	
 }
 
@@ -219,7 +219,7 @@ div.card-body {
 img#prod_img {
 	border-radius: 6px;
 	object-fit: cover;
-	aspect-ratio: 240/240;
+	aspect-ratio: 1/1;
 }
 
 
@@ -268,15 +268,25 @@ i#wish {
 
 /* 상품 제목 */
 div.product_title {
-    flex-grow: 1;		  /* 제목이 공간을 채울 수 있도록 설정 */
-    flex-shrink: 1; 	  /* 제목이 너무 커지지 않도록 설정 */
+    /* flex-grow: 1;   제목이 공간을 채울 수 있도록 설정 */
+    /* flex-shrink: 1; 제목이 너무 커지지 않도록 설정 */
     overflow: hidden; 	  /* 넘치는 텍스트 숨기기 */
     white-space: normal;  /* 텍스트 줄 바꿈 허용 */
-    line-height: 1.2; 	  /* 줄 간격을 조정 */
+    flex-grow: unset; 
+    flex-shrink: unset;
+    height: 60px; 
 }
 
 span.product_title {
 	font-size: 12pt;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 20px; /* 줄 높이 조정 */
+    height: 40px; /* line-height * 2줄 */
+  	
 }
 
 
@@ -292,7 +302,7 @@ span.product_price {
 
 
 /* 동네 및 등록일자 정보 */
-div.product_regdate {
+div.product_update_date {
 	font-size: 10pt;
 	color: #999999;
 }
@@ -300,10 +310,10 @@ div.product_regdate {
 
 /* 상품 검색 결과 없음 */
 div#is_no_product {
-	margin-top: 60px;
+	margin-top: 200px;
+	margin-bottom: 200px;
 	text-align: center;
 }
-
 
 
 </style>
@@ -490,10 +500,10 @@ div#is_no_product {
 							</div>
 							
 							<!-- 동네 및 등록 일자 -->
-							<div class="product_regdate">
+							<div class="product_update_date">
 								<span class="product_town">${prod_list.region_town}</span>
 								<span class="bar">|</span>
-								<span class="product_time" data-date="${prod_list.product_regdate}"></span>
+								<span class="product_time" data-date="${prod_list.product_update_date}"></span>
 							</div>
 						</div>			
 					</div>
@@ -510,6 +520,12 @@ div#is_no_product {
 		</c:if>
 
 	</div>
+	
+	<input type="hidden" class="cur_page" />		 <%-- 페이징 for param--%>
+	
+	<c:if test="${not empty requestScope.product_list}">
+		<jsp:include page="../paging.jsp"></jsp:include>
+	</c:if>
 </div>
 
 
@@ -527,9 +543,9 @@ div#is_no_product {
 		
 		// 상품 등록일자 계산 해주기
 	    $("span.product_time").each(function() {
-	        const product_reg_date = $(this).attr('data-date'); // 등록일
-	        const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
-	        $(this).text(time);								    // 텍스트로 출력
+	        const product_update_date = $(this).attr('data-date'); // 등록일
+	        const time = timeAgo(product_update_date); 	  		   // 함수 통해 시간 형식 변환
+	        $(this).text(time);								       // 텍스트로 출력
 	    }); // end of $("span.product_time").each(function()
 		
 		
@@ -605,6 +621,15 @@ div#is_no_product {
 	        // 필터 함수 호출
 	        getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
 	    });
+	    
+	    
+	    
+	    // 페이징 버튼 클릭하는 경우
+        $("a.page_button").click(function() {
+         	const page = $(this).data("page");
+         	$("input.cur_page").val(page); // hidden input에 page 번호 담기
+         	getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
+      	});
 				
 								
 		// 검색 필터에 값들 유지시키기 시작 //		
@@ -614,9 +639,10 @@ div#is_no_product {
 	    const category_detail_no = url_params.get('category_detail_no'); // 하위 카테고리 번호
 	    const min_price = url_params.get('min_price');					 // 최소가격
 	    const max_price = url_params.get('max_price');					 // 최대가격
-	    let region = url_params.get('region');					 	 // 지역번호
-	    let town = url_params.get('town');					 		 // 동네명
+	    let region = url_params.get('region');					 	 	 // 지역번호
+	    let town = url_params.get('town');					 		     // 동네명
 	    const sort_type = url_params.get('sort_type');					 // 정렬 방식
+	    let cur_page = url_params.get('cur_page');					     // 페이지번호
 	    
 	    
 	    // url 하위 카테고리 번호만 치고 들어올 경우 상위 카테고리 번호 추가하기
@@ -688,7 +714,13 @@ div#is_no_product {
 	        $("button[data-sort-type]").removeClass("selected");
 	        $("button[data-sort-type='" + sort_type + "']").addClass("selected");
 	    }
+	    // 페이지 유지
+	    if (cur_page) {
+	    	$("input.cur_page").val(cur_page);
+	    }
 	 	// 검색 필터에 값들 유지시키기 끝 //
+	 	
+	 
 	    	
 	}); // end of $(document).ready(function(){
 
@@ -705,6 +737,7 @@ div#is_no_product {
 	    let max_price = $("input.max_price").val().trim();    // 최소가격
 	    let region = $("input.fk_region_no").val().trim(); 	  // 지역번호
 	    let town = $("input.town").val().trim();			  // 동네명
+	    let cur_page = $("input.cur_page").val();			  // 페이징
 	    
 	    
 	    let sort_type = $("button.selected").data("sort-type");  // 클릭한 정렬 유형의 값 가져오기
@@ -723,6 +756,10 @@ div#is_no_product {
 	    }
 			
 	    // 각 필터 값이 있으면 url 추가, 없으면 공백 처리
+	    if (cur_page) {
+	        url += (is_first_param ? '?' : '&') + "cur_page=" + cur_page;
+	        is_first_param = false;
+	    }
 	    if (category_no) {
 	        url += (is_first_param ? '?' : '&') + "category_no=" + category_no;
 	        is_first_param = false;
@@ -804,14 +841,14 @@ div#is_no_product {
 	
 	
 	// 등록일 계산 해주는 함수
-	function timeAgo(reg_date) {
-	    const now = new Date(); 					 // 현재 시간
-	    const product_reg_date = new Date(reg_date); // 상품 등록일
+	function timeAgo(update_date) {
+	    const now = new Date(); 					 	   // 현재 시간
+	    const product_update_date = new Date(update_date); // 상품 등록일
 	    
 	    // console.log("현재 시간:", now);
 	    // console.log("상품 등록일:", product_reg_date);
 
-	    const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
+	    const second = Math.floor((now - product_update_date) / 1000); // 두 날짜 차이를 초 단위로 계산
 	    const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
 	    const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
 	    const day = Math.floor(hour / 24);					   		// 두 날짜 차이를 일 단위로 계산

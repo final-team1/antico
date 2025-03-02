@@ -36,19 +36,12 @@
 	    	and P.fk_region_no = to_number(#{region})
 	    </if>
 	    <!-- 정렬 설정  -->
-		<if test="sort_type != null and sort_type != ''">
 	    <choose>
-	        <when test="sort_type == 'recent'">
-	            order by P.product_regdate desc
-	        </when>
-	        <when test="sort_type == 'high'">
-	            order by P.product_price desc
-	        </when>
-	        <when test="sort_type == 'low'">
-	            order by P.product_price asc
-	        </when>
-	    </choose>	    
-		</if>
+	        <when test="sort_type == 'recent'">order by P.product_update_date desc</when>
+	        <when test="sort_type == 'high'">order by P.product_price desc</when>
+	        <when test="sort_type == 'low'">order by P.product_price asc</when>
+	        <otherwise>order by P.product_update_date desc </otherwise>
+	    </choose>
 	</select>	
 	
 	
@@ -90,24 +83,17 @@
 	    	and P.fk_region_no = to_number(#{region})
 	    </if>
 	    <!-- 정렬 설정  -->
-		<if test="sort_type != null and sort_type != ''">
 	    <choose>
-	        <when test="sort_type == 'recent'">
-	            order by P.product_regdate desc
-	        </when>
-	        <when test="sort_type == 'high'">
-	            order by P.product_price desc
-	        </when>
-	        <when test="sort_type == 'low'">
-	            order by P.product_price asc
-	        </when>
-	    </choose>	    
-		</if> 	
+	        <when test="sort_type == 'recent'">order by P.product_update_date desc</when>
+	        <when test="sort_type == 'high'">order by P.product_price desc</when>
+	        <when test="sort_type == 'low'">order by P.product_price asc</when>
+	        <otherwise>order by P.product_update_date desc </otherwise>
+	    </choose>   
 	</select>
 	
 	
 
-	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함) -->
+	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 처리 포함) -->
 	<resultMap id="getProductMap" type="HashMap">
 	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
@@ -135,76 +121,74 @@
 	    <result property="region_lng" 				column="region_lng" 			javaType="String"/>
 	</resultMap>
 	<select id="getProduct" parameterType="HashMap" resultMap="getProductMap">
-		select P.pk_product_no, 
-		       P.fk_member_no, 
-		       P.fk_region_no, 
-		       P.fk_category_no, 
-		       P.fk_category_detail_no, 
-		       P.product_title, 
-		       P.product_contents, 
-		       P.product_price, 
-		       P.product_status, 
-		       P.product_sale_status, 
-		       P.product_regdate, 
-		       P.product_update_date, 
-		       P.product_sale_type, 
-		       P.product_views,
-		       I.pk_prod_img_no,
-		       I.prod_img_name,
-		       I.prod_img_org_name,
-		       I.prod_img_is_thumbnail,
-		       R.pk_region_no,
-		       R.region_state,
-		       R.region_city,
-		       R.region_town,
-		       R.region_lat,
-		       R.region_lng
-		from tbl_product P 
-		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
-		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
-		where I.prod_img_is_thumbnail = 1
-		and P.product_sale_status IN (0, 1)
-		<!-- 검색어가 있는 경우 -->
-		<if test='search_prod != null and search_prod != ""'>
-        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
-      	</if>
-      	<!-- 상위 카테고리 번호가 있는 경우 -->
-		<if test='category_no != null and category_no != ""'>
-        	and P.fk_category_no = #{category_no}
-      	</if>
-      	<!-- 하위 카테고리 번호가 있는 경우 -->
-		<if test='category_detail_no != null and category_detail_no != ""'>
-        	and P.fk_category_detail_no = #{category_detail_no}
-      	</if>     	
-		<!-- 최소가격 및 최대가격 설정 하는 경우  -->
-      	<if test='min_price != null and min_price != ""'>
-        	and P.product_price &gt;= to_number(#{min_price})
-	    </if>
-	    <if test='max_price != null and max_price != ""'>
-	    	and P.product_price &lt;= to_number(#{max_price})
-	    </if>   
-	    <if test='region != null and region != ""'>
-	    	and P.fk_region_no = to_number(#{region}) and R.region_town = #{town}
-	    </if>    	
-		
-		<!-- 정렬 설정  -->
-		<if test="sort_type != null and sort_type != ''">
-	    <choose>
-	        <when test="sort_type == 'recent'">
-	            order by P.product_regdate desc
-	        </when>
-	        <when test="sort_type == 'high'">
-	            order by P.product_price desc
-	        </when>
-	        <when test="sort_type == 'low'">
-	            order by P.product_price asc
-	        </when>
-	    </choose>	    
-		</if>
-		<!-- 정렬 기본값 -->
-	    <if test="sort_type == null or sort_type == ''">
-	        order by P.product_regdate desc 
-	    </if>
+		SELECT pk_product_no, fk_member_no, fk_region_no, fk_category_no, fk_category_detail_no, product_title, product_contents, 
+			   product_price, product_status, product_sale_status, product_regdate, product_update_date, product_sale_type, product_views, pk_prod_img_no,
+			   prod_img_name, prod_img_org_name, prod_img_is_thumbnail, pk_region_no, region_state, region_city, region_town, region_lat, region_lng
+		FROM(
+				SELECT rownum AS rnum, p.*
+				FROM(
+					select P.pk_product_no, 
+					       P.fk_member_no, 
+					       P.fk_region_no, 
+					       P.fk_category_no, 
+					       P.fk_category_detail_no, 
+					       P.product_title, 
+					       P.product_contents, 
+					       P.product_price, 
+					       P.product_status, 
+					       P.product_sale_status, 
+					       P.product_regdate, 
+					       P.product_update_date, 
+					       P.product_sale_type, 
+					       P.product_views,
+					       I.pk_prod_img_no,
+					       I.prod_img_name,
+					       I.prod_img_org_name,
+					       I.prod_img_is_thumbnail,
+					       R.pk_region_no,
+					       R.region_state,
+					       R.region_city,
+					       R.region_town,
+					       R.region_lat,
+					       R.region_lng
+					from tbl_product P 
+					JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+					JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+					where I.prod_img_is_thumbnail = 1
+					and P.product_sale_status IN (0, 1)
+					<!-- 검색어가 있는 경우 -->
+					<if test='search_prod != null and search_prod != ""'>
+			        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
+			      	</if>
+			      	<!-- 상위 카테고리 번호가 있는 경우 -->
+					<if test='category_no != null and category_no != ""'>
+			        	and P.fk_category_no = #{category_no}
+			      	</if>
+			      	<!-- 하위 카테고리 번호가 있는 경우 -->
+					<if test='category_detail_no != null and category_detail_no != ""'>
+			        	and P.fk_category_detail_no = #{category_detail_no}
+			      	</if>     	
+					<!-- 최소가격 및 최대가격 설정 하는 경우  -->
+			      	<if test='min_price != null and min_price != ""'>
+			        	and P.product_price &gt;= to_number(#{min_price})
+				    </if>
+				    <if test='max_price != null and max_price != ""'>
+				    	and P.product_price &lt;= to_number(#{max_price})
+				    </if>   
+				    <if test='region != null and region != ""'>
+				    	and P.fk_region_no = to_number(#{region}) and R.region_town = #{town}
+				    </if>    	
+					
+					<!-- 정렬 설정  -->
+				    <choose>
+				        <when test="sort_type == 'recent'">order by P.product_update_date desc</when>
+				        <when test="sort_type == 'high'">order by P.product_price desc</when>
+				        <when test="sort_type == 'low'">order by P.product_price asc</when>
+				        <otherwise>order by P.product_update_date desc</otherwise>
+				    </choose>	    
+				 )	P
+			 )
+			 WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
 	</select>
 	
 	
@@ -463,9 +447,10 @@
      	ON P.pk_product_no = I.fk_product_no
       	JOIN tbl_member M ON M.pk_member_no = P.fk_member_no
       	where P.fk_member_no = #{fk_member_no2}
+      	and   P.product_sale_status IN (0, 1)
       	and   I.prod_img_is_thumbnail = 1
       	and   P.pk_product_no != #{pk_product_no}
-      	order by P.product_regdate
+      	order by P.product_update_date desc
 	</select>
 	
 	
@@ -541,10 +526,18 @@
 	</select>
 	
 	
+	<!-- 상품 조회수 증가하기 -->
+	<update id="increaseViewCount" parameterType="String">
+		update tbl_product
+		set product_views = product_views + 1
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
+	
 	<!-- "위로올리기" 클릭 시 상품 등록일자 업데이트 하기 -->
 	<update id="regDateUpdate" parameterType="String">
 		update tbl_product 
-		set product_regdate = SYSDATE  
+		set product_update_date = SYSDATE  
 		where pk_product_no = #{pk_product_no}
 	</update>
 	
@@ -563,6 +556,68 @@
 		where pk_product_no = #{pk_product_no}
 	</delete>
 	
+	
+	
+	
+	<!-- 모든 상품 조회 해오기(이미지 포함) -->
+	<resultMap id="getProductListMap" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="fk_region_no" 			column="fk_region_no" 			javaType="String"/>
+	    <result property="fk_category_no" 			column="fk_category_no" 		javaType="String"/>
+	    <result property="fk_category_detail_no" 	column="fk_category_detail_no" 	javaType="String"/>  
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="product_views" 			column="product_views" 			javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	    <result property="pk_region_no" 			column="pk_region_no" 			javaType="String"/>
+	    <result property="region_state" 			column="region_state" 			javaType="String"/>
+	    <result property="region_city" 				column="region_city" 			javaType="String"/>
+	    <result property="region_town" 				column="region_town" 			javaType="String"/>
+	    <result property="region_lat" 				column="region_lat" 			javaType="String"/>
+	    <result property="region_lng" 				column="region_lng" 			javaType="String"/>
+	</resultMap>
+	<select id="getProductList" parameterType="HashMap" resultMap="getProductListMap">
+		select P.pk_product_no, 
+		       P.fk_member_no, 
+		       P.fk_region_no, 
+		       P.fk_category_no, 
+		       P.fk_category_detail_no, 
+		       P.product_title, 
+		       P.product_contents, 
+		       P.product_price, 
+		       P.product_status, 
+		       P.product_sale_status, 
+		       P.product_regdate, 
+		       P.product_update_date, 
+		       P.product_sale_type, 
+		       P.product_views,
+		       I.pk_prod_img_no,
+		       I.prod_img_name,
+		       I.prod_img_org_name,
+		       I.prod_img_is_thumbnail,
+		       R.pk_region_no,
+		       R.region_state,
+		       R.region_city,
+		       R.region_town,
+		       R.region_lat,
+		       R.region_lng
+		from tbl_product P 
+		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+		where I.prod_img_is_thumbnail = 1
+		and P.product_sale_status IN (0, 1)
+		order by P.product_update_date desc
+	</select>
 	
 	
 	

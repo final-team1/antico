@@ -9,12 +9,10 @@
    <ul class="pagination">
       <%-- 첫 페이지 --%>
       <div class="pageBtn_box">
-         <li><a class="page_button" href="javascript:void(0);" data-page="1"><span aria-hidden="true"><img class="pageBtn"
-                  src="${pageContext.request.contextPath}/images/icon/go_first.svg" /></span></a></li>
+         <li><a class="page_button" href="javascript:void(0);" data-page="1"><span class="pageBtn" aria-hidden="true">&laquo;</span></a></li>
          <%-- 이전 페이지 --%>
          <c:if test="${paging.first_page ne 1}">
-            <li><a class="page_button" href="javascript:void(0);" data-page="${paging.first_page-1}"><span aria-hidden="true"><img class="pageBtn"
-                     src="${pageContext.request.contextPath}/images/icon/prev.svg" /></span></a></li>
+            <li><a class="page_button" href="javascript:void(0);" data-page="${paging.first_page-1}"><span class="pageBtn" aria-hidden="true">&lsaquo;</span></a></li>
          </c:if>
       </div>
       <div id="pageNo_box">
@@ -32,13 +30,11 @@
       <div class="pageBtn_box">
          <%-- 다음 페이지 --%>
          <c:if test="${paging.last_page ne paging.total_page_count}">
-            <li><a class="page_button" href="javascript:void(0);" data-page="${paging.last_page+1}"><span aria-hidden="true"><img class="pageBtn"
-                     src="${pageContext.request.contextPath}/images/icon/next.svg" /></span></a></li>
+            <li><a class="page_button" href="javascript:void(0);" data-page="${paging.last_page+1}"><span class="pageBtn" aria-hidden="true">&rsaquo;</span></a></li>
          </c:if>
 
          <%-- 마지막 페이지 --%>
-         <li><a class="page_button" href="javascript:void(0);" data-page="${paging.total_page_count}"><span aria-hidden="true"><img class="pageBtn"
-                  src="${pageContext.request.contextPath}/images/icon/go_last.svg" /></span></a></li>
+         <li><a class="page_button" href="javascript:void(0);" data-page="${paging.total_page_count}"><span class="pageBtn" aria-hidden="true">&raquo;</span></a></li>
       </div>
    </ul>
 </nav>

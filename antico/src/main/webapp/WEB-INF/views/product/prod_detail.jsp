@@ -83,11 +83,20 @@ div#title_info {
 	margin-top: 10px;
 	justify-content: space-between;
 	align-items: center;
+	
 }
 
 span#product_title {
 	font-size: 16pt;
 	font-weight: 500;
+	/* 말줄임 처리 */
+	width: 95%;
+	display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
 }
 
 i#share {
@@ -124,7 +133,7 @@ div#buyer_setting {
 }
 
 div#review_container {
-	margin-top: 10px;
+	margin-top: 40px;
 	width: 100%;
 	height: 80px;
 	border: solid 1px #dee2e6;
@@ -244,7 +253,7 @@ span.detail_title {
 
 div#prod_contents {
 	width: 100%;
-	height: 600px;
+	height: 800px;
 	overflow: hidden;
 }
 
@@ -314,24 +323,27 @@ div#other_product{
 }
 
 div#other_product_img_container {
-	width: 100%;
+	width: 50%;
 	display: flex;
 }
 
 div#other_product_img_div {
+	width: 100%;
 	cursor: pointer;
 }
 
 img#other_product_img {
 	obeject-fit: cover; 
 	width: 100%;
-	height: 150px;
 	border-radius: 6px;
+	aspect-ratio: 1/1;
 }
 
 div.ohter_product_title {
+	margin-top: 5px;
 	height: 50px; 
 	text-align: left;
+	font-weight: 500;
 }
 
 div.ohter_product_price {
@@ -465,340 +477,351 @@ span.sold_out_text {
 
 
 <div id="container">
+	<div id="prod_info_container" class="row">
+		<div id="sale_stauts_update_data" class="col-md p-0">
+			<c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) > 1}">
+			   <div id="carouselExampleIndicators" class="carousel slide">
+			        <div class="carousel-inner">
+			            <c:set var="is_first_image" value="false"/> <%-- 대표 이미지 활성화 여부 --%>
+			            
+			            <c:forEach var="img_list" items="${requestScope.product_img_list}">
+			                <c:choose>
+			                    <%-- 대표 이미지 (첫 번째 슬라이드) --%>
+			                    <c:when test="${img_list.prod_img_is_thumbnail == 1}">
+			                        <div class="carousel-item active img_div" >
+			                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
+			                            		
+				                        <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+				                        <c:if test="${product_map.product_sale_status == 1}">
+				                            <div class="sold_out_overlay">
+				                                <span class="sold_out_text">예약중</span>
+				                            </div>
+				                        </c:if>					                            		
+			                            						                            
+			                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+				                        <c:if test="${product_map.product_sale_status == 2}">
+				                            <div class="sold_out_overlay">
+				                                <span class="sold_out_text">판매완료</span>
+				                            </div>
+				                        </c:if>
+				                        			                        									                            
+			                        </div>
+			                        <c:set var="is_first_image" value="true"/>
+			                    </c:when>
+			                    
+			                    <%-- 일반 이미지 (대표 이미지가 이미 설정되었다면 일반 슬라이드) --%>
+			                    <c:when test="${img_list.prod_img_is_thumbnail == 0}">
+			                        <div class="carousel-item ${is_first_image ? '' : 'active'} img_div">
+			                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
 
-		<div id="prod_info_container" class="row">
-	
-			<div id="sale_stauts_update_data" class="col-md p-0">
-				<c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) > 1}">
-				   <div id="carouselExampleIndicators" class="carousel slide">
-				        <div class="carousel-inner">
-				            <c:set var="is_first_image" value="false"/> <%-- 대표 이미지 활성화 여부 --%>
-				            
-				            <c:forEach var="img_list" items="${requestScope.product_img_list}">
-				                <c:choose>
-				                    <%-- 대표 이미지 (첫 번째 슬라이드) --%>
-				                    <c:when test="${img_list.prod_img_is_thumbnail == 1}">
-				                        <div class="carousel-item active img_div" >
-				                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
-				                            		
-					                        <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
-					                        <c:if test="${product_map.product_sale_status == 1}">
-					                            <div class="sold_out_overlay">
-					                                <span class="sold_out_text">예약중</span>
-					                            </div>
-					                        </c:if>					                            		
-				                            						                            
-				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
-					                        <c:if test="${product_map.product_sale_status == 2}">
-					                            <div class="sold_out_overlay">
-					                                <span class="sold_out_text">판매완료</span>
-					                            </div>
-					                        </c:if>
-					                        			                        									                            
-				                        </div>
-				                        <c:set var="is_first_image" value="true"/>
-				                    </c:when>
-				                    
-				                    <%-- 일반 이미지 (대표 이미지가 이미 설정되었다면 일반 슬라이드) --%>
-				                    <c:when test="${img_list.prod_img_is_thumbnail == 0}">
-				                        <div class="carousel-item ${is_first_image ? '' : 'active'} img_div">
-				                            <img src="${img_list.prod_img_name}" class="d-block" id="prod_img"/>
-
-				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
-					                        <c:if test="${product_map.product_sale_status == 1}">
-					                            <div class="sold_out_overlay">
-					                                <span class="sold_out_text">예약중</span>
-					                            </div>
-					                        </c:if>	
-				                            
-				                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
-					                        <c:if test="${product_map.product_sale_status == 2}">
-					                            <div class="sold_out_overlay">
-					                                <span class="sold_out_text">판매완료</span>
-					                            </div>
-					                        </c:if>
-				                            
-				                        </div>
-				                        <c:set var="is_first_image" value="true"/>
-				                    </c:when>
-				                </c:choose>
-				            </c:forEach>
-				        </div>
-				
-				        <%-- 이전/다음 버튼 --%>
-				        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-				            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				        </a>
-				        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-				            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-				        </a>
-				   </div>
-				</c:if>
-				
-				<%-- 이미지가 1개일 경우, 캐러셀을 보여주지 않음 --%>
-			    <c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) == 1}">
-			    	<div class="img_div">
-			       		<img src="${requestScope.product_img_list[0].prod_img_name}" class="d-block" id="prod_img"/>
-			       		
-                        <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
-                        <c:if test="${product_map.product_sale_status == 1}">
-                            <div class="sold_out_overlay">
-                                <span class="sold_out_text">예약중</span>
-                            </div>
-                        </c:if>				       		
-			       		
-     					<%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
-                        <c:if test="${product_map.product_sale_status == 2}">
-                            <div class="sold_out_overlay">
-                                <span class="sold_out_text">판매완료</span>
-                            </div>
-                        </c:if>
-			       		
+			                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+				                        <c:if test="${product_map.product_sale_status == 1}">
+				                            <div class="sold_out_overlay">
+				                                <span class="sold_out_text">예약중</span>
+				                            </div>
+				                        </c:if>	
+			                            
+			                            <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+				                        <c:if test="${product_map.product_sale_status == 2}">
+				                            <div class="sold_out_overlay">
+				                                <span class="sold_out_text">판매완료</span>
+				                            </div>
+				                        </c:if>
+			                            
+			                        </div>
+			                        <c:set var="is_first_image" value="true"/>
+			                    </c:when>
+			                </c:choose>
+			            </c:forEach>
 			        </div>
-			    </c:if> 
-			</div>
-
 			
+			        <%-- 이전/다음 버튼 --%>
+			        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+			            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			        </a>
+			        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+			            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+			        </a>
+			   </div>
+			</c:if>
 			
-			<div id="prod_info" class="col-md p-0">
-				<div id="category_info">
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/index'" >홈</span>
-					<span class="greater">　>　</span>
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${product_map.fk_category_no}'">${product_map.category_name}</span>
-					<span class="greater">　>　</span>
-					<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${product_map.fk_category_no}&category_detail_no=${product_map.fk_category_detail_no}'">${product_map.category_detail_name}</span>
-				</div>
-				<div id="title_info">
-					<span id="product_title">${product_map.product_title}</span>
-					<!-- 공유 아이콘 -->
-					<span><i id="share" class="fa-solid fa-arrow-up-right-from-square" onclick="openShareModal()"></i></span>
-				</div>
-				<div id="price_info">	
-					<span><fmt:formatNumber value="${product_map.product_price}" pattern="#,###" /> 원</span>
-				</div>
-				<div id="time_view_info">
-					<span class="product_time" data-date="${product_map.product_regdate}"></span>
-					<span>·</span>
-					<span>조회 1</span>
-				</div>
-				<div id="status_region_info">
-					<ul id="status_region_info_ul">
-						<li class="status">
-							<span class="status_title">제품상태</span>
-							<c:if test="${product_map.product_status == 0}">
-								<span class="status">중고</span>
-							</c:if>
-							<c:if test="${product_map.product_status == 1}">
-								<span class="status">새상품</span>
-							</c:if>
-						</li>
-						
-						<li class="bar"></li>
-						
-						<li class="region">
-							<span class="region_title">희망거래동네</span>
-							<span class="region">${product_map.region_town}</span>
-						</li>
-						
-						<li class="bar"></li>
-						
-						<li id="sale_stauts_update_data2" class="sale_status">
-							<span class="sale_status_title">판매상태</span>
-							<c:if test="${product_map.product_sale_status == 0}">
-								<span class="sale_status">판매중</span>
-							</c:if>
-							<c:if test="${product_map.product_sale_status == 1}">
-								<span class="sale_status">예약중</span>
-							</c:if>
-							<c:if test="${product_map.product_sale_status == 2}">
-								<span class="sale_status">판매완료</span>
-							</c:if>
-						</li>
-						
-						<li class="bar"></li>
-						
-						<li class="extra" >
-							<span class="extra"></span>
-							<span class="extra"></span>
-						</li>
-						
-					</ul>
-				</div>
-				
-				
-				<!-- 판매자 본인의 상품일 경우에만 보여진다.  -->
-				<c:if test="${product_map.fk_member_no == fk_member_no}">
-				<div id="buyer_setting">
-					<ul id="buyer_setting_ul">
-						<li class="reg_update" onclick="regUpdate('${product_map.pk_product_no}')">
-							<span class="reg_update_title"><i class="fa-solid fa-turn-up"></i></span>
-							<span class="reg_update">위로올리기</span>
-						</li>
-						
-						<li class="bar"></li>
-						
-						<li class="sale_status_upate dropbtn">
-							<span class="sale_status_upate_title"><i class="fa-regular fa-circle-check"></i></span>
-							<span class="sale_status_upate sale_status_text">상태변경</span>
-							
-							<!-- 드롭다운 메뉴 -->
-					        <ul class="sale_status_dropdown">
-					            <li id="on_sale" class="sale_status_upate_li" data-status="0">판매중</li>
-					            <li id="booking" class="sale_status_upate_li" data-status="1">예약중</li>
-					            <li id="sold_out" class="sale_status_upate_li" data-status="2">판매완료</li>
-					        </ul>
-							
-						</li>
-						
-						
-						<li class="bar"></li>
-						
-						<li class="prod_upate">
-							<span class="prod_upate_title"><i class="fa-solid fa-pen-to-square"></i></span>
-							<span class="prod_upate">상품수정</span>
-						</li>
-						
-						<li class="bar"></li>
-						
-						<li class="prod_delete" onclick="prodDelete('${product_map.pk_product_no}')">
-							<span class="prod_delete_title"><i class="fa-regular fa-trash-can"></i></span>
-							<span class="prod_delete">상품삭제</span>
-						</li>
-						
-					</ul>
-				</div>
-				</c:if>				
-				
-				<!-- 판매자 본인 상품이거나 예약중 및 구매완료된 상품이라면 좋아요 및 채팅, 구매하기 버튼 안보여주기 -->
-				<c:if test="${(product_map.fk_member_no ne fk_member_no) and (product_map.product_sale_status != 1) and(product_map.product_sale_status != 2) }">
-				
-				<div id="button">
-					<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
-					<c:if test="${not empty requestScope.wish_list}">
-						<c:forEach var="wish_list" items="${requestScope.wish_list}">
-							<c:if test="${wish_list.fk_member_no == fk_member_no and wish_list.fk_product_no == product_map.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
-								<c:set var="heartCheck" value="true"/>
-							</c:if>
-						</c:forEach>
-					</c:if>	
-					
-					<!-- 좋아요 체크된 경우 (채워진 하트) -->				
-				    <c:choose>
-						 <c:when test="${heartCheck eq 'true'}">
-						     <span>
-						         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${product_map.fk_member_no}, ${fk_member_no})"></i>
-						     </span>
-						 </c:when>
-					<c:otherwise>
-					<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
-					     <span>
-					         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${product_map.fk_member_no}, ${fk_member_no})"></i>
-					     </span>
-					</c:otherwise>
-					</c:choose>
-					
-					<button id="chat">채팅하기</button>
-					<button id="buy" onclick="payment()">구매하기</button>
-
-				</div>
-				</c:if>
-			</div>	
-		</div>	
+			<%-- 이미지가 1개일 경우, 캐러셀을 보여주지 않음 --%>
+		    <c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) == 1}">
+		    	<div class="img_div">
+		       		<img src="${requestScope.product_img_list[0].prod_img_name}" class="d-block" id="prod_img"/>
+		       		
+                       <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+                       <c:if test="${product_map.product_sale_status == 1}">
+                           <div class="sold_out_overlay">
+                               <span class="sold_out_text">예약중</span>
+                           </div>
+                       </c:if>				       		
+		       		
+    					<%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+                       <c:if test="${product_map.product_sale_status == 2}">
+                           <div class="sold_out_overlay">
+                               <span class="sold_out_text">판매완료</span>
+                           </div>
+                       </c:if>
+		       		
+		        </div>
+		    </c:if> 
+		</div>
+	
 		
-		<div id="detail_info_container" class="row">	
-			<div id="prod_detail" class="col-8 p-0">
-				<div>
-					<span class="detail_title">상품 정보</span>
-					<hr>
-				</div>
-				
-				<div id="prod_contents">
-					<p class="contents">${product_map.product_contents}</p>
-				</div>
+		
+		<div id="prod_info" class="col-md p-0">
+			<div id="category_info">
+				<span class="prod_category" onclick="location.href='<%= ctxPath%>/index'" >홈</span>
+				<span class="greater">　>　</span>
+				<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${product_map.fk_category_no}'">${product_map.category_name}</span>
+				<span class="greater">　>　</span>
+				<span class="prod_category" onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${product_map.fk_category_no}&category_detail_no=${product_map.fk_category_detail_no}'">${product_map.category_detail_name}</span>
+			</div>
+			<div id="title_info">
+				<span id="product_title">${product_map.product_title}</span>
+				<!-- 공유 아이콘 -->
+				<span><i id="share" class="fa-solid fa-arrow-up-right-from-square" onclick="openShareModal()"></i></span>
+			</div>
+			<div id="price_info">	
+				<span><fmt:formatNumber value="${product_map.product_price}" pattern="#,###" /> 원</span>
+			</div>
+			<div id="time_view_info">
+				<span class="product_time" data-date="${product_map.product_update_date}"></span>
+				<span>·</span>
+				<span>조회 <fmt:formatNumber value="${product_map.product_views}" pattern="#,###" /></span>
+			</div>
+			<div id="status_region_info">
+				<ul id="status_region_info_ul">
+					<li class="status">
+						<span class="status_title">제품상태</span>
+						<c:if test="${product_map.product_status == 0}">
+							<span class="status">중고</span>
+						</c:if>
+						<c:if test="${product_map.product_status == 1}">
+							<span class="status">새상품</span>
+						</c:if>
+					</li>
+					
+					<li class="bar"></li>
+					
+					<li class="region">
+						<span class="region_title">희망거래동네</span>
+						<span class="region">${product_map.region_town}</span>
+					</li>
+					
+					<li class="bar"></li>
+					
+					<li id="sale_stauts_update_data2" class="sale_status">
+						<span class="sale_status_title">판매상태</span>
+						<c:if test="${product_map.product_sale_status == 0}">
+							<span class="sale_status">판매중</span>
+						</c:if>
+						<c:if test="${product_map.product_sale_status == 1}">
+							<span class="sale_status">예약중</span>
+						</c:if>
+						<c:if test="${product_map.product_sale_status == 2}">
+							<span class="sale_status">판매완료</span>
+						</c:if>
+					</li>
+					
+					<li class="bar"></li>
+					
+					<li class="extra" >
+						<span class="extra"></span>
+						<span class="extra"></span>
+					</li>
+					
+				</ul>
 			</div>
 			
-		    <div id="seller_detail" class="col-4 p-0">	    
-		    	<div>
-					<span class="seller_title">판매자 정보</span>
-					<hr>
-				</div>
-				<div id="member_name_role">
-					<%-- 판매자명 --%>
-					<a id="member_name" href="">${product_map.member_name}</a>
+			
+			<!-- 판매자 본인의 상품일 경우에만 보여진다.  -->
+			<c:if test="${product_map.fk_member_no == fk_member_no}">
+			<div id="buyer_setting">
+				<ul id="buyer_setting_ul">
+					<li class="reg_update" onclick="regUpdate('${product_map.pk_product_no}')">
+						<span class="reg_update_title"><i class="fa-solid fa-turn-up"></i></span>
+						<span class="reg_update">위로올리기</span>
+					</li>
 					
-					<%-- 판매자 등급 --%>
-					<c:if test="${product_map.member_role == 0}">
-						<span class="member_role" style="color: #b87333;">브론즈</span>
-					</c:if>
-					<c:if test="${product_map.member_role == 1}">
-						<span class="member_role" style="color: #c0c0c0;">실버</span>
-					</c:if>
-					<c:if test="${product_map.member_role == 2}">
-						<span class="member_role" style="color: #ffd700;">골드</span>
-					</c:if>
-					<c:if test="${product_map.member_role == 3 or product_map.member_role ==4}">
-						<span class="member_role" style="color: red;" >관리자</span>
-					</c:if>						
-				</div>
-				
-				<%-- 게이지 --%>
-				<div id="bar">
-					<c:if test="${product_map.member_role == 0}">
-						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #b87333;"></div>
-					</c:if>
-					<c:if test="${product_map.member_role == 1}">
-						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #c0c0c0;"></div>
-					</c:if>
-					<c:if test="${product_map.member_role == 2}">
-						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #ffd700;"></div>
-					</c:if>
-					<c:if test="${product_map.member_role == 3 or product_map.member_role ==4}">
-						<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: red"></div>
-					</c:if>
-					<div id="score">					
-						<span id="score">신뢰도 ${product_map.member_score}</span>
-					<div>
-				</div>
-				
-				<div id="review_container">
-					<ul id="review_container_ul">
-						<li class="review_cnt">
-							<span class="review_cnt_title">거래량</span>
-							<span class="review_cnt">1</span>
-						</li>
+					<li class="bar"></li>
+					
+					<li class="sale_status_upate dropbtn">
+						<span class="sale_status_upate_title"><i class="fa-regular fa-circle-check"></i></span>
+						<span class="sale_status_upate sale_status_text">상태변경</span>
 						
-						<li class="bar"></li>	
+						<!-- 드롭다운 메뉴 -->
+				        <ul class="sale_status_dropdown">
+				            <li id="on_sale" class="sale_status_upate_li" data-status="0">판매중</li>
+				            <li id="booking" class="sale_status_upate_li" data-status="1">예약중</li>
+				            <li id="sold_out" class="sale_status_upate_li" data-status="2">판매완료</li>
+				        </ul>
+						
+					</li>
+					
+					
+					<li class="bar"></li>
+					
+					<li class="prod_upate">
+						<span class="prod_upate_title"><i class="fa-solid fa-pen-to-square"></i></span>
+						<span class="prod_upate">상품수정</span>
+					</li>
+					
+					<li class="bar"></li>
+					
+					<li class="prod_delete" onclick="prodDelete('${product_map.pk_product_no}')">
+						<span class="prod_delete_title"><i class="fa-regular fa-trash-can"></i></span>
+						<span class="prod_delete">상품삭제</span>
+					</li>
+					
+				</ul>
+			</div>
+			</c:if>				
+			
+			<!-- 판매자 본인 상품이거나 예약중 및 구매완료된 상품이라면 좋아요 및 채팅, 구매하기 버튼 안보여주기 -->
+			<c:if test="${(product_map.fk_member_no ne fk_member_no) and (product_map.product_sale_status != 1) and(product_map.product_sale_status != 2) }">
+			
+			<div id="button">
+				<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
+				<c:if test="${not empty requestScope.wish_list}">
+					<c:forEach var="wish_list" items="${requestScope.wish_list}">
+						<c:if test="${wish_list.fk_member_no == fk_member_no and wish_list.fk_product_no == product_map.pk_product_no}"> <!-- 회원번호 및 상품 번호 대조 -->
+							<c:set var="heartCheck" value="true"/>
+						</c:if>
+					</c:forEach>
+				</c:if>	
+				
+				<!-- 좋아요 체크된 경우 (채워진 하트) -->				
+			    <c:choose>
+					 <c:when test="${heartCheck eq 'true'}">
+					     <span>
+					         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${product_map.fk_member_no}, ${fk_member_no})"></i>
+					     </span>
+					 </c:when>
+				<c:otherwise>
+				<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
+				     <span>
+				         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${product_map.pk_product_no}, ${product_map.fk_member_no}, ${fk_member_no})"></i>
+				     </span>
+				</c:otherwise>
+				</c:choose>
+				
+				<button id="chat">채팅하기</button>
+				<button id="buy" onclick="payment()">구매하기</button>
 
-						<li class="review_cnt">
-							<span class="review_cnt_title">후기</span>
-							<span class="review_cnt">1</span>
-						</li>
-						
-						<li class="bar"></li>	
-						
-						<li class="review_cnt">
-							<span class="review_cnt_title">단골</span>
-							<span class="review_cnt">1</span>
-						</li>												
-						
-					</ul>
-				</div>
-				
-				<%-- 다른 상품 --%>
-				<div id="other_product">
-					<c:forEach var="prod_one_member" items="${requestScope.product_list_one_member}" varStatus="status" begin="0" end="1">
-						<div id="other_product_img_container">
-							<div id="other_product_img_div" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${prod_one_member.pk_product_no}'">
-								<img id="other_product_img" src="${prod_one_member.prod_img_name}">
-								<div class="ohter_product_title"><span>${prod_one_member.product_title}</span></div>
-								<div class="ohter_product_price"><span><fmt:formatNumber value="${prod_one_member.product_price}" pattern="#,###" /> 원</span></div>
-							</div>
-						</div>
-					</c:forEach>	
-				</div> 	
+			</div>
+			</c:if>
+		</div>	
+	</div>	
+	
+	<div id="detail_info_container" class="row">	
+		<div id="prod_detail" class="col-md-8 p-0">
+			<div>
+				<span class="detail_title">상품 정보</span>
+				<hr>
+			</div>
+			
+			<div id="prod_contents">
+				<p class="contents">${product_map.product_contents}</p>
 			</div>
 		</div>
-</div>
+		
+	    <div id="seller_detail" class="col-md-4 p-0">	    
+	    	<div>
+				<span class="seller_title">판매자 정보</span>
+				<hr>
+			</div>
+			<div id="member_name_role">
+				<%-- 판매자명 --%>
+				<a id="member_name" href="">${product_map.member_name}</a>
+				
+				<%-- 판매자 등급 --%>
+				<c:if test="${product_map.member_role == 0}">
+					<span class="member_role" style="color: #b87333;">브론즈</span>
+				</c:if>
+				<c:if test="${product_map.member_role == 1}">
+					<span class="member_role" style="color: #c0c0c0;">실버</span>
+				</c:if>
+				<c:if test="${product_map.member_role == 2}">
+					<span class="member_role" style="color: #ffd700;">골드</span>
+				</c:if>
+				<c:if test="${product_map.member_role == 3 or product_map.member_role ==4}">
+					<span class="member_role" style="color: red;" >관리자</span>
+				</c:if>						
+			</div>
+			
+			<%-- 게이지 --%>
+			<div id="bar">
+				<c:if test="${product_map.member_role == 0}">
+					<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #b87333;"></div>
+				</c:if>
+				<c:if test="${product_map.member_role == 1}">
+					<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #c0c0c0;"></div>
+				</c:if>
+				<c:if test="${product_map.member_role == 2}">
+					<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: #ffd700;"></div>
+				</c:if>
+				<c:if test="${product_map.member_role == 3 or product_map.member_role ==4}">
+					<div id="bar_guage" style="width: ${product_map.member_score/10}%; background-color: red"></div>
+				</c:if>
+				<div id="score">					
+					<span id="score">신뢰도 ${product_map.member_score}</span>
+				</div>
+			</div>
+			
+			<div id="review_container">
+				<ul id="review_container_ul">
+					<li class="review_cnt">
+						<span class="review_cnt_title">거래량</span>
+						<span class="review_cnt">1</span>
+					</li>
+					
+					<li class="bar"></li>	
+
+					<li class="review_cnt">
+						<span class="review_cnt_title">후기</span>
+						<span class="review_cnt">1</span>
+					</li>
+					
+					<li class="bar"></li>	
+					
+					<li class="review_cnt">
+						<span class="review_cnt_title">단골</span>
+						<span class="review_cnt">1</span>
+					</li>												
+					
+				</ul>
+			</div>
+			
+			<%-- 다른 상품 --%>
+			<div id="other_product">
+				<c:forEach var="prod_one_member" items="${requestScope.product_list_one_member}" varStatus="status" begin="0" end="1">
+					<div id="other_product_img_container">
+						<div id="other_product_img_div" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${prod_one_member.pk_product_no}'">
+							<img id="other_product_img" src="${prod_one_member.prod_img_name}">
+							<div class="ohter_product_title">
+								<span>${prod_one_member.product_title}</span> 
+							</div>
+							<div>
+								<c:if test="${prod_one_member.product_sale_status == 0}">
+									<span class="sale_status">판매중</span>
+								</c:if>
+								<c:if test="${prod_one_member.product_sale_status == 1}">
+									<span class="sale_status">예약중</span>
+								</c:if>
+								<c:if test="${prod_one_member.product_sale_status == 2}">
+									<span class="sale_status">판매완료</span>
+								</c:if>
+							</div>
+							<div class="ohter_product_price"><span><fmt:formatNumber value="${prod_one_member.product_price}" pattern="#,###" /> 원</span></div>
+						</div>
+					</div>
+				</c:forEach>	
+			</div> 	
+		</div>
+	</div>
+</div>	
 
 
 
@@ -835,9 +858,9 @@ span.sold_out_text {
 		
 		// 상품 등록일자 계산 해주기
 	    $("span.product_time").each(function() {
-	        const product_reg_date = $(this).attr('data-date'); // 등록일
-	        const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
-	        $(this).text(time);								    // 텍스트로 출력
+	        const product_update_date = $(this).attr('data-date'); // 등록일
+	        const time = timeAgo(product_update_date); 	  		   // 함수 통해 시간 형식 변환
+	        $(this).text(time);								       // 텍스트로 출력
 	    }); // end of $("span.product_time").each(function()	
 	    		
 	    		
@@ -916,17 +939,17 @@ span.sold_out_text {
 			
 	
 	// 등록일 계산 해주는 함수
-	function timeAgo(reg_date) {
-	    const now = new Date(); 					 // 현재 시간
-	    const product_reg_date = new Date(reg_date); // 상품 등록일
+	function timeAgo(update_date) {
+	    const now = new Date(); 					 	   // 현재 시간
+	    const product_update_date = new Date(update_date); // 상품 등록일
 	    
 	    // console.log("현재 시간:", now);
 	    // console.log("상품 등록일:", product_reg_date);
 
-	    const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
-	    const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
-	    const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
-	    const day = Math.floor(hour / 24);					   		// 두 날짜 차이를 일 단위로 계산
+	    const second = Math.floor((now - product_update_date) / 1000); // 두 날짜 차이를 초 단위로 계산
+	    const minute = Math.floor(second / 60);				           // 두 날짜 차이를 분 단위로 계산
+	    const hour = Math.floor(minute / 60);				   		   // 두 날짜 차이를 시간 단위로 계산
+	    const day = Math.floor(hour / 24);					   		   // 두 날짜 차이를 일 단위로 계산
 	
 	   
 	    if (minute < 1) {

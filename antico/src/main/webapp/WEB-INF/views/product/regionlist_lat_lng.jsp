@@ -32,7 +32,7 @@ button#search_btn {
 
 /* 현재 내 위치 관련 박스 */
 button#get_lat_lng {
-	margin-top: 10px;
+	margin-top: 15px;
 	width: 100%;
 	height: 40px;
 	border: none;
