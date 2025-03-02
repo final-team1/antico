@@ -43,6 +43,16 @@
 		where pk_inquire_no = #{pk_inquire_no}
 	</select>
 	
+	<select id="get_inquire_comment" resultType="CommentVO" parameterType="String">
+		select comment_content, comment_regdate, member_name, comment_orgfilename, c.fk_member_no
+	    from tbl_comment c
+	    join tbl_inquire i ON i.pk_inquire_no = c.fk_inquire_no
+        join tbl_member m on m.pk_member_no = c.fk_member_no
+	    where fk_inquire_no = #{pk_inquire_no}
+	    order by fk_parent_no
+	</select>
+	
+	
 </mapper>
 
 

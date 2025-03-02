@@ -96,10 +96,20 @@ FROM tbl_inquire;
 
 
 
+select *
+from tbl_member
+
 drop table tbl_inquire purge
 
-select *
-from tbl_inquire;
+select inquire_status
+from tbl_inquire
+where pk_inquire_no = 202
+
+update tbl_inquire
+	    set inquire_status = 0
+	    where pk_inquire_no = 202
+        
+        commit;
 
 create table tbl_inquire
 (
@@ -150,6 +160,20 @@ CONSTRAINT comment_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_me
 
 CREATE SEQUENCE comment_seq;
 
+ALTER TABLE tbl_comment DROP COLUMN comment_title;
+
+ALTER TABLE tbl_comment DROP CONSTRAINT comment_fk_prt_con_no;
+
+
+ALTER TABLE tbl_comment DROP COLUMN comment_depth_no;
+
+commit;
+
+DELETE FROM tbl_comment;
+
+select *
+from tbl_comment
+order by fk_parent_no desc
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 공지사항 테이블

@@ -58,6 +58,7 @@
 	    <result property="product_status" 			column="product_status" 		javaType="String"/>
 	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
 	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
 	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
 	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
 	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
@@ -67,7 +68,7 @@
 	
 	<!-- 마이페이지에서 내상품 -->
 	<select id="myproduct" parameterType="String" resultMap="myproduct">
-		select pk_product_no, fk_member_no, product_title, product_contents, product_price, product_status, product_regdate, product_sale_status
+		select pk_product_no, fk_member_no, product_title, product_contents, product_price, product_status, product_regdate, product_update_date, product_sale_status
 		     , product_sale_type, pk_prod_img_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail
 		from tbl_product p join tbl_prod_img i
 		on p.pk_product_no = i.fk_product_no
@@ -89,10 +90,42 @@
 		where m.pk_member_no = #{mvo}
 	</select>
 	
-	<select id="member_select" resultType="String" parameterType="String">
-		select *
+	<resultMap id="member_select" type="HashMap">
+	    <result property="pk_member_no" 			column="pk_member_no"			javaType="String"/>
+	    <result property="member_name" 				column="member_name" 			javaType="String"/>
+	    <result property="member_score" 			column="member_score" 			javaType="String"/>
+	    <result property="member_role" 				column="member_role" 			javaType="String"/>
+	    <result property="member_point" 			column="member_point" 			javaType="String"/>
+	</resultMap>
+	
+	<select id="member_select" resultMap="member_select" parameterType="String">
+		select pk_member_no, member_name, member_score, member_role, member_point
 		from tbl_member
-		where pk_member_no = #{member_no}
+		where pk_member_no = to_number(#{member_no})
+	</select>
+	
+	<!-- g -->
+	<resultMap id="sellList" type="HashMap">
+	    <result property="pk_trade_no" 			column="pk_trade_no"			javaType="String"/>
+	    <result property="fk_seller_no" 		column="fk_seller_no" 			javaType="String"/>
+	    <result property="fk_consumer_no" 		column="fk_consumer_no" 		javaType="String"/>
+	    <result property="trade_confirm_date" 	column="trade_confirm_date" 	javaType="String"/>
+	    <result property="product_title" 		column="product_title" 			javaType="String"/>
+	    <result property="prod_img_name" 		column="prod_img_name" 			javaType="String"/>
+	    <result property="product_price" 		column="product_price" 			javaType="String"/>
+	</resultMap>
+	
+	<select id="sellList" resultMap="sellList" parameterType="String">
+		select t.pk_trade_no, t.fk_seller_no, t.fk_consumer_no
+		     , t.trade_confirm_date, p.product_title, p.product_price, i.prod_img_name
+		from tbl_trade t join tbl_product p
+		on t.fk_seller_no = p.fk_member_no
+		join tbl_member m
+		on t.fk_consumer_no = m.pk_member_no
+		join tbl_prod_img i
+		on p.pk_product_no = i.fk_product_no
+		where trade_status = 2 and #{fk_seller_no} = #{pk_member_no}
+		<if test='search_sell != ""'> and lower(product_title) like '%' || lower(#{search_sell}) || '%'</if>
 	</select>
 	
 </mapper>

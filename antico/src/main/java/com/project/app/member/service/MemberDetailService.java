@@ -58,8 +58,6 @@ public class MemberDetailService implements UserDetailsService{
 		String leave_member_no = member_dao.leaveCheck(member_user_id);
 		
 		
-	//	System.out.println("탈퇴신청을 한 회원인지 체크"+leave_member_no);
-	
 		Cookie cookie;
 
 		// 로그인시 회원상태가 1인것만 로그인 가능하도록
@@ -89,7 +87,7 @@ public class MemberDetailService implements UserDetailsService{
 			if(leave_member_no != null) { // 탈퇴신청을 한 회원이라면
 				// 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회
 				String fk_member_no = member_dao.loginCheck(leave_member_no);
-				System.out.println("로그인시 탈퇴 신청후 72시간이 지난 회원이 있는지 확인"+fk_member_no);
+			//	System.out.println("로그인시 탈퇴 신청후 72시간이 지난 회원이 있는지 확인"+fk_member_no);
 				
 				if(fk_member_no != null) { // 탈퇴신청을 한 회원이면서 72시간이 지났다면
 					// 72시간이 지난 회원이 로그인을 할 때 회원상태 업데이트
@@ -137,7 +135,6 @@ public class MemberDetailService implements UserDetailsService{
 				}
 			}
 		}
-	//	System.out.println("들어오나?");
 		return User.withUserDetails(user_detail).build();		
 	}
 

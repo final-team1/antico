@@ -43,8 +43,9 @@
                                             비공개
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="blurred-background"></div>
-                                            <span class="blurred-text">비공개 글입니다</span>
+                                            <div class="blurred-background">
+                                            	<span class="blurred-text">비공개 글입니다</span>
+                                            </div>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:when>
@@ -59,9 +60,6 @@
         </div>
     </c:forEach>
 </c:if>
-
-
-
 
 <script>
 	// 1:1 문의 상세보기 함수
@@ -154,7 +152,7 @@
 	}
 	
 	.blurred-text {
-	    position: absolute; /* 부모 컨테이너 기준으로 절대 위치 설정 */
+	    position: absolute;
 	    top: 50%;
 	    left: 50%;
 	    transform: translate(-50%, -50%);

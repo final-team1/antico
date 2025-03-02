@@ -34,4 +34,7 @@ public interface MemberDAO {
 	// 카카오 정보로 회원가입하는 메소드
 	int registerMemberKakao(MemberVO membervo);
 
+	// 구매를 하면 포인트를 차감 update, 상품상태를 예약중으로 변경 update, 포인트내역 insert, 거래 insert
+	int purchase(String pk_product_no, String member_no);
+
 }

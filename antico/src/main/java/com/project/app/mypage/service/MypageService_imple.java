@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.project.app.member.domain.MemberVO;
 import com.project.app.mypage.model.MypageDAO;
 
 @Service
@@ -72,10 +71,18 @@ public class MypageService_imple implements MypageService {
 
 	// 존재하는 회원인지 조회
 	@Override
-	public String member_select(String member_no) {
-		String mvo = mypagedao.member_select(member_no);
-		return mvo;
+	public Map<String, String> member_select(String member_no) {
+		Map<String, String> member_info = mypagedao.member_select(member_no);
+		return member_info;
 	}
+
+	// 로그인 한 회원의 판매확정된 판매내역들 가져오기
+	@Override
+	public List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell) {
+		List<Map<String, String>> sell_list = mypagedao.sellList(pk_member_no, fk_seller_no, search_sell);
+		return sell_list;
+	}
+
 
 	
 }

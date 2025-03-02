@@ -14,8 +14,9 @@
 
 <style type="text/css">
 *{
-font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 }
+
 
 div#container {
 	width: 70%;
@@ -83,7 +84,7 @@ button.main_btn, button.check_btn {
 		</div>
 		
 		<div id="check_product">
-			<button class="check_btn" onclick="location.href='<%= ctxPath%>/product/prod_detail/' + '${requestScope.pk_product_no}';">등록 상품 확인</button>	
+			<button class="check_btn" onclick="location.href='<%= ctxPath%>/product/prod_detail/' + '${requestScope.product_no}';">등록 상품 확인</button>	
 		</div>
 	</div>
 

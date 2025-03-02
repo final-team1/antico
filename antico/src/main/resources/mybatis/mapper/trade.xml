@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.trade.model.TradeDAO">
+	
+	<!-- 구매를 하면 포인트를 차감하기 -->
+	<update id="deductPoint" parameterType="String">
+		update tbl_member set member_point = member_point - #{product_price}
+		where pk_member_no = #{pk_member_no}
+	</update>
+	
+	<!-- 상품상태를 예약중으로 변경하기 -->
+	<update id="holdProduct" parameterType="String">
+		update tbl_product set product_sale_status = 1
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
+	<!-- 포인트내역에 사용정보 insert -->
+	<insert id="usePoint" parameterType="String">
+		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
+		values (point_history_seq.nextval, #{pk_member_no}, '#{reason}', #{product_price}, #{member_point}, #{member_point}-#{product_price}, sysdate)
+	</insert>
+
+	<!-- 거래테이블에 거래정보들 insert -->
+	<insert id="trade" parameterType="String">
+		insert into tbl_trade sets(pk_trade_no, fk_seller_no, fk_consumer_no, fk_product_no, trade_status, trade_pending_date)
+		values (tra_seq.nextval, #{member_no}, #{pk_member_no}, #{pk_product_no}, 1, sysdate)
+	</insert>
+	
+</mapper>

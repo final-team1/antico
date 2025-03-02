@@ -11,6 +11,7 @@
 
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 <script type="text/javascript" src="<%= ctx_Path%>/js/pointcharge.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
 
@@ -366,6 +367,7 @@ hr {
 }
 
 
+
 .product_list {
         list-style: none;
         padding: 0;
@@ -377,6 +379,7 @@ hr {
  .product_item {
      width: calc(25% - 10px);
      box-sizing: border-box;
+     position: relative;
  }
  .product_link {
      color: black;
@@ -392,9 +395,6 @@ hr {
      justify-content: center;
      align-items: center;
  }
- .cardimg:hover {
- 	transform: scale(1.05);
- }
  .product_img {
      width: 100%;
      height: 100%;
@@ -405,6 +405,34 @@ hr {
      font-size: 10pt;
      color: #aaa;
  }
+ 
+.overlay {
+    position: absolute;
+    top: 8px;
+    bottom: 0;
+    left: 8px;
+    width: 90%;  /* 이미지 크기만큼 */
+    height: 50%;  /* 이미지 크기만큼 */
+    background-color: rgba(128, 128, 128, 0.5);  /* 기본 회색 오버레이 */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.overlay.reservation {
+    background-color: rgba(128, 128, 128, 0.7);  /* 예약중 상태 오버레이 */
+}
+
+.overlay.soldout {
+    background-color: rgba(169, 169, 169, 0.7);  /* 판매완료 상태 오버레이 */
+}
+ 
+ .cardname:hover {
+ 	color: green;
+ }
 
 
 </style>
@@ -412,7 +440,48 @@ hr {
 
 
 <script>
-	
+$(document).ready(function() {
+	// 상품 등록일자 계산 해주기
+    $("span.product_date").each(function() {
+        const product_reg_date = $(this).attr('data-date'); // 등록일
+        const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
+        $(this).text(time);								    // 텍스트로 출력
+    }); // end of $("span.product_time").each(function()
+});
+
+    
+//등록일 계산 해주는 함수
+function timeAgo(reg_date) {
+    const now = new Date(); 					 // 현재 시간
+    const product_reg_date = new Date(reg_date); // 상품 등록일
+    
+    // console.log("현재 시간:", now);
+    // console.log("상품 등록일:", product_reg_date);
+
+    const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
+    const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
+    const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
+    const day = Math.floor(hour / 24);					   		// 두 날짜 차이를 일 단위로 계산
+
+   
+    if (minute < 1) {
+        return "방금 전";
+    } 
+    else if (minute < 60) {
+        return minute + "분 전";
+    } 
+    else if (hour < 24) {
+        return hour + "시간 전";
+    } 
+    else if (day < 30) {
+        return day +"일 전";
+    } 
+    else {
+        return "오래 전";
+    }
+} // end of function timeAgo(reg_date)
+
+
 	//모달 열기
 	function openShareModal() {
 		document.getElementById("shareModal").style.display = "flex";
@@ -471,15 +540,15 @@ hr {
                 item.style.display = 'block';
             }
             // 판매중 버튼(0)일 경우, sale_status가 0인 항목만 표시
-            else if (status == 0 && saleStatus == 0) {
+            else if (status == 1 && saleStatus == 0) {
                 item.style.display = 'block';
             }
             // 예약중 버튼(1)일 경우, sale_status가 1인 항목만 표시
-            else if (status == 1 && saleStatus == 1) {
+            else if (status == 2 && saleStatus == 1) {
                 item.style.display = 'block';
             }
             // 판매완료 버튼(2)일 경우, sale_status가 2인 항목만 표시
-            else if (status == 2 && saleStatus == 2) {
+            else if (status == 3 && saleStatus == 2) {
                 item.style.display = 'block';
             }
             // 조건에 맞지 않으면 숨김
@@ -489,6 +558,108 @@ hr {
         });
     }
 
+    
+    
+ // 정렬하기
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttonDesc = document.querySelector('button#desc');  // 최신순 버튼
+        const buttonPrice = document.querySelector('button#highPrice');  // 높은가격순 버튼
+        const buttonLowPrice = document.querySelector('button#lowPrice');  // 낮은가격순 버튼
+        
+        if (buttonDesc) {
+            buttonDesc.addEventListener('click', desc);
+        }
+        if (buttonPrice) {
+            buttonPrice.addEventListener('click', highPrice);
+        }
+        if (buttonLowPrice) {
+            buttonLowPrice.addEventListener('click', lowPrice);
+        }
+    });
+
+    function desc() {
+        const product_list = document.getElementById('product_list');
+        if (!product_list) {
+            console.error('product_list 요소를 찾을 수 없습니다.');
+            return;
+        }
+
+        const items = Array.from(product_list.getElementsByClassName('product_item'));
+        
+        // 날짜를 기준으로 내림차순 정렬
+        items.sort((a, b) => {
+            const dateA = new Date(a.querySelector('.product_date').getAttribute('data-date'));
+            const dateB = new Date(b.querySelector('.product_date').getAttribute('data-date'));
+            return dateB - dateA;
+        });
+
+        // 정렬된 항목들을 다시 리스트에 추가
+        items.forEach(item => product_list.appendChild(item));
+    }
+
+
+    function highPrice() {
+        const product_list = document.getElementById('product_list');
+        if (!product_list) {
+            console.error('product_list 요소를 찾을 수 없습니다.');
+            return;
+        }
+
+        const items = Array.from(product_list.getElementsByClassName('product_item'));
+        
+        // 가격을 기준으로 내림차순 정렬
+        items.sort((a, b) => {
+            const priceA = parseInt(a.querySelector('.cardprice span').textContent.replace(/[^0-9]/g, ''), 10);
+            const priceB = parseInt(b.querySelector('.cardprice span').textContent.replace(/[^0-9]/g, ''), 10);
+            return priceB - priceA;  // 높은 가격순으로 정렬
+        });
+        
+        // 정렬된 항목들을 다시 리스트에 추가
+        items.forEach(item => product_list.appendChild(item));
+    }
+
+    function lowPrice() {
+        const product_list = document.getElementById('product_list');
+        if (!product_list) {
+            console.error('product_list 요소를 찾을 수 없습니다.');
+            return;
+        }
+
+        const items = Array.from(product_list.getElementsByClassName('product_item'));
+        
+        // 가격을 기준으로 오름차순 정렬
+        items.sort((a, b) => {
+            const priceA = parseInt(a.querySelector('.cardprice span').textContent.replace(/[^0-9]/g, ''), 10);
+            const priceB = parseInt(b.querySelector('.cardprice span').textContent.replace(/[^0-9]/g, ''), 10);
+            return priceA - priceB;  // 낮은 가격순으로 정렬
+        });
+        
+        // 정렬된 항목들을 다시 리스트에 추가
+        items.forEach(item => product_list.appendChild(item));
+    }
+    
+    
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        const productItems = document.querySelectorAll('.product_item');
+        
+        productItems.forEach(item => {
+            const saleStatus = item.querySelector('.sale_status').value;
+            const overlay = item.querySelector('.overlay');
+
+            if (saleStatus == '1') {  // 예약중
+                overlay.classList.add('reservation');
+                overlay.style.display = 'flex'; // 예약중 오버레이 표시
+                overlay.textContent = '예약중';
+            } else if (saleStatus == '2') {  // 판매완료
+                overlay.classList.add('soldout');
+                overlay.style.display = 'flex'; // 판매완료 오버레이 표시
+                overlay.textContent = '판매완료';
+            }
+        });
+    });
+    
+    
 </script>
 
 <jsp:include page=".././header/header.jsp" />
@@ -504,7 +675,7 @@ hr {
 					<!-- 왼쪽 profile_section -->
 					<section class="profile_section" style="flex: 1;">
 						<div class="profile_header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-							<h4 class="name" style="font-weight: bold;">${seller_info.member_name}</h4>
+							<h4 class="name" style="font-weight: bold;">${requestScope.seller_name}</h4>
 							<button class="share_btn_arrow" onclick="openShareModal()">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
 	                                <path fill="currentColor" d="M18 7l-6-6-6 6h4v6h4V7h4z" />
@@ -515,7 +686,7 @@ hr {
 							앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>
 						<section class="stats_section">
 							<div class="stat_box">
-								<p>안전거래</p>
+								<p>거래횟수</p>
 								<span>1</span>
 							</div>
 							<div class="stat_box">
@@ -544,36 +715,38 @@ hr {
 			<!-- div2 아래, div1 내부 -->
 			<div>
 				<section class="my_products mt-5">
-					<h4 style="font-weight: bold;">내 상품</h4>
+					<h4 style="font-weight: bold;">판매상품</h4>
 					<nav class="product_nav">
 						<button class="all_prod" onclick="filterProducts(0)">전체</button>
-						<button class="on_sale" onclick="filterProducts(0)">판매중</button>
-						<button class="reservation" onclick="filterProducts(1)">예약중</button>
-						<button class="soldout" onclick="filterProducts(2)">판매완료</button>
+						<button class="on_sale" onclick="filterProducts(1)">판매중</button>
+						<button class="reservation" onclick="filterProducts(2)">예약중</button>
+						<button class="soldout" onclick="filterProducts(3)">판매완료</button>
 					</nav>
 					<br>
-					<span>총 ${requestScope.list_size}개</span><span class="orderby"><button>최신순</button><button>낮은가격순</button><button>높은가격순</button></span>
+					<span>총 ${requestScope.list_size}개</span><span class="orderby"><span class="orderby"><button id="highPrice" onclick="highPrice()">높은가격순</button><button id="lowPrice" onclick="lowPrice()">낮은가격순</button><button id="desc" onclick="desc()">최신순</button></span>
 				</section>
 
 				<!-- 상품 목록 -->
 				<div style="width: 100%;">
 				    <c:if test="${not empty requestScope.myproduct_list}">
-				        <ul class="product_list">
+				         <ul id="product_list" class="product_list">
 				            <c:forEach var="pvoList" items="${requestScope.myproduct_list}">
-				                <li class="product_item" value="">
-				                    <a href="<%= ctx_Path%>/product/prod_detail/${pvoList.pk_product_no}" class="product_link">
-				                        <div class="cardimg">
-				                            <img src="${pvoList.prod_img_name}" alt="상품 이미지" class="product_img">
-				                        </div>
-				                        <div class="cardname">${pvoList.product_title}</div>
-				                        <div class="cardprice">
-				                            <span><fmt:formatNumber value="${pvoList.product_price}" type="number" groupingUsed="true"/></span>
-				                            <span>원</span>
-				                        </div>
-				                        <span class="product_date">${pvoList.product_regdate}</span>
-				                        <input type="hidden" value="${pvoList.product_sale_status}"/>
-				                    </a>
-				                </li>
+				               <li class="product_item">
+								    <a href="<%= ctx_Path%>/product/prod_detail/${pvoList.pk_product_no}" class="product_link">
+								        <div class="cardimg">
+								            <img src="${pvoList.prod_img_name}" alt="상품 이미지" class="product_img">
+								            <div class="overlay"></div>
+								        </div>
+								        <div class="cardname">${pvoList.product_title}</div>
+								        <div class="cardprice">
+								            <span><fmt:formatNumber value="${pvoList.product_price}" type="number" groupingUsed="true"/></span>
+								            <span class="money"></span>원
+								        </div>
+								        <span class="product_date" data-date="${pvoList.product_update_date}"></span>
+								        <input type="hidden" value="${pvoList.product_sale_status}" class="sale_status"/>
+								    </a>
+								</li>
+				                        <input type="hidden" name="prod_orderby" value="${pvoList.fk_member_no}"/>
 				            </c:forEach>
 				        </ul>
 				    </c:if>

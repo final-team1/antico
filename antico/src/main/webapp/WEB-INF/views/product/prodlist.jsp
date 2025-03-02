@@ -116,7 +116,7 @@ button.choice_region {
 	border-radius: 6px;
 	font-size: 10pt;
 	background-color: #f1f4f6;
-	width: 60px;
+	width: 80px;
 	height: 30px;
 	color: #5a5a5a;
 }
@@ -210,7 +210,7 @@ div.card-body {
 	padding: 0px;
 	display: flex;
 	flex-direction: column; 		/* 세로 방향으로 정렬 */
-	justify-content: space-between; /* 항목들 간의 공간을 균등하게 배분 */
+	justify-content: flex-start;    /* 상단부터 채우도록 변경 */
     height: 100%; 					/* 카드 높이를 꽉 채우도록 설정 */	
 }
 
@@ -219,7 +219,41 @@ div.card-body {
 img#prod_img {
 	border-radius: 6px;
 	object-fit: cover;
-	aspect-ratio: 240/240;
+	aspect-ratio: 1/1;
+}
+
+
+
+/* 구매완료 관련 overlay */
+.img_div {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+div.sold_out_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* 반투명한 검은색 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 5; 	 				/* 다른 요소보다 위에 배치 */
+    max-width: 100%; 				/* 최대 크기 제한 */
+    border-radius: 6px;
+    padding: 0;
+}
+
+span.sold_out_text {
+    padding: 10px 20px;
+    font-size: 14pt;
+    font-weight: bold;
+    color: white;
+
 }
 
 
@@ -234,15 +268,25 @@ i#wish {
 
 /* 상품 제목 */
 div.product_title {
-    flex-grow: 1;		  /* 제목이 공간을 채울 수 있도록 설정 */
-    flex-shrink: 1; 	  /* 제목이 너무 커지지 않도록 설정 */
+    /* flex-grow: 1;   제목이 공간을 채울 수 있도록 설정 */
+    /* flex-shrink: 1; 제목이 너무 커지지 않도록 설정 */
     overflow: hidden; 	  /* 넘치는 텍스트 숨기기 */
     white-space: normal;  /* 텍스트 줄 바꿈 허용 */
-    line-height: 1.2; 	  /* 줄 간격을 조정 */
+    flex-grow: unset; 
+    flex-shrink: unset;
+    height: 60px; 
 }
 
 span.product_title {
 	font-size: 12pt;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 20px; /* 줄 높이 조정 */
+    height: 40px; /* line-height * 2줄 */
+  	
 }
 
 
@@ -258,7 +302,7 @@ span.product_price {
 
 
 /* 동네 및 등록일자 정보 */
-div.product_regdate {
+div.product_update_date {
 	font-size: 10pt;
 	color: #999999;
 }
@@ -266,10 +310,10 @@ div.product_regdate {
 
 /* 상품 검색 결과 없음 */
 div#is_no_product {
-	margin-top: 60px;
+	margin-top: 200px;
+	margin-bottom: 200px;
 	text-align: center;
 }
-
 
 
 </style>
@@ -340,18 +384,17 @@ div#is_no_product {
 								<input type="text" class="price_range min_price" placeholder="최소 가격"/>
 								<span>~</span>
 								<input type="text" class="price_range max_price" placeholder="최대 가격"/>
-								<button 
-								class="price_range_button" 
-								onclick="getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'))">적용</button>
+								<button class="price_range_button" onclick="getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'))">
+									적용
+								</button>
 							</td>
 						</tr>
 						<tr class="region_tr">
 							<td class="td_title">동네</td>
 							<td>
 							<button class="choice_region" onclick="showRegionSearchTab()">선택</button>
-							<input type="text" class="town_name"/>
-							<input type="text" class="lat"/>
-							<input type="text" class="lng"/>
+							<input type="hidden" class="fk_region_no" /> <%-- 지역번호 for search --%>
+							<input type="hidden" class="town" />		 <%-- 동네명 for param--%>
 							</td>
 						</tr>
 					</tbody>
@@ -400,8 +443,24 @@ div#is_no_product {
 				<div id="card_wrap" class="col-md-6 col-lg-3">
 					<div class="card">
 						<!-- 상품 이미지 -->
-						<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top mb-3" onclick="goProductDetail('${prod_list.pk_product_no}')" />
 						
+						<div class="img_div">
+							<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top" onclick="goProductDetail('${prod_list.pk_product_no}')" />
+	
+						    <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 2}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">판매완료</span>
+	                            </div>
+	                        </c:if>
+	                        <%-- 상품 상태가 예약중이면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 1}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">예약중</span>
+	                            </div>
+	                        </c:if>
+	                        
+						</div>
 						
 						<!-- 하트아이콘 -->
 						<c:set var="heartCheck" value="false"/> <%-- 하트 체크 여부 변수 --%>
@@ -417,13 +476,13 @@ div#is_no_product {
 					    <c:choose>
 							 <c:when test="${heartCheck eq 'true'}">
 							     <span>
-							         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+							         <i id="wish" class="fa-solid fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${prod_list.fk_member_no}, ${requestScope.fk_member_no})"></i>
 							     </span>
 							 </c:when>
 						<c:otherwise>
 						<!-- 좋아요가 체크되지 않은 경우 (빈 하트) -->	
 						     <span>
-						         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${requestScope.fk_member_no})"></i>
+						         <i id="wish" class="fa-regular fa-heart" onclick="wishInsert(this, ${prod_list.pk_product_no}, ${prod_list.fk_member_no}, ${requestScope.fk_member_no})"></i>
 						     </span>
 						</c:otherwise>
 						</c:choose>
@@ -441,10 +500,10 @@ div#is_no_product {
 							</div>
 							
 							<!-- 동네 및 등록 일자 -->
-							<div class="product_regdate">
+							<div class="product_update_date">
 								<span class="product_town">${prod_list.region_town}</span>
 								<span class="bar">|</span>
-								<span class="product_time" data-date="${prod_list.product_regdate}"></span>
+								<span class="product_time" data-date="${prod_list.product_update_date}"></span>
 							</div>
 						</div>			
 					</div>
@@ -461,14 +520,16 @@ div#is_no_product {
 		</c:if>
 
 	</div>
+	
+	<input type="hidden" class="cur_page" />		 <%-- 페이징 for param--%>
+	
+	<c:if test="${not empty requestScope.product_list}">
+		<jsp:include page="../paging.jsp"></jsp:include>
+	</c:if>
 </div>
 
 
 
-
-<jsp:include page="../tab/tab.jsp">
-	<jsp:param name="tabTitle" value="" />
-</jsp:include>
 
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
@@ -482,9 +543,9 @@ div#is_no_product {
 		
 		// 상품 등록일자 계산 해주기
 	    $("span.product_time").each(function() {
-	        const product_reg_date = $(this).attr('data-date'); // 등록일
-	        const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
-	        $(this).text(time);								    // 텍스트로 출력
+	        const product_update_date = $(this).attr('data-date'); // 등록일
+	        const time = timeAgo(product_update_date); 	  		   // 함수 통해 시간 형식 변환
+	        $(this).text(time);								       // 텍스트로 출력
 	    }); // end of $("span.product_time").each(function()
 		
 		
@@ -520,6 +581,9 @@ div#is_no_product {
 			const category_no = $(this).data("parent-no")				  // 클릭한 하위 카테고리 번호에 대한 상위 카테고리 번호 가져오기
 			getProductByfilter(category_no, category_datail_no); 		  // 카테고리에 따른 상품 출력
 			
+		    console.log("category_no:", category_no);
+		    console.log("category_detail_no:", category_detail_no);
+			
 		}); // end of category_detail_li.click(function()
 		
 				
@@ -539,7 +603,14 @@ div#is_no_product {
 		});	
 		
 		
-	    
+		// 동네명을 선택하는 경우  (button 태그 change 불가로 hidden 타입의 input에 동적으로 요소 값을 받아온다.)
+		$("input.fk_region_no").on("input", function(){
+
+			getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
+		});
+		
+		
+	    // 최신/가격 순 버튼 클릭 하는 경우
 	    $("button.sort").click(function() {
 	        // 모든 버튼에서 'selected' 클래스 제거
 	        $("button.sort").removeClass("selected");
@@ -550,18 +621,50 @@ div#is_no_product {
 	        // 필터 함수 호출
 	        getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
 	    });
+	    
+	    
+	    
+	    // 페이징 버튼 클릭하는 경우
+        $("a.page_button").click(function() {
+         	const page = $(this).data("page");
+         	$("input.cur_page").val(page); // hidden input에 page 번호 담기
+         	getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
+      	});
 				
 								
-		// 검색 필터에 값들 유지시키기 위한 //		
+		// 검색 필터에 값들 유지시키기 시작 //		
 	    // URL에서 카테고리 파라미터를 가져오기
 	    const url_params = new URLSearchParams(window.location.search);
-	    const category_no = url_params.get('category_no'); 				 // 상위 카테고리 번호
+	    let category_no = url_params.get('category_no'); 				 // 상위 카테고리 번호
 	    const category_detail_no = url_params.get('category_detail_no'); // 하위 카테고리 번호
-	
 	    const min_price = url_params.get('min_price');					 // 최소가격
 	    const max_price = url_params.get('max_price');					 // 최대가격
-
+	    let region = url_params.get('region');					 	 	 // 지역번호
+	    let town = url_params.get('town');					 		     // 동네명
 	    const sort_type = url_params.get('sort_type');					 // 정렬 방식
+	    let cur_page = url_params.get('cur_page');					     // 페이지번호
+	    
+	    
+	    // url 하위 카테고리 번호만 치고 들어올 경우 상위 카테고리 번호 추가하기
+	    if (category_detail_no && !category_no) {
+	        category_no = $("li.category_detail[data-categorydetail-no='" + category_detail_no + "']").data("parent-no");
+
+	     	// URL에 category_no 추가하기
+	        if (category_no) {
+	            url_params.set('category_no', category_no);
+
+	            // ategory_no를 가장 앞에 배치하여 URL 문자열 직접 생성
+	            let new_url = window.location.pathname + '?category_no=' + category_no;
+
+	            // 다른 기존 파라미터 추가
+	            url_params.delete('category_no'); // 기존 category_no 제거 (중복 방지)
+	            if (url_params.toString()) {
+	                new_url += '&' + url_params.toString();
+	            }
+
+	            history.replaceState(null, '', new_url); // URL 변경
+	        }
+	    }    
 	    
 	    // 상위 카테고리 상태 복원
 	    if (category_no) {
@@ -587,11 +690,22 @@ div#is_no_product {
 	    
 	    // 최소 가격 
 	    if (min_price) {
-	        $("input.min_price").val(decodeURIComponent(min_price));
+	        $("input.min_price").val(min_price);
 	    }
 	    // 최대 가격
 	    if (max_price) {
-	        $("input.max_price").val(decodeURIComponent(max_price));
+	        $("input.max_price").val(max_price);
+	    }
+	    
+	    // 지역번호 유지
+	    if (region) {
+	    	$("input.fk_region_no").val(region);
+	    }
+	    
+	    // 동네명 유지
+	    if (town) {
+	    	$("input.town").val(town);
+	    	$("button.choice_region").text(town);
 	    }
 	    
 	    // 정렬 방식
@@ -600,7 +714,13 @@ div#is_no_product {
 	        $("button[data-sort-type]").removeClass("selected");
 	        $("button[data-sort-type='" + sort_type + "']").addClass("selected");
 	    }
-	    
+	    // 페이지 유지
+	    if (cur_page) {
+	    	$("input.cur_page").val(cur_page);
+	    }
+	 	// 검색 필터에 값들 유지시키기 끝 //
+	 	
+	 
 	    	
 	}); // end of $(document).ready(function(){
 
@@ -609,14 +729,18 @@ div#is_no_product {
 	// Function Declaration---------------------------------
 	
 	
- 	// 필터로 해당 상품 조회해오기 (검색어포함)
+ 	// 필터로 해당 상품 조회해오기 (검색어,카테고리,가격,정렬,지역)
 	function getProductByfilter(category_no, category_detail_no) {
 		
-	    let search_prod = encodeURIComponent("${requestScope.search_prod}");     // 검색어
-	    let min_price = encodeURIComponent($("input.min_price").val().trim());   // 최소가격
-	    let max_price = encodeURIComponent($("input.max_price").val().trim());   // 최소가격
+	    let search_prod = "${requestScope.search_prod}";      // 검색어
+	    let min_price = $("input.min_price").val().trim();    // 최소가격
+	    let max_price = $("input.max_price").val().trim();    // 최소가격
+	    let region = $("input.fk_region_no").val().trim(); 	  // 지역번호
+	    let town = $("input.town").val().trim();			  // 동네명
+	    let cur_page = $("input.cur_page").val();			  // 페이징
 	    
-	    let sort_type = $("button.selected").data("sort-type"); 				 // 클릭한 정렬 유형의 값 가져오기
+	    
+	    let sort_type = $("button.selected").data("sort-type");  // 클릭한 정렬 유형의 값 가져오기
 
 	    
 	    let url = "<%= ctxPath %>/product/prodlist";
@@ -631,7 +755,11 @@ div#is_no_product {
 	        is_first_param = false;
 	    }
 			
-	    // 각 필터 값이 있으면 url 추가 없으면 공백 처리
+	    // 각 필터 값이 있으면 url 추가, 없으면 공백 처리
+	    if (cur_page) {
+	        url += (is_first_param ? '?' : '&') + "cur_page=" + cur_page;
+	        is_first_param = false;
+	    }
 	    if (category_no) {
 	        url += (is_first_param ? '?' : '&') + "category_no=" + category_no;
 	        is_first_param = false;
@@ -646,6 +774,14 @@ div#is_no_product {
 		} 
 	    if (max_price) {
 	        url += (is_first_param ? '?' : '&') + "max_price=" + max_price;
+	        is_first_param = false;
+	    }
+	    if (region) {
+	        url += (is_first_param ? '?' : '&') + "region=" + region;
+	        is_first_param = false;
+	    }
+	    if (town) {
+	        url += (is_first_param ? '?' : '&') + "town=" + town;
 	        is_first_param = false;
 	    }
 	    if (sort_type) {
@@ -668,30 +804,36 @@ div#is_no_product {
 	
 
 	// 하트 모양(좋아요) 클릭한 경우
-	function wishInsert(e, product_no, member_no) {
+	function wishInsert(e, product_no, fk_member_no, member_no) {
 		
 		if(member_no) { // 로그인한 경우라면
-			$.ajax({
-				url:"<%= ctxPath %>/product/wish_insert",
-				type:"post",
-				data: {"fk_product_no": product_no,
-					   "fk_member_no": member_no},
-				success:function(response) {
-					if($(e).hasClass("fa-regular")) {
-				        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
-				        showAlert('success', '관심상품에 추가하였습니다.');
-					} 
-					else {
-						$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
-						showAlert('error', '관심상품에서 삭제하였습니다.');
-					}	
-				},
-				error: function(request, status, error){ 
-	                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }	
-			}); 
+				
+			if(fk_member_no != member_no) { // 본인이 등록한 상품이 아닌 경우
+				$.ajax({
+					url:"<%= ctxPath %>/product/wish_insert",
+					type:"post",
+					data: {"fk_product_no": product_no,
+						   "fk_member_no": member_no},
+					success:function(response) {
+						if($(e).hasClass("fa-regular")) {
+					        $(e).removeClass("fa-regular").addClass("fa-solid"); // 하트 채우기
+					        showAlert('success', '관심상품에 추가하였습니다.');
+						} 
+						else {
+							$(e).removeClass("fa-solid").addClass("fa-regular"); // 하트 비우기
+							showAlert('error', '관심상품에서 삭제하였습니다.');
+						}	
+					},
+					error: function(request, status, error){ 
+						errorHandler(request, status, error);
+		            }	
+				});
+			}
+			else { // 본인이 등록한 상품인 경우
+				showAlert('error', '본인이 등록한 상품은 불가합니다.');
+			}
 		} 
-		else {
+		else { // 로그인 하지 않은 경우
 			showAlert('error', '로그인 후 이용 가능합니다.');
 		}
 		
@@ -699,14 +841,14 @@ div#is_no_product {
 	
 	
 	// 등록일 계산 해주는 함수
-	function timeAgo(reg_date) {
-	    const now = new Date(); 					 // 현재 시간
-	    const product_reg_date = new Date(reg_date); // 상품 등록일
+	function timeAgo(update_date) {
+	    const now = new Date(); 					 	   // 현재 시간
+	    const product_update_date = new Date(update_date); // 상품 등록일
 	    
 	    // console.log("현재 시간:", now);
 	    // console.log("상품 등록일:", product_reg_date);
 
-	    const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
+	    const second = Math.floor((now - product_update_date) / 1000); // 두 날짜 차이를 초 단위로 계산
 	    const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
 	    const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
 	    const day = Math.floor(hour / 24);					   		// 두 날짜 차이를 일 단위로 계산
@@ -738,16 +880,13 @@ div#is_no_product {
 			type : "get",
 			success : function(html) {
 				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-				openSideTab(html);
+				openSideTab(html, "");
 			},
 			 error: function(request, status, error){
 				 console.log(request.responseText);
 				 
 				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-			     showAlert("error", message);
+				 errorHandler(request, status, error);
 			     
 			     // 사이드 탭 닫기
 			     closeSideTab();

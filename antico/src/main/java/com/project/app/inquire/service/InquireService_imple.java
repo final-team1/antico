@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.project.app.comment.domain.CommentVO;
 import com.project.app.common.FileManager;
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.model.InquireDAO;
@@ -47,7 +48,12 @@ public class InquireService_imple implements InquireService {
 		return inquirevo;
 	}
 
-	
+	// 답변 조회
+	@Override
+	public List<CommentVO> inquire_comment(String pk_inquire_no) {
+		List<CommentVO> comment_list = dao.get_inquire_comment(pk_inquire_no);		
+		return comment_list;
+	}
 
 
 

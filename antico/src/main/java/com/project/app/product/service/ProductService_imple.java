@@ -4,13 +4,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.app.chat.domain.ProductChatDTO;
 import com.project.app.common.FileType;
+import com.project.app.common.PagingDTO;
+import com.project.app.component.GetMemberDetail;
+import com.project.app.component.ProductSaleStatusEventListener;
+import com.project.app.component.ProductStatusChangedEvent;
 import com.project.app.component.S3FileManager;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
@@ -26,31 +32,57 @@ public class ProductService_imple implements ProductService {
 	
 	@Autowired
 	private S3FileManager s3fileManager;
+	
+	@Autowired
+	private GetMemberDetail get_member_detail;
+	
+	private ApplicationEventPublisher eventPublisher;
+	
+	@Autowired
+	private ProductSaleStatusEventListener productSaleStatusEventListener;
 		
 
-	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
+	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
-		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
+		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
 		return product_list_cnt;
 	}
 		
 	
-	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
+	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
-		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
+		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
 		return prodcut_price_info;
 	}
 
 
 
-	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 정렬 포함)
+	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 포함)
 	@Override
-	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String sort_type) {
-		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, sort_type);
+	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, PagingDTO paging_dto) {
+		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, paging_dto);
 		return product_list;
 	}
+	
+	
+	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기
+	@Override
+	public List<Map<String, Object>> nearRegion(String current_lat, String current_lng) {
+		List<Map<String, Object>> near_region_list = productDAO.nearRegion(current_lat, current_lng);
+		return near_region_list;
+	}
+	
+	
+	// 특정 회원에 대한 다른 상품 정보 가져오기
+	@Override
+	public List<Map<String, String>> getProdcutOneMember(String fk_member_no2, String pk_product_no) {
+		List<Map<String, String>> product_list_one_member = productDAO.getProdcutOneMember(fk_member_no2, pk_product_no);
+		return product_list_one_member;
+	}
+
+	
 	
 	
 	// 특정 상품에 대한 상품 및 대표이미지 정보 가져오기
@@ -126,7 +158,7 @@ public class ProductService_imple implements ProductService {
 				for (int i=0; i < attach_list.size(); i++) {	
 					if (!attach_list.get(i).isEmpty()) { // 이미지 리스트에 파일이 존재하는 경우라면
 						
-						// S3에 첨부파일 업로드 하기
+						// #2. S3에 첨부파일 업로드 하기
 						List<Map<String, String>> fileList = s3fileManager.upload(attach_list, "product", FileType.IMAGE);
 						// System.out.println(fileList.get(i).get("org_file_name")); // 첨부파일 원본 파일명 가져오기
 						// System.out.println(fileList.get(i).get("file_name")); 	 // 첨부파일 업로드되는 파일명 가져오기
@@ -142,7 +174,7 @@ public class ProductService_imple implements ProductService {
 						product_imgvo.setFk_product_no(productvo.getPk_product_no());
 						// System.out.println(productvo.getPk_product_no());	
 						
-						// #2. 이미지 테이블에 이미지 정보 저장
+						// #3. 이미지 테이블에 이미지 정보 저장
 						result = productDAO.addImage(product_imgvo);
 		
 						index++; // 첫 번째 이미지 이후는 일반 사진으로 설정
@@ -193,20 +225,100 @@ public class ProductService_imple implements ProductService {
 	@Override
 	public Map<String, String> getProductDetail(String pk_product_no) {
 
-		Map<String, String> product_list = productDAO.getProductDetail(pk_product_no);
+		// #1. 특정 상품에 대한 정보 조회해오기
+		Map<String, String> product_map = productDAO.getProductDetail(pk_product_no);
 		
-		return product_list;
+		
+		String login_member_no = get_member_detail.MemberDetail().getPk_member_no(); // 로그인 한 유저번호 가져오기
+		
+		// 상품 조회수 증가는 로그인을 한 상태에서 다른 사람의 상품을 볼때만 증가하도록 한다.
+		if(login_member_no != null && !product_map.isEmpty() && !login_member_no.equals(product_map.get("fk_member_no"))) {
+			
+			// #2. 상품 조회수 증가하기 (DB)
+			int n = productDAO.increaseViewCount(pk_product_no);
+			
+		
+			if(n == 1) { // #3. 특정 상품 실제 정보에 업데이트 해주기 
+				 product_map.put("product_views", String.valueOf(Integer.parseInt(product_map.get("product_views")) +1 )); 
+			}
+		};
+		
+		return product_map;
 	}
 
+	
+	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	@Override
+	public int regDateUpdate(String pk_product_no) {
+		int result = productDAO.regDateUpdate(pk_product_no);
+		return result;
+	}
+	
+	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	@Override
+	@Transactional
+	public int saleStatusUpdate(String pk_product_no, String sale_status_no) {
+		int result = productDAO.saleStatusUpdate(pk_product_no, sale_status_no);
+		
+		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, sale_status_no));
+		
+		return result;
+	}
+	
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	@Override
+	public int delete(String pk_product_no) {
+		
+		int n = 0;
+
+		// 해당 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = productDAO.getProductImg(pk_product_no);
+		
+		for (int i=0; i < product_img_list.size(); i++) {
+			String file_name = product_img_list.get(i).getProd_img_name(); // 이미지 S3 업로드명 가져오기
+			
+			System.out.println("file_name : " + file_name);
+			
+			// #1. S3에서 이미지 삭제하기
+			s3fileManager.deleteImageFromS3(file_name);
+		}
+		// #2. 해당 상품 삭제하기 (외래키 설정으로 이미지 테이블 같이 삭제됨)
+		// int result = productDAO.delete(pk_product_no);
+		
+		return n;
+	}
+
+	
+	
+	//모든 상품 조회 해오기(이미지, 지역)
+	@Override
+	public List<Map<String, String>> getProductList() {
+		List<Map<String, String>> product_list_reg_date = productDAO.getProductList();
+		return product_list_reg_date;
+	}
+	
+		
 	
 	/*
 	 * 상품 요약 정보 목록 조회
 	 */
 	@Override
-	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
+	public List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+
+
+
+
+
+
 	
+
+	
+
 	
 
 

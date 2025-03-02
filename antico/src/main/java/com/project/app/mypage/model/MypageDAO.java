@@ -38,7 +38,10 @@ public interface MypageDAO {
 	Map<String, String> sellerList(String mvo);
 
 	// 존재하는 회원인지 조회
-	String member_select(String member_no);
+	Map<String, String> member_select(String member_no);
+
+	// 로그인 한 회원의 판매확정된 판매내역들 가져오기
+	List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell);
 
 
 }

@@ -13,11 +13,11 @@ import com.project.app.common.PagingDTO;
 import com.project.app.component.S3FileManager;
 import com.project.app.exception.BusinessException;
 import com.project.app.exception.ExceptionCode;
-import com.project.app.mypage.domain.TradeVO;
 import com.project.app.review.domain.BlacklistVO;
 import com.project.app.review.domain.ReviewVO;
 import com.project.app.review.domain.SurveyVO;
 import com.project.app.review.model.ReviewDAO;
+import com.project.app.trade.domain.TradeVO;
 
 import lombok.RequiredArgsConstructor;
 
