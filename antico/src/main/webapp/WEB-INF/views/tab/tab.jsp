@@ -144,15 +144,12 @@
 		}
 		
 		if(historyStack.length > 1) {
-			console.log(historyStack.length);
 			historyStack.pop();
+			
 			let previousPage = historyStack[historyStack.length - 1];
 						
 			$("span#sidetab_title").text(previousPage.tabTitle);
 			$("div#sidetab_content").html(previousPage.html);
-			
-			console.log("간다 " + previousPage.html);
-			
 		}
 		
 		else {

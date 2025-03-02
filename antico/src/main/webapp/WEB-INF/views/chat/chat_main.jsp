@@ -1,14 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%-- context path --%>
 <c:set var="ctx_path" value="${pageContext.request.contextPath}"/>
-<%-- 로그인 사용자 정보 --%>
-<c:set var="login_member_no" value="${requestScope.login_member_no}"/>
+
+<%-- 현재 로그인 사용자 일련번호 --%>
+<c:set var="login_member_no" value="${requestScope.login_member_vo.pk_member_no}" />
+
+<%-- 현재 로그인 사용자명 --%>
+<c:set var="login_member_name" value="${requestScope.login_member_vo.member_name}" />
+
 <%-- 채팅방 정보 목록 --%>
-<c:set var="chatroom_map_list" value="${requestScope.chatroom_map_list}"/>
+<c:set var="chatRoomRespDTOList" value="${requestScope.chatRoomRespDTOList}"/>
 
 <style>
 	div.chatroom_item {
@@ -54,39 +58,36 @@
 </style>
 
 <div>
-	<c:forEach items="${chatroom_map_list}" var="chatroom_map">
-		<div class="chatroom_item" data-room_id="${chatroom_map.room_id}">
+	<c:forEach items="${chatRoomRespDTOList}" var="chatRoomRespDTO">
+		<div class="chatroom_item" data-room-id="${chatRoomRespDTO.chatRoom.roomId}">
 			<img src="${ctx_path}/images/icon/user_circle.svg" width="50" />
 		
 			<div class="chatroom_detail">
 				<%-- 현재 로그인 사용자가 채팅 참여자중 누구인지 판별 --%>
 				<div class="sender_detail">
-					<c:if test="${chatroom_map.participant1_no ne login_member_no}">
-						<span>${chatroom_map.participant1_name}</span>
+					<%-- 채팅방에 아무도 매시지를 보내지 않은 경우 로그인 사용자 이름 표시 --%>
+					<c:if test="${empty chatRoomRespDTO.latestChat}">
+						${login_member_name}
+						${fn:substring(chatRoomRespDTO.chatRoom.regdate, 0, 10)}
 					</c:if>
-					<c:if test="${chatroom_map.participant2_no ne login_member_no}">
-						<span>${chatroom_map.participant2_name}</span>
+					<c:if test="${not empty chatRoomRespDTO.latestChat}">
+						${chatRoomRespDTO.latestChat.senderName}
+						${fn:substring(chatRoomRespDTO.latestChat.sendDate, 0, 10)}
 					</c:if>
 					
-					<c:if test="${empty chatroom_map.latest_chat_send_date}">
-						${chatroom_map.regdate}
-					</c:if>
-					<c:if test="${not empty chatroom_map.latest_chat_send_date}">
-						${chatroom_map.latest_chat_send_date}
-					</c:if>
 				</div>
 				
 				<%-- 최근 채팅 메시지가 길면 줄임말 처리 --%>
-				<c:if test="${fn:length(chatroom_map.latest_chat_message) > 27}">
-					${fn:substring(chatroom_map.latest_chat_message, 0, 27)}...
+				<c:if test="${fn:length(chatRoomRespDTO.latestChat.message) > 27}">
+					${fn:substring(chatRoomRespDTO.latestChat.message, 0, 27)}...
 				</c:if>
-				<c:if test="${fn:length(chatroom_map.latest_chat_message) <= 27}">
-					${chatroom_map.latest_chat_message}
+				<c:if test="${fn:length(chatRoomRespDTO.latestChat.message) <= 27}">
+					${chatRoomRespDTO.latestChat.message}
 				</c:if>
 			</div>
 		
 			<div class="product_image">
-				<img src="${chatroom_map.prod_img_name}" height=70 />
+				<img src="${chatRoomRespDTO.productChatDTO.prod_img_name}" height=70 />
 			</div>
 		</div>
 	</c:forEach>
@@ -100,9 +101,9 @@ $(document).ready(function(){
     .off("click", "div.chatroom_item")
 	.on("click", "div.chatroom_item", function(e){	
 		const sender_name = $(this).find("div.sender_detail span").text();		
-		const roomid = $(this).data("room_id");
+		const roomid = $(this).data("room-id");
 		
-		goChatRoom(roomid, sender_name);
+		goChatRoom(roomid, "채팅");
 		
 	});
 });
@@ -116,11 +117,10 @@ function goChatRoom(room_id, sender_name) {
 			"room_id" : room_id
 		},
 		success : function(html) {
-			// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기	
 			openSideTab(html, sender_name);
 		},
-		error: function(request, status, error){
-			errorHandler(request, status, error);
+		error: function(xhr, status, error){
+			errorHandler(xhr, status, error);
 		}
 	});
 }

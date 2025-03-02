@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.app.common.PagingDTO;
+import com.project.app.chat.domain.ProductChatDTO;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
 import com.project.app.product.domain.ProductImageVO;
@@ -75,9 +76,7 @@ public interface ProductService {
 	List<Map<String, String>> getProductList();
 	
 	// 상품 요약 정보 목록 조회
-	List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list);
-
-
+	List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list);
 	
 
 	

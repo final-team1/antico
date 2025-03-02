@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.mybatis.logging.LoggerFactory;
-import org.slf4j.Logger;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -20,14 +18,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.chat.domain.Chat;
 import com.project.app.chat.domain.ChatRoom;
-import com.project.app.chat.domain.Participant;
+import com.project.app.chat.domain.ChatRoomRespDTO;
 import com.project.app.chat.service.ChatService;
 import com.project.app.component.GetMemberDetail;
+import com.project.app.exception.BusinessException;
+import com.project.app.exception.ExceptionCode;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.product.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
 /*
@@ -57,10 +56,10 @@ public class ChatController {
 		String pk_member_no = login_member_vo.getPk_member_no(); // 현재 로그인 사용자 일련번호
 		
 		// 현재 로그인 사용자가 참여하고 있는 채팅방 목록 불러오기
-		List<Map<String, String>> chatroom_map_list = chatService.getChatRoomList(pk_member_no);
+		List<ChatRoomRespDTO> chatRoomRespDTOList = chatService.getChatRoomList(pk_member_no);
 		
-		mav.addObject("chatroom_map_list", chatroom_map_list);
-		mav.addObject("login_member_no", pk_member_no); // 로그인 사용자 일련번호
+		mav.addObject("chatRoomRespDTOList", chatRoomRespDTOList);
+		mav.addObject("login_member_vo", login_member_vo); // 로그인 사용자 일련번호
 		
 		mav.setViewName("chat/chat_main");
 		return mav;
@@ -72,12 +71,12 @@ public class ChatController {
 	@PostMapping("chatroom")
 	@ResponseBody
 	public ModelAndView createChatRoom(@RequestParam String pk_product_no, ModelAndView mav) {
-		MemberVO login_member_vo = detail.MemberDetail(); // 로그인 사용자 VO
+		MemberVO login_member_vo = detail.MemberDetail(); // 현재 사용자 VO
 		
-		// TODO 상품 일련번호 불러오기 (상품 상세 페이지에서)
-		// TODO 숫자인지 확인
+		// 상품 일련번호 불러오기 (상품 상세 페이지에서)
 		if(!NumberUtils.isDigits(pk_product_no)) {
-			log.error("상품 번호가 유효하지 않습니다.");
+			log.error("[ERROR] : 상품번호가 유효하지 않습니다 : " + pk_product_no);
+			throw new BusinessException(ExceptionCode.RPODUCT_NOT_ON_SALE);
 		}
 		
 		// 채팅 주제 상품 정보
@@ -88,11 +87,11 @@ public class ChatController {
 		
 		// 채팅방 개설 실패 시
 		if(chat_room == null) {
-			// TODO 예외처리
-			log.error("채팅방 개설 실패");
+			log.error("[ERROR] : 채팅방 생성 실패 chat_room is null");
+			throw new BusinessException(ExceptionCode.CREATE_CHATROOM_FAILD);
 		}
 		
-		mav.addObject("login_member_no", login_member_vo.getPk_member_no()); // 로그인 회원 정보
+		mav.addObject("login_member_vo", login_member_vo); // 로그인 회원 정보
 		mav.addObject("product_map", product_map); // 채팅 주제 상품 정보
 		mav.addObject("chat_room", chat_room); // 채팅방 정보
 		
@@ -106,21 +105,21 @@ public class ChatController {
 	@PostMapping("join")
 	@ResponseBody
 	public ModelAndView joinChatRoom(@RequestParam String room_id, ModelAndView mav) {
-		MemberVO login_member_vo = detail.MemberDetail(); // 로그인 사용자 VO
+		MemberVO login_member_vo = detail.MemberDetail(); // 현재 사용자 VO
 		
 		ChatRoom chat_room = chatService.getChatRoom(room_id); // 채팅방 정보 조회
 
 		// 채팅방 조회 실패
 		if(chat_room == null) {
-			// TODO 예외처리
-			log.error("채팅방 조회 실패");
+			log.error("[ERROR] : ChatrRoom 조회 실패");
+			throw new BusinessException(ExceptionCode.JOIN_CHATROOM_FAILD);
 		}
 		
 		// 채팅방의 주제 상품 정보 조회
 		String pk_product_no =  chat_room.getProductNo(); 
 		Map<String, String> product_map = productService.getProductInfo(pk_product_no);
 		
-		mav.addObject("login_member_no", login_member_vo.getPk_member_no()); // 로그인 회원 정보
+		mav.addObject("login_member_vo", login_member_vo); // 로그인 회원 정보
 		mav.addObject("product_map", product_map); // 채팅 주제 상품 정보 
 		mav.addObject("chat_room", chat_room); // 채팅방 정보
 		
@@ -135,19 +134,19 @@ public class ChatController {
 	@SendTo("/room/{roomId}") // 해당 url 요청은 구독자에게 전송 및 채팅 저장
 	public Chat chat(@DestinationVariable String roomId, Chat chat) {
 		// 채팅 메시지 저장 및 반환
-		Chat chat_message = chatService.createChat(roomId, chat.getSenderId(), chat.getMessage());
-		return chat_message;
+		chat.updateRoomId(roomId);
+		chat.updateReadMembers(chat.getSenderId());
+		return chatService.createChat(chat);
 	}
 	
 	/*
 	 * 웹소켓 구독 및 채팅 전송 
 	 */
 	@MessageMapping("/read/{roomId}") // 해당 url 요청은 구독처리
-	@SendTo("/room/{roomId}/read/") // 해당 url 요청은 구독자에게 전송 및 채팅 저장
-	public Participant chat(@DestinationVariable String roomId, Participant participant) {
+	@SendTo("/room/{roomId}/read") // 해당 url 요청은 구독자에게 전송 및 채팅 저장
+	public List<Chat> chat(@DestinationVariable String roomId, Map<String, String> paraMap) {
 		// 채팅 메시지 저장 및 반환
-		chatService.updateLastReadChat(roomId, participant);
-		return participant;
+		return chatService.updateUnReadCount(paraMap.get("chatId"), roomId, paraMap.get("memberNo"));
 	}
 	
 	/*

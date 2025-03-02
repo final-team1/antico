@@ -4,15 +4,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.app.chat.domain.ProductChatDTO;
 import com.project.app.common.FileType;
 import com.project.app.common.PagingDTO;
 import com.project.app.component.GetMemberDetail;
+import com.project.app.component.ProductSaleStatusEventListener;
+import com.project.app.component.ProductStatusChangedEvent;
 import com.project.app.component.S3FileManager;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
@@ -31,6 +35,11 @@ public class ProductService_imple implements ProductService {
 	
 	@Autowired
 	private GetMemberDetail get_member_detail;
+	
+	private ApplicationEventPublisher eventPublisher;
+	
+	@Autowired
+	private ProductSaleStatusEventListener productSaleStatusEventListener;
 		
 
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
@@ -249,8 +258,12 @@ public class ProductService_imple implements ProductService {
 	
 	// "상태변경" 클릭 시 상품 상태 업데이트 하기
 	@Override
+	@Transactional
 	public int saleStatusUpdate(String pk_product_no, String sale_status_no) {
 		int result = productDAO.saleStatusUpdate(pk_product_no, sale_status_no);
+		
+		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, sale_status_no));
+		
 		return result;
 	}
 	
@@ -293,7 +306,7 @@ public class ProductService_imple implements ProductService {
 	 * 상품 요약 정보 목록 조회
 	 */
 	@Override
-	public List<Map<String, String>> getProdcutSummaryList(List<String> pk_product_no_list) {
+	public List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
 
