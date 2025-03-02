@@ -409,7 +409,7 @@ $(document).ready(function(){
         
         // 파일 개수 제한
         if (fileArr.length + files.length > maxFiles) {
-            alert("최대 10개의 이미지만 업로드 가능합니다.");
+            showAlert('error', '최대 10개의 이미지만 업로드 가능합니다.');
             return;
         }
 		
@@ -425,12 +425,12 @@ $(document).ready(function(){
         	*/
         	
             if (!(file.type === 'image/jpeg' || file.type === 'image/png')) {
-                alert("jpg 또는 png 파일만 업로드 가능합니다.");
+                showAlert('error', 'jpg 또는 png 파일만 업로드 가능합니다.');
                 return;
             }
             
             if (file.size > 10 * 1024 * 1024) { // 10MB 제한
-                alert("각 이미지 파일 크기는 최대 10MB까지 가능합니다.");
+                showAlert('error', '각 이미지 파일 크기는 최대 10MB까지 가능합니다.');
                 return;
             }
 
@@ -534,7 +534,7 @@ $(document).ready(function(){
  		// console.log(contents.length);
  		
  		if(contents.length > 2000) {
- 			alert("상품 내용은 최대 2000자까지 입력 가능합니다.");
+ 			showAlert('error', '상품 내용은 최대 2000자까지 입력 가능합니다.');
  		}
  		
  	}); // end of $("textarea#prod_contents_textarea").keyup(function(e)		

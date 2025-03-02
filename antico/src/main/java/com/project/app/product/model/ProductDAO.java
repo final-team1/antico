@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.project.app.common.PagingDTO;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
 import com.project.app.product.domain.ProductImageVO;
@@ -20,8 +21,8 @@ public interface ProductDAO {
 	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type);
 			
-	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-	List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type);
+	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 포함)
+	List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, PagingDTO paging_dto);
 		
 	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기
 	List<Map<String, Object>> nearRegion(String current_lat, String current_lng);	
@@ -60,9 +61,10 @@ public interface ProductDAO {
 	// 특정 상품에 대한 이미지 정보 가져오기
 	List<ProductImageVO> getProductImg(String pk_product_no);
 
-	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
-	Map<String, String> getProductDetail(String pk_product_no);
-	
+	// 특정 상품 상세 페이지 부분
+	Map<String, String> getProductDetail(String pk_product_no); // 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+	int increaseViewCount(String pk_product_no); //글 조회수 증가하기
+		
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
 	int regDateUpdate(String pk_product_no);
 	
@@ -72,9 +74,16 @@ public interface ProductDAO {
 	// "상품삭제" 클릭 시 상품 삭제하기
 	int delete(String pk_product_no);
 	
+	
+	
+	// 모든 상품 조회 해오기(이미지, 지역)
+	List<Map<String, String>> getProductList();
+	
 	// 상품 요약 정보 목록 조회
 	List<Map<String, String>> selectProductSummaryList(List<String> pk_product_no_list);
 	
+
+
 
 	
 
