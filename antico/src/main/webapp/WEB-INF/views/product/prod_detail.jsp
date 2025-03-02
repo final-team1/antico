@@ -923,7 +923,7 @@ span.sold_out_text {
    				},
    				success : function(html) {
    					// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-   					openSideTab(html, "${product_map.member_name}");
+   					openSideTab(html, "채팅");
    				},
    				error: function(request, status, error){
    					errorHandler(request, status, error);

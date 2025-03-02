@@ -16,6 +16,7 @@
 		<typeAlias type="com.project.app.notice.domain.NoticeVO" alias="NoticeVO"/>
 		<typeAlias type="com.project.app.inquire.domain.InquireVO" alias="InquireVO"/>
 		<typeAlias type="com.project.app.comment.domain.CommentVO" alias="CommentVO"/>
+		<typeAlias type="com.project.app.chat.domain.ProductChatDTO" alias="ProductChatDTO"/>
 	</typeAliases>
 
 </configuration>
