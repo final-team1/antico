@@ -9,4 +9,7 @@ public interface TradeService {
 	// 구매를 하면 포인트를 차감 update, 상품상태를 예약중으로 변경 update, 포인트내역 insert, 거래 insert
 	int purchase(String pk_product_no, String member_no, String pk_member_no, String product_price, String member_point);
 
+	// 구매확정을 했을 때
+	int order_completed(Map<String, String> show_payment_map);
+
 }

@@ -30,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class TradeController {
 
 	@Autowired
-	private GetMemberDetail detail_member;
-	
-	@Autowired
 	private GetMemberDetail get_member_detail;
 	
 	
@@ -62,6 +59,7 @@ public class TradeController {
 		return mav;
 	}
 	
+	// 구매하기를 했을 때
 	@PostMapping("purchase")
 	@ResponseBody
 	public int purchase(@RequestParam String pk_product_no, @RequestParam String member_no, @RequestParam String product_price) {
@@ -71,6 +69,17 @@ public class TradeController {
 		// 구매를 하면 포인트를 차감 update, 상품상태를 예약중으로 변경 update, 포인트내역 insert, 거래 insert
 		int n = service.purchase(pk_product_no, member_no, pk_member_no, product_price, member_point);
 		
+		return n;
+	}
+	
+	// 구매확정을 했을 때
+	@PostMapping("order_completed")
+	@ResponseBody
+	public int orderCompleted(@RequestParam String pk_product_no) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		Map<String, String> show_payment_map = service.getProduct(pk_product_no, pk_member_no);
+		int n = service.order_completed(show_payment_map);
 		return n;
 	}
 }
