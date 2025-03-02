@@ -686,7 +686,7 @@ function timeAgo(reg_date) {
 							앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>
 						<section class="stats_section">
 							<div class="stat_box">
-								<p>안전거래</p>
+								<p>거래횟수</p>
 								<span>1</span>
 							</div>
 							<div class="stat_box">

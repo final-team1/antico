@@ -681,7 +681,7 @@ function timeAgo(reg_date) {
     
 </script>
 
-<jsp:include page=".././header/header.jsp" />
+<jsp:include page=".././header/header.jsp"/>
 
 <div class="container" style="display: flex;">
 	<!-- 사이드바 -->
@@ -721,7 +721,7 @@ function timeAgo(reg_date) {
 						앱에서 가게 소개 작성하고 신뢰도를 높여 보세요.</p>
 					<section class="stats_section">
 						<div class="stat_box">
-							<p>안전거래</p>
+							<p>거래횟수</p>
 							<span>1</span>
 						</div>
 						<div class="stat_box">
@@ -828,5 +828,3 @@ function timeAgo(reg_date) {
 
 <jsp:include page=".././footer/footer.jsp" />
 
-
-<jsp:include page="../tab/tab.jsp"></jsp:include>
