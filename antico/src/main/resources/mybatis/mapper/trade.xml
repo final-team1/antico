@@ -19,7 +19,7 @@
 	<!-- 포인트내역에 사용정보 insert -->
 	<insert id="usePoint" parameterType="String">
 		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
-		values (point_history_seq.nextval, #{pk_member_no}, '상품구매', #{product_price}, #{member_point}, #{member_point}-#{product_price}, sysdate)
+		values (point_history_seq.nextval, #{pk_member_no}, '#{reason}', #{product_price}, #{member_point}, #{member_point}-#{product_price}, sysdate)
 	</insert>
 
 	<!-- 거래테이블에 거래정보들 insert -->

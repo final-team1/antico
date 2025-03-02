@@ -11,7 +11,7 @@ public interface TradeDAO {
 	int holdProduct(String pk_product_no);
 
 	// 포인트내역에 사용정보 insert
-	int usePoint(String pk_member_no, String product_price, String member_point);
+	int usePoint(String pk_member_no, String product_price, String member_point, String reason);
 
 	// 거래테이블에 거래정보들 insert
 	int trade(String pk_product_no, String member_no, String pk_member_no);

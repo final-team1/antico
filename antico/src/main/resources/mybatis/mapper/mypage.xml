@@ -95,10 +95,11 @@
 	    <result property="member_name" 				column="member_name" 			javaType="String"/>
 	    <result property="member_score" 			column="member_score" 			javaType="String"/>
 	    <result property="member_role" 				column="member_role" 			javaType="String"/>
+	    <result property="member_point" 			column="member_point" 			javaType="String"/>
 	</resultMap>
 	
 	<select id="member_select" resultMap="member_select" parameterType="String">
-		select pk_member_no, member_name, member_score, member_role
+		select pk_member_no, member_name, member_score, member_role, member_point
 		from tbl_member
 		where pk_member_no = to_number(#{member_no})
 	</select>
