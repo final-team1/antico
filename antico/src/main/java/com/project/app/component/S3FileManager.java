@@ -53,6 +53,11 @@ public class S3FileManager {
 		if (file.isEmpty() || StringUtils.isBlank(org_file_name)) {
 			throw new S3Exception(ExceptionCode.FILE_IS_EMPTY);
 		}
+		
+		// 파일당 크기 최대 5MB 제한
+		if (file.getSize() > 1024 * 124 * 5) {
+			throw new S3Exception(ExceptionCode.FILE_SIZE_EXCEED);
+		}
 
 		// 파일이 지정된 확장자인지 확인
 		validateFileExtention(org_file_name, file_type);
@@ -147,7 +152,7 @@ public class S3FileManager {
 		try {
 			int last_index = file_name.lastIndexOf(".amazonaws.com/"); // 디렉토리 + s3 저장파일명 시작 인덱스
 			
-			String key = file_name.substring(last_index + 16); // s3에 저장된 파일명 추출
+			String key = file_name.substring(last_index + 15); // s3에 저장된 파일명 추출
 			
 			// s3client delete 요청 객체 생성
 			DeleteObjectRequest delete_object_request = DeleteObjectRequest.builder()
