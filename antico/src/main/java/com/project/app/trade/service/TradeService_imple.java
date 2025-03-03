@@ -1,5 +1,6 @@
 package com.project.app.trade.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,18 +57,24 @@ public class TradeService_imple implements TradeService {
 
 	// 구매확정을 했을 때
 	@Override
-	public int order_completed(Map<String, String> show_payment_map) {
+	public int order_completed(String pk_product_no, String product_price, String pk_member_no, String fk_member_no) {
+		int a = 0;
+		int b = 0;
+		int c = 0;
+		int d = 0;
 		String reason = "상품판매";
-		String product_price = show_payment_map.get("product_price");
-		String fk_member_no = show_payment_map.get("fk_member_no"); // 판매자
-		String pk_product_no = show_payment_map.get("pk_product_no");
-		Map<String, String> member_select = mydao.member_select(fk_member_no);
-		String member_point = member_select.get("member_point");
-	//	int a = tradedao.plusPoint(product_price, fk_member_no); // 판매자 포인트 증가 업데이트
-	//	int b = tradedao.completedProduct(pk_product_no); // 판매상태를 구매확정으로 업데이트
-	//	int c = tradedao.completedTrade(pk_trade_no); // 구매상태를 결제확정으로 업데이트
-		int d = tradedao.usePoint(fk_member_no, product_price, member_point, reason); // 포인트내역에 사용정보 insert
-		return d;
+		String pk_trade_no = tradedao.purchaseSelect(pk_product_no, pk_member_no); // 구매를 먼저 했는지 조회
+		if(pk_trade_no != null) { //구매를 먼저 한 상태라면
+			Map<String, String> member_select = mydao.member_select(fk_member_no);
+			String member_point = member_select.get("member_point");
+			a = tradedao.plusPoint(product_price, fk_member_no); // 판매자 포인트 증가 업데이트
+			b = tradedao.completedProduct(pk_product_no); // 판매상태를 구매확정으로 업데이트
+			c = tradedao.completedTrade(pk_product_no); // 구매상태를 결제확정으로 업데이트
+			d = tradedao.usePoint(fk_member_no, product_price, member_point, reason); // 포인트내역에 사용정보 insert
+		} else { // 구매를 안 한 경우라면
+			throw new BusinessException(ExceptionCode.NOT_PAYMENT_CONSUMER);
+		}
+		return a*b*c*d;
 	}
 	
 	

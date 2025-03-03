@@ -171,6 +171,7 @@ div.product_info {
 			<span id="product_title"> 
 				${product_map.product_title} 
 			</span>
+			<button onclick="Completed()">구매확정</button>
 		</div>
 	</div>
 	
@@ -448,6 +449,31 @@ div.product_info {
 		$("#chatting").append(chatDiv);
 	}
 
+	
+	
+	function Completed() {
+		$.ajax({
+            url: "${ctx_path}/trade/order_completed",
+            type: "post",
+            data: {
+                pk_product_no: "${product_map.pk_product_no}",
+                fk_member_no: "${product_map.fk_member_no}",
+                product_price: "${product_map.product_price}",
+            },
+            dataType: "json",
+            success: function(n) {
+                if (n == 1) {
+                	showAlert('success', '구매가 확정되었습니다.');
+                } else {
+                	showAlert('error', '구매확정이 실패하였습니다.');
+                }
+            },
+            error : function(request, status, error) {
+	        	errorHandler(request, status, error);
+	         }
+        });
+	}
+	
 </script>
 
 </html>

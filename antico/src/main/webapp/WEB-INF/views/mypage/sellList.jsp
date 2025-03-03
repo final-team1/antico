@@ -175,6 +175,13 @@ $(document).ready(function () {
             "border": "solid 1px rgb(13, 204, 90)"
         });
     });
+    
+ // 상품 검색 창에서 엔터 키 입력 시 검색 실행
+    $("input:text[name='search_sell']").on("keyup", function(e) {
+        if (e.keyCode == 13) { // 엔터 키 입력 시
+            Search();
+        }
+    });
 });
 	
 
@@ -183,15 +190,10 @@ document.querySelector(".filter_btn").addEventListener("click", function() {
     document.querySelector(".filter_modal").classList.toggle("show");
 });
 
-// 상품 검색 창에서 엔터 키 입력 시 검색 실행
-$("input:text[name='search_sell']").on("keyup", function(e) {
-    if (e.keyCode == 13) { // 엔터 키 입력 시
-        goSearch();
-    }
-});
+
 
 // 상품 검색 함수
-function goSearch() {
+function Search() {
 	const search_sell = $("input:text[name='search_sell']").val();
 	 $.ajax({
 	        url: "<%= ctx_Path %>/mypage/sell_list",

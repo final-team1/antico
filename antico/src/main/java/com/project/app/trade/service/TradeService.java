@@ -10,6 +10,6 @@ public interface TradeService {
 	int purchase(String pk_product_no, String member_no, String pk_member_no, String product_price, String member_point);
 
 	// 구매확정을 했을 때
-	int order_completed(Map<String, String> show_payment_map);
+	int order_completed(String pk_product_no, String product_price, String pk_member_no, String fk_member_no);
 
 }
