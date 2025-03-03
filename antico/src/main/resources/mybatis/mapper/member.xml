@@ -6,14 +6,36 @@
 <mapper namespace="com.project.app.member.model.MemberDAO">
 
    	<insert id="registerMember" parameterType="MemberVO">
-        insert into tbl_member(pk_member_no, member_regdate, member_user_id, member_passwd, member_tel, member_passwd_change_date,member_role , member_point, member_score,member_status, member_name)
-        values(mem_seq.nextval , sysdate, #{member_user_id}, #{member_passwd}, #{member_tel}, sysdate, 0, 0, 0,1, #{member_name})
+        insert into tbl_member(pk_member_no, member_regdate, member_user_id, member_passwd, member_tel, member_passwd_change_date, member_role, member_point, member_score, member_status, member_name, member_oauth_type)
+        values(mem_seq.nextval , sysdate, #{member_user_id},
+        <if test="member_passwd != null">
+          #{member_passwd}
+        </if>
+        <if test="member_passwd == null">
+        	null
+        </if>
+         , 
+         <if test="member_tel != null">
+         #{member_tel}
+         </if>
+         <if test="member_tel == null">
+         null
+         </if>
+         
+         , sysdate, 0, 0, 0, 1, #{member_name}, 
+        <if test="member_oauth_type == null">
+       		null
+        </if>
+        <if test="member_oauth_type != null">
+        	#{member_oauth_type}
+        </if>
+        )
     </insert>
     
-    <insert id="registerMemberKakao" parameterType="MemberVO">
-        insert into tbl_member(pk_member_no, member_regdate, member_user_id, member_passwd, member_tel, member_passwd_change_date,member_role , member_point, member_score,member_status, member_name)
-        values(mem_seq.nextval , sysdate, #{member_user_id}, #{member_passwd}, #{member_tel}, sysdate, 0, 0, 0,1, #{member_name})
-    </insert>
+    <update id="google_tel_add" parameterType="String">
+    	UPDATE tbl_member 
+		SET member_tel = #{member_tel}
+    </update>
    
 	<select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
 		select *
@@ -21,11 +43,6 @@
 		where member_user_id = #{member_user_id}
 	</select>
 	
-	<select id="kakaoRegistCheckByUserId" parameterType="MemberVO" resultType="int">
-		select count(*)
-		from tbl_member
-		where member_user_id = #{member_user_id} and member_passwd = 'kakao'
-	</select>
 	
 	<select id="selectMemberByMemberUserId" parameterType="MemberVO" resultType="MemberVO">
 		select *

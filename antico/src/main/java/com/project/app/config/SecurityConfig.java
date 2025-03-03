@@ -20,11 +20,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
-import com.project.app.member.service.KAuthCustomUserInfoService;
+import com.project.app.member.service.AuthCustomDetailService;
 import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
 import com.project.app.security.LoginFailureHandler;
 import com.project.app.security.OauthFailer;
+import com.project.app.security.OauthSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,13 +44,13 @@ public class SecurityConfig {
 	private final LoginFailureHandler login_failure_handler;
 	
 	
-	private final KAuthCustomUserInfoService kauth_custom_user_info;
-	
-	
     private final OauthFailer oauth_failer;
     
     
     private final DefaultOAuth2UserService oAuth2UserService;
+    
+    
+    private final OauthSuccessHandler oauth_success_handler;
 	
 
     @Bean
@@ -58,14 +59,7 @@ public class SecurityConfig {
     }
 	
 
-	/* 
-	 * Bcrypt bean 등록
-	 */
-    @Bean
-    PasswordEncoder pwd_encoder() {
-		return new BCryptPasswordEncoder();
-	}
-    
+
 	/*
 	 * AES256 암호화 클래스 bean 등록
 	 */
@@ -110,9 +104,8 @@ public class SecurityConfig {
     				.baseUri("/login/oauth2/code/**")
     		)
             .failureHandler(oauth_failer)
-            .successHandler((request, response, authentication) -> {
-                response.sendRedirect("/antico/index"); // 로그인 성공 후 리디렉트할 URL
-            })
+            .successHandler(oauth_success_handler)
+            
             .userInfoEndpoint(userInfo -> userInfo
                     .userService(oAuth2UserService))
             )
