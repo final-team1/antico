@@ -35,8 +35,13 @@ public class IndexController {
 	public ModelAndView index(HttpServletRequest request, ModelAndView mav) {
 		
 		// 최근 등록된 상품 조회 해오기
-		List<Map<String, String>> product_list_reg_date = service.getProductList(); 
+		List<Map<String, String>> product_list_reg_date = service.getProductList(null); 
 		mav.addObject("product_list_reg_date", product_list_reg_date);
+		
+		// 이번 주 인기 급상승 상품 조회를 위한 
+		String sort_views_week = "sort_views_week";
+		List<Map<String, String>> product_list_views_week = service.getProductList(sort_views_week); 
+		mav.addObject("product_list_views_week", product_list_views_week);
 		
 	    mav.setViewName("main/index");
 

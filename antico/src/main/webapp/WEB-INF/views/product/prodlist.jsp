@@ -224,7 +224,7 @@ img#prod_img {
 
 
 
-/* 구매완료 관련 overlay */
+/* overlay */
 .img_div {
     position: relative;
     display: inline-block;
@@ -446,6 +446,14 @@ div#is_no_product {
 						
 						<div class="img_div">
 							<img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top" onclick="goProductDetail('${prod_list.pk_product_no}')" />
+							
+							
+							<%-- 상품 상태가 예약중이면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 1}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">예약중</span>
+	                            </div>
+	                        </c:if>
 	
 						    <%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
 	                        <c:if test="${prod_list.product_sale_status == 2}">
@@ -453,12 +461,7 @@ div#is_no_product {
 	                                <span class="sold_out_text">판매완료</span>
 	                            </div>
 	                        </c:if>
-	                        <%-- 상품 상태가 예약중이면 오버레이 추가 --%>
-	                        <c:if test="${prod_list.product_sale_status == 1}">
-	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
-	                                <span class="sold_out_text">예약중</span>
-	                            </div>
-	                        </c:if>
+
 	                        
 						</div>
 						
