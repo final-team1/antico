@@ -52,7 +52,10 @@
 			
 		</div>
 		<div style="width:100%; text-align: center; padding-bottom: 3%;">
-			<img id="kakaoImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
+			<img id="naverImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
+		</div>	
+		<div style="width:100%; text-align: center; padding-bottom: 3%;">
+			<img id="googleImg" src="${pageContext.request.contextPath}/images/login/naver.png" width="95%"/>
 		</div>			
 		<div style="padding:1% 2% 1% 2%;">
 			<button type="button" class="BtnStyle" onclick="location.href='${pageContext.request.contextPath}/member/register'">회원가입하기</button>
@@ -63,15 +66,6 @@
 	</div>
 	
 	
-<%-- 	<form action="${ctxPath}/auth/login" method="post">
-		
-		<input type="text" name="mem_user_id"/>
-		
-		<input type="text" name="mem_passwd"/>
-		
-		<input type="submit"/>
-		
-	</form> --%>
 
 
 </div>
@@ -124,7 +118,19 @@ $(document).ready(function(){
 	
 	$("img#kakaoImg").bind("click", function(){
 		
-		location.href='https://kauth.kakao.com/oauth/authorize?client_id=2fc45348c1f277afbb09c75d902df014&redirect_uri=http://localhost/antico/kakaologin/callback&response_type=code';
+		location.href='${pageContext.request.contextPath}/oauth2/authorization/kakao';
+		
+	});
+	
+	$("img#naverImg").bind("click", function(){
+		
+		location.href='${pageContext.request.contextPath}/oauth2/authorization/naver';
+		
+	});
+	
+	$("img#googleImg").bind("click", function(){
+		
+		location.href='${pageContext.request.contextPath}/oauth2/authorization/google';
 		
 	});
 	

@@ -1,3 +1,12 @@
+
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
+#    #org.springframework.web: DEBUG
+#    org.springframework.security.oauth2: TRACE
+#    org.springframework.security.web: TRACE
+
+
 spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백개수를 반드시 꼭 지켜야 한다. 
   profiles: #실행환경(dev(개발),test(테스트),local(로컬),prod(운영))
     active: local 
@@ -35,18 +44,58 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
       max-request-size: 20MB  # 파일 및 파일을 제외한 input 태그값 업로드 용량제한 설정하기. (1MB)
 
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC(bUwjDnfUHjtP0Msilg9YiLjty02Jk+G6K6I0TmYYEY1Sh4L8/1+clT6STKCm4GWHQZ4Tp4At5CpvkIkAV7NfgJkMrE7KvODrRrfCr9f9IrYOprEweRCdsw==)
+            client-secret: ENC(8vism1QymVlbaFkN1wEGJ7vk1CQeJAMlin79Pd3EucWCx7VgYnRtDoHadigDVjSR)
+            scope: profile, email, https://www.googleapis.com/auth/user.phonenumbers.read
+            
+             
+
+          naver:
+            client-id: ENC(9F6I9p4gCMsFEZqLqx5tsGa1PWxzlhzBFMkx6xmd5UU=)
+            client-secret: ENC(Rh66fH+4xC/FXcInr/6c3QYY+8WglzvJ)
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost/antico/login/oauth2/code/naver
+            scope: name, email, profile_image
+            client-name: Naver
+                  
+          kakao:
+            client-id: ENC(E6s5AblYNMphC17owzjI936vq093etEd2SDaQgFWHrRuEbWm8k1/XLGHaKfJBYqO/kaHUa8loofUw2YBDDUqHLTGlhhMxZopLBtRWFQc126yQz8MlyqIzA==)
+            client-secret: ENC(4mSLPLN+OE+014DxNANWwNxjyXiUQ9crAXJwpTxGrQjxu1oI3doJnPU0JiO+iEL/)
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            scope: account_email
+            redirect-uri: http://localhost/antico/login/oauth2/code/kakao
+            client-name: kakao
+                
+        provider:
+          naver:
+            authorization-uri: https://nid.naver.com/oauth2.0/authorize
+            token-uri: https://nid.naver.com/oauth2.0/token
+            user-info-uri: https://openapi.naver.com/v1/nid/me
+            user-info-authentication-method: header
+            user-name-attribute: response
+
+
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-info-authentication-method: header
+            user-name-attribute: id
+
+
 mybatis: #mybatis 설정
   configuration:
     map-underscore-to-camel-case: true  
   #type-aliases-package: com.spring.app.**.domain 
   #mapper-locations: com/spring/app/**/mapper/*.xml   #src/main/java 아래 패키지속에 매퍼파일을 만드는 경우 
   mapper-locations: mybatis/mapper/**/*.xml          #src/main/resources 아래 폴더속에 매퍼파일을 만드는 경우
-logging: #로그 지정
-  level:
-    #root: error
-    '[com.spring.board]': debug 
-    #com.zaxxer.hikari.HikariConfig: DEBUG
-    #com.zaxxer.hikari: TRACE 
 
 server:
   port: 80
@@ -82,6 +131,6 @@ kakao:
 pointcharge:
   chargekey: ENC(5kDANTybdoAQAvmPxAVioZZy60aWlvGu)
 
-kakaologin:
-  client_id: 2fc45348c1f277afbb09c75d902df014
-  redirect_uri: http://localhost/antico/kakaologin/callback
+
+
+

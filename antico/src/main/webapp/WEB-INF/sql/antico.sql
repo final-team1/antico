@@ -1,8 +1,7 @@
 
 select * from tab;
 
-select *
-from tbl_member;
+
 
 delete from tbl_member
 where pk_member_no = 101;
@@ -590,10 +589,23 @@ show user;
 
 
 
+ALTER TABLE tbl_member 
+MODIFY member_user_id  VARCHAR(50);
+
+ALTER TABLE tbl_member 
+ADD member_oauth_type varchar2(30) NULL;
+
+select *
+from tbl_member;
+
+UPDATE tbl_member
+SET member_name = '최재혁'
+WHERE pk_member_no = 102;
+
+commit;
+
+delete from tbl_member
+where pk_member_no = 188;
 
 
-
-
-
-
-
+desc tbl_member;

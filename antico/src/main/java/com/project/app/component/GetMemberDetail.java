@@ -14,18 +14,12 @@ import com.project.app.member.model.MemberDAO;
 
 import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @Component
 public class GetMemberDetail {
 	
 	@Autowired
 	private MemberDAO member_dao;
-	
-	public GetMemberDetail(MemberDAO member_dao) {
-		this.member_dao = member_dao;
-	}
-
-
-
 
 	@Bean
 	public MemberVO MemberDetail() {
@@ -35,10 +29,29 @@ public class GetMemberDetail {
 		MemberVO member_vo = new MemberVO();
 		
 		if(authentication != null) {
-			// 회원의 정보를 유저타입으로 형변환 후 회원의 아이디를 가져온다.
-			String member_user_id = String.valueOf(((User)authentication.getPrincipal()).getUsername());
-			
-			member_vo = member_dao.selectMemberByUserId(member_user_id);
+			String member_user_id = ""; 
+
+			if(authentication instanceof User) {
+				member_user_id = String.valueOf(((User)authentication.getPrincipal()).getUsername());
+				
+				member_vo = member_dao.selectMemberByUserId(member_user_id);
+			}else {
+				member_user_id = authentication.getName();
+				
+				if(authentication.getName().length() < 12) {
+					
+					member_vo = member_dao.selectMemberByUserId(member_user_id);
+					
+				}else {
+					
+					int n = member_user_id.indexOf(",");
+					
+					member_user_id = member_user_id.substring(4, n);
+					
+					member_vo = member_dao.selectMemberByUserId(member_user_id);
+				}
+				
+			}
 			
 		}
 		

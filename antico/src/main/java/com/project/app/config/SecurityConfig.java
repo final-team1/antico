@@ -3,29 +3,29 @@ package com.project.app.config;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
+import com.project.app.member.service.AuthCustomDetailService;
 import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
 import com.project.app.security.LoginFailureHandler;
+import com.project.app.security.OauthFailer;
+import com.project.app.security.OauthSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,7 +43,15 @@ public class SecurityConfig {
 	
 	private final LoginFailureHandler login_failure_handler;
 	
+	
+    private final OauthFailer oauth_failer;
     
+    
+    private final DefaultOAuth2UserService oAuth2UserService;
+    
+    
+    private final OauthSuccessHandler oauth_success_handler;
+	
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -51,14 +59,7 @@ public class SecurityConfig {
     }
 	
 
-	/* 
-	 * Bcrypt bean 등록
-	 */
-    @Bean
-    PasswordEncoder pwd_encoder() {
-		return new BCryptPasswordEncoder();
-	}
-    
+
 	/*
 	 * AES256 암호화 클래스 bean 등록
 	 */
@@ -74,24 +75,43 @@ public class SecurityConfig {
 		
     http.authorizeHttpRequests(
     		
-    	  request -> request
-    	  .requestMatchers("/chat/**").authenticated()
-    	  
-    	  .requestMatchers("/product/**").authenticated()
-    	  
-    	  .requestMatchers("/mypage/**").authenticated()
-    	  
-          .requestMatchers("/kakaologin/**").permitAll()
+    	request -> request
+					
+		.requestMatchers("/chat/**").authenticated()
+					 
+		.requestMatchers("/product/**").authenticated()
+					  
+		.requestMatchers("/mypage/**").authenticated()
+					  
+		.requestMatchers("/kakaologin/**").permitAll()
+					 
           
-          .requestMatchers("/**").permitAll()
+        .requestMatchers("/**").permitAll()
+          
+        .requestMatchers("/login/oauth2/**").permitAll()
+          
+        .requestMatchers("/oauth2/**").permitAll()
              
-          .anyRequest().authenticated()
+        .anyRequest().authenticated()
     )
     .exceptionHandling(ex -> ex
     	 .accessDeniedHandler(custom_handler)
     	 .authenticationEntryPoint(custom_entry_point)
     	 )
+    .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(configurationSource()))
+    .oauth2Login(oauth2Configurer -> oauth2Configurer
+    		.redirectionEndpoint( redirect -> redirect
+    				.baseUri("/login/oauth2/code/**")
+    		)
+            .failureHandler(oauth_failer)
+            .successHandler(oauth_success_handler)
+            
+            .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService))
+            )
+
     .csrf(AbstractHttpConfigurer::disable)
+    
     .formLogin((formLogin) ->
       	formLogin
 	      	.loginPage("/member/login")
@@ -101,17 +121,27 @@ public class SecurityConfig {
 	      	.defaultSuccessUrl("/index", true)
 	      	.failureHandler(login_failure_handler)
       		.permitAll()
-    	)
+     )
+     
      .logout(logout -> logout
     		 .logoutUrl("/logout")
     		 .logoutSuccessUrl("/index")
     		 .clearAuthentication(true)
     		 );
-     
+    
      return http.build();
      }
 
-	
-	
+    public CorsConfigurationSource configurationSource(){
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowedMethods(List.of("GET","POST","DELETE"));
+        source.registerCorsConfiguration("/**",config);
+        return source;
+    }
+
 	
 }
