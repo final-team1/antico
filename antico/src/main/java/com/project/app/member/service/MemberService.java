@@ -12,7 +12,7 @@ public interface MemberService {
 	// 단일 사용자 정보 조회
 	MemberVO getMember(String member_user_id);
 
-	
-	
+	void google_tel_add(String member_tel);
+
 	
 }
