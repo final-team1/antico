@@ -21,7 +21,7 @@ public class MemberService_imple implements MemberService {
 	
 	private final MemberVO member_vo;
 	
-	private PasswordEncoder pwd_encoder;
+	private final PasswordEncoder pwd_encoder;
     
 	
 	@Override
@@ -50,10 +50,5 @@ public class MemberService_imple implements MemberService {
 		member_dao.google_tel_add(member_tel);
 	}
 
-
-
-
-	
-	
 
 }

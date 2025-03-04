@@ -28,6 +28,7 @@ import com.project.app.component.oauth2member.GoogleUser;
 import com.project.app.component.oauth2member.KakaoUser;
 import com.project.app.component.oauth2member.NaverUser;
 import com.project.app.member.domain.MemberVO;
+import com.project.app.member.model.MemberDAO;
 import com.project.app.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
@@ -46,7 +47,7 @@ public class AuthCustomDetailService extends DefaultOAuth2UserService{
 	
 	private final GoogleUser google_user;
 	
-	private final MemberService member_service;
+	private final MemberDAO member_service;
 	
 	private final MemberVO member_vo;
 	
@@ -72,36 +73,36 @@ public class AuthCustomDetailService extends DefaultOAuth2UserService{
         if("kakao".equals(userRequest.getClientRegistration().getRegistrationId())){
         	extra_member_vo = kakao_user.oauth2User(oAuth2User);
         	
-        	if(member_service.getMember(String.valueOf(user_info.get("id"))) == null) {
+        	if(member_service.selectMemberByUserId(String.valueOf(user_info.get("id"))) == null) {
         		member_service.registerMember(extra_member_vo);
         	}
         	name_attribute_key = "id";
-        	extra_member_vo = member_service.getMember(String.valueOf(user_info.get("id")));
+        	extra_member_vo = member_service.selectMemberByUserId(String.valueOf(user_info.get("id")));
         	
         }else if("naver".equals(userRequest.getClientRegistration().getRegistrationId())){
         	extra_member_vo  = naver_user.oauth2User(oAuth2User);
         	
-        	if(member_service.getMember(String.valueOf(response.get("id"))) == null) {
+        	if(member_service.selectMemberByUserId(String.valueOf(response.get("id"))) == null) {
         		
         		member_service.registerMember(extra_member_vo);
         		
         	}
         	
         	name_attribute_key = "response";
-        	extra_member_vo = member_service.getMember(String.valueOf(response.get("id")));
+        	extra_member_vo = member_service.selectMemberByUserId(String.valueOf(response.get("id")));
         	
         }else if("google".equals(userRequest.getClientRegistration().getRegistrationId())){
         	
         	extra_member_vo = google_user.oauth2User(oAuth2User);
         	
-        	if(member_service.getMember(String.valueOf(google_info.get("sub"))) == null) {
+        	if(member_service.selectMemberByUserId(String.valueOf(google_info.get("sub"))) == null) {
         		
         		member_service.registerMember(extra_member_vo);
         		
         	}
         	
         	extra_member_vo.setMember_tel(userRequest.getAccessToken().getTokenValue());
-        	extra_member_vo = member_service.getMember(String.valueOf(google_info.get("sub")));
+        	extra_member_vo = member_service.selectMemberByUserId(String.valueOf(google_info.get("sub")));
         	name_attribute_key = "sub";
         }
         
