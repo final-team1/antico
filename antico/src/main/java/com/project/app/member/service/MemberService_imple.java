@@ -19,14 +19,9 @@ public class MemberService_imple implements MemberService {
 	
 	private final MemberDAO member_dao;
 	
-	private PasswordEncoder pwd_encoder;
-	
 	private final MemberVO member_vo;
 	
-
-    PasswordEncoder pwd_encoder() {
-		return new BCryptPasswordEncoder();
-	}
+	private PasswordEncoder pwd_encoder;
     
 	
 	@Override
