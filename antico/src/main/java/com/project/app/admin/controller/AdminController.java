@@ -26,8 +26,6 @@ import com.project.app.notice.domain.NoticeVO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-
-
 @Controller
 @RequestMapping("/admin/*")
 public class AdminController {
@@ -231,12 +229,31 @@ public class AdminController {
 	
 	// 유저 관리
 	@GetMapping("admin_member_management")
-	public ModelAndView admin_member_management(ModelAndView mav) {
+	public ModelAndView admin_member_management(ModelAndView mav, @RequestParam(defaultValue = "1") int cur_page) {
 		
-		List<MemberVO> member_list = service.admin_member_management();
+		// 유저 총 수
+		int member_count = service.getmember_count();
+		
+		 PagingDTO paging_dto = PagingDTO.builder()
+	            .cur_page(cur_page)
+	            .row_size_per_page(5)  
+	            .page_size(5)  
+	            .total_row_count(member_count)
+	            .build();
+
+	    // 페이징 정보 계산
+	    paging_dto.pageSetting();
+	    
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    paraMap.put("paging_dto", paging_dto);
+		
+		List<MemberVO> member_list = service.admin_member_management(paraMap);
 		
 		// 유저 조회
-		mav.addObject("member_list", member_list);
+		mav.addObject("member_list", member_list);		
+		mav.addObject("member_count", member_count);
+		mav.addObject("paging_dto", paging_dto);
 		
 		mav.setViewName("admin/admin_member_management");
 		return mav;
@@ -263,18 +280,112 @@ public class AdminController {
 	    return map;
 	}
 
+	// 상품 리스트
+	@GetMapping("admin_product_list")
+	public ModelAndView admin_product_list(ModelAndView mav, @RequestParam(defaultValue = "1") int cur_page) {
+		
+		// 상품 총 개수
+		int product_count = service.getproduct_count();
+		
+		 PagingDTO paging_dto = PagingDTO.builder()
+	            .cur_page(cur_page)
+	            .row_size_per_page(8)
+	            .page_size(5)  
+	            .total_row_count(product_count)
+	            .build();
 
+	    // 페이징 정보 계산
+	    paging_dto.pageSetting();
+	    
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    paraMap.put("paging_dto", paging_dto);
+		
+		// 상품조회
+		List<Map<String, String>> admin_product_list = service.get_admin_product_list(paraMap);
+		
+		// 유저 조회
+		mav.addObject("admin_product_list", admin_product_list);
+		mav.addObject("product_count", product_count);
+		mav.addObject("paging_dto", paging_dto);
+		
+		mav.setViewName("admin/admin_product_list");
+		return mav;
+	}
 	
+	// 상품 상세정보
+	@GetMapping("admin_product_detail")
+	public ModelAndView admin_product_detail(ModelAndView mav, HttpServletRequest request) {
+	    String pk_product_no = request.getParameter("pk_product_no");
+	    
+	    Map<String, String> paraMap = new HashMap<>();
+	    paraMap.put("pk_product_no", pk_product_no);
 		
+	    Map<String, String> product_vo = service.admin_product_detail(paraMap);
+	    
+	    mav.addObject("product_vo", product_vo);
+	    
+	    mav.setViewName("admin/admin_product_detail");
+	    return mav;
+	}
 		
+	// 관리자 통계페이지
+	@GetMapping("admin_statistics")
+	public ModelAndView admin_statistics(ModelAndView mav) {		
+		mav.setViewName("admin/admin_statistics");
+		return mav;
+	}	
+	
+	// 일별 방문자 차트
+	@GetMapping("admin_statistics/admin_visitantchat")
+	@ResponseBody
+	public List<Map<String, String>> admin_visitantchat() {
 		
+		List<Map<String, String>> admin_visitantchat = service.admin_visitantchat();
 		
+		return admin_visitantchat;
+	}
+	
+	// 월별 방문자 차트
+	@GetMapping("admin_statistics/admin_visitant_monthchat")
+	@ResponseBody
+	public List<Map<String, String>> admin_visitant_monthchat() {
 		
+		List<Map<String, String>> admin_visitant_monthchat = service.admin_visitant_monthchat();
 		
+		return admin_visitant_monthchat;
+	}	
+
+	// 연별 방문자 차트
+	@GetMapping("admin_statistics/admin_visitant_yearchat")
+	@ResponseBody
+	public List<Map<String, String>> admin_visitant_yearchat() {
 		
+		List<Map<String, String>> admin_visitant_yearchat = service.admin_visitant_yearchat();
 		
+		return admin_visitant_yearchat;
+	}		
 		
+	// 일별 매출액 차트
+	@GetMapping("admin_statistics/admin_saleschat")
+	@ResponseBody
+	public List<Map<String, String>> admin_saleschat() {
 		
+		List<Map<String, String>> admin_saleschat = service.admin_saleschat();
 		
+		return admin_saleschat;
+	}
+
+	// 카테고리별 상품 조회수차트
+	@GetMapping("admin_statistics/admin_product_total_views")
+	@ResponseBody
+	public List<Map<String, String>> admin_product_total_views() {
 		
+		List<Map<String, String>> admin_product_total_views = service.admin_product_total_views();
+		
+		return admin_product_total_views;
+	}
+	
+	
+	
 }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.project.app.comment.domain.CommentVO;
-import com.project.app.common.FileManager;
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.model.InquireDAO;
 
@@ -16,10 +15,7 @@ public class InquireService_imple implements InquireService {
 
 	@Autowired
 	private InquireDAO dao;
-	
-	@Autowired
-	private FileManager fileManager;
-	
+
 	// 문의 내역 조회
 	@Override
 	public List<InquireVO> inquire_list() {

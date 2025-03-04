@@ -8,7 +8,6 @@
 
 <jsp:include page=".././header/header.jsp" />
 
-<!-- 메인 콘텐츠 영역 -->
 <div class="main">
 	<div class="main-container">
 		<jsp:include page=".././admin/admin_sidemenu.jsp" />
@@ -43,13 +42,12 @@
 		</div>
 	</div>
 
-	<div class="paging">
+	<div class="paging" style="height: 20px;">
 		<jsp:include page="../paging.jsp"></jsp:include>
 	</div>
 </div>
 
 <jsp:include page=".././footer/footer.jsp" />
-<jsp:include page="../tab/tab.jsp"></jsp:include>
 
 <script type="text/javascript">
 	//1:1 문의 상세보기 함수

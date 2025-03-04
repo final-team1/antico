@@ -39,14 +39,13 @@
             </ul>
         </c:if>
 
-        <div class="paging">
+        <div class="paging" style="height: 20px;">
 			<jsp:include page="../paging.jsp"></jsp:include>
 		</div>
     </section>
 </div>
 
 <jsp:include page="../footer/footer.jsp" />
-<jsp:include page="../tab/tab.jsp"></jsp:include>
 
 <script type="text/javascript">
 

@@ -18,8 +18,6 @@
 
 <jsp:include page=".././footer/footer.jsp" />
 
-<jsp:include page="../tab/tab.jsp"></jsp:include>
-
 <script type="text/javascript">
 	$(document).ready(function() {
 

@@ -34,6 +34,13 @@ public class AdminService_imple implements AdminService {
 		return n;
 	}
 
+	// 1:1문의 총개수
+	@Override
+	public int getInquireCount() {
+		int Inquire_Count = dao.getInquireCount();
+		return Inquire_Count;
+	}
+	
 	// 미답변 1:1문의 리스트
 	@Override
 	public List<Map<String, String>> uninquire_list(Map<String, Object> paraMap) {
@@ -81,17 +88,17 @@ public class AdminService_imple implements AdminService {
 		return n;
 	}
 
-	// 1:1문의 총개수
+	// 유저 총 수
 	@Override
-	public int getInquireCount() {
-		int Inquire_Count = dao.getInquireCount();
-		return Inquire_Count;
+	public int getmember_count() {
+		int member_count = dao.getmember_count();
+		return member_count;
 	}
-
+	
 	// 유저조회
 	@Override
-	public List<MemberVO> admin_member_management() {
-		List<MemberVO> member_list = dao.admin_member_management(); 
+	public List<MemberVO> admin_member_management(Map<String, Object> paraMap) {
+		List<MemberVO> member_list = dao.admin_member_management(paraMap); 
 		return member_list;
 	}
 
@@ -101,6 +108,67 @@ public class AdminService_imple implements AdminService {
 		int update_member_status = dao.update_member_status(paramMap);
 		return update_member_status;
 	}
+
+	// 상품 총 개수
+	@Override
+	public int getproduct_count() {
+		int product_count = dao.getproduct_count();
+		return product_count;
+	}
+	
+	// 상품 조회
+	@Override
+	public List<Map<String, String>> get_admin_product_list(Map<String, Object> paraMap) {
+		List<Map<String, String>> product_list = dao.get_admin_product_list(paraMap);
+		return product_list;
+	}
+
+	// 상품 상세정보
+	@Override
+	public Map<String, String> admin_product_detail(Map<String, String> paraMap) {
+		Map<String, String> product_vo = dao.admin_product_detail(paraMap);
+		return product_vo;
+	}
+
+	// 일별 방문자 차트
+	@Override
+	public List<Map<String, String>> admin_visitantchat() {
+		List<Map<String, String>> admin_visitantchat = dao.admin_visitantchat();
+		return admin_visitantchat;
+	}
+
+	// 월별 방문자 차트
+	@Override
+	public List<Map<String, String>> admin_visitant_monthchat() {
+		List<Map<String, String>> admin_visitant_monthchat = dao.admin_visitant_monthchat();
+		return admin_visitant_monthchat;
+	}
+
+	// 연별 방문자 차트
+	@Override
+	public List<Map<String, String>> admin_visitant_yearchat() {
+		List<Map<String, String>> admin_visitant_yearchat = dao.admin_visitant_yearchat();
+		return admin_visitant_yearchat;
+	}
+
+	// 일별 매출액	
+	@Override
+	public List<Map<String, String>> admin_saleschat() {
+		List<Map<String, String>> admin_saleschat = dao.admin_saleschat();
+		return admin_saleschat;
+	}
+
+	// 카테고리별 상품 조회수	
+	@Override
+	public List<Map<String, String>> admin_product_total_views() {
+		List<Map<String, String>> admin_product_total_views = dao.admin_product_total_views();
+		return admin_product_total_views;
+	}
+
+	
+
+
+
 
 
 
