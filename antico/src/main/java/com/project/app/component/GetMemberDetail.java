@@ -38,15 +38,19 @@ public class GetMemberDetail {
 			}else {
 				member_user_id = authentication.getName();
 				
-				if(authentication.getName().length() < 12) {
+				if(authentication.getName().length() < 11) {
 					
 					member_vo = member_dao.selectMemberByUserId(member_user_id);
 					
-				}else {
+				}else if(authentication.getName().length() >= 11 && authentication.getName().length() < 21){
 					
 					int n = member_user_id.indexOf(",");
 					
 					member_user_id = member_user_id.substring(4, n);
+					
+					member_vo = member_dao.selectMemberByUserId(member_user_id);
+				}else {
+					member_user_id = authentication.getName();
 					
 					member_vo = member_dao.selectMemberByUserId(member_user_id);
 				}

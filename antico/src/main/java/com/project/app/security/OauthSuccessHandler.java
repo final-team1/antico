@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.service.MemberService;
 
@@ -41,26 +43,27 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
 		
 		System.out.println(member_vo.getMember_oauth_type());
 		
-		/*
-		 * if("google".equals(member_vo.getMember_oauth_type())) {
-		 * 
-		 * String accessToken = getAccessToken(authentication);
-		 * 
-		 * String member_tel = getPhoneNumber(accessToken);
-		 * 
-		 * System.out.println(member_tel);
-		 * 
-		 * member_service.google_tel_add(member_tel);
-		 * 
-		 * }
-		 */
+		
+		if("google".equals(member_vo.getMember_oauth_type())) {
+		  
+			String accessToken = getAccessToken(authentication);
+			
+			//String member_tel = getPhoneNumber(accessToken);
+			  
+			//System.out.println(member_tel);
+			 
+			//member_service.google_tel_add(member_tel);
+		 
+		}
+		 
 		
 		response.sendRedirect("/antico/index");
 		
 	}
 	
 	private String getPhoneNumber(String accessToken) {
-	    String url = "https://people.googleapis.com/v1/people/me?personFields=phoneNumbers";
+		String url = "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,phoneNumbers";
+
 
 	    RestTemplate restTemplate = new RestTemplate();
 	    HttpHeaders headers = new HttpHeaders();
@@ -70,7 +73,12 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
 	    ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 	    Map<String, Object> body = response.getBody();
 	    
-	    System.out.println("Response Body: " + body);
+	    try {
+			System.out.println("Response Body: " + new ObjectMapper().writeValueAsString(body));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    
 	    if (body != null && body.containsKey("phoneNumbers")) {
 	        List<Map<String, String>> phoneNumbers = (List<Map<String, String>>) body.get("phoneNumbers");
@@ -91,7 +99,7 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler {
             );
 
             if (authorizedClient != null && authorizedClient.getAccessToken() != null) {
-                return authorizedClient.getAccessToken().getTokenValue(); // ✅ 토큰을 String으로 반환
+                return authorizedClient.getAccessToken().getTokenValue(); // 토큰을 String으로 반환
             }
         }
         return null;

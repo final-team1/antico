@@ -52,7 +52,11 @@ public class SecurityConfig {
     
     private final OauthSuccessHandler oauth_success_handler;
 	
-
+	@Bean
+    PasswordEncoder pwd_encoder() {
+		return new BCryptPasswordEncoder();
+	}
+    
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
