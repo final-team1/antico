@@ -18,8 +18,8 @@
 	
 	<!-- 포인트내역에 사용정보 insert -->
 	<insert id="usePoint" parameterType="String">
-		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
-		values (point_history_seq.nextval, #{pk_member_no}, '#{reason}', #{product_price}, #{member_point}, #{member_point}-#{product_price}, sysdate)
+		insert into tbl_point_history (pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
+		values (point_history_seq.nextval, #{pk_member_no}, #{reason}, #{product_price}, #{member_point}, #{member_point}-#{product_price}, sysdate)
 	</insert>
 
 	<!-- 거래테이블에 거래정보들 insert -->
@@ -27,5 +27,29 @@
 		insert into tbl_trade sets(pk_trade_no, fk_seller_no, fk_consumer_no, fk_product_no, trade_status, trade_pending_date)
 		values (tra_seq.nextval, #{member_no}, #{pk_member_no}, #{pk_product_no}, 1, sysdate)
 	</insert>
+	
+	<!-- 판매자 포인트 증가 업데이트 -->
+	<update id="plusPoint">
+		update tbl_member set member_point = member_point + #{product_price}
+		where pk_member_no = #{fk_member_no}
+	</update>
+	
+	<!-- 판매상태를 구매확정으로 업데이트 -->
+	<update id="completedProduct">
+		update tbl_product set product_sale_status = 2
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
+	<!-- 구매상태를 결제확정으로 업데이트 -->
+	<update id="completedTrade">
+		update tbl_trade set trade_status = 2, trade_confirm_date = sysdate
+		where fk_product_no = #{pk_product_no}
+	</update>
+	
+	<select id="purchaseSelect" parameterType="String" resultType="String">
+		select pk_trade_no
+		from tbl_trade
+		where fk_product_no = #{pk_product_no} and fk_consumer_no = #{pk_member_no}
+	</select>
 	
 </mapper>

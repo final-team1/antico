@@ -1,5 +1,7 @@
 package com.project.app.trade.model;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -15,5 +17,17 @@ public interface TradeDAO {
 
 	// 거래테이블에 거래정보들 insert
 	int trade(String pk_product_no, String member_no, String pk_member_no);
+
+	// 판매자 포인트 증가 업데이트
+	int plusPoint(String product_price, String fk_member_no);
+
+	// 판매상태를 구매확정으로 업데이트
+	int completedProduct(String pk_product_no);
+
+	// 구매상태를 결제확정으로 업데이트
+	int completedTrade(String pk_product_no);
+
+	// 구매를 먼저 했는지 조회
+	String purchaseSelect(String pk_product_no, String pk_member_no);
 
 }

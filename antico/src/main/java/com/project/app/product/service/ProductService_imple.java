@@ -295,8 +295,8 @@ public class ProductService_imple implements ProductService {
 	
 	//모든 상품 조회 해오기(이미지, 지역)
 	@Override
-	public List<Map<String, String>> getProductList() {
-		List<Map<String, String>> product_list_reg_date = productDAO.getProductList();
+	public List<Map<String, String>> getProductList(String sort_views_week) {
+		List<Map<String, String>> product_list_reg_date = productDAO.getProductList(sort_views_week);
 		return product_list_reg_date;
 	}
 	

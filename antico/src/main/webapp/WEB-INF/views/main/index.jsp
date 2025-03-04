@@ -46,10 +46,34 @@
     overflow: hidden;
 }
 
+div.mainImg_div {
+	width: 100%;
+	padding-bottom: 30px;
+}
+
+img.mainImg {
+	display: block;
+	width: 100%;
+	object-fit: cover;
+	border: none;
+	border-radius: 6px;
+	aspect-ratio: 1/1;
+}
+
+
+
 .swiper-slide {
     text-align: center;
     font-size: 18px;
     background: #fff;
+    margin-top: 5px;
+    border: none;
+    margin-right: 0px !important;
+   	padding: 0px;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-clip: padding-box;
+    
 
   /* Center slide text vertically */
     display: -webkit-box;
@@ -64,52 +88,81 @@
     -ms-flex-align: center;
     -webkit-align-items: center;
     align-items: center;
-/*     padding-bottom: 30px; */
-}
-
-.swiper-slide img {
-	display: block;
-	width: 100%;
-	object-fit: cover;
 }
 
 /* swiper 점 모양 */
+
 .swiper-pagination-bullet {
-  width: 10px;
-  height: 10px;
-  background-color: #0DCC5A;
+	width: 10px;
+	height: 10px;
+	background-color: #0DCC5A;
 }
 
 
 .swiper-button-prev,
 .swiper-button-next {
-  padding: 15px 5px;
-  color: black;
+    padding: 15px 5px;
+    color: black;
 }
 
 .swiper-button-prev:after,
 .swiper-button-next:after {
-  font-size: 16pt;
-  font-weight: 900;
+    font-size: 16pt;
+    font-weight: 900;
 }
 
 
 
 .mainImgContainer{
-	height:325px;
+	height: 420px;
 }
 
 .menuImgContainer{
 	height: 325px;
+	margin-top: 130px;
 }
 
-.menuImg{
-	border-radius: 10%;
+
+
+div.swiper-wrapper {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+	border: none;
+    transform: translateZ(0); /* 미세한 선 방지 */
+    will-change: transform;
+
+}
+
+
+img.menuImg{
+	display: block;
+	border-radius: 6px;
 	aspect-ratio: 1/1;
+	border: none;
+	width: 100%;
+	object-fit: cover;
+	border: none;
+}
+
+
+
+div.menu_title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+span.menu_title {
+	font-size: 10pt; 
+	padding-top: 10px;
+	cursor: pointer;
 }
 
 div.index_prod_list {
 	padding-bottom: 30px;
+	cursor: pointer;
+	border: none;
 }
 
 div.index_prod_list span {
@@ -117,15 +170,17 @@ div.index_prod_list span {
 }
 
 div.prod_title {
+	margin-top: 5px;
    	overflow: hidden;
   	text-overflow: ellipsis;
   	display: -webkit-box;
   	-webkit-line-clamp: 2;
   	-webkit-box-orient: vertical;
   	height: 50px;
-}
+}	
 
 span.prod_title {
+	width: 100%;
 	font-size: 12pt;
 }
 
@@ -146,6 +201,43 @@ div.prod_town_time {
 
 
 
+
+/* overlay */
+div.menuImg_div {
+    position: relative;
+    display: inline-block;
+    border: none;
+    overflow: hidden;
+    width: 100%;
+}
+
+div.sold_out_overlay {
+    position: absolute;
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* 반투명한 검은색 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 5; 	 				/* 다른 요소보다 위에 배치 */
+    border-radius: 6px;
+    border: none !important; /* 혹시라도 border가 생기는 경우 제거 */
+    padding: 0 !important; /* padding 문제 방지 */
+    box-sizing: border-box;
+}
+
+span.sold_out_text {
+    padding: 10px 20px;
+    font-size: 14pt;
+    font-weight: bold;
+    color: white;
+
+}
+
 </style>
 
 
@@ -165,11 +257,26 @@ div.prod_town_time {
 	  <!-- Additional required wrapper -->
 	  <div class="swiper-wrapper">
 	    <!-- Slides -->
-	    <div class="swiper-slide"><img src="https://img2.joongna.com/banner/1709792928336.webp"></div>
-	    <div class="swiper-slide"><img src="https://img2.joongna.com/banner/1737697998356.webp"></div>
-	    <div class="swiper-slide"><img src=""></div>
-	    <div class="swiper-slide"><img src=""></div>
-	    <div class="swiper-slide"><img src=""></div>
+	    <div class="swiper-slide">
+		    <div class="mainImg_div">
+		    	<img class="mainImg" src="${pageContext.request.contextPath}/images/main/main1.png">
+		    </div>
+	    </div>
+	    <div class="swiper-slide">
+		    <div class="mainImg_div">
+		    	<img class="mainImg" src="${pageContext.request.contextPath}/images/main/main2.png">
+		    </div>
+	    </div>
+	   	<div class="swiper-slide">
+		    <div class="mainImg_div">
+		    	<img class="mainImg" src="${pageContext.request.contextPath}/images/main/main3.png">
+		    </div>
+	    </div>
+	   	<div class="swiper-slide">
+		    <div class="mainImg_div">
+		    	<img class="mainImg" src="${pageContext.request.contextPath}/images/main/main4.png">
+		    </div>
+	    </div>	    		    
 	  </div>
 	  <!-- If we need pagination -->
 	  <div class="swiper-pagination"></div>
@@ -186,7 +293,10 @@ div.prod_town_time {
 
 
 <div class="menuImgContainer container">
- 	<h3 style="margin-top:15%;">방금 등록된 상품</h3>
+	<div class="menu_title">
+ 		<h3 style="margin-bottom: 0px;">방금 등록된 상품</h3>
+ 		<span class="menu_title" onclick="location.href='${pageContext.request.contextPath}/product/prodlist'">전체보기</span>
+	</div>
 	<div class="swiper swiperCategory"> 
 	  <!-- Additional required wrapper -->
 	  <div class="swiper-wrapper">
@@ -195,9 +305,25 @@ div.prod_town_time {
 	    <c:forEach var="reg_date_list" items="${requestScope.product_list_reg_date}" varStatus="status"  begin="0" end="6">
 	    <div class="swiper-slide menuImg">
 	    	
-	    	<div class="index_prod_list">
-	    		<img class="menuImg" src="${reg_date_list.prod_img_name}">
-	    		
+	    	<div class="index_prod_list" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${reg_date_list.pk_product_no}'">
+	    		<div class="menuImg_div">
+		    		<img class="menuImg" src="${reg_date_list.prod_img_name}">
+		    		
+		    		 <%-- 상품 상태가 예약중이면 오버레이 추가 --%>
+	                <c:if test="${reg_date_list.product_sale_status == 1}">
+	                    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${reg_date_list.pk_product_no}'">
+	                        <span class="sold_out_text">예약중</span>
+	                    </div>
+	                </c:if>
+		    		
+					<%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+	                <c:if test="${reg_date_list.product_sale_status == 2}">
+	                    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${reg_date_list.pk_product_no}'">
+	                        <span class="sold_out_text">판매완료</span>
+	                    </div>
+	                </c:if>
+                </div>
+
 	    		<div class="prod_info">
 	    			<div class="prod_title">
 		    			<span class="prod_title">${reg_date_list.product_title}</span>
@@ -230,29 +356,48 @@ div.prod_town_time {
 
 
 <div class="menuImgContainer container">
- 	<h3 style="margin-top:15%;">방금 등록된 상품</h3>
+	<div class="menu_title">
+ 		<h3 style="margin-bottom: 0px;">이번 주 인기 급상승 상품!</h3>
+	</div>
 	<div class="swiper swiperCategory"> 
 	  <!-- Additional required wrapper -->
 	  <div class="swiper-wrapper">
 	  
 	    <!-- Slides -->
-	    <c:forEach var="reg_date_list" items="${requestScope.product_list_reg_date}" varStatus="status"  begin="0" end="6">
+	    <c:forEach var="views_week_list" items="${requestScope.product_list_views_week}" varStatus="status"  begin="0" end="6">
 	    <div class="swiper-slide menuImg">
 	    	
-	    	<div class="index_prod_list">
-	    		<img class="menuImg" src="${reg_date_list.prod_img_name}">
+	    	<div class="index_prod_list" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${views_week_list.pk_product_no}'">
+	    		
+	    		<div class="menuImg_div">
+		    		<img class="menuImg" src="${views_week_list.prod_img_name}">
+		    		
+		    		 <%-- 상품 상태가 예약중이면 오버레이 추가 --%>
+	                <c:if test="${views_week_list.product_sale_status == 1}">
+	                    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${views_week_list.pk_product_no}'">
+	                        <span class="sold_out_text">예약중</span>
+	                    </div>
+	                </c:if>
+		    		
+					<%-- 상품 상태가 판매 완료면 오버레이 추가 --%>
+	                <c:if test="${views_week_list.product_sale_status == 2}">
+	                    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${views_week_list.pk_product_no}'">
+	                        <span class="sold_out_text">판매완료</span>
+	                    </div>
+	                </c:if>
+                </div>
 	    		
 	    		<div class="prod_info">
 	    			<div class="prod_title">
-		    			<span class="prod_title">${reg_date_list.product_title}</span>
+		    			<span class="prod_title">${views_week_list.product_title}</span>
 		    		</div>
 		    		<div>
-		    			<span class="prod_price"><fmt:formatNumber value="${reg_date_list.product_price}" pattern="#,###" /> 원</span>
+		    			<span class="prod_price"><fmt:formatNumber value="${views_week_list.product_price}" pattern="#,###" /> 원</span>
 		    		</div>
 		    		<div class="prod_town_time">
-						<span class="prod_town">${reg_date_list.region_town}</span>
+						<span class="prod_town">${views_week_list.region_town}</span>
 						<span class="bar">|</span>
-						<span class="prod_time" data-date="${reg_date_list.product_update_date}"></span>
+						<span class="prod_time" data-date="${views_week_list.product_update_date}"></span>
 					</div>
 	    		</div>
 			</div>
@@ -302,32 +447,31 @@ div.prod_town_time {
 	            </tr>
 	            <tr>
 	                <th scope="row">국</th>
-	                <td>시금치된장국</td>
-	                <td>된장찌개</td>
-	                <td>계란탕</td>
-	                <td>어묵탕</td>
-	                <td>육개장</td>
+	                <td>김치찌개</td>
+	                <td>배추된장국</td>
+	                <td>얼큰 콩나물국</td>
+	                <td>오징어 뭇국</td>
+	                <td>매콤어묵탕</td>
 	            </tr>
 	            <tr>
 	                <th scope="row">메인메뉴</th>
-	                <td>소불고기<br>중식해물볶음<br>베이컨감자채볶음<br>미나리볶음</td>
-	                <td>닭갈비<br>소세지야채볶음<br>오징어튀김</td>
-	                <td>유산슬<br>너비아니구이<br>잡채<br>군만두</td>
-	                <td>언양불고기<br>떡볶이<br>모둠튀김(오징어, 김말이, 만두)<br>계란곤약장조림</td>
-	                <td>제육볶음<br>조기튀김</td>
+	                <td>돼지불고기<br>생선까스<br>애호박새송이볶음<br>
+	                <td>찜닭<br>미트볼비엔나 케찹볶음<br>계란말이<br>양파튀김<br>어묵볶음</td>
+	                <td>훈제오리야채볶음<br>타코야끼<br>알감자조림<br>청경채양파볶음</td>
+	                <td>궁중떡볶이<br>두부조림<br>동그랑땡<br>계란곤약간장조림</td>
+	                <td>보쌈<br>코다리조림</td>
 	            </tr>
 	            <tr>
 	                <th scope="row">반찬</th>
-	                <td>도토리묵무침<br>오징어젓갈<br>쌈<br>쌈장</td>
-	                <td>콩나물무침<br>고사리무침<br>마카로니 샐러드</td>
-	                <td>단무지무침<br>부추무침<br>조미김</td>
-	                <td>깻잎지<br>조미김</td>
-	                <td>콩나물무침<br>멸치몪음<br>쌈<br>고추장아찌<br>조미김</td>
+	                <td>청포묵무침<br>오징어젓갈<br>쌈<br>쌈장</td>
+	                <td>숙주무침<br>오이야채 초무침<br>콩자반<br>조미김</td>
+	                <td>깻잎지<br>쌈무<br>단무지무침<br>부추무침</td>
+	                <td>시금치무침<br>미역줄기초무침<br>콘감자마요<br>조미김</td>
+	                <td>오징어 야채무침<br>콩나물무침<br>고추장아찌<br>쌈/쌈장<br>조미김</td>
 	            </tr>
 	        </tbody>
 	    </table>
 	</div>
-	
 </div>
 
 
@@ -373,6 +517,8 @@ breakpoints: {
 const swiperCategory = new Swiper('.swiperCategory', {
 direction: 'horizontal',
 loop: true,
+slidesPerView: 6,
+spaceBetween: 20,
 
 breakpoints: {
   1024: {

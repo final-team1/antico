@@ -346,11 +346,23 @@ div.ohter_product_title {
 	font-weight: 500;
 }
 
+
+span.ohter_product_title{
+	width: 95%;
+	display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
 div.ohter_product_price {
 	height: 50px; 
 	text-align: left;
 	font-weight: bold;
 }
+
 
 
 
@@ -801,7 +813,7 @@ span.sold_out_text {
 						<div id="other_product_img_div" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${prod_one_member.pk_product_no}'">
 							<img id="other_product_img" src="${prod_one_member.prod_img_name}">
 							<div class="ohter_product_title">
-								<span>${prod_one_member.product_title}</span> 
+								<span class="ohter_product_title">${prod_one_member.product_title}</span> 
 							</div>
 							<div>
 								<c:if test="${prod_one_member.product_sale_status == 0}">

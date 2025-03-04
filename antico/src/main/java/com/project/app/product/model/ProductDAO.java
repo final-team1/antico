@@ -78,7 +78,7 @@ public interface ProductDAO {
 	
 	
 	// 모든 상품 조회 해오기(이미지, 지역)
-	List<Map<String, String>> getProductList();
+	List<Map<String, String>> getProductList(String sort_views_week);
 	
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> selectProductSummaryList(List<String> pk_product_no_list);

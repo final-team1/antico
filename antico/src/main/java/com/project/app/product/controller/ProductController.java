@@ -25,6 +25,7 @@ import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.service.ProductService;
 import com.project.app.common.PagingDTO;
 import com.project.app.component.GetMemberDetail;
+import com.project.app.member.domain.MemberVO;
 
 /*
  * 상품 컨트롤러
@@ -52,9 +53,13 @@ public class ProductController {
 
 		// 하위 카테고리 정보 가져오기
 		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
+		
+		// 로그인 회원정보 가져오기
+		MemberVO login_member_vo = get_member_detail.MemberDetail();
 
 		mav.addObject("category_list", category_list);
 		mav.addObject("category_detail_list", category_detail_list);
+		mav.addObject("login_member_vo", login_member_vo);
 
 		mav.setViewName("product/add");
 

@@ -358,6 +358,81 @@ form.search {
 }
 
 
+
+
+/* 카테고리 버튼 시작 */
+/* 전체 드롭다운 */
+div#dropdown{ 
+	margin-top: 5px;
+	display: none;
+    flex-direction: column; /* 아래로 펼쳐지도록 설정 */
+    position: absolute;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+div#category_dropdown {
+    background: white;
+    width: 220px; /* 두 개의 카테고리 영역 포함 */
+    height: 480px;
+
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+/* 상위 카테고리 컨테이너 */
+div.category_list_container {
+    width: 220px;
+}
+
+/* 상위 카테고리 */
+ul.category_list,
+ul.category_detail_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li.category_item,
+li.category_detail_item {
+    padding: 10px;
+    cursor: pointer;
+    color: #5a5a5a;
+    font-size: 10pt;
+    background: white;
+}
+
+li.category_item:hover,
+li.category_detail_item:hover {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+/* 하위 카테고리 */
+div#category_detail_dropdown {
+	margin-left: 0px;
+    background: #fff;
+    border: none;
+   	overflow-y: auto;
+    scrollbar-width: none;
+    position: absolute;
+    left: 220px; /* 상위 카테고리 옆에 배치 */
+    top: 0;
+    width: 220px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+div.category_detail_container {
+	width: 220px;
+	height: 480px;
+}
+
+/* 카테고리 버튼 끝 */
+
+
+
+
 </style>
 
 </head>
@@ -434,10 +509,43 @@ form.search {
 	
 	<div style="display:flex;">
 	
-		<div>
-		<span class="btn btn-dark mr-4 category">카테고리</span>
+		<div class="category_menu">
+			<span id="category_btn" class="btn btn-dark mr-4 category">카테고리</span>
+			
+			<div id="dropdown">	
+			<div id="category_dropdown">
+			    <!-- 카테고리 리스트 컨테이너 -->
+			    <div class="category_list_container">
+			        <ul class="category_list">
+			            <c:forEach var="category" items="${category_list}">
+			                <li class="category_item" data-category-id="${category.pk_category_no}"
+			                    onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${category.pk_category_no}'">
+			                    ${category.category_name}
+			                </li>
+			            </c:forEach>
+			        </ul>
+			    </div>
+			</div>
+			<div id="category_detail_dropdown"> 
+			    <!-- 하위 카테고리 리스트 컨테이너 (옆으로 나오는 구조) -->
+			    <div class="category_detail_container">
+			        <c:forEach var="category" items="${category_list}">
+			            <ul class="category_detail_list" data-category-id="${category.pk_category_no}">
+			                <c:forEach var="category_detail_list" items="${category_detail_list}">
+			                    <c:if test="${category_detail_list.fk_category_no == category.pk_category_no}">
+			                        <li class="category_detail_item"
+			                            onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${category_detail_list.fk_category_no}&category_detail_no=${category_detail_list.pk_category_detail_no}'">
+			                            ${category_detail_list.category_detail_name}
+			                        </li>
+			                    </c:if>
+			                </c:forEach>
+			            </ul>
+			        </c:forEach>
+			    </div>
+			</div>
+			</div>
 		</div>
-	
+		
 		<div class="menuItem">
 			<a class="menuStyle">이벤트</a>
 		</div>
@@ -467,20 +575,11 @@ form.search {
 		
 	</div>
 	
+	
+	
 </div>
 
-<hr style="margin-bottom: 0px;">
-<div style="display:none" class="categoryView">
-	<ul>
-		<li>전자제품</li>
-		<li>머시기</li>
-		<li>다른머시기</li>
-		<li></li>
-		<li></li>
-		<li></li>
-		<li></li>
-	</ul>
-</div>
+
 
 </div>
 </div>
@@ -590,7 +689,54 @@ $(document).ready(function(){
 	   	if(e.keyCode == 13){ // 엔터를 했을 경우
 		   	goSearch();
 	   	}
+	})
+	
+	
+	/* 상품 카테고리 시작 */
+	// 하위 카테고리 숨기기
+	$("div#category_detail_dropdown").hide();
+	
+	// 카테고리 버튼에 hover 시 dropdown 보여주기
+   	$("span#category_btn").hover(
+   		    function() {
+   		     	$("div#dropdown").show();
+   		    },
+   	);
+
+   	// 상위 카테고리 목록 hover 시 하위 카테고리명 보여주기
+    $("li.category_item").hover(
+       function () {
+           let category_id = $(this).data("category-id");
+
+           // 모든 하위 카테고리 숨김
+           $("ul.category_detail_list").hide();
+
+           // 해당 상위 카테고리에 맞는 하위 카테고리 보이기
+           let category_detail_id = $('.category_detail_list[data-category-id="' + category_id + '"]');
+           if (category_detail_id.length) {
+        	   category_detail_id.show();
+               $("div#category_detail_dropdown").show();
+           }
+           
+       }
+   	);
+    
+	// 마우스를 3개 요소에서 완전히 벗어나면(카테고리 버튼, 상위 카테고리, 하위 카테고리 div) 숨기기
+	$("span#category_btn, div#category_detail_dropdown, div#category_dropdown").on("mouseleave", function(event) {
+	    // 이벤트 관련 요소 확인
+	    if (
+	        !$(event.relatedTarget).closest("span#category_btn, div#category_detail_dropdown, div#category_dropdown").length
+	    ) {
+	        $("div#category_detail_dropdown, div#category_dropdown").hide();
+	    }
 	});
+ 
+	// 카테고리 버튼 가면 다시 보여주기
+	$("span#category_btn").on("mouseenter", function() {
+	    $("div#category_dropdown").show();
+	});
+    /* 상품 카테고리 끝 */
+
 	
 	
 	// 채팅 버튼 클릭 시 채팅 페이지 표시
