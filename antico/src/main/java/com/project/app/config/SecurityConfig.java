@@ -25,7 +25,6 @@ import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
 import com.project.app.security.LoginFailureHandler;
 import com.project.app.security.OauthFailer;
-import com.project.app.security.OauthSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,9 +48,7 @@ public class SecurityConfig {
     
     private final DefaultOAuth2UserService oAuth2UserService;
     
-    
-    private final OauthSuccessHandler oauth_success_handler;
-	
+
 	@Bean
     PasswordEncoder pwd_encoder() {
 		return new BCryptPasswordEncoder();
@@ -86,9 +83,12 @@ public class SecurityConfig {
 		.requestMatchers("/product/**").authenticated()
 					  
 		.requestMatchers("/mypage/**").authenticated()
-					  
-		.requestMatchers("/kakaologin/**").permitAll()
-					 
+		
+		.requestMatchers("/notice/notice_list").authenticated()
+		
+		.requestMatchers("/review/**").permitAll()
+		
+		.requestMatchers("/admin/**").hasAnyRole("ADMIN_1","ADMIN_2")
           
         .requestMatchers("/**").permitAll()
           
@@ -96,7 +96,6 @@ public class SecurityConfig {
           
         .requestMatchers("/oauth2/**").permitAll()
              
-        .anyRequest().authenticated()
     )
     .exceptionHandling(ex -> ex
     	 .accessDeniedHandler(custom_handler)
@@ -108,7 +107,6 @@ public class SecurityConfig {
     				.baseUri("/login/oauth2/code/**")
     		)
             .failureHandler(oauth_failer)
-            .successHandler(oauth_success_handler)
             
             .userInfoEndpoint(userInfo -> userInfo
                     .userService(oAuth2UserService))

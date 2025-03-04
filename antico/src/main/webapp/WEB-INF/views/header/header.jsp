@@ -2,11 +2,13 @@
     pageEncoding="UTF-8"%>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%
 
    String ctxPath = request.getContextPath();
    //     /myspring 
 %>    
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -315,7 +317,22 @@ img.main_logo {
 }
 
 
-.my_header{
+.my_header_user{
+	position: absolute;
+	list-style: none;
+	height: 50px; 
+    width: 70px;
+    left: 114px;
+    top: 30px;
+    padding: 0;
+    text-align: center;
+    border: solid 1px #F1F4F6;
+    border-radius: 5px;
+    font-size: 12px;
+    display:none;
+}
+
+.my_header_admin{
 	position: absolute;
 	list-style: none;
 	height: 50px; 
@@ -415,14 +432,27 @@ form.search {
 					<li class="">
 						
 						<c:if test="${pageContext.request.userPrincipal.name == null}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
-						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
-					
-					<ul class="my_header">
-						<li style="margin-top:2px;"><a href="#" onclick="myPage(); return false;">마이페이지</a></li>
-						<li><hr style="margin: 4px;"></li>
-						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+						<sec:authorize access="hasAnyRole('ROLE_ADMIN_1', 'ROLE_ADMIN_2')">
+    					<p class="my_manu_admin">마이</p>
+						</sec:authorize>
+						<sec:authorize access="hasAnyRole('ROLE_USER_1', 'ROLE_USER_2', 'ROLE_USER_3')">
+						<p class="my_manu_user">마이</p>
+						</sec:authorize>
 						
-					</ul>
+						<ul class="my_header_user" >
+							<li style="margin-top:2px;"><a href="#" onclick="myPage(); return false;">마이페이지</a></li>
+							<li><hr style="margin: 4px;"></li>
+							<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+							
+						</ul>
+						
+						<ul class="my_header_admin">
+							<li style="margin-top:2px;"><a href="<%=ctxPath %>/admin/admin_page">관리자페이지</a></li>
+							<li><hr style="margin: 4px;"></li>
+							<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+							
+						</ul>
+						
 					</li>	
 				</ul>
 			</div>
@@ -568,19 +598,31 @@ function goSearch() {
 $(document).ready(function(){
 	
 	
-	$("ul.my_header").css("display", "none");
+	$("ul.my_header_user").css("display", "none");
+	
+	$("ul.my_header_admin").css("display", "none");
 	
 	$("img.main_logo").click(function(e){
 		location.href = "<%=ctxPath%>/index";
 	});	
 	
 	
-	$("p.my_manu").bind("click", function(){
+	$("p.my_manu_user").bind("click", function(){
 		
-		if($("ul.my_header").css("display") == "none"){
-			$("ul.my_header").css("display", "block");
+		if($("ul.my_header_user").css("display") == "none"){
+			$("ul.my_header_user").css("display", "block");
 		}else{
-			$("ul.my_header").css("display", "none");
+			$("ul.my_header_user").css("display", "none");
+		}
+		
+	});
+	
+	$("p.my_manu_admin").bind("click", function(){
+		
+		if($("ul.my_header_admin").css("display") == "none"){
+			$("ul.my_header_admin").css("display", "block");
+		}else{
+			$("ul.my_header_admin").css("display", "none");
 		}
 		
 	});
@@ -627,6 +669,8 @@ function myPage() {
         }
     });
 }
+
+
 
 </script>
 

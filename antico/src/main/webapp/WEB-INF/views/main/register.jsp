@@ -8,12 +8,12 @@
 
 <div style="width:25%; margin:0 auto 10% auto;">
 	
-	<div style="width:100%; margin:0 auto 0 auto; text-align: center;">
+	<div style="width:100%; margin:0 auto; text-align: center;">
 		<img class="main_logo" src="${pageContext.request.contextPath}/images/logo/logo_black.svg" width="200"/>
 	</div>
 	
-	<div class="" style="width:100%; margin:4% auto 10% auto; border: solid 1.5px #E6E6E6; border-radius: 3%; padding: 20px 20px">
-		<form action="${ctxPath}/member/register" method="post">
+	<div class="" style="width:500px; margin:4% auto 10% auto; border: solid 1.5px #E6E6E6; border-radius: 3%; padding: 20px 20px">
+		<form action="${ctxPath}/member/register" method="post" name="registerFrom">
 		<div class="textSpan">
 			<span class="block">중고나라에 오신 것을</span>
 			<span>환영합니다.</span>
@@ -22,22 +22,30 @@
 		<div style="padding:8% 2% 1% 2%; width:100%; margin-bottom: 5%;">
 			<p>아이디</p>
 			<input type="text" name="member_user_id" class="textbox" placeholder="아이디"/>
-				
+			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="idCheck">아이디는 영문, 숫자를 포함해야하며 특수문자 8~20글자만 가능합니다.</p>
 		</div>
 		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
 			<p>비밀번호</p>
-			<input type="text" name="member_passwd" class="textbox" placeholder="비밀번호"/>
+			<input type="password" name="member_passwd" class="textbox" placeholder="비밀번호"/>
+			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="passCheck">아이디는 영문, 숫자, 특수문자 모두 사용하여 8~20글자만 가능합니다</p>
+		</div>		
+		<div style="padding:1% 2% 0% 2%; margin-bottom: 5%;">
+			<p>비밀번호 확인</p>
+			<input type="password" name="member_passwd_ck" class="textbox" placeholder="비밀번호 확인"/>
+			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="passCheckResult">비밀번호가 일치하지 않습니다.</p>
 		</div>		
 		
 				
 		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
 			전회번호
 			<input type="text" name="member_tel" class="textbox" placeholder="- 없이 숫자만 입력해주세요"/>
+			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="telCheck">전화번호는 숫자로 11자를 입력해주세요.</p>
 		</div>	
 		
-		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
+		<div style="padding:0% 2% 1% 2%; margin-bottom: 5%;">
 			이름
 			<input type="text" name="member_name" class="textbox" placeholder=""/>
+			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="nameCheck">이름은 한글로 2~5 글자로 입력해주세요.</p>
 		</div>	
 		
 		
@@ -49,20 +57,11 @@
 			
 		</div>			
 		<div style="padding:1% 2% 1% 2%;"">
-			<button type="submit" class="BtnStyle" onclick="location.href='${ctxPath}/member/register'">회원가입하기</button>
+			<button type="button" class="BtnStyle btnSubmit">회원가입하기</button>
+			<button type="button" style="display:none"></button>
 		</div>
 		
 
-	
-<%-- 	<form action="${ctxPath}/auth/login" method="post">
-		
-		<input type="text" name="mem_user_id"/>
-		
-		<input type="text" name="mem_passwd"/>
-		
-		<input type="submit"/>
-		
-	</form> --%>
 
 </form>
 </div>
@@ -111,35 +110,118 @@ Kakao.init('61202bdbe397ec06765ee5a7cb40b414');
 </script>
 
 <script type="text/javascript">
+
 $(document).ready(function(){
 	
-	$("img#kakaoImg").bind("click", function(){
+	const user_id_reg = /^[a-zA-Z](?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$/g;
+	const user_passwd_reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~@#$!%*?&])[a-zA-Z\d~@#$!%*?&]{8,20}$/ ;
+	const user_tel_reg = /^010\d{8}$/;
+	const user_name_reg = /^[가-힣]{2,5}$/;
+	
+	$("input:text[name='member_user_id']").bind("blur", function(e){
 		
-		Kakao.Auth.authorize({
-			redirectUri: 'http://localhost/antico/member/login',
-			
-		});
+		 const user_id = $(e.target).val();
+		 
+		 if(user_id_reg.test(user_id)){
+			 
+			 $("#idCheck").css("display","none");
+			 
+		 }else{
+			 
+			 $("#idCheck").css("display","block");
+			 
+		 }
+		 
+	});
+	
+	$("input:password[name='member_passwd']").bind("blur", function(e){
 		
-		console.log(getAccessToken());
+		 const passwd = $(e.target).val();
+		 
+		 if(user_passwd_reg.test(passwd)){
+			 
+			 $("#passCheck").css("display","none");
+			 
+		 }else{
+			 
+			 $("#passCheck").css("display","block");
+			 
+		 }
+		 
+	});
+	
+	$("input:password[name='member_passwd_ck']").bind("blur", function(e){
 		
+		 const passwd_ck = $(e.target).val();
+		 
+		 const passwd = $("input:password[name='member_passwd']").val();
+		 
+		 if(passwd_ck == passwd){
+			 $("#passCheckResult").css("display","none");
+		 }else{
+			 $("#passCheckResult").css("display","block");
+		 }
+		 
+	});
+	
+	$("input:text[name='member_tel']").bind("blur", function(e){
+		
+		 const tel = $(e.target).val();
+		 
+		 if(user_tel_reg.test(tel)){
+			 
+			 $("#telCheck").css("display","none");
+			 
+		 }else{
+			 
+			 $("#telCheck").css("display","block");
+			 
+		 }
+		 
+	});
+	
+	$("input:text[name='member_name']").bind("blur", function(e){
+		
+		 const name = $(e.target).val();
+		 
+		 if(user_name_reg.test(name)){
+			 
+			 $("#nameCheck").css("display","none");
+			 
+		 }else{
+			 
+			 $("#nameCheck").css("display","block");
+			 
+		 }
+		 
 	});
 	
 	
+	$("button.btnSubmit").bind("click", function(){
+		
+		const passwd_ck = $("input:password[name='member_passwd_ck']").val();
+		const tel = $("input:text[name='member_tel']").val();
+		const name = $("input:text[name='member_name']").val();
+		const passwd =$("input:password[name='member_passwd']").val();
+		const user_id = $("input:text[name='member_user_id']").val();
+		
+		if(tel	!= "" || name != "" || passwd != "" || user_id != "" ){
+			
+			if(user_id_reg.test(user_id) && user_passwd_reg.test(passwd) 
+					&&user_tel_reg.test(tel) && user_name_reg.test(name) && passwd_ck == passwd){
+				document.registerFrom.submit();
+			}else{
+				alert("모든 항목을 형식에 맞게 작성해주세요.");
+			}
+			
+		}else{
+			alert("입력하지 않은 항목이 있습니다. 다시 입력해주세요.");
+		}
+		
+	});
+	
 });
 
-function requestUserInfo() {
-    Kakao.API.request({
-      url: '/v2/user/me',
-    })
-      .then(function(res) {
-        alert(JSON.stringify(res));
-      })
-      .catch(function(err) {
-        alert(
-          'failed to request user information: ' + JSON.stringify(err)
-        );
-      });
-  }
 </script>
 
 

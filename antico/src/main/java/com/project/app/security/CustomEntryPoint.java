@@ -43,6 +43,14 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 			
 			response.addCookie(cookie);
 			
+		}else if(request_url.startsWith(ctx_path+"/admin")) {
+			Cookie cookie = new Cookie("message", URLEncoder.encode("관리자페이지는&nbsp;관리자만&nbsp;확인가능합니다.", "UTF-8"));
+			
+			cookie.setMaxAge(5); 
+			
+			cookie.setPath("/");
+			
+			response.addCookie(cookie);
 		}
 		
 		response.sendRedirect(ctx_path+"/member/login");
