@@ -363,7 +363,6 @@ form.search {
 /* 카테고리 버튼 시작 */
 /* 전체 드롭다운 */
 div#dropdown{ 
-	margin-top: 5px;
 	display: none;
     flex-direction: column; /* 아래로 펼쳐지도록 설정 */
     position: absolute;

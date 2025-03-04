@@ -619,7 +619,7 @@
 			and product_update_date >= trunc(sysdate) -7 <!-- 최근 7일 이내 등록된 상품 -->
 		</if>
 		<choose>
-	        <when test="sort_views_week == 'sort_views_week'">order by P.product_views desc</when> <!-- 이번 주 인기 급상승 상품  -->
+	        <when test="sort_views_week == 'sort_views_week'">order by P.product_views desc</when>
 	        <otherwise>order by P.product_update_date desc</otherwise> <!-- 방금 등록된 상품 -->
 	    </choose>	
 	</select>

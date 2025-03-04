@@ -36,6 +36,7 @@ public class ProductService_imple implements ProductService {
 	@Autowired
 	private GetMemberDetail get_member_detail;
 	
+	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 	
 	@Autowired
@@ -159,13 +160,13 @@ public class ProductService_imple implements ProductService {
 					if (!attach_list.get(i).isEmpty()) { // 이미지 리스트에 파일이 존재하는 경우라면
 						
 						// #2. S3에 첨부파일 업로드 하기
-						List<Map<String, String>> fileList = s3fileManager.upload(attach_list, "product", FileType.IMAGE);
+						Map<String, String> fileList = s3fileManager.upload(attach_list.get(i), "product", FileType.IMAGE);
 						// System.out.println(fileList.get(i).get("org_file_name")); // 첨부파일 원본 파일명 가져오기
 						// System.out.println(fileList.get(i).get("file_name")); 	 // 첨부파일 업로드되는 파일명 가져오기
 						
 						// 이미지 VO에 값 넣어주기
-						product_imgvo.setProd_img_name(fileList.get(i).get("file_name")); 		  // 저장된 파일명
-						product_imgvo.setProd_img_org_name(fileList.get(i).get("org_file_name")); // 원본 파일명
+						product_imgvo.setProd_img_name(fileList.get("file_name")); 		  // 저장된 파일명
+						product_imgvo.setProd_img_org_name(fileList.get("org_file_name")); // 원본 파일명
 						
 						// 첫 번째 이미지는 대표사진, 나머지는 일반사진 
 						product_imgvo.setProd_img_is_thumbnail(index ==0 ? "1" : "0");
@@ -271,8 +272,6 @@ public class ProductService_imple implements ProductService {
 	// "상품삭제" 클릭 시 상품 삭제하기
 	@Override
 	public int delete(String pk_product_no) {
-		
-		int n = 0;
 
 		// 해당 상품에 대한 이미지 정보 가져오기
 		List<ProductImageVO> product_img_list = productDAO.getProductImg(pk_product_no);
@@ -286,9 +285,9 @@ public class ProductService_imple implements ProductService {
 			s3fileManager.deleteImageFromS3(file_name);
 		}
 		// #2. 해당 상품 삭제하기 (외래키 설정으로 이미지 테이블 같이 삭제됨)
-		// int result = productDAO.delete(pk_product_no);
+		int result = productDAO.delete(pk_product_no);
 		
-		return n;
+		return result;
 	}
 
 	
