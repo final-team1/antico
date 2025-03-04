@@ -300,6 +300,35 @@ public class ProductController {
 	
 	
 	
+	// "상품수정" form 페이지 요청
+	@PostMapping("update")
+	public ModelAndView update(ModelAndView mav,
+							   @RequestParam(defaultValue = "") String pk_product_no) {
+
+		// 상위 카테고리 정보 가져오기
+		List<CategoryVO> category_list = service.getCategory();
+
+		// 하위 카테고리 정보 가져오기
+		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
+
+		mav.addObject("category_list", category_list);
+		mav.addObject("category_detail_list", category_detail_list);
+		
+		// 상품 정보 가져오기
+		Map<String, String> product_map = service.getProductDetail(pk_product_no);
+		mav.addObject("product_map", product_map);
+		
+		// 특정 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
+		mav.addObject("product_img_list", product_img_list);
+
+		mav.setViewName("product/update");
+
+		return mav;
+	}
+	
+	
+	
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
 	@PostMapping("reg_update")
 	@ResponseBody

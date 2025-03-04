@@ -675,7 +675,7 @@ span.sold_out_text {
 					
 					<li class="bar"></li>
 					
-					<li class="prod_upate">
+					<li class="prod_upate" onclick="prodUpdate('${product_map.pk_product_no}')">
 						<span class="prod_upate_title"><i class="fa-solid fa-pen-to-square"></i></span>
 						<span class="prod_upate">상품수정</span>
 					</li>
@@ -835,6 +835,12 @@ span.sold_out_text {
 	</div>
 </div>	
 
+
+<!-- 상품 수정 페이지 이동을 위한 form -->
+<form name="prodUpdateFrm">
+   <input type="hidden" name="pk_product_no" />
+   <input type="hidden" />
+</form>	       
 
 
 
@@ -1045,6 +1051,19 @@ span.sold_out_text {
 	} // end of function regUpdate(product_no)
 	
 	
+	
+	// "상품수정" 클릭 시 수정 페이지로 이동
+	function prodUpdate(pk_product_no) {
+		
+		   const frm = document.prodUpdateFrm;
+		   frm.pk_product_no.value = pk_product_no;
+		   
+		   frm.method = "post";
+		   frm.action = "<%= ctxPath%>/product/update";
+		   frm.submit();	
+	} // end of function prodUpdate(product_no)
+	
+
 	
 	// "상품삭제" 클릭 시 상품 삭제하기
 	function prodDelete(product_no) {
