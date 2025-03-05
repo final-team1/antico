@@ -5,14 +5,14 @@
 
 <mapper namespace="com.project.app.member.model.MemberDAO">
 
-   	<insert id="registerMember" parameterType="MemberVO">
+      <insert id="registerMember" parameterType="MemberVO">
         insert into tbl_member(pk_member_no, member_regdate, member_user_id, member_passwd, member_tel, member_passwd_change_date, member_role, member_point, member_score, member_status, member_name, member_oauth_type)
         values(mem_seq.nextval , sysdate, #{member_user_id},
         <if test="member_passwd != null">
           #{member_passwd}
         </if>
         <if test="member_passwd == null">
-        	null
+           null
         </if>
          , 
          <if test="member_tel != null">
@@ -24,67 +24,67 @@
          
          , sysdate, 0, 0, 0, 1, #{member_name}, 
         <if test="member_oauth_type == null">
-       		null
+             null
         </if>
         <if test="member_oauth_type != null">
-        	#{member_oauth_type}
+           #{member_oauth_type}
         </if>
         )
     </insert>
     
     <update id="google_tel_add" parameterType="String">
-    	UPDATE tbl_member 
-		SET member_tel = #{member_tel}
+       UPDATE tbl_member 
+      SET member_tel = #{member_tel}
     </update>
    
-	<select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
-		select *
-		from tbl_member
-		where member_user_id = #{member_user_id}
-	</select>
-	
-	
-	<select id="selectMemberByMemberUserId" parameterType="MemberVO" resultType="MemberVO">
-		select *
-		from tbl_member
-		where member_user_id = #{member_user_id} and member_status = 1
-	</select>
-	
-	<!-- 탈퇴신청을 한 회원인지 체크 -->
-	<select id="leaveCheck" resultType="String" parameterType="String">
-		select *
-		from tbl_leave l join tbl_member m
-		on l.fk_member_no = m.pk_member_no
-		where m.member_user_id = #{member_user_id}
-	</select>
-	
-	<!-- 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회 -->
-	<select id="loginCheck" parameterType="String" resultType="String">
-	   select m.pk_member_no
-	    from tbl_member m
-	    join tbl_leave l on m.pk_member_no = l.fk_member_no
-	    where l.leave_date is not null
-	    and (sysdate - l.leave_date) > 72 / 24
-	    and m.member_status = 1
-	    and m.pk_member_no = #{leave_member_no}
-	</select>
+   <select id="selectMemberByUserId" parameterType="String" resultType="MemberVO">
+      select *
+      from tbl_member
+      where member_user_id = #{member_user_id}
+   </select>
+   
+   
+   <select id="selectMemberByMemberUserId" parameterType="MemberVO" resultType="MemberVO">
+      select *
+      from tbl_member
+      where member_user_id = #{member_user_id} and member_status = 1
+   </select>
+   
+   <!-- 탈퇴신청을 한 회원인지 체크 -->
+   <select id="leaveCheck" resultType="String" parameterType="String">
+      select pk_member_no
+      from tbl_leave l join tbl_member m
+      on l.fk_member_no = m.pk_member_no
+      where m.pk_member_no = #{pk_member_no}
+   </select>
+   
+   <!-- 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회 -->
+   <select id="loginCheck" parameterType="String" resultType="String">
+      select m.pk_member_no
+       from tbl_member m
+       join tbl_leave l on m.pk_member_no = l.fk_member_no
+       where l.leave_date is not null
+       and (sysdate - l.leave_date) > 72 / 24
+       and m.member_status = 0
+       and m.pk_member_no = #{leave_member_no}
+   </select>
 
-	<!-- 72시간이 지난 회원이 로그인을 할 때 회원상태 업데이트 -->
-	<update id="statusUpdate" parameterType="String">
-		update tbl_member set member_status = 0
-		where pk_member_no = #{fk_member_no}
-	</update>
-	
-	<!-- 탈퇴신청은 했지만 72시간이 지나지 않은 회원이 로그인한 경우 -->
-	<delete id="leaveDelete" parameterType="String">
-		delete from tbl_leave where pk_leave_no = #{leave_member_no}
-	</delete>
-	
-	<insert id="loginHistoryByLoginHistoryVo" parameterType="LoginhistoryVO">
-		insert into tbl_loginhistory(pk_login_history_no, fk_member_no, login_history_user_ip, login_history_date)
-		values (login_history_seq.nextval, to_number(#{fk_member_no}), #{login_history_user_ip}, sysdate)
-	</insert>
+   <!-- 탈퇴신청은 했지만 72시간이 지나지 않은 회원이 로그인한 경우 -->
+   <delete id="leaveDelete" parameterType="String">
+      delete from tbl_leave where pk_leave_no = #{leave_member_no}
+   </delete>
+   
+   <insert id="loginHistoryByLoginHistoryVo" parameterType="LoginhistoryVO">
+      insert into tbl_loginhistory(pk_login_history_no, fk_member_no, login_history_user_ip, login_history_date)
+      values (login_history_seq.nextval, to_number(#{fk_member_no}), #{login_history_user_ip}, sysdate)
+   </insert>
 
+   <!-- 탈퇴신청을 했지만 72시간 이내에 접속한 경우 -->
+   <update id="rollback" parameterType="String">
+      update tbl_member set member_status = 1
+      where pk_member_no = #{leave_member_no}
+   </update>
+   
 </mapper>
 
 
