@@ -41,7 +41,13 @@ public interface MypageDAO {
 	Map<String, String> member_select(String member_no);
 
 	// 로그인 한 회원의 판매확정된 판매내역들 가져오기
-	List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell);
+	List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell, String search_date);
+
+	// 판매상세정보 가져오기
+	Map<String, String> infoSell(String pk_trade_no);
+
+	// 상품페이지 이동
+	String productNo(String pk_trade_no);
 
 
 }

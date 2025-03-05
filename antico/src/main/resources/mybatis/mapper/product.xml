@@ -552,7 +552,7 @@
 	
 	<!-- "상품삭제" 클릭 시 상품 삭제하기 -->
 	<delete id="delete" parameterType="String">
-		delete tbl_product
+		delete from tbl_product
 		where pk_product_no = #{pk_product_no}
 	</delete>
 
