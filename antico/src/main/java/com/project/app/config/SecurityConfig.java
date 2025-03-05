@@ -21,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
 import com.project.app.member.service.AuthCustomDetailService;
+import com.project.app.security.CoustomSuccessHandle;
 import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
 import com.project.app.security.LoginFailureHandler;
@@ -48,6 +49,8 @@ public class SecurityConfig {
     
     private final DefaultOAuth2UserService oAuth2UserService;
     
+    
+    private final CoustomSuccessHandle costom_oauth_success;
 
 	@Bean
     PasswordEncoder pwd_encoder() {
@@ -107,10 +110,11 @@ public class SecurityConfig {
     				.baseUri("/login/oauth2/code/**")
     		)
             .failureHandler(oauth_failer)
-            
+            .successHandler(costom_oauth_success)
             .userInfoEndpoint(userInfo -> userInfo
                     .userService(oAuth2UserService))
             )
+    
 
     .csrf(AbstractHttpConfigurer::disable)
     
@@ -121,6 +125,7 @@ public class SecurityConfig {
 	      	.usernameParameter("member_user_id")
 	      	.passwordParameter("member_passwd")
 	      	.defaultSuccessUrl("/index", true)
+	      	.successHandler(costom_oauth_success)
 	      	.failureHandler(login_failure_handler)
       		.permitAll()
      )

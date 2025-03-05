@@ -65,8 +65,8 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
             client-name: Naver
                   
           kakao:
-            client-id: ENC(E6s5AblYNMphC17owzjI936vq093etEd2SDaQgFWHrRuEbWm8k1/XLGHaKfJBYqO/kaHUa8loofUw2YBDDUqHLTGlhhMxZopLBtRWFQc126yQz8MlyqIzA==)
-            client-secret: ENC(4mSLPLN+OE+014DxNANWwNxjyXiUQ9crAXJwpTxGrQjxu1oI3doJnPU0JiO+iEL/)
+            client-id: ENC(ed6mZk2ojK8dP9C5260yVzMQ9KWN/8wo7OYMRdGAiJmioBS89piPCTAdoLuJYZo4)
+            client-secret: ENC(MRorWkaXAopO2SgeLNwBQVlE5P8+PiSfBvc1omaj4p3ApeBjVxYUbqZULWnma4rx)
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             scope: account_email

@@ -79,6 +79,11 @@
 	<delete id="leaveDelete" parameterType="String">
 		delete from tbl_leave where pk_leave_no = #{leave_member_no}
 	</delete>
+	
+	<insert id="loginHistoryByLoginHistoryVo" parameterType="LoginhistoryVO">
+		insert into tbl_loginhistory(pk_login_history_no, fk_member_no, login_history_user_ip, login_history_date)
+		values (login_history_seq.nextval, to_number(#{fk_member_no}), #{login_history_user_ip}, sysdate)
+	</insert>
 
 </mapper>
 
