@@ -3,6 +3,7 @@ package com.project.app.member.model;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.project.app.member.domain.MemberVO;
+import com.project.app.mypage.domain.LoginHistoryVO;
 
 @Mapper
 public interface MemberDAO {
@@ -34,5 +35,8 @@ public interface MemberDAO {
 
 	// google oauth로그인시 전화번호만 따로 추가시키는 메소드
 	void google_tel_add(String member_tel);
+
+	// 로그인시 로그인 기록을 남기는 메소드
+	void loginHistoryByLoginHistoryVo(LoginHistoryVO login_history_vo);
 
 }
