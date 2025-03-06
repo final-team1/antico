@@ -18,6 +18,7 @@ public class MypageService_imple implements MypageService {
 	@Override
 	public int delete_submit(Map<String, String> paraMap) {
 		int n = mypagedao.delete_submit(paraMap);
+		int m = mypagedao.statusUpdate(paraMap);
 		return n;
 	}
 

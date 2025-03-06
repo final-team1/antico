@@ -12,6 +12,11 @@
 	</insert>
 
 	<!-- 탈퇴 신청시 탈퇴테이블에 insert -->
+	<update id="statusUpdate" parameterType="Map">
+		update tbl_member set member_status = 0
+		where pk_member_no = #{fk_member_no}
+	</update>
+	
     <insert id="pointcharge" parameterType="Map">
 	    insert into tbl_charge sets(pk_charge_no, fk_member_no, charge_price, charge_regdate, charge_commission)
 		values (cha_no.nextval, #{fk_member_no}, #{charge_price}, sysdate, #{charge_commission})

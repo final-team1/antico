@@ -49,5 +49,7 @@ public interface MypageDAO {
 	// 상품페이지 이동
 	String productNo(String pk_trade_no);
 
+	int statusUpdate(Map<String, String> paraMap);
+
 
 }
