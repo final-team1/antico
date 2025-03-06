@@ -81,6 +81,7 @@ public class MypageService_imple implements MypageService {
 	@Override
 	public List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell, String search_date) {
 		List<Map<String, String>> sell_list = mypagedao.sellList(pk_member_no, fk_seller_no, search_sell, search_date);
+			
 		return sell_list;
 	}
 
