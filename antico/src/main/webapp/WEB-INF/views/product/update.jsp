@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <% String ctxPath = request.getContextPath(); %>
+
 
 <%-- 상품 map --%>
 <c:set var="product_map" value="${requestScope.product_map}" />
@@ -241,10 +243,24 @@ button.update {
 	font-size: 10pt;
 }
 
+/* 취소 버튼 */
+button.cancel {
+	border: none;
+	border-radius: 6px;
+	color: white;
+	background-color: black;
+	width: 150px;
+	height: 50px;
+	font-weight: bold;
+	font-size: 10pt;
+	margin-left: 20px;
+}
+
+
 
 /* 경매 날짜 필드 관련 */
 input[type='datetime-local'] {
-    width: 160px;
+    width: 185px;
    	height: 40px;
     background-color: white;
     border: solid 1px #cccccc;
@@ -270,8 +286,8 @@ span.auction_warning {
 
 <div id="container">
 
-	<!-- 상품 등록 시작 -->
-	<form name="prod_add_frm" enctype="multipart/form-data">	
+	<!-- 상품 수정 시작 -->
+	<form id="prod_update" name="prod_update_frm" enctype="multipart/form-data">	
 		
 		
 		<!-- 상품 이미지  -->
@@ -287,6 +303,9 @@ span.auction_warning {
 				<!-- 상품 이미지 미리보기  -->
 				<div id="image_previews" style="margin-left: 10px; width: 100%; display: flex; flex-wrap: wrap;">
 				</div>
+				
+				<!-- 기존 이미지 담아가기 -->
+			   	<input id="deleted_img_name" type="hidden" name="prod_img_name">
 			</div>
 		</div>
 		
@@ -301,7 +320,7 @@ span.auction_warning {
 		<div id="category" class="cm_margin_top">
 		    <!-- 상위카테고리 -->
 		    <div class="category_left">
-		    	<input id="category" name="fk_category_no" type="text" value="${product_map.fk_category_no}" />
+		    	<input id="category" name="fk_category_no" type="hidden" value="${product_map.fk_category_no}" />
 		        <ul>
 		        	<c:forEach var="category_list" items="${requestScope.category_list}">
 		            	<li onclick="loadCategoryDetail('${category_list.pk_category_no}')" class="category_left" data-category-no="${category_list.pk_category_no}">${category_list.category_name}</li>
@@ -312,7 +331,7 @@ span.auction_warning {
 		
 		    <!-- 하위카테고리 (처음엔 숨김) -->
 		    <div id="category_detail" class="category_right">
-		    	<input id="category_detail" name="fk_category_detail_no" type="text" value="${product_map.fk_category_detail_no}" />
+		    	<input id="category_detail" name="fk_category_detail_no" type="hidden" value="${product_map.fk_category_detail_no}" />
 		        <ul id="category_detail_list">
 		        </ul> 
 		    </div>
@@ -329,7 +348,7 @@ span.auction_warning {
 		<div id="prod_contents" class="cm_margin_top">
 			<textarea id="prod_contents_textarea" name="product_contents" maxlength="2000" 
 			placeholder="- 상품명 &#10;- 구매 시기&#10;- 사용 기간&#10;- 하자 여부&#10;* 실제 촬영한 사진과 함께 상세 정보를 입력해주세요.&#10;* 카카오톡 아이디 첨부 시 게시물 삭제 및 이용제재 처리될 수 있어요&#10;안전하고 건전한 거래환경을 위해 과학기술정보통신부, 한국인터넷진흥원, ANTICO가 함께합니다." 
-			>${product_map.product_contents}</textarea>
+			><c:out value="${product_map.product_contents}"/></textarea>
 		</div>
 		
 		<div style="position: relative;">
@@ -343,12 +362,13 @@ span.auction_warning {
 			<div class="button">
 				<input type="button" class="used" value="중고" data-value="0" />
 				<input type="button" class="new" value="새상품" data-value="1" />
-				<input type="text" id="prod_status_value" name="product_status" value="${product_map.product_status}" />
+				<input type="hidden" id="prod_status_value" name="product_status" value="${product_map.product_status}" />
 			</div>
 		</div>
 		
 		
 		<!-- 판매 유형 -->
+		<%-- 
 		<div id="prod_sale_type" class="cm_margin_top">
 			<span class="cm_span_title">판매 유형</span>
 			<div class="button">
@@ -356,11 +376,11 @@ span.auction_warning {
 				<input type="button" class="auction" value="경매" data-value="3" />
 				<input type="text" id="prod_sale_type_value" name="product_sale_type" value="${product_map.product_sale_status}" />
 				
-				<input type="datetime-local" class="auction_start_date" name="auction_start_date" placeholder="경매 시작 날짜" required />
-				<span class="auction_warning">경매 시작 시간 (경매 시작 시간으로부터 1시간 후가 마감 시간입니다.)</span>
+				<input type="datetime-local" class="auction_start_date" name="auction_start_date" placeholder="경매 시작 날짜" />
+				<span class="auction_warning">경매 시작 시간 (시작 시간으로부터 1시간 후가 마감 시간입니다.)</span>
 			</div>
 		</div>
-		
+		--%>
 
 		<!-- 희망 거래 동네 -->
 		<div id="prod_region" class="cm_margin_top">
@@ -368,15 +388,19 @@ span.auction_warning {
 			<div id="region_button" class="button">
 				<input type="button" class="add_region" value="선택" />
 				<input class="town_name" disabled value="${product_map.region_town}" /> <%-- 동네명 보여주기 위한 --%>
-				<input id="fk_region_no" name="fk_region_no" type="text" value="${product_map.fk_region_no}"/>
+				<input id="fk_region_no" name="fk_region_no" type="hidden" value="${product_map.fk_region_no}"/>
 				<%-- <i id="location" class="fa-solid fa-location-dot fa-2xs"></i> 위치 아이콘 --%>
 			</div>
 		</div>
 		
 		<!-- 등록 버튼 -->
 		<div class="cm_margin_top" style="text-align: center;">
-			<button id="update" class="update">수정</button>
+			<button type="button" id="update" class="update">수정</button>
+			<button type="button" id="cancel" class="cancel" onclick="history.back()">취소</button>
 		</div>
+		
+		<%-- form 전송용 --%>
+		<input type="hidden" id="prod_pk_product_no" name="pk_product_no" value="${product_map.pk_product_no}" /> 
 
 	</form>
 	<!-- 상품 등록 끝 -->
@@ -392,28 +416,114 @@ span.auction_warning {
 
 $(document).ready(function(){
 	
-	// 페이지 로드 시 이미지 미리보기
-	loadInitialImages();
 	
+	// 기존 이미지 파일 미리보기 시작
+	let input_file = $("input#prod_img")[0];
+	let product_imglist = []; // 기존 이미지 정보
+	let fileArr = []; 		  // fileArr 배열을 초기화
+	let maxFiles = 10; 		  // 최대 업로드 가능 개수
+	let deletedFileArr = [];
+
+	<c:forEach var="img" items="${img_list}">
+		product_imglist.push({
+			prod_img_name: "${img.prod_img_name}",
+	        pk_prod_img_no: "${img.pk_prod_img_no}",
+	        prod_img_is_thumbnail: "${img.prod_img_is_thumbnail}"
+	    });
+	</c:forEach>
+
+	let image_previews = $("#image_previews");
+	let img_count_text = $("#img_count");
+
+	// 기존 이미지 미리보기 추가
+	product_imglist.forEach(function (imgData, index) {
+	    let each_img_preview = $("<div>").attr("data-name", imgData.prod_img_name).css({
+	        "position": "relative",
+	        "display": "inline-block",
+	        "margin-left": "5px",
+	        "margin-right": "6px",
+	        "border-radius": "6px",
+	        "width": "86px",
+	        "height": "80px",
+	        "overflow": "hidden"
+	    });
+
+	    let img = $("<img>").attr("src", imgData.prod_img_name).css({
+	        "width": "86px",
+	        "height": "80px",
+	        "padding-left": "0px",
+	        "border-radius": "6px",
+	        "object-fit": "cover",
+	        "box-sizing": "border-box"
+	    });
+
+	    let close_button = $("<button>").attr("type", "button").css({
+	        "position": "absolute",
+	        "top": "2px",
+	        "right": "2px",
+	        "border": "solid 1px #cccccc",
+	        "background-color": "white",
+	        "color": "black",
+	        "border-radius": "50%",
+	        "width": "20px",
+	        "height": "20px",
+	        "cursor": "pointer"
+	    }).text("X").css({
+	        "font-weight": "bold",
+	        "font-size": "10px",
+	        "color": "#5a5a5a"
+	    });
+
+	    each_img_preview.append(img).append(close_button);
+	    image_previews.append(each_img_preview);
+
+	    // 기존 이미지를 배열에 추가 (업로드된 파일 배열에는 추가 안 함)
+	    fileArr.push({ prod_img_name: imgData.prod_img_name, pk_prod_img_no: imgData.pk_prod_img_no });
+
+	    // 첫 번째 이미지에 테두리 추가
+	    if (index === 0) {
+	        each_img_preview.css("border", "solid 1px #0dcc5a");
+	    }
+
+	    // 삭제 버튼 클릭 이벤트
+	    close_button.on("click", function (event) {
 	
-	// 파일 이미지 미리 보기 시작
-    let maxFiles = 10; // 최대 업로드 가능 개수
-    //let fileArr = [];  // 파일 정보 배열
-    let input_file = $("input#prod_img")[0];
+
+	        let parentDiv = $(this).closest("div"); // 해당 미리보기 div 찾기
+	        let imgName = parentDiv.attr("data-name"); // data-name 속성에서 이미지 이름 가져오기
+
+	        // 배열에서 삭제할 이미지 찾기
+	        let index_remove = fileArr.findIndex(f => f.prod_img_name === imgName);
+	        if (index_remove !== -1) {
+	            let removedItem = fileArr.splice(index_remove, 1)[0]; // 배열에서 삭제
+
+	            // 삭제된 이미지 이름 저장
+	            deletedFileArr.push(removedItem.prod_img_name);
+	            $("#deleted_img_name").val(deletedFileArr.join(",")); // hidden input 업데이트
+	        }
+
+	        parentDiv.remove(); // 미리보기 삭제
+	        $("#img_count").text(fileArr.length + "/" + maxFiles); // 이미지 개수 업데이트
+		
+	        
+	        // 첫 번째 이미지가 삭제되면, 새로운 첫 번째 이미지에 테두리 추가
+	        $("#image_previews div").first().css("border", "solid 1px #0dcc5a");
+	    });
+	});
+	
+
+	 // 이미지 개수 갱신
+	 $("#img_count").text(fileArr.length + "/" + maxFiles); // 서버에서 받은 이미지 개수로 갱신
+    	 
     
- 	// 이미지 개수 초기값 설정 (페이지 로드 시)
-    // $("#img_count").text("0/" + maxFiles); // 업로드된 이미지 개수와 최대 개수 설정
-	
     // 이미지 미리보기 업로드 처리
     $("input#prod_img").on("change", function(e) {
         let files = Array.from(e.target.files);
         let image_previews = $("#image_previews");
         let img_count_text = $("#img_count");
-
+		
         
-        // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
         $(this).val("");
-        
         
         // 파일 개수 제한
         if (fileArr.length + files.length > maxFiles) {
@@ -423,14 +533,6 @@ $(document).ready(function(){
 		
         // 파일 형식 제한
         files.forEach(file => {
-        	
-        	/*
-            // 이미 업로드된 파일 이름과 중복되는지 확인
-            if (fileArr.some(f => f.name === file.name)) {
-                alert(file.name + " 파일은 이미 업로드되었습니다.");
-                return;
-            }
-        	*/
         	
             if (!(file.type === 'image/jpeg' || file.type === 'image/png')) {
                 showAlert('error', 'jpg 또는 png 파일만 업로드 가능합니다.');
@@ -506,6 +608,8 @@ $(document).ready(function(){
                 dataTransfer.items.add(file) // 새로 선택된 파일들만 추가
                 input_file.files = dataTransfer.files; // input 요소에 파일 업데이트
                 
+                // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
+                e.target.value = '';
                 
                 // 삭제 버튼 클릭 시 이벤트
                 close_button.on("click", function () {
@@ -528,6 +632,7 @@ $(document).ready(function(){
                 });
 
             };
+            
             reader.readAsDataURL(file);
         });
         
@@ -564,7 +669,7 @@ $(document).ready(function(){
 
  	
 	// 상품 내용 text 개수 업데이트 하기
-	let product_contents = "${product_map.product_contents}"; // text 값 가져오기
+	let product_contents = $("textarea#prod_contents_textarea").val(); // text 값 가져오기
 	let text_length = product_contents.length; // 텍스트의 길이를 구함
 	$('#text_count').text(text_length + ' / 2000'); // 텍스트 개수 표시를 업데이트
  	
@@ -794,8 +899,15 @@ $(document).ready(function(){
     	let prod_infoData_OK = true; // 유효성 여부 확인하는 용도
     	
     	// 이미지 유효성 검사
+    	/*
     	const prod_img = $("input#prod_img").val();
     	if (prod_img == "") {
+    		showAlert('error', '이미지는 필수 입력사항입니다.');
+    		prod_infoData_OK = false;
+    		return false;
+    	}
+    	*/
+    	if (fileArr.length === 0) {
     		showAlert('error', '이미지는 필수 입력사항입니다.');
     		prod_infoData_OK = false;
     		return false;
@@ -901,21 +1013,21 @@ $(document).ready(function(){
     	}	
     	
     	
-    	if(prod_infoData_OK) { // 유효성 검사 통과했으면 상품 등록 시작한다.
+    	if(prod_infoData_OK) { // 유효성 검사 통과했으면 상품 수정 시작한다.
       	  // 경매상품 등록
       	  if($("input#prod_sale_type_value").val() == 1)	 {
       		// 폼(form)을 전송(submit)
-       	    const frm = document.prod_add_frm;
+       	    const frm = document.prod_update_frm;
        	    frm.method = "post";
-       	    frm.action = "<%= ctxPath%>/auction/add";
+       	    frm.action = "<%= ctxPath%>/auction/update_end";
        	    frm.submit();
       	  }
       	  // 일반상품 등록
       	  else {
       		// 폼(form)을 전송(submit)
-     	        const frm = document.prod_add_frm;
+     	        const frm = document.prod_update_frm;
      	        frm.method = "post";
-     	        frm.action = "<%= ctxPath%>/product/add";
+     	        frm.action = "<%= ctxPath%>/product/update_end";
      	        frm.submit();  
       	  }
     	      
@@ -928,95 +1040,6 @@ $(document).ready(function(){
 
 
 // Function Declaration---------------------------------		
-
-
-
-
-//페이지 로드 시 기존 이미지 미리보기
-let productImgList = [];
-let fileArr = []; // fileArr 배열을 초기화
-let maxFiles = 10; // 최대 업로드 가능 개수
-
-<c:forEach var="img" items="${img_list}">
- 	productImgList.push("${img.prod_img_name}");  // prod_img_name 필드를 이미지 URL로 추가
-</c:forEach>
-
-function loadInitialImages() {
-	let image_previews = $("#image_previews");
- 	let img_count_text = $("#img_count");
- 
-	productImgList.forEach(function (imgUrl, index) {
-	     let each_img_preview = $("<div>").css({
-	         "position": "relative",
-	         "display": "inline-block",
-	         "margin-left": "5px",
-	         "margin-right": "6px",
-	         "border-radius": "6px",
-	         "width": "86px",
-	         "height": "80px",
-	         "overflow": "hidden"
-	     });
-	
-	     let img = $("<img>").attr("src", imgUrl).css({
-	         "width": "86px",
-	         "height": "80px",
-	         "padding-left": "0px",
-	         "border-radius": "6px",
-	         "object-fit": "cover",
-	         "box-sizing": "border-box"
-	     });
-	
-	     let close_button = $("<button>").css({
-	         "position": "absolute",
-	         "top": "2px",
-	         "right": "2px",
-	         "border": "solid 1px #cccccc",
-	         "background-color": "white",
-	         "color": "black",
-	         "border-radius": "50%",
-	         "width": "20px",
-	         "height": "20px",
-	         "cursor": "pointer",
-	     }).text("X").css({
-	         "font-weight": "bold",
-	         "font-size": "10px",
-	         "color": "#5a5a5a"
-	     });
-	
-	     each_img_preview.append(img).append(close_button);
-	     image_previews.append(each_img_preview);
-	
-	     // 기존 이미지를 배열에 추가 (선택된 파일 배열에는 추가 안 함)
-	     fileArr.push({ name: imgUrl });
-	
-	     // 첫 번째 이미지에 테두리 추가 (이미지가 올라온 직후)
-	     if (index === 0) {
-	         each_img_preview.css("border", "solid 1px #0dcc5a");
-	     }
-	
-	     // 삭제 버튼 클릭 시 이벤트
-	     close_button.on("click", function () {
-	         // 삭제 처리
-	         let index_remove = fileArr.findIndex(f => f.name === imgUrl);
-	         if (index_remove !== -1) {
-	             fileArr.splice(index_remove, 1);  // 배열에서 해당 파일 제거
-	             each_img_preview.remove();         // 미리보기 이미지 삭제
-	             $("#img_count").text(fileArr.length + "/" + maxFiles); // 이미지 개수 업데이트
-	
-	             // 첫 번째 이미지가 삭제되면, 새로운 첫 번째 이미지에 테두리 추가
-	             $("#image_previews div").first().css("border", "solid 1px #0dcc5a");
-	         }
-	     });
- 	});
-
-	 // 이미지 개수 갱신
-	 $("#img_count").text(fileArr.length + "/" + maxFiles); // 서버에서 받은 이미지 개수로 갱신
-
-}
-
-
-
-
 
 
 // 상위 카테고리 클릭하면 하위 카테고리 나타내주기 시작 //

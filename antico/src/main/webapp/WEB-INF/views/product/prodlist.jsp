@@ -242,7 +242,7 @@ div.sold_out_overlay {
     justify-content: center;
     align-items: center;
     text-align: center;
-    z-index: 5; 	 				/* 다른 요소보다 위에 배치 */
+    z-index: 1; 	 				/* 다른 요소보다 위에 배치 */
     max-width: 100%; 				/* 최대 크기 제한 */
     border-radius: 6px;
     padding: 0;
@@ -264,7 +264,8 @@ i#wish {
 	 right: 10px; 
 	 color: #0DCC5A;
 	 font-size: 16pt;
-}
+	 z-index: 2;
+}	
 
 /* 상품 제목 */
 div.product_title {
@@ -461,7 +462,23 @@ div#is_no_product {
 	                                <span class="sold_out_text">판매완료</span>
 	                            </div>
 	                        </c:if>
+	                        
 
+						    <%-- 경매시작 전 상품이면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 3}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">경매 시작 전</span>
+	                            </div>
+	                        </c:if>	                        
+
+
+						    <%-- 경매중인 상품이면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 4}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">경매중</span>
+	                            </div>
+	                        </c:if>
+	                        
 	                        
 						</div>
 						

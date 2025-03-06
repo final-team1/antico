@@ -63,7 +63,7 @@ public interface ProductDAO {
 	List<ProductImageVO> getProductImg(String pk_product_no);
 
 	// 특정 상품 상세 페이지 부분
-	Map<String, String> getProductDetail(String pk_product_no); // 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+	Map<String, String> getProductDetail(String pk_product_no); // 특정 상품에 대한 정보 가져오기(지역, 회원, 카테고리, 경매)
 	int increaseViewCount(String pk_product_no); //글 조회수 증가하기
 		
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
@@ -72,9 +72,13 @@ public interface ProductDAO {
 	// "상태변경" 클릭 시 상품 상태 업데이트 하기
 	int saleStatusUpdate(String pk_product_no, String sale_status_no);
 	
-	// "상품삭제" 클릭 시 상품 삭제하기
-	int delete(String pk_product_no);
+	// 상품 수정 관련 부분
+	int updateProduct(ProductVO productvo); // 상품 테이블 수정 내용 업데이트
+	int deleteOriginImg(String prod_img_name); // 이미지 테이블에서 기존 이미지들 일괄 삭제하기
+	void updateThumbnail(ProductImageVO first_image); // 기존 이미지만 삭제하는 경우 썸네일 업데이트 하기
 	
+	// 상품 삭제 관련 부분
+	int delete(String pk_product_no); 
 	
 	
 	// 모든 상품 조회 해오기(이미지, 지역)
@@ -82,6 +86,12 @@ public interface ProductDAO {
 	
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> selectProductSummaryList(List<String> pk_product_no_list);
+	
+
+	
+
+
+
 	
 
 

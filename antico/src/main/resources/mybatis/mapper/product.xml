@@ -12,7 +12,7 @@
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
 		where I.prod_img_is_thumbnail = 1
-		and P.product_sale_status IN (0, 1)
+		and P.product_sale_status IN (0, 1, 3, 4)
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -59,7 +59,7 @@
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_region_no
 		WHERE I.prod_img_is_thumbnail = 1
-		and P.product_sale_status IN (0, 1)
+		and P.product_sale_status IN (0, 1, 3, 4)
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -155,7 +155,7 @@
 					JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 					JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
 					where I.prod_img_is_thumbnail = 1
-					and P.product_sale_status IN (0, 1)
+					and P.product_sale_status IN (0, 1, 3, 4)
 					<!-- 검색어가 있는 경우 -->
 					<if test='search_prod != null and search_prod != ""'>
 			        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -447,7 +447,7 @@
      	ON P.pk_product_no = I.fk_product_no
       	JOIN tbl_member M ON M.pk_member_no = P.fk_member_no
       	where P.fk_member_no = #{fk_member_no2}
-      	and   P.product_sale_status IN (0, 1)
+      	and   P.product_sale_status IN (0, 1, 3, 4)
       	and   I.prod_img_is_thumbnail = 1
       	and   P.pk_product_no != #{pk_product_no}
       	order by P.product_update_date desc
@@ -463,7 +463,7 @@
 	</select>
 
 	
-	<!-- 특정 삼품에 대한 정보 가져오기(이미지, 지역, 회원, 카테고리) -->
+	<!-- 특정 상품에 대한 정보 가져오기(이미지, 지역, 회원, 카테고리, 경매정보) -->
 	<resultMap id="getProductDetailMap" type="HashMap">
 	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
@@ -490,6 +490,8 @@
 	    <result property="member_score" 			column="member_score" 			javaType="String"/>
 	    <result property="category_name" 			column="category_name" 			javaType="String"/>
 	    <result property="category_detail_name" 	column="category_detail_name" 	javaType="String"/>
+	    <result property="auction_enddate" 			column="auction_enddate" 		javaType="String"/>
+	    <result property="auction_startdate" 		column="auction_startdate" 		javaType="String"/>
 	</resultMap>
 	<select id="getProductDetail" parameterType="HashMap" resultMap="getProductDetailMap">
 		select P.pk_product_no, 
@@ -516,12 +518,16 @@
 		       M.member_role,
 		       M.member_score,
 		       C.category_name,
-		       D.category_detail_name
+		       D.category_detail_name,
+		       A.pk_auction_no,
+       		   to_char(A.auction_enddate, 'YYYY-MM-DD HH24:MI') AS auction_enddate,
+               to_char(A.auction_startdate, 'YYYY-MM-DD HH24:MI') AS auction_startdate
 		from tbl_product P 
 		JOIN tbl_region R ON P.fk_region_no = R.pk_region_no
 		JOIN tbl_member M ON P.fk_member_no = M.pk_member_no
 		JOIN tbl_category C ON P.fk_category_no = C.pk_category_no
 		JOIN tbl_category_detail D ON P.fk_category_detail_no = D.pk_category_detail_no
+		LEFT JOIN tbl_auction A ON P.pk_product_no = A.fk_product_no
 		where P.pk_product_no = #{pk_product_no}	
 	</select>
 	
@@ -550,13 +556,43 @@
 	</update>
 	
 	
+	<!-- 상품 수정하기 -->
+	<update id="updateProduct" parameterType="ProductVO">
+		update tbl_product set 
+		fk_region_no = #{fk_region_no},
+		fk_category_no = #{fk_category_no}, 
+		fk_category_detail_no = #{fk_category_detail_no}, 
+		product_title = #{product_title}, 
+		product_contents = #{product_contents}, 
+		product_price = #{product_price}, 
+		product_status = #{product_status}, 
+		product_update_date = SYSDATE
+		where pk_product_no = #{pk_product_no}
+	</update>
+		
+	
+	<!-- 이미지 테이블에서 기존 이미지들 일괄 삭제하기 -->
+	<delete id="deleteOriginImg" parameterType="ProductImageVO">
+		delete
+		from tbl_prod_img
+		where prod_img_name = #{prod_img_name}
+	</delete>
+	
+	<!-- 기존이미지 썸네일 업데이트 하기 -->
+	<update id="updateThumbnail" parameterType="ProductImageVO">
+		update tbl_prod_img
+		set prod_img_is_thumbnail = ${prod_img_is_thumbnail}
+		where pk_prod_img_no = ${pk_prod_img_no}
+	</update>
+	
+	
 	<!-- "상품삭제" 클릭 시 상품 삭제하기 -->
 	<delete id="delete" parameterType="String">
-		delete from tbl_product
+		delete 
+		from tbl_product
 		where pk_product_no = #{pk_product_no}
 	</delete>
 
-	
 	
 	<!-- 모든 상품 조회 해오기(이미지 포함) -->
 	<resultMap id="getProductListMap" type="HashMap">
@@ -614,7 +650,7 @@
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
 		where I.prod_img_is_thumbnail = 1
-		and P.product_sale_status IN (0, 1)
+		and P.product_sale_status IN (0, 1, 3, 4)
 		<if test='sort_views_week != null and sort_views_week != ""'>
 			and product_update_date >= trunc(sysdate) -7 <!-- 최근 7일 이내 등록된 상품 -->
 		</if>
@@ -623,6 +659,8 @@
 	        <otherwise>order by P.product_update_date desc</otherwise> <!-- 방금 등록된 상품 -->
 	    </choose>	
 	</select>
+	
+	
 	
 	<!-- 상품 요약 정보 목록 조회 (이미지명 포함) -->
 	<select id="selectProductSummaryList" resultType="productChatDTO">
