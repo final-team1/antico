@@ -22,4 +22,7 @@ public class ProductVO {
 	private String product_sale_type;  		// 판매유형 (0: 일반, 1: 경매)
 	private String product_views;    		// 조회수	
 	
+	// 경매 상품 등록 필드
+	private String auction_start_date;
+	
 }

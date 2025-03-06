@@ -86,24 +86,8 @@ public interface ProductDAO {
 	
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> selectProductSummaryList(List<String> pk_product_no_list);
-	
 
-	
+	// 경매 상품 이미지 등록
+	int insertAuctionProductImage(List<Map<String, String>> fileList, String c_product_no);
 
-
-
-	
-
-
-
-	
-
-
-	
-
-	
-
-
-
-	
 }
