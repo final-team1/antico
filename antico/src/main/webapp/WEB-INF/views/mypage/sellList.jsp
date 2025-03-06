@@ -225,7 +225,7 @@ function Search() {
                 let formattedPrice = item.product_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
                 v_html += `
                     <div class="sell_history">
-                        <div class="sell_date">\${item.trade_confirm_date}<span style="float: right;"></span>\${item.pk_trade_no}</div>
+                        <div class="sell_date">\${item.trade_confirm_date}<span style="float: right;"></span></div>
                         <div class="sell_info">
                             <span class="sell_status">판매완료</span>
                         </div>

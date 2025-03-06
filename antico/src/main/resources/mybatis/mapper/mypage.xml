@@ -129,7 +129,12 @@
 		from tbl_trade t
 		join tbl_product p on t.fk_product_no = p.pk_product_no
 		where t.trade_status = 2
+		<if test='fk_seller_no == "fk_seller_no"'>
 		and t.fk_seller_no = #{pk_member_no}
+		</if>
+		<if test='fk_seller_no == "fk_consumer_no"'>
+		and t.fk_consumer_no = #{pk_member_no}
+		</if>
 	  	<if test='search_sell != ""'> 
 	    and lower(product_title) like '%' || lower(#{search_sell}) || '%' 
 	  	</if>

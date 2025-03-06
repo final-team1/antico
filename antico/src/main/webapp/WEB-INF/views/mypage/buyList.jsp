@@ -7,7 +7,6 @@
 %>
 <c:set var="ctx_Path" value="${pageContext.request.contextPath}" />
 
-<script type="text/javascript" src="<%= ctx_Path%>/js/pointcharge.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
@@ -153,98 +152,166 @@
     color: white;
 }
 
+.sell_item:hover {
+	cursor: pointer;
+}
 
 </style>
 
 
 <script>
-
 $(document).ready(function () {
-    $(".filter > li > button").click(function () {
-        // 모든 버튼의 배경색을 원래대로 변경
-        $(".filter > li > button").css({
+    // 상세 필터 모달 열기/닫기
+    function toggleFilterModal() {
+        $(".filter_modal").toggleClass("show");
+    }
+    $(".filter_btn").on("click", toggleFilterModal);
+
+    // 필터 버튼 선택
+    $(".filter button").on("click", function () {
+        $(".filter button").removeClass("selected"); // 기존 선택 해제
+        $(this).addClass("selected"); // 현재 버튼 활성화
+
+        // 스타일 적용
+        $(".filter button").css({
             "background-color": "white",
             "color": "black",
             "border": "solid 1px black"
         });
-
-        // 클릭한 버튼에 색상 적용
         $(this).css({
             "background-color": "rgb(13, 204, 90)",
             "color": "white",
             "border": "solid 1px rgb(13, 204, 90)"
         });
     });
+
+    // 필터 적용 (조회 버튼 클릭)
+    $(".filter_apply").on("click", function () {
+        let isSelected = $(".filter button.selected").length > 0;
+        if (!isSelected) {
+            showAlert("error", "조회 기간을 선택해주세요."); // 선택 안 하면 알림
+            return;
+        } else {
+        	$(".filter_modal").removeClass("show"); // 필터 모달 닫기
+        	Search();
+        }
+    });
+
+    // 상품 검색 엔터 키 이벤트
+    $("input:text[name='search_sell']").on("keyup", function (e) {
+        if (e.keyCode == 13) {
+            Search();
+        }
+    });
+    
 });
-	
 
 
-document.querySelector(".filter_btn").addEventListener("click", function() {
-    document.querySelector(".filter_modal").classList.toggle("show");
-});
-
-// 상품 검색 창에서 엔터 키 입력 시 검색 실행
-$("input:text[name='search_sell']").on("keyup", function(e) {
-    if (e.keyCode == 13) { // 엔터 키 입력 시
-        goSearch();
-    }
-});
-
+    
 // 상품 검색 함수
-function goSearch() {
-    const frm = document.searchFrm;
-    frm.method = "get";
-    frm.action = "<%= ctx_Path%>/product/prodlist";
-    frm.submit();
+function Search() {
+	
+    const search_sell = $("input:text[name='search_sell']").val();
+    let search_date = $(".filter button.selected").data("period");
+    $.ajax({
+        url: "<%= ctx_Path %>/mypage/buy_search_list",
+        type: "post",
+        data: { "search_sell": search_sell,
+        		"search_date": search_date},
+        dataType: "json",
+        success: function (json) {
+            let v_html = "";
+            $.each(json, function (index, item) {
+                let formattedPrice = item.product_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+                v_html += `
+                    <div class="sell_history">
+                        <div class="sell_date">\${item.trade_confirm_date}<span style="float: right;"></span></div>
+                        <div class="sell_info">
+                            <span class="sell_status">판매완료</span>
+                        </div>
+                        <div class="sell_item" style="display: flex;" onclick="sell_list_info(this)">
+                        <input type="hidden" name="pk_trade_no" value="\${item.pk_trade_no}"/>
+                            <img style="width: 100px; height: 90px;" src="\${item.prod_img_name}"/>
+                            <div>
+                                <p class="sell_title">\${item.product_title}</p>
+                                
+                                <strong class="sell_price">\${formattedPrice}</strong>
+                            </div>
+                        </div>
+                        <button class="review_btn">받은 후기</button>
+                    </div>`;
+            });
+            $("div.search_sell_list").html(v_html); // 한 번만 업데이트
+        },
+        error: function () {
+            showAlert("error", "해당 검색의 판매내역이 없습니다.");
+        }
+    });
 }
 
-// 상세 필터 열기/닫기
-function toggleFilter() {
-    $(".filter_modal").toggleClass("active");
-}
 
-// 필터 적용하기
-function applyFilter() {
-    const selectedPeriod = $("input[name='filter_period']:checked").val();
-    if (!selectedPeriod) {
-        alert("조회 기간을 선택해주세요.");
+// 판매 상세 조회 함수
+function sell_list_info(element) {
+    let pk_trade_no = $(element).closest(".sell_history").find("input:hidden[name='pk_trade_no']").val();
+
+    console.log("pk_trade_no:", pk_trade_no);
+
+    if (!pk_trade_no) {
+        showAlert("error", "거래 번호가 없습니다.");
         return;
     }
 
-    // 필터 값 전송 (예제에서는 alert로 확인)
-    alert("선택한 조회 기간: " + selectedPeriod);
-    
-    // 상세 필터 닫기
-    $(".filter_modal").removeClass("active");
+    	var tabTitle = "구매내역 상세";
+    $.ajax({
+        url: "<%= ctx_Path %>/mypage/buy_list_info",
+        type: "post",
+        data: { "pk_trade_no": pk_trade_no },
+        success: function (html) {
+        	openSideTab(html, tabTitle);
+        },
+        error: function (xhr) {
+            showAlert("error", "실패");
+        }
+    });
 }
+
 
 </script>
 
 
-<!-- 검색 폼 -->
-<form name="searchFrm" class="searchFrm">
-    <div class="sell_search_container">
-        <i class="fas fa-search"></i>
-        <input type="text" name="search_sell" class="search_sell" placeholder="상품명을 입력해주세요.">
-        <button type="button" class="filter_btn">상세필터</button>
-    </div>
-</form>
-
-<div class="sell_history">
-    <div class="sell_date">2025.02.03</div>
-    <div class="sell_info">
-        <span class="sell_status">구매완료</span>
-    </div>
-    <div class="sell_item" style="display: flex;">
-        <img style="width: 100px; height: 90px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKCArbr29NHQngi50AsC43HYLsVrSiLfb5jA&s"/>
-        <div>
-	        <p class="sell_title">이모티콘 팔아요</p>
-	        <strong class="sell_price">원</strong>
-        </div>
-    </div>
-    <button class="review_btn">보낸 후기</button>
+<div class="sell_search_container">
+    <i class="fas fa-search"></i>
+    <input type="text" name="search_sell" class="search_sell" placeholder="상품명을 입력해주세요.">
+    <button type="button" class="filter_btn">상세필터</button>
+</div>
+<div class="search_sell_list">
+	<c:if test="${not empty requestScope.buy_list}">
+	   <c:forEach var="sell_list" items="${requestScope.buy_list}">
+	    	
+			<div class="sell_history">
+			    <div class="sell_date">${sell_list.trade_confirm_date}<span style="float: right;"></span></div>
+			    <div class="sell_info">
+			        <span class="sell_status">판매완료</span>
+			    </div>
+			    <div class="sell_item" style="display: flex;" onclick="sell_list_info(this)">
+			    <input type="hidden" name="pk_trade_no" value="${sell_list.pk_trade_no}"/>
+			        <img style="width: 100px; height: 90px;" src="${sell_list.prod_img_name}"/>
+			        <div>
+				        <p class="sell_title">${sell_list.product_title}</p>
+				        <strong class="sell_price">
+						    <fmt:formatNumber value="${sell_list.product_price}" type="number" pattern="#,###" />원
+						</strong>
+			        </div>
+			    </div>
+			    <button class="review_btn">받은 후기</button>
+			</div>
+		</c:forEach>
+	</c:if>
 </div>
 
+<c:if test="${empty requestScope.buy_list}">
+	<div>판매된 상품이 없습니다.</div>
+</c:if>
 <!-- 상세 필터 모달 -->
 <div class="filter_modal">
     <div class="filter_content">
