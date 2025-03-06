@@ -238,7 +238,7 @@ button.add {
 
 /* 경매 날짜 필드 관련 */
 input[type='datetime-local'] {
-    width: 160px;
+    width: 185px;
    	height: 40px;
     background-color: white;
     border: solid 1px #cccccc;
@@ -347,7 +347,7 @@ span.auction_warning {
 				<input type="hidden" id="prod_sale_type_value" name="product_sale_type" value="" />
 				
 				<input type="datetime-local" class="auction_start_date" name="auction_start_date" placeholder="경매 시작 날짜" required />
-				<span class="auction_warning">경매 시작 시간 (경매 시작 시간으로부터 1시간 후가 마감 시간입니다.)</span>
+				<span class="auction_warning">경매 시작 시간 (시작 시간으로부터 1시간 후가 마감 시간입니다.)</span>
 			</div>
 		</div>
 		
@@ -396,11 +396,9 @@ $(document).ready(function(){
         let files = Array.from(e.target.files);
         let image_previews = $("#image_previews");
         let img_count_text = $("#img_count");
-
+		
         
-        // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
         $(this).val("");
-        
         
         // 파일 개수 제한
         if (fileArr.length + files.length > maxFiles) {
@@ -493,6 +491,8 @@ $(document).ready(function(){
                 dataTransfer.items.add(file); // 선택한 파일을 DataTransfer 객체에 추가
                 input_file.files = dataTransfer.files; // input 요소에 파일 업데이트
                 
+                // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
+                e.target.value = '';
                 
                 // 삭제 버튼 클릭 시 이벤트
                 close_button.on("click", function () {

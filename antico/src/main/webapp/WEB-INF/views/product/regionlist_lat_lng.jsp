@@ -185,7 +185,7 @@ $(document).ready(function(){
 				const current_lat = position.coords.latitude;
 				const current_lng = position.coords.longitude;
 				
-				console.log("현재 위치:", current_lat, current_lng);
+				// console.log("현재 위치:", current_lat, current_lng);
 				
 				
 				

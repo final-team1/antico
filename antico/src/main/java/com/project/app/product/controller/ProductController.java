@@ -1,6 +1,7 @@
 package com.project.app.product.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class ProductController {
 
 	// 상품 등록 완료 요청
 	@PostMapping("add")
-	public ModelAndView add(Map<String, String> paraMap, ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
+	public ModelAndView add(ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
 	      	
 		  // 로그인한 회원의 회원번호 값 가져오기
 		  String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
@@ -82,6 +83,9 @@ public class ProductController {
 		
 	      // 이미지 정보 가져오기 
 	      List<MultipartFile> attach_list = product_imgvo.getAttach();
+	      
+	      // System.out.println(attach_list);
+	      // System.out.println(attach_list.size());
 	      
 	      // 상품 등록 완료 후 상품 테이블 및 이미지 테이블에 상품 정보 저장
 	      int n = service.addProduct(productvo, product_imgvo, attach_list);
@@ -275,12 +279,12 @@ public class ProductController {
 		// 좋아요 정보 가져오기
 		List<Map<String, String>> wish_list = service.getWish();
 		mav.addObject("wish_list", wish_list);
-	
+		
 		// 특정 상품에 대한 이미지 정보 가져오기
 		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
-		mav.addObject("product_img_list", product_img_list);
-		
-		// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+		mav.addObject("product_img_list", product_img_list);		
+
+		// 특정 상품에 대한 정보 가져오기(지역, 회원, 카테고리, 경매정보)
 		Map<String, String> product_map = service.getProductDetail(pk_product_no);
 		mav.addObject("product_map", product_map);
 		
@@ -298,6 +302,25 @@ public class ProductController {
 		return mav;
 	}
 	
+
+	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	@PostMapping("reg_update")
+	@ResponseBody
+	public int regDateUpdate(@RequestParam(defaultValue = "") String pk_product_no) {
+		int result = service.regDateUpdate(pk_product_no);
+		return result;
+	}
+	
+	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	@PostMapping("sale_status_update")
+	@ResponseBody
+	public int saleStatusUpdate(@RequestParam(defaultValue = "") String pk_product_no,
+								@RequestParam(defaultValue = "") String sale_status_no) {
+		int result = service.saleStatusUpdate(pk_product_no, sale_status_no);
+		return result;
+	}
 	
 	
 	// "상품수정" form 페이지 요청
@@ -328,23 +351,25 @@ public class ProductController {
 	}
 	
 	
-	
-	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
-	@PostMapping("reg_update")
-	@ResponseBody
-	public int regDateUpdate(@RequestParam(defaultValue = "") String pk_product_no) {
-		int result = service.regDateUpdate(pk_product_no);
-		return result;
-	}
-	
-	
-	// "상태변경" 클릭 시 상품 상태 업데이트 하기
-	@PostMapping("sale_status_update")
-	@ResponseBody
-	public int saleStatusUpdate(@RequestParam(defaultValue = "") String pk_product_no,
-								@RequestParam(defaultValue = "") String sale_status_no) {
-		int result = service.saleStatusUpdate(pk_product_no, sale_status_no);
-		return result;
+	// "상품 수정" 완료 요청
+	@PostMapping("update_end")
+	public ModelAndView update_end(ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
+		
+		// 새로 업로드된 이미지 정보 가져오기 
+		List<MultipartFile> attach_list = product_imgvo.getAttach();
+		
+		// 상품 수정
+		int n = service.updateProduct(productvo, product_imgvo, attach_list);
+		
+		if (n == 1) {
+			String pk_product_no = productvo.getPk_product_no();
+			mav.setViewName("redirect:/product/prod_detail/" + pk_product_no);
+		}
+		else {
+			mav.setViewName("product/update");
+		}
+		
+		return mav;
 	}
 	
 	

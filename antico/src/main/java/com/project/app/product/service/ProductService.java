@@ -58,7 +58,7 @@ public interface ProductService {
 	// 특정 상품에 대한 이미지 정보 가져오기
 	List<ProductImageVO> getProductImg(String pk_product_no);
 	
-	// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+	// 특정 상품에 대한 정보 가져오기(지역, 회원, 카테고리, 경매)
 	Map<String, String> getProductDetail(String pk_product_no);
 	
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
@@ -66,6 +66,9 @@ public interface ProductService {
 	
 	// "상태변경" 클릭 시 상품 상태 업데이트 하기
 	int saleStatusUpdate(String pk_product_no, String sale_status_no);
+	
+	// 상품 수정하기
+	int updateProduct(ProductVO productvo, ProductImageVO product_imgvo, List<MultipartFile> attach_list);
 	
 	// "상품삭제" 클릭 시 상품 삭제하기
 	int delete(String pk_product_no);
@@ -78,6 +81,7 @@ public interface ProductService {
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list);
 	
+
 
 	
 
