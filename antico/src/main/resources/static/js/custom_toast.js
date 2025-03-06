@@ -85,7 +85,7 @@ function errorHandler(request, status, error) {
 
 	// 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
 	let response = request.responseText;
-	let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
+	let message = response.substring(0, 4) === "msg/" ? response.substr(4) : "";
 
 	showAlert("error", message);
 
