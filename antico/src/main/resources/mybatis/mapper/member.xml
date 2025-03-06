@@ -71,7 +71,7 @@
 
    <!-- 탈퇴신청은 했지만 72시간이 지나지 않은 회원이 로그인한 경우 -->
    <delete id="leaveDelete" parameterType="String">
-      delete from tbl_leave where pk_leave_no = #{leave_member_no}
+      delete from tbl_leave where fk_member_no = #{leave_member_no}
    </delete>
    
    <insert id="loginHistoryByLoginHistoryVo" parameterType="LoginhistoryVO">
