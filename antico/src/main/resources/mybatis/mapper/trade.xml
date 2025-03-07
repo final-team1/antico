@@ -24,7 +24,7 @@
 
 	<!-- 거래테이블에 거래정보들 insert -->
 	<insert id="trade" parameterType="String">
-		insert into tbl_trade sets(pk_trade_no, fk_seller_no, fk_consumer_no, fk_product_no, trade_status, trade_pending_date)
+		insert into tbl_trade (pk_trade_no, fk_seller_no, fk_consumer_no, fk_product_no, trade_status, trade_pending_date)
 		values (tra_seq.nextval, #{member_no}, #{pk_member_no}, #{pk_product_no}, 1, sysdate)
 	</insert>
 	
@@ -50,6 +50,13 @@
 		select pk_trade_no
 		from tbl_trade
 		where fk_product_no = #{pk_product_no} and fk_consumer_no = #{pk_member_no}
+	</select>
+
+	<!--상품 일련번호를 통한 거래내역 조회-->
+	<select id="selectTradeByProductNo" parameterType="String" resultType="TradeVO">
+		select pk_trade_no, fk_seller_no, fk_consumer_no, fk_product_no, trade_status, trade_cancel_date, trade_pending_date, trade_confirm_date
+		from tbl_trade
+		where fk_product_no = #{pk_product_no}
 	</select>
 	
 </mapper>

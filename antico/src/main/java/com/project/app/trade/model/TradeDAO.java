@@ -1,8 +1,11 @@
 package com.project.app.trade.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
+
+import com.project.app.trade.domain.TradeVO;
 
 @Mapper
 public interface TradeDAO {
@@ -30,4 +33,6 @@ public interface TradeDAO {
 	// 구매를 먼저 했는지 조회
 	String purchaseSelect(String pk_product_no, String pk_member_no);
 
+	// 상품 일련번호를 통한 거래 내역 조회
+	Optional<TradeVO> selectTradeByProductNo(String pkProductNo);
 }
