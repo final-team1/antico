@@ -658,8 +658,23 @@ function timeAgo(reg_date) {
             }
         });
     });
-    
-    
+
+	// 거래 후기 클릭시
+	function sellerReview() {
+		$.ajax({
+			url : "<%=ctx_Path%>/review/",
+			data : {
+				"pk_member_no" : "${requestScope.mvo}"
+			},
+			success : function(html) {
+				openSideTab(html, "거래 후기");
+			},
+			error : function(request, status, error) {
+				errorHandler(request, status, error);
+			}
+		});
+	}
+
 </script>
 
 <jsp:include page=".././header/header.jsp" />
@@ -691,7 +706,7 @@ function timeAgo(reg_date) {
 							</div>
 							<div class="stat_box">
 								<p>거래후기</p>
-								<a href="#" onclick="myreview()" style="text-decoration: underline;">1</a>
+								<a href="#" onclick="sellerReview()" style="text-decoration: underline;">1</a>
 							</div>
 							<div class="stat_box">
 								<p>단골</p>

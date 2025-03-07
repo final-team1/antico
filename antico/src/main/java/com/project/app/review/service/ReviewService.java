@@ -35,4 +35,7 @@ public interface ReviewService {
 	// 후기 설문 문항 선택 내역 조회
 	List<SurveyVO> getSurveyRespList(String pk_review_no);
 
+	// 후기가 이미 존재하는지 조회
+	int getCountReview(String pk_review_no);
+
 }

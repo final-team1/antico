@@ -121,7 +121,7 @@
 				where fk_seller_no = #{pk_member_no}
 				order by review_regdate desc
 			) a
-		)
+		) b
 		where rnum between #{paging_dto.first_row} and #{paging_dto.last_row}
 	</select>
 	
@@ -130,7 +130,7 @@
 		select distinct pk_review_no, fk_consumer_no, consumer_name, fk_seller_no, seller_name, 
 			   pk_trade_no, review_content, review_img_file_name, review_img_org_name,
 			   product_title, review_regdate
-		from v_review_survey_resp join 
+		from v_review_survey_resp
 		where pk_review_no = #{pk_review_no}
 	</select>
 	
@@ -139,6 +139,13 @@
 		select pk_survey_no, survey_content
 		from v_review_survey_resp
 		where pk_review_no = #{pk_review_no}
+	</select>
+
+	<!--후기가 이미 존재하는지 조회-->
+	<select id="selectCountReview" resultType="int">
+		select count(*)
+		from tbl_review join tbl_trade on fk_trade_no = pk_trade_no
+		where fk_product_no = #{pk_prodcut_no}
 	</select>
 	
 </mapper>
