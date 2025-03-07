@@ -46,13 +46,14 @@
 	}
 	
 	div.product_image {
+		padding-right: 10px;
 		width : 100px;
 		height : 100%;
 		text-align : right;
 	}
 	
 	div.product_image img {
-		object-fit : cover;
+		object-fit : contain;
 	}
 	
 </style>
