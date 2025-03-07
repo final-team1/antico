@@ -784,5 +784,3 @@ function timeAgo(reg_date) {
 
 <jsp:include page=".././footer/footer.jsp" />
 
-
-<jsp:include page="../tab/tab.jsp"></jsp:include>
