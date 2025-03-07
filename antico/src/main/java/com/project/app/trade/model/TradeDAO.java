@@ -39,4 +39,16 @@ public interface TradeDAO {
 	// 상품 일련번호를 통한 거래 내역 조회
 	Optional<TradeVO> selectTradeByProductNo(String pkProductNo);
 
+	// 결제한 금액만큼 포인트를 돌려준다.
+	int returnPoint(String product_price, String pk_member_no);
+
+	// 판매중으로 다시 변경
+	int onSell(String pk_product_no);
+
+	// 포인트내역에 기록을 남기기
+	int cancelData(String pk_member_no, String product_price, String member_point, String reason);
+
+	// 거래를 구매취소로 변경하고, 거래취소날짜 업데이트
+	int buyCancel(String pk_product_no);
+
 }
