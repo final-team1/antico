@@ -159,6 +159,7 @@ public class ProductController {
 								@RequestParam(defaultValue = "") String region,
 								@RequestParam(defaultValue = "") String town,
 								@RequestParam(defaultValue = "") String sort_type,
+								@RequestParam(defaultValue = "") String sale_type,
 								@RequestParam(defaultValue = "1") int cur_page) {
 
 		// View 페이지 출력을 위한 정보 가져오기 시작 //
@@ -189,11 +190,10 @@ public class ProductController {
 		search_prod = search_prod.trim(); // 검색어 공백 없애주기
 		
 		// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
-        
+        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
         
         // 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
+        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
         
         mav.addObject("product_list_cnt", product_list_cnt); 	     // 총 개수 전달
         mav.addObject("prodcut_price_info", prodcut_price_info);     // 가격 정보 전달 
@@ -215,7 +215,7 @@ public class ProductController {
         if(product_list_cnt > 0) { // 상품이 존재한다면
         	
         	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, paging_dto); 
+            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto); 
             
             mav.addObject("product_list", product_list); // 상품 정보 전달	   
         }
@@ -359,15 +359,10 @@ public class ProductController {
 		List<MultipartFile> attach_list = product_imgvo.getAttach();
 		
 		// 상품 수정
-		int n = service.updateProduct(productvo, product_imgvo, attach_list);
+		service.updateProduct(productvo, product_imgvo, attach_list);
 		
-		if (n == 1) {
-			String pk_product_no = productvo.getPk_product_no();
-			mav.setViewName("redirect:/product/prod_detail/" + pk_product_no);
-		}
-		else {
-			mav.setViewName("product/update");
-		}
+		String pk_product_no = productvo.getPk_product_no();
+		mav.setViewName("redirect:/product/prod_detail/" + pk_product_no);
 		
 		return mav;
 	}

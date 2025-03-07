@@ -531,7 +531,7 @@ span.sold_out_text {
 	<div id="prod_info_container" class="row">
 		<div id="sale_stauts_update_data" class="col-md p-0">
 			<c:if test="${not empty requestScope.product_img_list and fn:length(requestScope.product_img_list) > 1}">
-			   <div id="carouselExampleIndicators" class="carousel slide">
+			   <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
 			        <div class="carousel-inner">
 			            <c:set var="is_first_image" value="false"/> <%-- 대표 이미지 활성화 여부 --%>
 			            
@@ -884,7 +884,7 @@ span.sold_out_text {
 			</div>
 			<div id="member_name_role">
 				<%-- 판매자명 --%>
-				<a id="member_name" href="">${product_map.member_name}</a>
+				<a id="member_name" href="${pageContext.request.contextPath}/mypage/mypagemain/${product_map.fk_member_no}">${product_map.member_name}</a>
 				
 				<%-- 판매자 등급 --%>
 				<c:if test="${product_map.member_role == 0}">

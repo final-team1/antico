@@ -16,13 +16,13 @@ public interface ProductService {
 	
 	
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-	int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type);
+	int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type);
 	
 	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-	Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type);
+	Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type);
 
 	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 지역, 가격대, 정렬, 페이징 포함)
-	List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, PagingDTO paging_dto);
+	List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type, PagingDTO paging_dto);
 	
 	// 특정 상품에 대한 상품 및 대표이미지 정보 가져오기
 	Map<String, String> getProductInfo(String pk_product_no);

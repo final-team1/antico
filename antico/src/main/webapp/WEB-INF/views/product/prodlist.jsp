@@ -357,7 +357,8 @@ div#is_no_product {
 								<span class="selected_category" data-category-no="" style="cursor: pointer;"></span> <!-- 상위 카테고리명 -->
 								<span class="selected_category_detail" data-categorydetail-no="" style="cursor: pointer;"></span> <!-- 하위 카테고리명 -->
 							</td>
-						</tr>
+						</tr>						
+						
 						<tr class="tr_second">
 							<td class="td_title td_second_title"></td>
 							<td>
@@ -377,6 +378,17 @@ div#is_no_product {
 						        </ul>	
 							</td>
 						</tr>
+							
+						<tr>
+							<td class="td_title">
+								<span>판매유형</span>
+							</td>	
+							<td>
+								<span class="sale_type general_product" data-sale-type="0" style="cursor: pointer; margin-right: 5px;">일반</span>
+								<span class="sale_type auction_product" data-sale-type="1" style="cursor: pointer;">경매</span>
+							</td>
+						</tr>
+						
 						<tr>
 							<td class="td_title">
 								<span>가격</span>
@@ -601,8 +613,8 @@ div#is_no_product {
 			const category_no = $(this).data("parent-no")				  // 클릭한 하위 카테고리 번호에 대한 상위 카테고리 번호 가져오기
 			getProductByfilter(category_no, category_datail_no); 		  // 카테고리에 따른 상품 출력
 			
-		    console.log("category_no:", category_no);
-		    console.log("category_detail_no:", category_detail_no);
+		    //console.log("category_no:", category_no);
+		    //console.log("category_detail_no:", category_detail_no);
 			
 		}); // end of category_detail_li.click(function()
 		
@@ -644,6 +656,20 @@ div#is_no_product {
 	    
 	    
 	    
+	    // 판매 유형을 클릭하는 경우
+	    $("span.sale_type").click(function(){
+	        // 모든곳에서 'selected' 클래스 제거
+	        $("span.sale_type").removeClass("selected");
+
+	        // 클릭된 span에 'selected' 클래스 추가
+	        $(this).addClass("selected");
+	        
+	        // 필터 함수 호출
+	        getProductByfilter($('span.selected_category').data('category-no'), $('span.selected_category_detail').data('category-detail-no'));
+	    });
+	    
+	    
+	    
 	    // 페이징 버튼 클릭하는 경우
         $("a.page_button").click(function() {
          	const page = $(this).data("page");
@@ -661,6 +687,7 @@ div#is_no_product {
 	    const max_price = url_params.get('max_price');					 // 최대가격
 	    let region = url_params.get('region');					 	 	 // 지역번호
 	    let town = url_params.get('town');					 		     // 동네명
+	    const sale_type = url_params.get('sale_type');					 // 판매유형
 	    const sort_type = url_params.get('sort_type');					 // 정렬 방식
 	    let cur_page = url_params.get('cur_page');					     // 페이지번호
 	    
@@ -727,7 +754,12 @@ div#is_no_product {
 	    	$("input.town").val(town);
 	    	$("button.choice_region").text(town);
 	    }
-	    
+	    // 판매유형 유지
+	    if (sale_type) {
+	        // 기존에 선택된 버튼을 제거하고, 새로 선택된 버튼에 클래스를 추가
+	        $("span[data-sale-type]").removeClass("selected");
+	        $("span[data-sale-type='" + sale_type + "']").addClass("selected");
+	    } 
 	    // 정렬 방식
 	    if (sort_type) {
 	        // 기존에 선택된 버튼을 제거하고, 새로 선택된 버튼에 클래스를 추가
@@ -752,12 +784,13 @@ div#is_no_product {
  	// 필터로 해당 상품 조회해오기 (검색어,카테고리,가격,정렬,지역)
 	function getProductByfilter(category_no, category_detail_no) {
 		
-	    let search_prod = "${requestScope.search_prod}";      // 검색어
-	    let min_price = $("input.min_price").val().trim();    // 최소가격
-	    let max_price = $("input.max_price").val().trim();    // 최소가격
-	    let region = $("input.fk_region_no").val().trim(); 	  // 지역번호
-	    let town = $("input.town").val().trim();			  // 동네명
-	    let cur_page = $("input.cur_page").val();			  // 페이징
+	    let search_prod = "${requestScope.search_prod}";                      // 검색어
+	    let min_price = $("input.min_price").val().trim();                    // 최소가격
+	    let max_price = $("input.max_price").val().trim();                    // 최소가격
+	    let region = $("input.fk_region_no").val().trim(); 	  		          // 지역번호
+	    let town = $("input.town").val().trim();			  		          // 동네명
+	    let sale_type = $("span.sale_type.selected").attr("data-sale-type");  // 판매유형
+	    let cur_page = $("input.cur_page").val();			  		          // 페이징
 	    
 	    
 	    let sort_type = $("button.selected").data("sort-type");  // 클릭한 정렬 유형의 값 가져오기
@@ -802,6 +835,10 @@ div#is_no_product {
 	    }
 	    if (town) {
 	        url += (is_first_param ? '?' : '&') + "town=" + town;
+	        is_first_param = false;
+	    }
+	    if (sale_type) {
+	        url += (is_first_param ? '?' : '&') + "sale_type=" + sale_type;
 	        is_first_param = false;
 	    }
 	    if (sort_type) {
