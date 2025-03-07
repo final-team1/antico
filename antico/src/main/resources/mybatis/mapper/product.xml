@@ -5,7 +5,7 @@
 
 <mapper namespace="com.project.app.product.model.ProductDAO">
 	
-	<!-- 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역 정렬 포함) -->
+	<!-- 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 판매유형, 정렬 포함) -->
 	<select id="getProductCnt" parameterType="HashMap" resultType="int">
 		select COUNT(*) AS prod_count
 		from tbl_product P 
@@ -25,6 +25,10 @@
 		<if test='category_detail_no != null and category_detail_no != ""'>
         	and P.fk_category_detail_no = #{category_detail_no}
       	</if>
+      	<!-- 판매유형이 있는 경우 -->
+		<if test='sale_type != null and sale_type != ""'>
+        	and P.product_sale_type = to_number(#{sale_type})
+      	</if>      	
       	<!-- 최소가격 및 최대가격 설정 하는 경우  -->
       	<if test='min_price != null and min_price != ""'>
         	and P.product_price &gt;= to_number(#{min_price})
@@ -45,7 +49,7 @@
 	</select>	
 	
 	
-	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함) -->
+	<!-- 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 판매유형, 정렬 포함) -->
 	<resultMap id="getProductPriceMap" type="HashMap" >
 	    <result property="avg_price" 	column="avg_price"  	javaType="String" />
 	    <result property="max_price" 	column="max_price"  	javaType="String" />
@@ -72,6 +76,10 @@
 		<if test='category_detail_no != null and category_detail_no != ""'>
         	and P.fk_category_detail_no = #{category_detail_no}
       	</if>
+      	<!-- 판매유형이 있는 경우 -->
+		<if test='sale_type != null and sale_type != ""'>
+        	and P.product_sale_type = to_number(#{sale_type})
+      	</if>      	
       	<!-- 최소가격 및 최대가격 설정 하는 경우  -->
       	<if test='min_price != null and min_price != ""'>
         	and P.product_price &gt;= to_number(#{min_price})
@@ -93,7 +101,7 @@
 	
 	
 
-	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 처리 포함) -->
+	<!-- 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 판매유형,  페이징 처리 포함) -->
 	<resultMap id="getProductMap" type="HashMap">
 	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
 	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
@@ -167,7 +175,11 @@
 			      	<!-- 하위 카테고리 번호가 있는 경우 -->
 					<if test='category_detail_no != null and category_detail_no != ""'>
 			        	and P.fk_category_detail_no = #{category_detail_no}
-			      	</if>     	
+			      	</if>
+			      	<!-- 판매유형이 있는 경우 -->
+					<if test='sale_type != null and sale_type != ""'>
+			        	and P.product_sale_type = #{sale_type}
+			      	</if> 			      	     	
 					<!-- 최소가격 및 최대가격 설정 하는 경우  -->
 			      	<if test='min_price != null and min_price != ""'>
 			        	and P.product_price &gt;= to_number(#{min_price})
@@ -460,6 +472,7 @@
 		select pk_prod_img_no, fk_product_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail
 		from tbl_prod_img
 		where fk_product_no = #{pk_product_no}
+		order by pk_prod_img_no asc
 	</select>
 
 	
