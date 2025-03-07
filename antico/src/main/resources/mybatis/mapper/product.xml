@@ -673,8 +673,23 @@
 		</foreach> 
 		order by pk_product_no
 	</select>
+
 	
-	
+	<!-- 경매 상품 이미지 등록 -->
+	<insert id="insertAuctionProductImage">
+		insert into tbl_prod_img(pk_prod_img_no, fk_product_no, prod_img_name, prod_img_org_name, prod_img_is_thumbnail)
+	    <!-- select 결과 집합이 그대로 tbl_prod_img 테이블로 삽입 -->
+	    select pi_seq.nextval, #{c_product_no}, prod_img_name, prod_img_org_name, prod_img_is_thumbnail
+	    from (
+	    	<!-- union all을 통해 여러 행의 select 결과 값이 생성 -->
+	        <foreach collection="fileList" item="map" separator=" UNION ALL " index="index">
+	        	select 	#{map.file_name} as prod_img_name, #{map.org_file_name} as prod_img_org_name, 
+	        			(case when #{index} = 0 then 1 else 0 end) as prod_img_is_thumbnail
+	        	from dual
+	        </foreach>
+	    ) a
+	</insert>
+
 </mapper>
 
 

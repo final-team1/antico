@@ -19,8 +19,11 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.common.PagingDTO;
+import com.project.app.product.service.ProductService;
 import com.project.app.review.domain.SurveyVO;
 import com.project.app.review.service.ReviewService;
+import com.project.app.trade.domain.TradeVO;
+import com.project.app.trade.service.TradeService;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +37,10 @@ import lombok.RequiredArgsConstructor;
 public class ReviewController {	
 	
 	private final ReviewService reviewService;
-	
+
+	private final TradeService tradeService;
+	private final ProductService productService;
+
 	/*
 	 * 사용자 후기 메인 페이지 조회
 	 * 비 로그인 사용자도 접근 가능
@@ -42,9 +48,6 @@ public class ReviewController {
 	@GetMapping("/")
 	@ResponseBody
 	public ModelAndView getReviewMainPage(@RequestParam String pk_member_no, ModelAndView mav) {
-		
-		// TODO 판매자 페이지에서 조회시 pk_member_no를 가져오도록 변경
-		pk_member_no = "3";
 		
 		// 판매자 구매 후기 통계 조회(긍정적 리뷰, 부정적 리뷰, 리뷰 당 받은 개수)
 		// keys
@@ -70,7 +73,8 @@ public class ReviewController {
 		
 		// 최근 받은 리뷰 목록 가져오기
 		List<Map<String, String>> review_map_list = reviewService.getConsumerReviewList(paging_dto, pk_member_no);
-		
+
+		mav.addObject("seller_no", pk_member_no);
 		mav.addObject("survey_stat_list", survey_stat_list);
 		mav.addObject("review_count", review_count);
 		mav.addObject("review_map_list", review_map_list);
@@ -100,9 +104,6 @@ public class ReviewController {
 	@GetMapping("reviews/{pk_member_no}/{cur_page}")
 	@ResponseBody
 	public List<Map<String, String>> getReviewList(@PathVariable String pk_member_no, @PathVariable String cur_page) {
-		// TODO 판매자 페이지에서 조회시 pk_member_no를 가져오도록 변경
-		pk_member_no = "3";
-		
 		int current_page = 1;
 		
 		if(NumberUtils.isDigits(cur_page)) {
@@ -137,8 +138,13 @@ public class ReviewController {
 	 */
 	@GetMapping("register")
 	@ResponseBody
-	public ModelAndView getReviewRegisterPage(@RequestParam String pk_trade_no, ModelAndView mav) {
+	public ModelAndView getReviewRegisterPage(@RequestParam String pk_product_no, ModelAndView mav) {
 		List<SurveyVO> survey_vo_list = reviewService.getSurveyMapList(); // 후기 설문문항 목록 조회
+		Map<String, String> product_map = productService.getProductInfo(pk_product_no); // 거래상품 조회
+		TradeVO trade_vo = tradeService.getTradeByProductNo(pk_product_no); // 거래내역 조회
+
+		mav.addObject("product_map", product_map);
+		mav.addObject("trade_vo", trade_vo);
 		mav.addObject("survey_vo_list", survey_vo_list);
 		mav.setViewName("review/register");
 		return mav;
@@ -154,15 +160,13 @@ public class ReviewController {
 
 		String str_pk_survey_resp_no =  request.getParameter("arr_pk_survey_resp_no"); 	// 사용자가 선택한 설문문항 테이블 일련번호 문자열
 		String pk_trade_no = request.getParameter("pk_trade_no");					   	// 거래 일련번호
-		String review_content = request.getParameter("review_content");				   	// 후기 내역
-		String review_type = request.getParameter("review_type");						// 후기 타입 0 : 구매후기, 1 : 판매 홍보 후기
+		String review_content = request.getParameter("review_content");				   	// 후기 내역			// 후기 타입 0 : 구매후기, 1 : 판매 홍보 후기
 		
 		Map<String, String> para_map = new HashMap<>();
 		
 		para_map.put("str_pk_survey_resp_no", str_pk_survey_resp_no);
 		para_map.put("pk_trade_no", pk_trade_no);
 		para_map.put("review_content", review_content);
-		para_map.put("review_type", review_type);
 		
 		// 첨부 이미지가 없는 후기도 작성 가능하기에 빈 값으로 초기화
 		para_map.put("review_img_org_name", ""); 

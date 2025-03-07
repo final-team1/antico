@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.auction.model.AuctionDAO">
+
+	<!-- 경매 정보 등록 -->
+	<insert id="insertAuction" parameterType="String">
+		insert into tbl_auction(pk_auction_no, fk_product_no, auction_regdate, auction_startdate, auction_enddate)
+		values(auc_seq.nextval, #{pk_product_no}, sysdate, to_date(#{auction_startdate}, 'yyyy-mm-dd"T"hh24:mi'), 
+			   to_date(#{auction_startdate}, 'yyyy-mm-dd"T"hh24:mi') + 1/24)
+	</insert>
+	
+	<resultMap type="HashMap" id="testMap">
+		<result column="pk_product_no" property="pk_product_no" javaType="String"/>
+		<result column="pk_member_no" property="pk_member_no" javaType="String"/>
+		<result column="member_name" property="member_name" javaType="String"/>
+		<result column="pk_auction_no" property="pk_auction_no" javaType="String"/>
+	</resultMap>
+	
+	<!-- 경매 시작 시간인 경매 상품 조회 -->
+	<select id="selectProductNoListByAuctionStartDate" resultMap="testMap">
+		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no
+		from tbl_product p join tbl_member m on p.fk_member_no = m.pk_member_no 
+			 join tbl_auction a on p.pk_product_no = a.fk_product_no 
+			 and p.product_sale_status = 3 and <![CDATA[a.auction_startdate <= (sysdate + 1/24/60)]]>
+	</select>
+
+	<!-- 경매 시작 시간인 경매 상품 판매 상태 수정 -->
+	<update id="updateProductSaleStatus">
+		update tbl_product set product_sale_status = 4
+		where pk_product_no in 
+		<foreach item="productNo" collection="productNoList" open="(" close=")" separator=",">
+			#{productNo}
+		</foreach>
+	</update>
+
+</mapper>
+
+
+
+

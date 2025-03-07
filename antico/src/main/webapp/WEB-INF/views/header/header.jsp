@@ -65,8 +65,11 @@
   <link href="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/browsertests/qunit.min.css" rel="stylesheet">
   
   <%-- 웹소켓 연결 관리 모듈 JS --%>
-  <script type="text/javascript" src="<%=ctxPath%>/js/chat/Chat.js"></script>
-  
+  <script type="text/javascript" src="<%=ctxPath%>/js/chat/chat.js"></script>
+
+  <%-- SSE 연결 관리 모듈 JS --%>
+  <script type="text/javascript" src="<%=ctxPath%>/js/sse/sse.js"></script>
+
   <jsp:include page="../tab/tab.jsp"/>
   
 <style>

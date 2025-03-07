@@ -363,6 +363,9 @@ $(document).ready(function() {
         const time = timeAgo(product_reg_date); 	  		// 함수 통해 시간 형식 변환
         $(this).text(time);								    // 텍스트로 출력
     }); // end of $("span.product_time").each(function()
+
+	SSEManager.connect("<%=ctx_Path%>/sse/${requestScope.pk_member_no}");
+	SSEManager.addEvent("auction", "info");
 });
 
     
@@ -471,20 +474,18 @@ function timeAgo(reg_date) {
 	
 	// 계좌 후기 클릭시
 	function myreview() {
-		const tabTitle = "거래 후기";
-	      
-	      $.ajax({
-	         url : "<%=ctx_Path%>/mypage/mybank",
-	         success : function(html) {
-	            openSideTab(html, tabTitle);
-	         },
-	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
-	            closeSideTab();
-	         }
-	      });
+		$.ajax({
+			url : "<%=ctx_Path%>/review/",
+			data : {
+				"pk_member_no" : "${requestScope.pk_member_no}"
+			},
+			success : function(html) {
+				openSideTab(html, "거래 후기");
+			},
+			error : function(request, status, error) {
+				errorHandler(request, status, error);
+			}
+		});
 	}
 	
 	
