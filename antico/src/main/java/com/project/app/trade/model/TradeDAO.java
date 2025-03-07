@@ -30,4 +30,7 @@ public interface TradeDAO {
 	// 구매를 먼저 했는지 조회
 	String purchaseSelect(String pk_product_no, String pk_member_no);
 
+	// 이미 구매 확정을 했는지 조회
+	String statusCheck(String pk_product_no);
+
 }

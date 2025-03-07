@@ -52,4 +52,10 @@
 		where fk_product_no = #{pk_product_no} and fk_consumer_no = #{pk_member_no}
 	</select>
 	
+	<select id="statusCheck" parameterType="String" resultType="String">
+		select trade_status
+		from tbl_trade
+		where fk_product_no = #{pk_product_no}
+	</select>
+	
 </mapper>
