@@ -47,16 +47,16 @@ public class ProductService_imple implements ProductService {
 
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
-		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
+	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type) {
+		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
 		return product_list_cnt;
 	}
 		
 	
 	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type) {
-		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
+	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type) {
+		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
 		return prodcut_price_info;
 	}
 
@@ -64,8 +64,8 @@ public class ProductService_imple implements ProductService {
 
 	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 포함)
 	@Override
-	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, PagingDTO paging_dto) {
-		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, paging_dto);
+	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type, PagingDTO paging_dto) {
+		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto);
 		return product_list;
 	}
 	
@@ -359,7 +359,7 @@ public class ProductService_imple implements ProductService {
 					// 기존 이미지 가져오기 
 					List<ProductImageVO> product_img_list = productDAO.getProductImg(productvo.getPk_product_no());
 					
-					// System.out.println("product_img_list size: " + product_img_list.size()); // 로그로 확인
+					// System.out.println("product_img_list size: " + product_img_list.size());
 					
 					// 첫 번째 이미지는 대표사진, 나머지는 일반사진 
 					if (product_img_list.isEmpty()) { // 기존 이미지가 비어있다면

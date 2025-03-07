@@ -413,6 +413,7 @@ ul.category_detail_list {
     margin: 0;
 }
 
+li.all,
 li.category_item,
 li.category_detail_item {
     padding: 10px;
@@ -422,6 +423,7 @@ li.category_detail_item {
     background: white;
 }
 
+li.all:hover,
 li.category_item:hover,
 li.category_detail_item:hover {
     background: #f5f5f5;
@@ -549,7 +551,8 @@ div.category_detail_container {
 			    <!-- 카테고리 리스트 컨테이너 -->
 			    <div class="category_list_container">
 			        <ul class="category_list">
-			            <c:forEach var="category" items="${category_list}">
+							<li class="all" onclick="javascript:location.href='<%= ctxPath%>/product/prodlist'">전체</li>
+			            <c:forEach var="category" items="${requestScope.category_list}">
 			                <li class="category_item" data-category-id="${category.pk_category_no}"
 			                    onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${category.pk_category_no}'">
 			                    ${category.category_name}
@@ -561,9 +564,9 @@ div.category_detail_container {
 			<div id="category_detail_dropdown"> 
 			    <!-- 하위 카테고리 리스트 컨테이너 (옆으로 나오는 구조) -->
 			    <div class="category_detail_container">
-			        <c:forEach var="category" items="${category_list}">
+			        <c:forEach var="category" items="${requestScope.category_list}">
 			            <ul class="category_detail_list" data-category-id="${category.pk_category_no}">
-			                <c:forEach var="category_detail_list" items="${category_detail_list}">
+			                <c:forEach var="category_detail_list" items="${requestScope.category_detail_list}">
 			                    <c:if test="${category_detail_list.fk_category_no == category.pk_category_no}">
 			                        <li class="category_detail_item"
 			                            onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${category_detail_list.fk_category_no}&category_detail_no=${category_detail_list.pk_category_detail_no}'">
