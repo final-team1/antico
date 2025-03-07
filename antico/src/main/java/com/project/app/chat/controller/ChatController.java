@@ -1,5 +1,6 @@
 package com.project.app.chat.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -136,6 +137,7 @@ public class ChatController {
 		// 채팅 메시지 저장 및 반환
 		chat.updateRoomId(roomId);
 		chat.updateReadMembers(chat.getSenderId());
+		chat.updateSendDate(LocalDateTime.now());
 		return chatService.createChat(chat);
 	}
 	

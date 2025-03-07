@@ -36,34 +36,25 @@ public class ProductSaleStatusEventListener {
 	
 	private final GetMemberDetail memberDetail;
 
-	
 	/*
 	 * 상품 판매 상태에 따라 알림 채팅 처리 메소드
 	 */
 	@TransactionalEventListener
 	public void notifyChatOnSaleStatusChange(ProductStatusChangedEvent event) {
-		String product_sale_status = event.getNewStatus();
+		String status = event.getNewStatus();
 		
 		String pk_product_no = event.getProductId();
 		
-		switch(product_sale_status) {
+		switch(status) {
 			case "0" : { // 판매 중
 				break;
 			}
 			case "1" : { // 예약 중
-				broadcastProductSaleStatusChat(pk_product_no, "예약중");
+				broadcastProductSaleStatusChat(pk_product_no, "결제완료");
 				break;
 			}
 			case "2" : { // 구매 확정
 				broadcastProductSaleStatusChat(pk_product_no, "구매확정");
-				break;
-			}
-			case "3" : { // 경매 시작 전
-				// TODO 경매 기능 적용 시 사용
-				break;
-			}
-			case "4" : { // 경매 중
-				// TODO 경매 기능 적용 시 사용
 				break;
 			}
 			case "5" : { // 경매 완료
@@ -71,8 +62,7 @@ public class ProductSaleStatusEventListener {
 				break;
 			}
 			default : {
-				// TODO 예외처리
-				log.error("[ERROR] : 상품 판매 상태 값이 유효하지 않습니다. product_sale_status : " + product_sale_status);
+				log.error("[ERROR] : 상품 판매 상태 값이 유효하지 않습니다. product_sale_status : {}", status);
 				break;
 			}
 		}
