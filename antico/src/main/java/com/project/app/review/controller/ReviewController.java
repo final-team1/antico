@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.common.PagingDTO;
+import com.project.app.exception.BusinessException;
+import com.project.app.exception.ExceptionCode;
 import com.project.app.product.service.ProductService;
 import com.project.app.review.domain.SurveyVO;
 import com.project.app.review.service.ReviewService;
@@ -139,6 +141,12 @@ public class ReviewController {
 	@GetMapping("register")
 	@ResponseBody
 	public ModelAndView getReviewRegisterPage(@RequestParam String pk_product_no, ModelAndView mav) {
+		// 이미 후기를 작성하였는지 확인
+		int n = reviewService.getCountReview(pk_product_no);
+		if(n != 0) {
+			throw new BusinessException(ExceptionCode.REVIEW_AREADY_EXISTS);
+		}
+
 		List<SurveyVO> survey_vo_list = reviewService.getSurveyMapList(); // 후기 설문문항 목록 조회
 		Map<String, String> product_map = productService.getProductInfo(pk_product_no); // 거래상품 조회
 		TradeVO trade_vo = tradeService.getTradeByProductNo(pk_product_no); // 거래내역 조회

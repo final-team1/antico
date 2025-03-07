@@ -54,4 +54,6 @@ public interface ReviewDAO {
 	// 후기 설문 응답 목록 상세 조회
 	List<SurveyVO> selectSurveyRespList(String pk_review_no);
 
+	// 후기가 이미 존재하는지 조회
+	int selectCountReview(String pkReviewNo);
 }
