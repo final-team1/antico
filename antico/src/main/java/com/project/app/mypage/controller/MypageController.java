@@ -119,6 +119,7 @@ public class MypageController {
 	        mav.setViewName("mypage/sellerpage");
 	    }
 
+	    mav.addObject("mvo", mvo);
 	    mav.addObject("seller_name", seller_name);
 	    mav.addObject("myproduct_list", myproduct_list);
 	    mav.addObject("member_score", member_score);

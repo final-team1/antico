@@ -33,6 +33,10 @@ public interface TradeDAO {
 	// 구매를 먼저 했는지 조회
 	String purchaseSelect(String pk_product_no, String pk_member_no);
 
+	// 이미 구매 확정을 했는지 조회
+	String statusCheck(String pk_product_no);
+
 	// 상품 일련번호를 통한 거래 내역 조회
 	Optional<TradeVO> selectTradeByProductNo(String pkProductNo);
+
 }

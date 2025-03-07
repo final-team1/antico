@@ -59,4 +59,10 @@
 		where fk_product_no = #{pk_product_no}
 	</select>
 	
+	<select id="statusCheck" parameterType="String" resultType="String">
+		select trade_status
+		from tbl_trade
+		where fk_product_no = #{pk_product_no}
+	</select>
+	
 </mapper>

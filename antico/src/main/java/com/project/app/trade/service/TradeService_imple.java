@@ -76,8 +76,10 @@ public class TradeService_imple implements TradeService {
 		int b = 0;
 		int c = 0;
 		int d = 0;
+		
 		String reason = "상품판매";
 		String pk_trade_no = tradedao.purchaseSelect(pk_product_no, pk_member_no); // 구매를 먼저 했는지 조회
+		String statusCheck = tradedao.statusCheck(pk_product_no); // 이미 구매 확정을 했는지 조회
 		if(pk_trade_no != null) { //구매를 먼저 한 상태라면
 			Map<String, String> member_select = mydao.member_select(fk_member_no);
 			String member_point = member_select.get("member_point");
@@ -85,7 +87,10 @@ public class TradeService_imple implements TradeService {
 			b = tradedao.completedProduct(pk_product_no); // 판매상태를 구매확정으로 업데이트
 			c = tradedao.completedTrade(pk_product_no); // 구매상태를 결제확정으로 업데이트
 			d = tradedao.usePoint(fk_member_no, product_price, member_point, reason); // 포인트내역에 사용정보 insert
-		} else { // 구매를 안 한 경우라면
+		} else if ("2".equals(statusCheck)) { // 이미 구매확정이라면
+			throw new BusinessException(ExceptionCode.PAYMENT_ALREADY_EXISTS);
+		}
+		else { // 구매를 안 한 경우라면
 			throw new BusinessException(ExceptionCode.NOT_PAYMENT_CONSUMER);
 		}
 
