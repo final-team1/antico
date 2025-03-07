@@ -65,4 +65,28 @@
 		where fk_product_no = #{pk_product_no}
 	</select>
 	
+	<!-- 구매취소시 포인트를 돌려주기 -->
+	<update id="returnPoint" parameterType="String">
+		update tbl_member set member_point = member_point + #{product_price}
+		where pk_member_no = #{pk_member_no}
+	</update>
+	
+	<!-- 구매취소시 상품상태를 판매중으로 변경하기 -->
+	<update id="onSell" parameterType="String">
+		update tbl_product set product_sale_status = 0
+		where pk_product_no = #{pk_product_no}
+	</update>
+	
+	<!-- 포인트내역에 사용정보 insert -->
+	<insert id="cancelData" parameterType="String">
+		insert into tbl_point_history (pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
+		values (point_history_seq.nextval, #{pk_member_no}, #{reason}, #{product_price}, #{member_point}, #{member_point}+#{product_price}, sysdate)
+	</insert>
+	
+	<update id="buyCancel">
+		update tbl_trade set trade_status = 0, trade_cancel_date = sysdate
+		where fk_product_no = #{pk_product_no}
+	</update>
+	
+	
 </mapper>

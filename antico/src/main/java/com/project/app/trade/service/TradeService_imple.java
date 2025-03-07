@@ -108,4 +108,26 @@ public class TradeService_imple implements TradeService {
 			.orElseThrow(() -> new BusinessException(ExceptionCode.TRADE_NOT_FOUND));
 	}
 
+	// 구매취소 처리
+	@Override
+	public int Cancel(String product_price, String pk_product_no, String pk_member_no, String reason) {
+		int n = 0;
+		String pk_trade_no = tradedao.purchaseSelect(pk_product_no, pk_member_no); // 구매를 먼저 했는지 조회
+		String statusCheck = tradedao.statusCheck(pk_product_no); // 이미 구매 확정을 했는지 조회
+		if(pk_trade_no != null) { //구매를 먼저 한 상태라면
+			Map<String, String> member_select = mydao.member_select(pk_member_no);
+			String member_point = member_select.get("member_point");
+			int point = tradedao.returnPoint(product_price, pk_member_no); // 결제한 금액만큼 포인트를 돌려준다.
+			int sell = tradedao.onSell(pk_product_no); // 판매중으로 다시 변경
+			int cancel_data = tradedao.cancelData(pk_member_no, product_price, member_point, reason); // 포인트내역에 기록을 남기기
+			int buy_cancel = tradedao.buyCancel(pk_product_no); // 거래를 구매취소로 변경하고, 거래취소날짜 업데이트
+			n = point*sell*cancel_data*buy_cancel;
+		} else if ("0".equals(statusCheck)) {
+			throw new BusinessException(ExceptionCode.CANCEL_AREADY_EXISTS);
+		} else if ("2".equals(statusCheck)) {
+			throw new BusinessException(ExceptionCode.PAYMENT_ALREADY_EXISTS);
+		}
+		return n;
+	}
+
 }

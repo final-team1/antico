@@ -492,7 +492,7 @@
             switch (message) {
                 case "결제완료" : {
                     v_html += `<div><p class="status_chat_p">결제가 완료되었습니다. <br> 상품 수령 시 구매 확정을 눌러주세요</p><button type="button" class="order_complete_button" onclick="completeOrder()">구매 확정하기</button>`;
-                    v_html += `<button type="button" class="order_cancel_button" onclick="">구매 취소하기</button></div>`;
+                    v_html += `<button type="button" class="order_cancel_button" onclick="tradeCancel()">구매 취소하기</button></div>`;
                     break;
                 }
                 case "구매확정" : {
@@ -545,5 +545,28 @@
                 errorHandler(request, status, error);
             }
         });
+    }
+    
+    
+    // 구매취소를 눌렀을 경우
+    function tradeCancel() {
+    	$.ajax({
+    		url: "${ctx_path}/trade/Cancel",
+    		type: "post",
+    		data: {"product_price":"${product_map.product_price}",
+    			   "pk_product_no": "${product_map.pk_product_no}"
+    		},
+    		 dataType: "json",
+             success: function (n) {
+                 if (n == 1) {
+                     showAlert('success', '구매취소가 완료되었습니다.');
+                 } else {
+                     showAlert('error', '구매취소가 실패되었습니다.');
+                 }
+             },
+             error: function (request, status, error) {
+                 errorHandler(request, status, error);
+             }
+    	});
     }
 </script>

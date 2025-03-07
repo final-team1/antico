@@ -16,4 +16,7 @@ public interface TradeService {
 
 	// 상품 일련번호를 통한 거래 내역 조회
 	TradeVO getTradeByProductNo(String pkProductNo);
+
+	// 구매취소 처리
+	int Cancel(String product_price, String pk_product_no, String pk_member_no, String reason);
 }
