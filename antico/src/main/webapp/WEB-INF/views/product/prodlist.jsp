@@ -378,6 +378,17 @@ div#is_no_product {
 						        </ul>	
 							</td>
 						</tr>
+							
+						<tr>
+							<td class="td_title">
+								<span>판매유형</span>
+							</td>	
+							<td>
+								<span class="sale_type general_product" data-sale-type="0" style="cursor: pointer; margin-right: 5px;">일반</span>
+								<span class="sale_type auction_product" data-sale-type="1" style="cursor: pointer;">경매</span>
+							</td>
+						</tr>
+						
 						<tr>
 							<td class="td_title">
 								<span>가격</span>
