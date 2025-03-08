@@ -17,16 +17,16 @@ public interface ReviewDAO {
 
 	// 거래 일련번호를 통한 후기 조회
 	ReviewVO selectReview(String pk_member_no, String pk_trade_no);
-	
+
 	// 거래 일련번호를 통해 거래 내역 유무 조회 || TODO 추후에 거래 관련 DAO로 이동
 	Optional<TradeVO> selectTrade(String pk_trade_no);
-	
+
 	// 후기 설문 문항 정보 조회
 	List<SurveyVO> selectSurveyList();
 
 	// 시퀀스 후기 일련번호 조회
 	String selectPkReviewNo();
-	
+
 	// 후기 저장
 	int insertReview(Map<String, String> map);
 
@@ -47,7 +47,7 @@ public interface ReviewDAO {
 
 	// 최근 받은 구매 후기 목록 가져오기
 	List<Map<String, String>> selectConsumerReviewList(PagingDTO paging_dto, String pk_member_no);
-	
+
 	// 후기 상세 조회
 	Optional<Map<String, String>> selectConsumerReviewDetails(String pk_review_no);
 
@@ -55,5 +55,8 @@ public interface ReviewDAO {
 	List<SurveyVO> selectSurveyRespList(String pk_review_no);
 
 	// 후기가 이미 존재하는지 조회
-	int selectCountReview(String pkReviewNo);
+	int selectCountReview(String pk_product_no);
+
+	// 후기 상세 조회 (거래 일련번호 조회)
+	Optional<Map<String, String>> getSellerReviewDetailsByTradeNo(String pk_trade_no);
 }

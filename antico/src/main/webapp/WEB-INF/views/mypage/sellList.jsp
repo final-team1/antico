@@ -203,7 +203,27 @@ $(document).ready(function () {
             Search();
         }
     });
-    
+
+	// 받은 후기 클릭 이벤트
+	$("button.review_btn").on("click", function(){
+		const pk_trade_no = $(this).parent("div.sell_history").find("input[name='pk_trade_no']").val();
+		$.ajax({
+			url : "<%=ctx_Path%>/review/seller/details",
+			dataType : "json",
+			data : {
+				pk_trade_no : pk_trade_no
+			},
+			success : function(json) {
+				// 후기 아이콘
+				const icon_url = "<%=ctx_Path%>/images/icon/review.svg";
+				showReviewModal(json, icon_url);
+			},
+			error: function(request, status, error){
+				errorHandler(request, status, error);
+			}
+		});
+	});
+
 });
 
 
