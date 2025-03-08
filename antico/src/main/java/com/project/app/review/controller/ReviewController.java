@@ -29,10 +29,12 @@ import com.project.app.trade.service.TradeService;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * 판매자/구매자 리뷰 컨트롤러
  */
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/review/*")
@@ -241,6 +243,39 @@ public class ReviewController {
 		map.put("review_map", review_map);
 		map.put("survey_list", survey_list);
 		
+		return map;
+	}
+
+	/*
+	 * 사용자 받은 후기 상세 조회 (후기 내역, 설문 응답 내역)
+	 * review_map keys
+	 *  pk_review_no : 후기 일련번호
+	 *  fk_consumer_no : 구매자 일련번호
+	 *  consumer_name : 구매자 명
+	 *  fk_seller_no : 판매자 일련번호
+	 * 	seller_name : 판매자 명
+	 *  pk_trade_no : 거래내역 일련번호
+	 *  review_content : 후기 내용
+	 *  review_regdate : 후기 등록일자
+	 *  review_img_file_name : 후기 이미지 파일 명
+	 *  review_img_org_name : 후기 이미지 파일 원본명
+	 *  product_title : 거래 상품명
+	 */
+	@GetMapping("seller/details")
+	@ResponseBody
+	public Map<String, Object> getSellerReviewDetailsByTradeNo(@RequestParam String pk_trade_no){
+
+		// 후기 상세 내역
+		Map<String, String> review_map = reviewService.getSellerReviewDetailsByTradeNo(pk_trade_no);
+
+		// 후기 설문 문항 선택 내역
+		List<SurveyVO> survey_list = reviewService.getSurveyRespList(review_map.get("pk_review_no"));
+
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("review_map", review_map);
+		map.put("survey_list", survey_list);
+
 		return map;
 	}
 }

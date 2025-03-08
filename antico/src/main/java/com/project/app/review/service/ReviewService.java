@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.app.common.PagingDTO;
-import com.project.app.review.domain.ReviewVO;
 import com.project.app.review.domain.SurveyVO;
 
 public interface ReviewService {
@@ -31,6 +30,9 @@ public interface ReviewService {
 
 	// 후기 상세 내역 조회
 	Map<String, String> getConsumeReviewDetails(String pk_review_no);
+
+	// 후기 상세 내역 조회
+	Map<String, String> getSellerReviewDetailsByTradeNo(String pk_trade_no);
 
 	// 후기 설문 문항 선택 내역 조회
 	List<SurveyVO> getSurveyRespList(String pk_review_no);
