@@ -37,6 +37,9 @@ public interface MypageService {
 	// 상품페이지 이동
 	String productNo(String pk_trade_no);
 
+	 // 거래횟수와 단골을 알아오기 위함.
+	Map<String, String> tradeCnt(String member_no);
+
 
 
 

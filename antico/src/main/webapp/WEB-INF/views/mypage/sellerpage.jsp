@@ -702,7 +702,7 @@ function timeAgo(reg_date) {
 						<section class="stats_section">
 							<div class="stat_box">
 								<p>거래횟수</p>
-								<span>1</span>
+								<span>${requestScope.trade_map.trade_cnt}</span>
 							</div>
 							<div class="stat_box">
 								<p>거래후기</p>
@@ -710,7 +710,7 @@ function timeAgo(reg_date) {
 							</div>
 							<div class="stat_box">
 								<p>단골</p>
-								<span>0</span>
+								<span>${requestScope.trade_map.vip_consumber}</span>
 							</div>
 						</section>
 					</section>

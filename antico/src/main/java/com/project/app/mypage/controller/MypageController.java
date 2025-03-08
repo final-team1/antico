@@ -91,6 +91,7 @@ public class MypageController {
 	        service.role_update(role, pk_member_no);
 	    }
 
+	    Map<String, String> trade_map = service.tradeCnt(member_no); // 거래횟수와 단골을 알아오기 위함.
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
 			member_role = "브론즈";
@@ -119,6 +120,7 @@ public class MypageController {
 	        mav.setViewName("mypage/sellerpage");
 	    }
 
+	    mav.addObject("trade_map", trade_map);
 	    mav.addObject("mvo", mvo);
 	    mav.addObject("seller_name", seller_name);
 	    mav.addObject("myproduct_list", myproduct_list);

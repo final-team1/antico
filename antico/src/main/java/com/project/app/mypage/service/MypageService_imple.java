@@ -1,5 +1,6 @@
 package com.project.app.mypage.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,6 +98,21 @@ public class MypageService_imple implements MypageService {
 	public String productNo(String pk_trade_no) {
 		String pk_product_no = mypagedao.productNo(pk_trade_no);
 		return pk_product_no;
+	}
+
+	 // 거래횟수와 단골을 알아오기 위함.
+	@Override
+	public Map<String, String> tradeCnt(String member_no) {
+		Map<String, String> trade_map = new HashMap<>();
+		String trade_cnt = mypagedao.tradeCnt(member_no);
+		String vip_consumber = mypagedao.vipConsumer(member_no);
+		if(vip_consumber == null) {
+			vip_consumber = "0";
+		}
+		System.out.println("vip_consumber"+vip_consumber);
+		trade_map.put("trade_cnt", trade_cnt);
+		trade_map.put("vip_consumber", vip_consumber);
+		return trade_map;
 	}
 
 
