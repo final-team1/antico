@@ -51,5 +51,11 @@ public interface MypageDAO {
 
 	int statusUpdate(Map<String, String> paraMap);
 
+	// 거래횟수와 단골을 알아오기 위함.
+	String tradeCnt(String member_no);
+
+	// 단골의 고객수를 알아오기 위함.
+	String vipConsumer(String member_no);
+
 
 }
