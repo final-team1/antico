@@ -377,6 +377,25 @@ public class ProductController {
 	}
 	
 	
+	// 시세조회 페이지	
+	@GetMapping("market_price")
+	public ModelAndView marketPriceCheck(ModelAndView mav) {
+		
+		mav.setViewName("product/market_price");
+		
+		return mav;
+	}
+	
+	// 검색어에 따른 시세조회 해오기
+	@GetMapping("market_price_search")
+	@ResponseBody
+	public List<Map<String, String>> marketPriceSearch(@RequestParam(defaultValue = "") String search_price) {
+		
+		// 검색어에 맞는 시세 조회
+		List<Map<String, String>> marketPrice = service.getMargetPrice(search_price);
+		return marketPrice;
+	}
+	
 	
 
 } // end of public class ProductController

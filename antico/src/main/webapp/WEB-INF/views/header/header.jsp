@@ -594,7 +594,7 @@ div.category_detail_container {
 			<a class="menuStyle">사기조회</a>
 		</div>
 		<div class="menuItem">
-			<a class="menuStyle">시세조회</a>
+			<a class="menuStyle" href="<%=ctxPath%>/product/market_price">시세조회</a>
 		</div>
 		<div class="menuItem">
 			<a class="menuStyle">읽을거리</a>

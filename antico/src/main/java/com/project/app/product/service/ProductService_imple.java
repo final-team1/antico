@@ -413,6 +413,15 @@ public class ProductService_imple implements ProductService {
 
 	
 	
+	// 검색어에 맞는 시세 조회
+	@Override
+	public List<Map<String, String>> getMargetPrice(String search_price) {
+		List<Map<String, String>> marketPrice = productDAO.getMargetPrice(search_price);
+		return marketPrice;
+	}
+
+	
+	
 	//모든 상품 조회 해오기(이미지, 지역)
 	@Override
 	public List<Map<String, String>> getProductList(String sort_views_week) {
@@ -429,6 +438,7 @@ public class ProductService_imple implements ProductService {
 	public List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
+
 
 
 }
