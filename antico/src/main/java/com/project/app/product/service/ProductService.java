@@ -83,13 +83,9 @@ public interface ProductService {
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list);
 
-	
+	// 경매 상품 등록
+	int addAuctionProduct(ProductVO productvo);
 
-
-	
-
-	
-	
-
-	
+	// 경매 이미지 상품 등록
+	int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo);
 }

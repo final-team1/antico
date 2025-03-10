@@ -19,6 +19,7 @@
 		<typeAlias type="com.project.app.chat.domain.ProductChatDTO" alias="ProductChatDTO"/>
 		<typeAlias type="com.project.app.mypage.domain.LoginHistoryVO" alias="LoginHistoryVO"/>
 		<typeAlias type="com.project.app.admin.domain.CalendarVO" alias="CalendarVO"/>
+		<typeAlias type="com.project.app.auction.domain.AuctionVO" alias="AuctionVO"/>
 	</typeAliases>
 
 </configuration>

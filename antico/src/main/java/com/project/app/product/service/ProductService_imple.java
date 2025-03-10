@@ -439,6 +439,22 @@ public class ProductService_imple implements ProductService {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
 
+	/*
+	 * 경매 상품 등록
+	 */
+	@Override
+	@Transactional
+	public int addAuctionProduct(ProductVO productvo) {
+		return productDAO.addProduct(productvo);
+	}
+
+	/*
+	 * 경매 상품 이미지 등록
+	 */
+	@Override
+	public int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo) {
+		return productDAO.insertAuctionProductImage(fileList, cProductNo);
+	}
 
 
 }
