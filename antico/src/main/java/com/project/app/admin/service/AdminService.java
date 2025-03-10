@@ -3,6 +3,7 @@ package com.project.app.admin.service;
 import java.util.List;
 import java.util.Map;
 
+import com.project.app.admin.domain.CalendarVO;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
@@ -48,6 +49,9 @@ public interface AdminService {
 	// 상품 상세정보
 	Map<String, String> admin_product_detail(Map<String, String> paraMap);
 
+	// 상품삭제하기
+	int admin_deleteproduct(String pk_product_no);
+	
 	// 일별 방문자 차트
 	List<Map<String, String>> admin_visitantchat();
 
@@ -62,6 +66,27 @@ public interface AdminService {
 
 	// 카테고리별 상품 조회수	
 	List<Map<String, String>> admin_product_total_views();
+
+	// 캘린더 일정 등록하기
+	int admin_registercalendar(Map<String, String> paraMap);
+
+	// 캘린더를 불러오는것
+	List<CalendarVO> admin_selectcalendar(String pk_member_no);
+
+	// 일정상세보기
+	Map<String, String> admin_detailcalendar(String pk_calendar_no);
+
+	// 일정삭제하기
+	int admin_deletecalendar(String pk_calendar_no);
+
+	// 일정 수정하기
+	int admin_editcalendar_end(CalendarVO cvo);
+
+	// 검색 기능
+	List<Map<String, String>> admin_searchcalendar(Map<String, String> paraMap);
+
+
+
 
 
 
