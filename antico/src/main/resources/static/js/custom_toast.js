@@ -18,7 +18,7 @@ const Toast = Swal.mixin({
 });
 
 // 토스트 알림 함수
-// icon 종류 : success, error, waring, info, question
+// icon 종류 : success, error, warning, info, question
 function showAlert(type, msg) {
 	Toast.fire({
 		icon: type,
@@ -91,4 +91,15 @@ function errorHandler(request, status, error) {
 
 	// 사이드 탭 닫기
 	closeSideTab();
+}
+
+// ajax 공통 에러 핸들러 함수 및 토스트 처리
+function errorHandlerWithNoClose(request, status, error) {
+	console.log(request.responseText);
+
+	// 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
+	let response = request.responseText;
+	let message = response.substring(0, 4) === "msg/" ? response.substr(4) : "";
+
+	showAlert("error", message);
 }
