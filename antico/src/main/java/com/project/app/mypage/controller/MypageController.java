@@ -13,9 +13,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
+import com.project.app.member.service.Oauth2Service;
 import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.service.MypageService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,12 +30,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping(value="/mypage/*")
 public class MypageController {
 	
-	@Autowired
-	private GetMemberDetail get_member_detail;
+	
+	private final GetMemberDetail get_member_detail;
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -40,8 +46,9 @@ public class MypageController {
 	@Value("${pointcharge.chargekey}")
 	private String pointcharge_chargekey;
 	
-	@Autowired
-	private MypageService service;
+	private final MypageService service;
+	
+	private final Oauth2Service oauth2_service;
 	
 	@GetMapping("/mypagecheck")
 	@ResponseBody
@@ -314,15 +321,25 @@ public class MypageController {
 	// 탈퇴 신청시 탈퇴테이블에 insert
 	@PostMapping("delete_submit")
 	@ResponseBody
-	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo) {
+	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo, HttpServletRequest request) {
+		
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		
 		String fk_member_no = lvo.getFk_member_no();
 	    String leave_reason = lvo.getLeave_reason();
 
 	    Map<String, String> paraMap = new HashMap<>();
 	    paraMap.put("fk_member_no", fk_member_no);
 	    paraMap.put("leave_reason", leave_reason);
-
-	    int n = service.delete_submit(paraMap);
+		
+		if(member_vo.getMember_oauth_type() != null) {
+			
+			HttpSession session = request.getSession();
+			
+			oauth2_service.unlinkKakaoUser(String.valueOf(session.getAttribute("access_token")));
+		}
+		
+		int n = service.delete_submit(paraMap);
 
 	    Map<String, Integer> response = new HashMap<>();
 	    response.put("n", n);

@@ -51,4 +51,12 @@ public class MemberService_imple implements MemberService {
 	}
 
 
+	@Override
+	public void oauthMemberDeilte() {
+		
+		
+		
+	}
+
+
 }

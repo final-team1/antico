@@ -15,6 +15,7 @@ import com.project.app.mypage.domain.LoginHistoryVO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -28,6 +29,8 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
+		
+		HttpSession session = request.getSession();
 		
 		String user_id = "";
 		
@@ -47,6 +50,12 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 		
 		MemberVO member_vo = get_member_detail.MemberDetail();
 		
+		if(member_vo.getMember_oauth_type() != null) {
+	        String access_token = String.valueOf(authentication.getPrincipal());
+
+	        session.setAttribute("access_token", access_token);
+		}
+		
 		LoginHistoryVO login_history_vo = new LoginHistoryVO();
 		
 		login_history_vo.setFk_member_no(member_vo.getPk_member_no());
@@ -55,7 +64,7 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 		
 		member_dao.loginHistoryByLoginHistoryVo(login_history_vo);
 		
-		response.sendRedirect(request.getContextPath()+"/index");
+		response.sendRedirect(request.getContextPath()+"/index");	
 	}
 
 }

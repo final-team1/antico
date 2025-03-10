@@ -582,11 +582,17 @@ CONSTRAINT account_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_me
 
 CREATE SEQUENCE acc_seq;
 
+select * from tab;
 
+select * 
+from tbl_loginhistory
 
 show user;
 
 
+select *
+from tbl_region
+where region_lat = 37.5586816
 
 
 ALTER TABLE tbl_member 
@@ -609,3 +615,13 @@ where pk_member_no = 188;
 
 
 desc tbl_member;
+
+
+select *
+from tbl_loginhistory;
+
+update tbl_loginhistory
+set login_history_date = to_date('25/03/01')
+where fk_member_no = 61;
+
+

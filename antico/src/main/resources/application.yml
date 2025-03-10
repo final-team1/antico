@@ -126,6 +126,7 @@ cloud:
 # kakao 공유하기 api
 kakao:
   apikey: ENC(cb7pRmtUMOz1N4am9q3VZmZI8sh+20ladaa2nbrS5m44SfdPtB6o1PNoDU4bNUzh)
+  admin-key: ENC(S9flTnSmQnXRr9xZ7Dvw8OzJWhOijaGlnMONPtpDON0ABKJG0BTmOwAIvU2bNZzG)
 
 # 포인트 충전하기 api
 pointcharge:
