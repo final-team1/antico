@@ -80,46 +80,8 @@ public class InquireController {
 		
 		inquirevo.setFk_member_no(pk_member_no);
 		
-		MultipartFile attach = inquirevo.getAttach();
+		MultipartFile attach = mrequest.getFile("attach");
 		
-		if (attach != null) {
-
-			HttpSession session = mrequest.getSession();
-			String root = session.getServletContext().getRealPath("/");
-
-			String path = root + "resources" + File.separator + "files";
-
-			String newFileName = "";
-			// WAS(톰캣)의 디스크에 저장될 파일명
-
-			byte[] bytes = null;
-			// 첨부파일의 내용물을 담는 것
-
-			long fileSize = 0;
-			// 첨부파일의 크기
-
-			try {
-				bytes = attach.getBytes();
-				// 첨부파일의 내용물을 읽어오는 것
-
-				String originalFilename = attach.getOriginalFilename();
-
-				// 첨부되어진 파일을 업로드 하는 것이다.
-				newFileName = fileManager.doFileUpload(bytes, originalFilename, path);
-
-				inquirevo.setInquire_filename(newFileName);
-
-				inquirevo.setInquire_orgfilename(originalFilename);
-				
-				fileSize = attach.getSize(); // 첨부파일의 크기(단위는 byte임)
-				inquirevo.setInquire_file_size(String.valueOf(fileSize));
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-
 		int n = 0;
 
 		if (attach.isEmpty()) {
@@ -127,7 +89,7 @@ public class InquireController {
 			n = service.add(inquirevo); // <== 파일첨부가 없는 1:1문의
 		} else {
 			// 파일첨부가 있는 경우라면
-			n = service.add_withFile(inquirevo); // <== 파일첨부가 있는 1:1문의
+			n = service.add_withFile(inquirevo, attach); // <== 파일첨부가 있는 1:1문의
 		}
 
 		if (n == 1) {
