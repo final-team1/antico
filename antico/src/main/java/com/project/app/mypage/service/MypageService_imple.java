@@ -1,5 +1,6 @@
 package com.project.app.mypage.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class MypageService_imple implements MypageService {
 	@Override
 	public int delete_submit(Map<String, String> paraMap) {
 		int n = mypagedao.delete_submit(paraMap);
+		int m = mypagedao.statusUpdate(paraMap);
 		return n;
 	}
 
@@ -78,9 +80,39 @@ public class MypageService_imple implements MypageService {
 
 	// 로그인 한 회원의 판매확정된 판매내역들 가져오기
 	@Override
-	public List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell) {
-		List<Map<String, String>> sell_list = mypagedao.sellList(pk_member_no, fk_seller_no, search_sell);
+	public List<Map<String, String>> sellList(String pk_member_no, String fk_seller_no, String search_sell, String search_date) {
+		List<Map<String, String>> sell_list = mypagedao.sellList(pk_member_no, fk_seller_no, search_sell, search_date);
+			
 		return sell_list;
+	}
+
+	// 판매상세정보 가져오기
+	@Override
+	public Map<String, String> infoSell(String pk_trade_no) {
+		Map<String, String> Info_sell = mypagedao.infoSell(pk_trade_no);
+		return Info_sell;
+	}
+
+	// 상품페이지 이동
+	@Override
+	public String productNo(String pk_trade_no) {
+		String pk_product_no = mypagedao.productNo(pk_trade_no);
+		return pk_product_no;
+	}
+
+	 // 거래횟수와 단골을 알아오기 위함.
+	@Override
+	public Map<String, String> tradeCnt(String member_no) {
+		Map<String, String> trade_map = new HashMap<>();
+		String trade_cnt = mypagedao.tradeCnt(member_no);
+		String vip_consumber = mypagedao.vipConsumer(member_no);
+		if(vip_consumber == null) {
+			vip_consumber = "0";
+		}
+		System.out.println("vip_consumber"+vip_consumber);
+		trade_map.put("trade_cnt", trade_cnt);
+		trade_map.put("vip_consumber", vip_consumber);
+		return trade_map;
 	}
 
 

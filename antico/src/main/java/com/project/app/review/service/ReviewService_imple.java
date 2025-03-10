@@ -3,13 +3,13 @@ package com.project.app.review.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.app.common.FileType;
 import com.project.app.common.PagingDTO;
+import com.project.app.component.GetMemberDetail;
 import com.project.app.component.S3FileManager;
 import com.project.app.exception.BusinessException;
 import com.project.app.exception.ExceptionCode;
@@ -20,16 +20,18 @@ import com.project.app.review.model.ReviewDAO;
 import com.project.app.trade.domain.TradeVO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService_imple implements ReviewService {
-	
-	@Autowired
-	private ReviewDAO reviewDAO;
-	
-	// aws s3 api
-	private final S3FileManager s3FileManager;
+
+	private final ReviewDAO reviewDAO;
+
+	private final GetMemberDetail memberDetail; // 시큐리티 로그인 회원 정보
+
+	private final S3FileManager s3FileManager; // aws s3 api
 	
 	/*
 	 * 후기 설문 문항 정보 조회 
@@ -52,26 +54,26 @@ public class ReviewService_imple implements ReviewService {
 	@Override
 	@Transactional
 	public int registerReview(Map<String, String> para_map, MultipartFile file) {
-		int n1, n2 = 0; // 결과값을 저장할 정수
-		
-		// TODO security context 에서 로그인 사용자 정보 가져오기
-		String pk_member_no = "4"; // 후기 작성자 회원 일련번호
-		
+		int n1 = 0; // 결과값을 저장할 정수
+		int n2 = 0; // 결과값을 저장할 정수
+
+		String pk_member_no = memberDetail.MemberDetail().getPk_member_no(); // 후기 작성자 회원 일련번호
+
 		// 동일한 거래에서 사용자가 작성힌 후기가 존재하면 예외 발생
 		ReviewVO reviewVO = reviewDAO.selectReview(pk_member_no, para_map.get("pk_trade_no"));
 		
 		if(reviewVO != null) {
 			throw new BusinessException(ExceptionCode.REVIEW_AREADY_EXISTS);
 		}
-		
+
 		// 실제로 거래가 진행됬는지 및 후기 작성자가 구매자인지 확인
 		TradeVO tradeVO = reviewDAO.selectTrade(para_map.get("pk_trade_no"))
 				.orElseThrow(() -> new BusinessException(ExceptionCode.TRADE_NOT_FOUND));
-		
+
 		if(!tradeVO.getFk_consumer_no().equals(pk_member_no)) {
 			throw new BusinessException(ExceptionCode.NOT_CONSUMER_MEMBER);
 		}
-		
+
 		// 첨부 이미지가 존재한다면 S3에 업로드 처리 후 url인 filename 및 original file name를 DB에 저장
 		if(!file.isEmpty()) {
 			// 2번째 파라미터는 S3 버켓에서 review(후기) 관련 이미지들만 관리하기 위해 추가한 디렉토리 경로
@@ -95,7 +97,7 @@ public class ReviewService_imple implements ReviewService {
 		
 		// 사용자 선택 설문 문항 삽입
 		n2 = reviewDAO.insertSurveyResp(arr_pk_survey_resp_no, pk_review_no);
-		
+
 		return n1 * n2;
 	}
 
@@ -105,8 +107,7 @@ public class ReviewService_imple implements ReviewService {
 	@Override
 	@Transactional
 	public int addBlacklist(String pk_target_member_no) {
-		// TODO security context 에서 로그인 사용자 정보 가져오기
-		String pk_member_no = "4"; // 후기 작성자 회원 일련번호
+		String pk_member_no = memberDetail.MemberDetail().getPk_member_no(); // 후기 작성자 회원 일련번호
 		
 		// 이미 블랙리스트에 추가된 경우 예외 발생
 		BlacklistVO blacklistVO = reviewDAO.selectBlacklist(pk_member_no, pk_target_member_no);
@@ -160,11 +161,28 @@ public class ReviewService_imple implements ReviewService {
 	}
 
 	/*
+	 * 후기 상세 내역 조회 거래 일련번호로 조회
+	 */
+	@Override
+	public Map<String, String> getSellerReviewDetailsByTradeNo(String pk_trade_no) {
+		return reviewDAO.getSellerReviewDetailsByTradeNo(pk_trade_no)
+			.orElseThrow(() -> new BusinessException(ExceptionCode.REVIEW_NOT_FOUND));
+	}
+
+	/*
 	 * 후기에 따른 설문 문항 선택 내역 조회
 	 */
 	@Override
 	public List<SurveyVO> getSurveyRespList(String pk_review_no) {	
 		return reviewDAO.selectSurveyRespList(pk_review_no);
+	}
+
+	/*
+	 * 후기가 이미 존재하는지 확인
+	 */
+	@Override
+	public int getCountReview(String pk_review_no) {
+		return reviewDAO.selectCountReview(pk_review_no);
 	}
 
 }

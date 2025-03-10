@@ -1,8 +1,5 @@
 package com.project.app.comment.controller;
 
-
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -14,7 +11,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.comment.domain.CommentVO;
 import com.project.app.comment.service.CommentService;
-import com.project.app.common.FileManager;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 
@@ -57,11 +53,9 @@ public class CommentController {
 		
 		if (attach.isEmpty()) {
 			n = service.add_comment(comment_vo);
-			System.out.println("1");
 		}
 		else {
 			n = service.add_file_comment(comment_vo, attach);
-			System.out.println("2");
 		}
 		
 		if (n == 1) {

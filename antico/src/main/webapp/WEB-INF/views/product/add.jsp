@@ -238,7 +238,7 @@ button.add {
 
 /* 경매 날짜 필드 관련 */
 input[type='datetime-local'] {
-    width: 200px;
+    width: 185px;
    	height: 40px;
     background-color: white;
     border: solid 1px #cccccc;
@@ -252,19 +252,11 @@ input[type='datetime-local'] {
     cursor : pointer;
 }
 
-
-/* placehodler 넣어주기 
-input[type='date']::before {
-    color: #444444;
-    content: attr(placeholder);
-    position: absolute;
-    top: 50%; /* 수 직 중앙 정렬 
-    left: 10px; /* 왼쪽 여백 
-    transform: translateY(-50%); /* 정확한 수직 중앙 정렬 
-    pointer-events: none; /* 텍스트가 클릭되지 않도록 
-    z-index: 0; /* ::before 텍스트가 아래에 오도록 설정 
+span.auction_warning {
+	font-size: 10pt;
+	color: red;
+	visibility: hidden;
 }
-*/
 
 </style>
 
@@ -274,8 +266,6 @@ input[type='date']::before {
 
 	<!-- 상품 등록 시작 -->
 	<form name="prod_add_frm" enctype="multipart/form-data">	
-		
-		<%-- <input type="hidden" name="fk_member_no" value="${sessionScope.loginuser.pk_member_no}" /> --%>
 		
 		<!-- 상품 이미지  -->
 		<div id="prod_img_container">
@@ -357,6 +347,7 @@ input[type='date']::before {
 				<input type="hidden" id="prod_sale_type_value" name="product_sale_type" value="" />
 				
 				<input type="datetime-local" class="auction_start_date" name="auction_start_date" placeholder="경매 시작 날짜" required />
+				<span class="auction_warning">경매 시작 시간 (시작 시간으로부터 1시간 후가 마감 시간입니다.)</span>
 			</div>
 		</div>
 		
@@ -405,11 +396,9 @@ $(document).ready(function(){
         let files = Array.from(e.target.files);
         let image_previews = $("#image_previews");
         let img_count_text = $("#img_count");
-
+		
         
-        // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
         $(this).val("");
-        
         
         // 파일 개수 제한
         if (fileArr.length + files.length > maxFiles) {
@@ -502,6 +491,8 @@ $(document).ready(function(){
                 dataTransfer.items.add(file); // 선택한 파일을 DataTransfer 객체에 추가
                 input_file.files = dataTransfer.files; // input 요소에 파일 업데이트
                 
+                // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
+                e.target.value = '';
                 
                 // 삭제 버튼 클릭 시 이벤트
                 close_button.on("click", function () {
@@ -620,6 +611,9 @@ $(document).ready(function(){
         // 경매 종료 날짜 숨기기
         $("input.auction_start_date").css({"visibility": "hidden"});
         
+        // 경매 시간 문구 숨기기
+        $("span.auction_warning").css({"visibility": "hidden"});
+        
         // 선택한 상품 상태 값 변경
         $("#prod_sale_type_value").val($(this).data("value"));
         
@@ -649,6 +643,9 @@ $(document).ready(function(){
     	
         // 경매 시작 날짜 보이기
         $("input.auction_start_date").css({"visibility" : "visible"});
+        
+        // 경매 시간 문구 보이기
+        $("span.auction_warning").css({"visibility": "visible"});
 
         // 일반 판매 버튼 스타일 (흰색 배경, 검은색 글씨)
         $("input.general").css({

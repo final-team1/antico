@@ -12,6 +12,11 @@
 	</insert>
 
 	<!-- 탈퇴 신청시 탈퇴테이블에 insert -->
+	<update id="statusUpdate" parameterType="Map">
+		update tbl_member set member_status = 0
+		where pk_member_no = #{fk_member_no}
+	</update>
+	
     <insert id="pointcharge" parameterType="Map">
 	    insert into tbl_charge sets(pk_charge_no, fk_member_no, charge_price, charge_regdate, charge_commission)
 		values (cha_no.nextval, #{fk_member_no}, #{charge_price}, sysdate, #{charge_commission})
@@ -116,16 +121,91 @@
 	</resultMap>
 	
 	<select id="sellList" resultMap="sellList" parameterType="String">
-		select t.pk_trade_no, t.fk_seller_no, t.fk_consumer_no
-		     , t.trade_confirm_date, p.product_title, p.product_price, i.prod_img_name
-		from tbl_trade t join tbl_product p
-		on t.fk_seller_no = p.fk_member_no
-		join tbl_member m
-		on t.fk_consumer_no = m.pk_member_no
-		join tbl_prod_img i
-		on p.pk_product_no = i.fk_product_no
-		where trade_status = 2 and #{fk_seller_no} = #{pk_member_no}
-		<if test='search_sell != ""'> and lower(product_title) like '%' || lower(#{search_sell}) || '%'</if>
+		select t.pk_trade_no, t.fk_seller_no, t.fk_consumer_no,
+		       t.trade_confirm_date, p.product_title, p.product_price, 
+		       (select min(i.prod_img_name) 
+		        from tbl_prod_img i 
+		        where i.fk_product_no = p.pk_product_no) as prod_img_name
+		from tbl_trade t
+		join tbl_product p on t.fk_product_no = p.pk_product_no
+		where t.trade_status = 2
+		<if test='fk_seller_no == "fk_seller_no"'>
+		and t.fk_seller_no = #{pk_member_no}
+		</if>
+		<if test='fk_seller_no == "fk_consumer_no"'>
+		and t.fk_consumer_no = #{pk_member_no}
+		</if>
+	  	<if test='search_sell != ""'> 
+	    and lower(product_title) like '%' || lower(#{search_sell}) || '%' 
+	  	</if>
+	  	<if test='search_date != ""'> 
+		    and t.trade_confirm_date >= 
+		    <choose>
+		        <when test="search_date == '1year'">current_date - interval '1' year</when>
+		        <when test="search_date == '1week'">current_date - interval '7' day</when>
+		        <when test="search_date == '1month'">current_date - interval '1' month</when>
+		        <when test="search_date == '3months'">current_date - interval '3' month</when>
+		        <when test="search_date == '6months'">current_date - interval '6' month</when>
+		    </choose>
+		</if>
+	</select>
+	
+	
+	<resultMap id="sell_info" type="HashMap">
+	    <result property="pk_trade_no" 			column="pk_trade_no"			javaType="String"/>
+	    <result property="fk_seller_no" 		column="fk_seller_no" 			javaType="String"/>
+	    <result property="fk_consumer_no" 		column="fk_consumer_no" 		javaType="String"/>
+	    <result property="trade_confirm_date" 	column="trade_confirm_date" 	javaType="String"/>
+	    <result property="product_title" 		column="product_title" 			javaType="String"/>
+	    <result property="prod_img_name" 		column="prod_img_name" 			javaType="String"/>
+	    <result property="product_price" 		column="product_price" 			javaType="String"/>
+	    <result property="seller_name" 			column="seller_name" 			javaType="String"/>
+	    <result property="consumer_name" 		column="consumer_name" 			javaType="String"/>
+	</resultMap>
+	<!-- 판매상세정보 가져오기 -->
+	<select id="infoSell" resultMap="sell_info" parameterType="String">
+		select y.pk_trade_no, y.fk_seller_no, y.fk_consumer_no,
+		       y.trade_confirm_date, y.product_title, y.product_price, y.prod_img_name,
+		       y.seller_name, r.member_name as consumer_name
+		from
+		(
+		select  v.pk_trade_no, v.fk_seller_no, v.fk_consumer_no,
+		        v.trade_confirm_date, v.product_title, v.product_price, v.prod_img_name, m.member_name as seller_name
+		from (
+		    select t.pk_trade_no, t.fk_seller_no, t.fk_consumer_no,
+		           t.trade_confirm_date, p.product_title, p.product_price, 
+		           (select min(i.prod_img_name) 
+		            from tbl_prod_img i 
+		            where i.fk_product_no = p.pk_product_no) as prod_img_name
+		    from tbl_trade t
+		    join tbl_product p on t.fk_product_no = p.pk_product_no
+		    where t.pk_trade_no = #{pk_trade_no}
+		) v 
+		join tbl_member m on v.fk_seller_no = m.pk_member_no ) y
+		join tbl_member r on y.fk_consumer_no = r.pk_member_no
+	</select>
+	
+	<select id="productNo" parameterType="String" resultType="String">
+		select fk_product_no
+		from tbl_trade
+		where pk_trade_no = #{pk_trade_no}
+	</select>
+	
+	<!-- 거래횟수를 알아오기 -->
+	<select id="tradeCnt" parameterType="String">
+		select nvl(count(*), 0) as tradeCnt
+		from tbl_trade
+		where (fk_seller_no = 61 or fk_consumer_no = 61) and trade_status = 2
+	</select>
+	
+	<select id="vipConsumer" parameterType="String">
+		select count(distinct case when fk_seller_no = #{member_no} then fk_consumer_no end)
+		from tbl_trade
+		where (fk_seller_no = #{member_no} or fk_consumer_no = #{member_no}) 
+		  and trade_status = 2
+		group by 
+		    case when fk_seller_no = #{member_no} then fk_consumer_no end
+		having count(*) >= 3
 	</select>
 	
 </mapper>

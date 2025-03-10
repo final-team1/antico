@@ -79,8 +79,19 @@ public class TradeController {
 		// pk_product_no 상품번호, product_price 상품금액, pk_member_no 로그인한 회원, fk_member_no 판매자
 		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
-	//	Map<String, String> show_payment_map = service.getProduct(pk_product_no, pk_member_no);
 		int n = service.order_completed(pk_product_no, product_price, pk_member_no, fk_member_no);
+		return n;
+	}
+	
+	// 구매취소 처리
+	@PostMapping("Cancel")
+	@ResponseBody
+	public int Cancel(@RequestParam String product_price, @RequestParam String pk_product_no) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		String reason = "구매취소";
+		int n = service.Cancel(product_price, pk_product_no, pk_member_no, reason);
+		
 		return n;
 	}
 }

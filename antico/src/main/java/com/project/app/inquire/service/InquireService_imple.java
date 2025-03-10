@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.app.comment.domain.CommentVO;
-import com.project.app.common.FileManager;
+import com.project.app.common.FileType;
+import com.project.app.component.S3FileManager;
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.model.InquireDAO;
 
@@ -16,9 +18,9 @@ public class InquireService_imple implements InquireService {
 
 	@Autowired
 	private InquireDAO dao;
-	
+
 	@Autowired
-	private FileManager fileManager;
+	private S3FileManager s3FileManager;
 	
 	// 문의 내역 조회
 	@Override
@@ -36,7 +38,14 @@ public class InquireService_imple implements InquireService {
 
 	// 파일첨부가 있는 경우의 1:1문의
 	@Override
-	public int add_withFile(InquireVO inquirevo) {
+	public int add_withFile(InquireVO inquirevo, MultipartFile attach) {
+		
+		// 1. 파일 업로드 처리: 파일을 S3에 업로드하고 반환된 맵에서 파일명 정보 추출
+	    Map<String, String> file_map = s3FileManager.upload(attach, "inquire", FileType.ALL);
+	    
+	    inquirevo.setInquire_orgfilename(file_map.get("org_file_name"));
+	    inquirevo.setInquire_filename(file_map.get("file_name"));
+		
 		int n = dao.add_withFile(inquirevo); // 첨부파일이 있는 경우
 		return n;
 	}

@@ -76,8 +76,6 @@
 
 <jsp:include page=".././footer/footer.jsp" />
 
-<jsp:include page="../tab/tab.jsp"></jsp:include>
-
 <script>
   $(document).ready(function() {
   	
@@ -162,7 +160,7 @@
 				   error: function(error){
 					   alert("실패");
 				   }    
-			   	});
+			   	}); 
 			 }
 		});// end of keyup
 	   	   

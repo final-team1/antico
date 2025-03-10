@@ -104,7 +104,7 @@
                 type: "post",
                 data: {
                     pk_product_no: "${show_payment_map.pk_product_no}",
-                    member_no: "${member_vo.pk_member_no}",
+                    member_no: "${show_payment_map.fk_member_no}",
                     product_price: "${show_payment_map.product_price}"
                 },
                 dataType: "json",

@@ -11,6 +11,8 @@
         <span class="inquire-label">문의 내용 :</span>
         <span class="inquire-text">${requestScope.inquirevo.inquire_content}</span>
         <span class="inquire-date">${requestScope.inquirevo.inquire_regdate}</span>
+        &nbsp;|&nbsp;
+        <span class="inquire-date"><a href="${requestScope.inquirevo.inquire_filename}">${requestScope.inquirevo.inquire_orgfilename}</a></span>
     </div>
 </div>
 
@@ -27,6 +29,8 @@
 		        <span class="answer-date">${comment.comment_regdate}</span>
 		        &nbsp;|&nbsp;
 		        <span class="answer-date">${comment.member_name}</span>
+		        &nbsp;|&nbsp;
+		        <span class="answer-date"><a href="${comment.comment_filename}">${comment.comment_orgfilename}</a></span>
 		    </div>    
 		</div>
 </c:forEach>

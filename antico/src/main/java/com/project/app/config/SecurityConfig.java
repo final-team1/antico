@@ -21,11 +21,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
 import com.project.app.member.service.AuthCustomDetailService;
+import com.project.app.security.CoustomSuccessHandle;
 import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
 import com.project.app.security.LoginFailureHandler;
 import com.project.app.security.OauthFailer;
-import com.project.app.security.OauthSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,8 +50,8 @@ public class SecurityConfig {
     private final DefaultOAuth2UserService oAuth2UserService;
     
     
-    private final OauthSuccessHandler oauth_success_handler;
-	
+    private final CoustomSuccessHandle costom_oauth_success;
+
 	@Bean
     PasswordEncoder pwd_encoder() {
 		return new BCryptPasswordEncoder();
@@ -86,9 +86,12 @@ public class SecurityConfig {
 		.requestMatchers("/product/**").authenticated()
 					  
 		.requestMatchers("/mypage/**").authenticated()
-					  
-		.requestMatchers("/kakaologin/**").permitAll()
-					 
+		
+		.requestMatchers("/notice/notice_list").authenticated()
+		
+		.requestMatchers("/review/**").permitAll()
+		
+		.requestMatchers("/admin/**").hasAnyRole("ADMIN_1","ADMIN_2")
           
         .requestMatchers("/**").permitAll()
           
@@ -96,7 +99,6 @@ public class SecurityConfig {
           
         .requestMatchers("/oauth2/**").permitAll()
              
-        .anyRequest().authenticated()
     )
     .exceptionHandling(ex -> ex
     	 .accessDeniedHandler(custom_handler)
@@ -108,11 +110,11 @@ public class SecurityConfig {
     				.baseUri("/login/oauth2/code/**")
     		)
             .failureHandler(oauth_failer)
-            .successHandler(oauth_success_handler)
-            
+            .successHandler(costom_oauth_success)
             .userInfoEndpoint(userInfo -> userInfo
                     .userService(oAuth2UserService))
             )
+    
 
     .csrf(AbstractHttpConfigurer::disable)
     
@@ -123,6 +125,7 @@ public class SecurityConfig {
 	      	.usernameParameter("member_user_id")
 	      	.passwordParameter("member_passwd")
 	      	.defaultSuccessUrl("/index", true)
+	      	.successHandler(costom_oauth_success)
 	      	.failureHandler(login_failure_handler)
       		.permitAll()
      )

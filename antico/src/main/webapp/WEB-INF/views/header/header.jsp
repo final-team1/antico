@@ -2,11 +2,13 @@
     pageEncoding="UTF-8"%>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%
 
    String ctxPath = request.getContextPath();
    //     /myspring 
 %>    
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -63,8 +65,11 @@
   <link href="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/browsertests/qunit.min.css" rel="stylesheet">
   
   <%-- 웹소켓 연결 관리 모듈 JS --%>
-  <script type="text/javascript" src="<%=ctxPath%>/js/chat/Chat.js"></script>
-  
+  <script type="text/javascript" src="<%=ctxPath%>/js/chat/chat.js"></script>
+
+  <%-- SSE 연결 관리 모듈 JS --%>
+  <script type="text/javascript" src="<%=ctxPath%>/js/sse/sse.js"></script>
+
   <jsp:include page="../tab/tab.jsp"/>
   
 <style>
@@ -315,7 +320,22 @@ img.main_logo {
 }
 
 
-.my_header{
+.my_header_user{
+	position: absolute;
+	list-style: none;
+	height: 50px; 
+    width: 70px;
+    left: 114px;
+    top: 30px;
+    padding: 0;
+    text-align: center;
+    border: solid 1px #F1F4F6;
+    border-radius: 5px;
+    font-size: 12px;
+    display:none;
+}
+
+.my_header_admin{
 	position: absolute;
 	list-style: none;
 	height: 50px; 
@@ -363,7 +383,6 @@ form.search {
 /* 카테고리 버튼 시작 */
 /* 전체 드롭다운 */
 div#dropdown{ 
-	margin-top: 5px;
 	display: none;
     flex-direction: column; /* 아래로 펼쳐지도록 설정 */
     position: absolute;
@@ -394,6 +413,7 @@ ul.category_detail_list {
     margin: 0;
 }
 
+li.all,
 li.category_item,
 li.category_detail_item {
     padding: 10px;
@@ -403,6 +423,7 @@ li.category_detail_item {
     background: white;
 }
 
+li.all:hover,
 li.category_item:hover,
 li.category_detail_item:hover {
     background: #f5f5f5;
@@ -490,14 +511,27 @@ div.category_detail_container {
 					<li class="">
 						
 						<c:if test="${pageContext.request.userPrincipal.name == null}"><a href="<%=ctxPath%>/member/login">마이</a></c:if>
-						<c:if test="${pageContext.request.userPrincipal.name != null}"><p class="my_manu">마이</p></c:if>
-					
-					<ul class="my_header">
-						<li style="margin-top:2px;"><a href="#" onclick="myPage(); return false;">마이페이지</a></li>
-						<li><hr style="margin: 4px;"></li>
-						<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+						<sec:authorize access="hasAnyRole('ROLE_ADMIN_1', 'ROLE_ADMIN_2')">
+    					<p class="my_manu_admin">마이</p>
+						</sec:authorize>
+						<sec:authorize access="hasAnyRole('ROLE_USER_1', 'ROLE_USER_2', 'ROLE_USER_3')">
+						<p class="my_manu_user">마이</p>
+						</sec:authorize>
 						
-					</ul>
+						<ul class="my_header_user" >
+							<li style="margin-top:2px;"><a href="#" onclick="myPage(); return false;">마이페이지</a></li>
+							<li><hr style="margin: 4px;"></li>
+							<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+							
+						</ul>
+						
+						<ul class="my_header_admin">
+							<li style="margin-top:2px;"><a href="<%=ctxPath %>/admin/admin_page">관리자페이지</a></li>
+							<li><hr style="margin: 4px;"></li>
+							<li style="margin-top:4px;"><a href="<%=ctxPath%>/logout">로그아웃</a></li>
+							
+						</ul>
+						
 					</li>	
 				</ul>
 			</div>
@@ -517,7 +551,8 @@ div.category_detail_container {
 			    <!-- 카테고리 리스트 컨테이너 -->
 			    <div class="category_list_container">
 			        <ul class="category_list">
-			            <c:forEach var="category" items="${category_list}">
+							<li class="all" onclick="javascript:location.href='<%= ctxPath%>/product/prodlist'">전체</li>
+			            <c:forEach var="category" items="${requestScope.category_list}">
 			                <li class="category_item" data-category-id="${category.pk_category_no}"
 			                    onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${category.pk_category_no}'">
 			                    ${category.category_name}
@@ -529,9 +564,9 @@ div.category_detail_container {
 			<div id="category_detail_dropdown"> 
 			    <!-- 하위 카테고리 리스트 컨테이너 (옆으로 나오는 구조) -->
 			    <div class="category_detail_container">
-			        <c:forEach var="category" items="${category_list}">
+			        <c:forEach var="category" items="${requestScope.category_list}">
 			            <ul class="category_detail_list" data-category-id="${category.pk_category_no}">
-			                <c:forEach var="category_detail_list" items="${category_detail_list}">
+			                <c:forEach var="category_detail_list" items="${requestScope.category_detail_list}">
 			                    <c:if test="${category_detail_list.fk_category_no == category.pk_category_no}">
 			                        <li class="category_detail_item"
 			                            onclick="location.href='<%= ctxPath%>/product/prodlist?category_no=${category_detail_list.fk_category_no}&category_detail_no=${category_detail_list.pk_category_detail_no}'">
@@ -559,7 +594,7 @@ div.category_detail_container {
 			<a class="menuStyle">사기조회</a>
 		</div>
 		<div class="menuItem">
-			<a class="menuStyle">시세조회</a>
+			<a class="menuStyle" href="<%=ctxPath%>/product/market_price">시세조회</a>
 		</div>
 		<div class="menuItem">
 			<a class="menuStyle">읽을거리</a>
@@ -667,19 +702,31 @@ function goSearch() {
 $(document).ready(function(){
 	
 	
-	$("ul.my_header").css("display", "none");
+	$("ul.my_header_user").css("display", "none");
+	
+	$("ul.my_header_admin").css("display", "none");
 	
 	$("img.main_logo").click(function(e){
 		location.href = "<%=ctxPath%>/index";
 	});	
 	
 	
-	$("p.my_manu").bind("click", function(){
+	$("p.my_manu_user").bind("click", function(){
 		
-		if($("ul.my_header").css("display") == "none"){
-			$("ul.my_header").css("display", "block");
+		if($("ul.my_header_user").css("display") == "none"){
+			$("ul.my_header_user").css("display", "block");
 		}else{
-			$("ul.my_header").css("display", "none");
+			$("ul.my_header_user").css("display", "none");
+		}
+		
+	});
+	
+	$("p.my_manu_admin").bind("click", function(){
+		
+		if($("ul.my_header_admin").css("display") == "none"){
+			$("ul.my_header_admin").css("display", "block");
+		}else{
+			$("ul.my_header_admin").css("display", "none");
 		}
 		
 	});
@@ -773,6 +820,8 @@ function myPage() {
         }
     });
 }
+
+
 
 </script>
 

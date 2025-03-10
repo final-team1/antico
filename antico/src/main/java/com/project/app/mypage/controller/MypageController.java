@@ -91,6 +91,7 @@ public class MypageController {
 	        service.role_update(role, pk_member_no);
 	    }
 
+	    Map<String, String> trade_map = service.tradeCnt(member_no); // 거래횟수와 단골을 알아오기 위함.
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
 			member_role = "브론즈";
@@ -119,6 +120,8 @@ public class MypageController {
 	        mav.setViewName("mypage/sellerpage");
 	    }
 
+	    mav.addObject("trade_map", trade_map);
+	    mav.addObject("mvo", mvo);
 	    mav.addObject("seller_name", seller_name);
 	    mav.addObject("myproduct_list", myproduct_list);
 	    mav.addObject("member_score", member_score);
@@ -216,11 +219,14 @@ public class MypageController {
 	
 	// 판매내역
 	@GetMapping("sell_list")
-	public ModelAndView sellList(ModelAndView mav, @RequestParam(defaultValue = "") String search_sell) {
+	@ResponseBody
+	public ModelAndView sellList(ModelAndView mav) {
 		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String fk_seller_no = "fk_seller_no";
-		List<Map<String, String>> sell_list = service.sellList(pk_member_no, fk_seller_no, search_sell); // 로그인 한 회원의 판매확정된 판매내역들 가져오기
+		String search_sell = "";
+		String search_date = "";
+		List<Map<String, String>> sell_list = service.sellList(pk_member_no, fk_seller_no, search_sell, search_date); // 로그인 한 회원의 판매확정된 판매내역들 가져오기
 		search_sell = search_sell.trim(); // 검색어 공백 없애주기
 		mav.addObject("search_sell", search_sell);  // 검색어 전달
 		mav.addObject("sell_list", sell_list);
@@ -228,16 +234,64 @@ public class MypageController {
 		return mav;
 	}
 	
+	// 검색어가 있는 경우
+	@PostMapping("search_list")
+	@ResponseBody
+	public List<Map<String, String>> search_list (@RequestParam(defaultValue = "") String search_sell, @RequestParam(defaultValue = "") String search_date) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		String fk_seller_no = "fk_seller_no";
+		List<Map<String, String>> sell_list = service.sellList(pk_member_no, fk_seller_no, search_sell, search_date); // 로그인 한 회원의 판매확정된 판매내역들 가져오기
+		return sell_list;
+	}
+	
+	@PostMapping("sell_list_info")
+	@ResponseBody
+	public ModelAndView sell_list_info(@RequestParam(required = false, defaultValue = "0") String pk_trade_no,
+	                                   ModelAndView mav) {
+	    Map<String, String> Info_sell = service.infoSell(pk_trade_no);
+	    String pk_product_no = service.productNo(pk_trade_no); // 상품페이지 이동
+	    Info_sell.put("pk_product_no", pk_product_no);
+	    mav.addObject("Info_sell", Info_sell);
+	    mav.setViewName("mypage/sell_info");
+	    return mav;
+	}
+
 	// 구매내역
 	@GetMapping("buy_list")
-	public ModelAndView buyList(ModelAndView mav, @RequestParam(defaultValue = "") String search_sell) {
+	public ModelAndView buyList(ModelAndView mav) {
 		MemberVO member_vo = get_member_detail.MemberDetail();
 		String pk_member_no = member_vo.getPk_member_no();
 		String fk_consumer_no = "fk_consumer_no";
-		List<Map<String, String>> buy_list = service.sellList(pk_member_no, fk_consumer_no, search_sell);
+		String search_sell = "";
+		String search_date = "";
+		List<Map<String, String>> buy_list = service.sellList(pk_member_no, fk_consumer_no, search_sell, search_date);
 		mav.addObject("buy_list", buy_list);
 		mav.setViewName("mypage/buyList");
 		return mav;
+	}
+	
+	// 검색어가 있는 경우
+	@PostMapping("buy_search_list")
+	@ResponseBody
+	public List<Map<String, String>> buy_search_list (@RequestParam(defaultValue = "") String search_sell, @RequestParam(defaultValue = "") String search_date) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		String pk_member_no = member_vo.getPk_member_no();
+		String fk_consumer_no = "fk_consumer_no";
+		List<Map<String, String>> buy_list = service.sellList(pk_member_no, fk_consumer_no, search_sell, search_date); // 로그인 한 회원의 판매확정된 판매내역들 가져오기
+		return buy_list;
+	}
+	
+	@PostMapping("buy_list_info")
+	@ResponseBody
+	public ModelAndView buy_list_info(@RequestParam(required = false, defaultValue = "0") String pk_trade_no,
+	                                   ModelAndView mav) {
+	    Map<String, String> Info_buy = service.infoSell(pk_trade_no);
+	    String pk_product_no = service.productNo(pk_trade_no); // 상품페이지 이동
+	    Info_buy.put("pk_product_no", pk_product_no);
+	    mav.addObject("Info_buy", Info_buy);
+	    mav.setViewName("mypage/buy_info");
+	    return mav;
 	}
 	
 	// 계좌관리

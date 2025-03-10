@@ -6,6 +6,7 @@
 <c:set var="survey_stat_list" value="${requestScope.survey_stat_list}" />
 <c:set var="review_count" value="${requestScope.review_count}" />
 <c:set var="review_map_list" value="${requestScope.review_map_list}" />
+<c:set var="seller_no" value="${requestScope.seller_no}" />
 
 <style>
 	div#review_container {
@@ -181,22 +182,13 @@
 		$.ajax({
 			url : "${pageContext.request.contextPath}/review/all_reviews",
 			data : {
-				"pk_member_no" : "3"
+				"pk_member_no" : "${seller_no}"
 			},
 			success : function(html) {
 				openSideTab(html);
 			},
 			error: function(request, status, error){
-				 console.log(request.responseText);
-				 
-				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-			     showAlert("error", message);
-			     
-			     // 사이드 탭 닫기
-			     closeSideTab();
+				errorHandler(request, status, error);
 			}
 		});
 	}
@@ -212,16 +204,7 @@
 				showReviewModal(json, icon_url);
 			},
 			error: function(request, status, error){
-				 console.log(request.responseText);
-				 
-				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-			     showAlert("error", message);
-			     
-			     // 사이드 탭 닫기
-			     closeSideTab();
+				errorHandler(request, status, error);
 			}
 		});
 	}

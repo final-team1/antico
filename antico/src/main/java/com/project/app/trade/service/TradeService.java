@@ -2,6 +2,8 @@ package com.project.app.trade.service;
 
 import java.util.Map;
 
+import com.project.app.trade.domain.TradeVO;
+
 public interface TradeService {
 
 	Map<String, String> getProduct(String pk_product_no, String pk_member_no);
@@ -12,4 +14,9 @@ public interface TradeService {
 	// 구매확정을 했을 때
 	int order_completed(String pk_product_no, String product_price, String pk_member_no, String fk_member_no);
 
+	// 상품 일련번호를 통한 거래 내역 조회
+	TradeVO getTradeByProductNo(String pkProductNo);
+
+	// 구매취소 처리
+	int Cancel(String product_price, String pk_product_no, String pk_member_no, String reason);
 }

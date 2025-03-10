@@ -17,13 +17,13 @@
 		from tbl_trade
 		where pk_trade_no = #{pk_trade_no}
 	</select>
-	
+
 	<!-- 후기 설문 문항 목록 조회 -->
 	<select id="selectSurveyList" resultType="SurveyVO">
 		select pk_survey_no, survey_content
 		from tbl_survey
 	</select>
-	
+
 	<!-- 시퀀스 후기 일련번호 조회 -->
 	<select id="selectPkReviewNo" resultType="String">
 		select review_seq.nextval from dual
@@ -31,21 +31,21 @@
 
 	<!-- 후기 저장 -->
 	<insert id="insertReview" parameterType="HashMap" keyColumn="pk_review_no" keyProperty="pk_review_no">
-	    insert into tbl_review (pk_review_no, fk_member_no, fk_trade_no, review_content, review_regdate, review_img_file_name, review_img_org_name)
-	    values (#{pk_review_no}, #{pk_member_no}, #{pk_trade_no}, #{review_content}, SYSDATE, #{review_img_file_name}, #{review_img_org_name})
+		insert into tbl_review (pk_review_no, fk_member_no, fk_trade_no, review_content, review_regdate, review_img_file_name, review_img_org_name)
+		values (#{pk_review_no}, #{pk_member_no}, #{pk_trade_no}, #{review_content}, SYSDATE, #{review_img_file_name}, #{review_img_org_name})
 	</insert>
 
 	<!-- 후기 설문조사 삽입 -->
 	<insert id="insertSurveyResp">
-	    insert into tbl_survey_resp (pk_survey_resp_no, fk_review_no, fk_survey_no)
-	    <!-- select 결과 집합이 그대로 tbl_survey_resp 테이블로 삽입 -->
-	    select survey_resp_seq.nextval, a.fk_review_no, a.fk_survey_no 
-	    from (
-	    	<!-- union all을 통해 여러 행의 select 결과 값이 생성 -->
-	        <foreach collection="arr_pk_survey_resp_no" item="pk_survey_no" separator="UNION ALL">
-	            SELECT #{pk_review_no} as fk_review_no, #{pk_survey_no} as fk_survey_no from dual
-	        </foreach>
-	    ) a
+		insert into tbl_survey_resp (pk_survey_resp_no, fk_review_no, fk_survey_no)
+		<!-- select 결과 집합이 그대로 tbl_survey_resp 테이블로 삽입 -->
+		select survey_resp_seq.nextval, a.fk_review_no, a.fk_survey_no
+		from (
+		<!-- union all을 통해 여러 행의 select 결과 값이 생성 -->
+		<foreach collection="arr_pk_survey_resp_no" item="pk_survey_no" separator="UNION ALL">
+			SELECT #{pk_review_no} as fk_review_no, #{pk_survey_no} as fk_survey_no from dual
+		</foreach>
+		) a
 	</insert>
 
 	<!-- 블랙리스트 추가 -->
@@ -53,35 +53,35 @@
 		insert into tbl_blacklist(pk_blacklist_no, fk_target_member_no, fk_member_no, blacklist_regdate)
 		values(blacklist_seq.nextval, #{pk_target_member_no}, #{pk_member_no}, sysdate)
 	</insert>
-	
+
 	<!-- 블랙리스트 조회 -->
 	<select id="selectBlacklist" resultType="BlacklistVO">
 		select pk_blacklist_no, fk_target_member_no, fk_member_no, blacklist_regdate
 		from tbl_blacklist
 		where fk_target_member_no = #{pk_target_member_no} and fk_member_no = #{pk_member_no}
 	</select>
-	
+
 	<resultMap type="HashMap" id="sellerSurveyStatListMap">
 		<result column="pk_survey_no" property="pk_survey_no" javaType="String"/>
 		<result column="survey_content" property="survey_content" javaType="String"/>
 		<result column="count" property="count" javaType="String"/>
 	</resultMap>
-	
-	 <!-- 판매자 구매 리뷰 통계 조회(긍정적 리뷰, 부정적 리뷰, 리뷰 당 받은 개수) 뷰 테이블에서 조회 -->
+
+	<!-- 판매자 구매 리뷰 통계 조회(긍정적 리뷰, 부정적 리뷰, 리뷰 당 받은 개수) 뷰 테이블에서 조회 -->
 	<select id="selectConsumerSurveyStatList" parameterType="String" resultMap="sellerSurveyStatListMap">
 		select pk_survey_no, survey_content, count(*) as count
 		from v_review_survey_resp
 		where fk_seller_no = #{pk_member_no}
 		group by pk_survey_no, survey_content
 	</select>
-	
+
 	<!-- 사용자가 받은 구매 후기 전체 개수 뷰 테이블에서 조회 -->
 	<select id="selectConsumerTotalReviewCount" parameterType="String" resultType="int">
-        select count(distinct pk_review_no)
-        from v_review_survey_resp
-        where fk_seller_no = #{pk_member_no}
+		select count(distinct pk_review_no)
+		from v_review_survey_resp
+		where fk_seller_no = #{pk_member_no}
 	</select>
-	
+
 	<resultMap type="HashMap" id="reviewSummaryMap">
 		<result column="pk_review_no" property="pk_review_no" javaType="String" />
 		<result column="fk_consumer_no" property="fk_consumer_no" javaType="String" />
@@ -90,7 +90,7 @@
 		<result column="review_regdate" property="review_regdate" javaType="String" />
 		<result column="review_img_file_name" property="review_img_file_name" javaType="String" />
 	</resultMap>
-		
+
 	<resultMap type="HashMap" id="reviewMap">
 		<result column="pk_review_no" property="pk_review_no" javaType="String" />
 		<result column="fk_consumer_no" property="fk_consumer_no" javaType="String" />
@@ -104,43 +104,59 @@
 		<result column="review_img_org_name" property="review_img_org_name" javaType="String" />
 		<result column="product_title" property="product_title" javaType="String" />
 	</resultMap>
-	
+
 	<!-- 최근 받은 구매 후기 목록 가져오기 뷰 테이블에서 조회 -->
 	<select id="selectConsumerReviewList" resultMap="reviewSummaryMap">
-		select pk_review_no, fk_consumer_no, consumer_name, review_content, 
+		select pk_review_no, fk_consumer_no, consumer_name, review_content,
 			   to_char(review_regdate, 'yyyy-mm-dd') as review_regdate, review_img_file_name
 		from
-		(
-			select rownum as rnum, a.*
-			from
 			(
-				select distinct pk_review_no, fk_consumer_no, consumer_name, 
-					   review_content, review_regdate, 
-					   review_img_file_name
-				from v_review_survey_resp
-				where fk_seller_no = #{pk_member_no}
-				order by review_regdate desc
-			) a
-		)
+				select rownum as rnum, a.*
+				from
+					(
+						select distinct pk_review_no, fk_consumer_no, consumer_name,
+										review_content, review_regdate,
+										review_img_file_name
+						from v_review_survey_resp
+						where fk_seller_no = #{pk_member_no}
+						order by review_regdate desc
+					) a
+			) b
 		where rnum between #{paging_dto.first_row} and #{paging_dto.last_row}
 	</select>
-	
+
 	<!-- 후기 상세 조회 -->
-	<select id="selectConsumerReviewDetails" resultMap="reviewMap">
-		select distinct pk_review_no, fk_consumer_no, consumer_name, fk_seller_no, seller_name, 
-			   pk_trade_no, review_content, review_img_file_name, review_img_org_name,
-			   product_title, review_regdate
-		from v_review_survey_resp join 
+	<select id="selectConsumerReviewDetails" parameterType="String" resultMap="reviewMap">
+		select distinct pk_review_no, fk_consumer_no, consumer_name, fk_seller_no, seller_name,
+						pk_trade_no, review_content, review_img_file_name, review_img_org_name,
+						product_title, review_regdate
+		from v_review_survey_resp
 		where pk_review_no = #{pk_review_no}
 	</select>
-	
+
+	<!-- 후기 상세 조회 (거래 일련번호 조회) -->
+	<select id="getSellerReviewDetailsByTradeNo" parameterType="String" resultMap="reviewMap">
+		select distinct pk_review_no, fk_consumer_no, consumer_name, fk_seller_no, seller_name,
+						pk_trade_no, review_content, review_img_file_name, review_img_org_name,
+						product_title, review_regdate
+		from v_review_survey_resp
+		where pk_trade_no = #{pk_trade_no}
+	</select>
+
 	<!-- 후기 설문 응답 목록 상세 조회 -->
 	<select id="selectSurveyRespList" resultType="SurveyVO">
 		select pk_survey_no, survey_content
 		from v_review_survey_resp
 		where pk_review_no = #{pk_review_no}
 	</select>
-	
+
+	<!--후기가 이미 존재하는지 조회-->
+	<select id="selectCountReview" resultType="int">
+		select count(*)
+		from tbl_review join tbl_trade on fk_trade_no = pk_trade_no
+		where fk_product_no = #{pk_product_no}
+	</select>
+
 </mapper>
 
 

@@ -609,3 +609,28 @@ where pk_member_no = 188;
 
 
 desc tbl_member;
+
+
+
+
+
+create table tbl_calendar 
+(pk_calendar_no    number                 -- 일정관리 번호
+,fk_member_no      number  not null  -- 캘린더 일정 작성자 유저아이디
+,calendar_startdate     date                   -- 시작일자
+,calendar_enddate       date                   -- 종료일자
+,calendar_title       varchar2(400)          -- 제목
+,calendar_place         varchar2(200)          -- 장소
+,calendar_content       varchar2(4000)         -- 내용	
+,constraint calendar_pk_calendar_no primary key(pk_calendar_no)
+,constraint calendar_fk_member_no foreign key(fk_member_no) references tbl_member(pk_member_no)
+);
+-- Table TBL_CALENDAR_SCHEDULE이(가) 생성되었습니다.
+
+create sequence seq_calendar
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;

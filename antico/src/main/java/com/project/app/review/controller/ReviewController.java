@@ -19,22 +19,32 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.common.PagingDTO;
+import com.project.app.exception.BusinessException;
+import com.project.app.exception.ExceptionCode;
+import com.project.app.product.service.ProductService;
 import com.project.app.review.domain.SurveyVO;
 import com.project.app.review.service.ReviewService;
+import com.project.app.trade.domain.TradeVO;
+import com.project.app.trade.service.TradeService;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * 판매자/구매자 리뷰 컨트롤러
  */
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/review/*")
 public class ReviewController {	
 	
 	private final ReviewService reviewService;
-	
+
+	private final TradeService tradeService;
+	private final ProductService productService;
+
 	/*
 	 * 사용자 후기 메인 페이지 조회
 	 * 비 로그인 사용자도 접근 가능
@@ -42,9 +52,6 @@ public class ReviewController {
 	@GetMapping("/")
 	@ResponseBody
 	public ModelAndView getReviewMainPage(@RequestParam String pk_member_no, ModelAndView mav) {
-		
-		// TODO 판매자 페이지에서 조회시 pk_member_no를 가져오도록 변경
-		pk_member_no = "3";
 		
 		// 판매자 구매 후기 통계 조회(긍정적 리뷰, 부정적 리뷰, 리뷰 당 받은 개수)
 		// keys
@@ -70,7 +77,8 @@ public class ReviewController {
 		
 		// 최근 받은 리뷰 목록 가져오기
 		List<Map<String, String>> review_map_list = reviewService.getConsumerReviewList(paging_dto, pk_member_no);
-		
+
+		mav.addObject("seller_no", pk_member_no);
 		mav.addObject("survey_stat_list", survey_stat_list);
 		mav.addObject("review_count", review_count);
 		mav.addObject("review_map_list", review_map_list);
@@ -100,9 +108,6 @@ public class ReviewController {
 	@GetMapping("reviews/{pk_member_no}/{cur_page}")
 	@ResponseBody
 	public List<Map<String, String>> getReviewList(@PathVariable String pk_member_no, @PathVariable String cur_page) {
-		// TODO 판매자 페이지에서 조회시 pk_member_no를 가져오도록 변경
-		pk_member_no = "3";
-		
 		int current_page = 1;
 		
 		if(NumberUtils.isDigits(cur_page)) {
@@ -137,8 +142,19 @@ public class ReviewController {
 	 */
 	@GetMapping("register")
 	@ResponseBody
-	public ModelAndView getReviewRegisterPage(@RequestParam String pk_trade_no, ModelAndView mav) {
+	public ModelAndView getReviewRegisterPage(@RequestParam String pk_product_no, ModelAndView mav) {
+		// 이미 후기를 작성하였는지 확인
+		int n = reviewService.getCountReview(pk_product_no);
+		if(n != 0) {
+			throw new BusinessException(ExceptionCode.REVIEW_AREADY_EXISTS);
+		}
+
 		List<SurveyVO> survey_vo_list = reviewService.getSurveyMapList(); // 후기 설문문항 목록 조회
+		Map<String, String> product_map = productService.getProductInfo(pk_product_no); // 거래상품 조회
+		TradeVO trade_vo = tradeService.getTradeByProductNo(pk_product_no); // 거래내역 조회
+
+		mav.addObject("product_map", product_map);
+		mav.addObject("trade_vo", trade_vo);
 		mav.addObject("survey_vo_list", survey_vo_list);
 		mav.setViewName("review/register");
 		return mav;
@@ -154,15 +170,13 @@ public class ReviewController {
 
 		String str_pk_survey_resp_no =  request.getParameter("arr_pk_survey_resp_no"); 	// 사용자가 선택한 설문문항 테이블 일련번호 문자열
 		String pk_trade_no = request.getParameter("pk_trade_no");					   	// 거래 일련번호
-		String review_content = request.getParameter("review_content");				   	// 후기 내역
-		String review_type = request.getParameter("review_type");						// 후기 타입 0 : 구매후기, 1 : 판매 홍보 후기
+		String review_content = request.getParameter("review_content");				   	// 후기 내역			// 후기 타입 0 : 구매후기, 1 : 판매 홍보 후기
 		
 		Map<String, String> para_map = new HashMap<>();
 		
 		para_map.put("str_pk_survey_resp_no", str_pk_survey_resp_no);
 		para_map.put("pk_trade_no", pk_trade_no);
 		para_map.put("review_content", review_content);
-		para_map.put("review_type", review_type);
 		
 		// 첨부 이미지가 없는 후기도 작성 가능하기에 빈 값으로 초기화
 		para_map.put("review_img_org_name", ""); 
@@ -229,6 +243,39 @@ public class ReviewController {
 		map.put("review_map", review_map);
 		map.put("survey_list", survey_list);
 		
+		return map;
+	}
+
+	/*
+	 * 사용자 받은 후기 상세 조회 (후기 내역, 설문 응답 내역)
+	 * review_map keys
+	 *  pk_review_no : 후기 일련번호
+	 *  fk_consumer_no : 구매자 일련번호
+	 *  consumer_name : 구매자 명
+	 *  fk_seller_no : 판매자 일련번호
+	 * 	seller_name : 판매자 명
+	 *  pk_trade_no : 거래내역 일련번호
+	 *  review_content : 후기 내용
+	 *  review_regdate : 후기 등록일자
+	 *  review_img_file_name : 후기 이미지 파일 명
+	 *  review_img_org_name : 후기 이미지 파일 원본명
+	 *  product_title : 거래 상품명
+	 */
+	@GetMapping("seller/details")
+	@ResponseBody
+	public Map<String, Object> getSellerReviewDetailsByTradeNo(@RequestParam String pk_trade_no){
+
+		// 후기 상세 내역
+		Map<String, String> review_map = reviewService.getSellerReviewDetailsByTradeNo(pk_trade_no);
+
+		// 후기 설문 문항 선택 내역
+		List<SurveyVO> survey_list = reviewService.getSurveyRespList(review_map.get("pk_review_no"));
+
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("review_map", review_map);
+		map.put("survey_list", survey_list);
+
 		return map;
 	}
 }

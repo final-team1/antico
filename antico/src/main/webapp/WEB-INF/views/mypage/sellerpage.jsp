@@ -658,8 +658,23 @@ function timeAgo(reg_date) {
             }
         });
     });
-    
-    
+
+	// 거래 후기 클릭시
+	function sellerReview() {
+		$.ajax({
+			url : "<%=ctx_Path%>/review/",
+			data : {
+				"pk_member_no" : "${requestScope.mvo}"
+			},
+			success : function(html) {
+				openSideTab(html, "거래 후기");
+			},
+			error : function(request, status, error) {
+				errorHandler(request, status, error);
+			}
+		});
+	}
+
 </script>
 
 <jsp:include page=".././header/header.jsp" />
@@ -687,15 +702,15 @@ function timeAgo(reg_date) {
 						<section class="stats_section">
 							<div class="stat_box">
 								<p>거래횟수</p>
-								<span>1</span>
+								<span>${requestScope.trade_map.trade_cnt}</span>
 							</div>
 							<div class="stat_box">
 								<p>거래후기</p>
-								<a href="#" onclick="myreview()" style="text-decoration: underline;">1</a>
+								<a href="#" onclick="sellerReview()" style="text-decoration: underline;">1</a>
 							</div>
 							<div class="stat_box">
 								<p>단골</p>
-								<span>0</span>
+								<span>${requestScope.trade_map.vip_consumber}</span>
 							</div>
 						</section>
 					</section>
@@ -784,5 +799,3 @@ function timeAgo(reg_date) {
 
 <jsp:include page=".././footer/footer.jsp" />
 
-
-<jsp:include page="../tab/tab.jsp"></jsp:include>

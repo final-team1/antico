@@ -7,7 +7,9 @@
 %>
 
 <div style="width:15%;">
-	<h2 class="side">Admin</h2>
+	<h2 class="side">
+		<a class="header" href="<%= ctxPath %>/admin/admin_page">Admin</a>
+	</h2>
 	
 	<h4 class="side">User</h4>
 	
@@ -15,7 +17,9 @@
 		<li>
 			<a href="<%= ctxPath %>/admin/admin_member_management">사용자 관리</a>
 		</li>
-		<li>상품 관리</li>
+		<li>
+			<a href="<%= ctxPath %>/admin/admin_product_list">상품 관리</a>
+		</li>
 	</ul>
 	
 	<h4 class="side">Management</h4>
@@ -28,10 +32,12 @@
 				<li><a href="<%= ctxPath %>/admin/admin_notice_delete">공지사항 삭제</a></li>
 			</ul>
 		</li>
-		<li class="inquireReply"><a href="<%= ctxPath %>/admin/admin_uninquire_list">1:1 문의</a></li>
+		<li><a href="<%= ctxPath %>/admin/admin_uninquire_list">1:1 문의</a></li>
 	</ul>
 	
-	<h4 class="side">Statistics</h4>
+	<h4 class="side">
+		<a class="header" href="<%= ctxPath %>/admin/admin_statistics">Statistics</a>
+	</h4>
 </div>
 
 <script>
@@ -60,8 +66,18 @@
 	.side {
 		margin-bottom: 10%;
 	}
-	/* 숨겨져 있는 서브 메뉴 */
+	
 	.noticeSubMenu {
 		display: none;
+	}
+	
+	.header {
+		text-decoration: none;
+		color: black;
+	}
+	
+	.header:hover {
+		text-decoration: none;
+		color: black;
 	}
 </style>

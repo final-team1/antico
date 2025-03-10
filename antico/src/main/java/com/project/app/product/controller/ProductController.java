@@ -1,6 +1,7 @@
 package com.project.app.product.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class ProductController {
 
 	// 상품 등록 완료 요청
 	@PostMapping("add")
-	public ModelAndView add(Map<String, String> paraMap, ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
+	public ModelAndView add(ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
 	      	
 		  // 로그인한 회원의 회원번호 값 가져오기
 		  String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
@@ -82,6 +83,9 @@ public class ProductController {
 		
 	      // 이미지 정보 가져오기 
 	      List<MultipartFile> attach_list = product_imgvo.getAttach();
+	      
+	      // System.out.println(attach_list);
+	      // System.out.println(attach_list.size());
 	      
 	      // 상품 등록 완료 후 상품 테이블 및 이미지 테이블에 상품 정보 저장
 	      int n = service.addProduct(productvo, product_imgvo, attach_list);
@@ -155,6 +159,7 @@ public class ProductController {
 								@RequestParam(defaultValue = "") String region,
 								@RequestParam(defaultValue = "") String town,
 								@RequestParam(defaultValue = "") String sort_type,
+								@RequestParam(defaultValue = "") String sale_type,
 								@RequestParam(defaultValue = "1") int cur_page) {
 
 		// View 페이지 출력을 위한 정보 가져오기 시작 //
@@ -185,11 +190,10 @@ public class ProductController {
 		search_prod = search_prod.trim(); // 검색어 공백 없애주기
 		
 		// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
-        
+        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
         
         // 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type);
+        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
         
         mav.addObject("product_list_cnt", product_list_cnt); 	     // 총 개수 전달
         mav.addObject("prodcut_price_info", prodcut_price_info);     // 가격 정보 전달 
@@ -211,7 +215,7 @@ public class ProductController {
         if(product_list_cnt > 0) { // 상품이 존재한다면
         	
         	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, paging_dto); 
+            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto); 
             
             mav.addObject("product_list", product_list); // 상품 정보 전달	   
         }
@@ -275,12 +279,12 @@ public class ProductController {
 		// 좋아요 정보 가져오기
 		List<Map<String, String>> wish_list = service.getWish();
 		mav.addObject("wish_list", wish_list);
-	
+		
 		// 특정 상품에 대한 이미지 정보 가져오기
 		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
-		mav.addObject("product_img_list", product_img_list);
-		
-		// 특정 삼품에 대한 정보 가져오기(지역, 회원, 카테고리)
+		mav.addObject("product_img_list", product_img_list);		
+
+		// 특정 상품에 대한 정보 가져오기(지역, 회원, 카테고리, 경매정보)
 		Map<String, String> product_map = service.getProductDetail(pk_product_no);
 		mav.addObject("product_map", product_map);
 		
@@ -298,7 +302,7 @@ public class ProductController {
 		return mav;
 	}
 	
-	
+
 	
 	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
 	@PostMapping("reg_update")
@@ -319,6 +323,51 @@ public class ProductController {
 	}
 	
 	
+	// "상품수정" form 페이지 요청
+	@PostMapping("update")
+	public ModelAndView update(ModelAndView mav,
+							   @RequestParam(defaultValue = "") String pk_product_no) {
+
+		// 상위 카테고리 정보 가져오기
+		List<CategoryVO> category_list = service.getCategory();
+
+		// 하위 카테고리 정보 가져오기
+		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
+
+		mav.addObject("category_list", category_list);
+		mav.addObject("category_detail_list", category_detail_list);
+		
+		// 상품 정보 가져오기
+		Map<String, String> product_map = service.getProductDetail(pk_product_no);
+		mav.addObject("product_map", product_map);
+		
+		// 특정 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
+		mav.addObject("product_img_list", product_img_list);
+
+		mav.setViewName("product/update");
+
+		return mav;
+	}
+	
+	
+	// "상품 수정" 완료 요청
+	@PostMapping("update_end")
+	public ModelAndView update_end(ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
+		
+		// 새로 업로드된 이미지 정보 가져오기 
+		List<MultipartFile> attach_list = product_imgvo.getAttach();
+		
+		// 상품 수정
+		service.updateProduct(productvo, product_imgvo, attach_list);
+		
+		String pk_product_no = productvo.getPk_product_no();
+		mav.setViewName("redirect:/product/prod_detail/" + pk_product_no);
+		
+		return mav;
+	}
+	
+	
 	// "상품삭제" 클릭 시 상품 삭제하기
 	@PostMapping("delete")
 	@ResponseBody
@@ -327,6 +376,25 @@ public class ProductController {
 		return result;
 	}
 	
+	
+	// 시세조회 페이지	
+	@GetMapping("market_price")
+	public ModelAndView marketPriceCheck(ModelAndView mav) {
+		
+		mav.setViewName("product/market_price");
+		
+		return mav;
+	}
+	
+	// 검색어에 따른 시세조회 해오기
+	@GetMapping("market_price_search")
+	@ResponseBody
+	public List<Map<String, String>> marketPriceSearch(@RequestParam(defaultValue = "") String search_price) {
+		
+		// 검색어에 맞는 시세 조회
+		List<Map<String, String>> marketPrice = service.getMargetPrice(search_price);
+		return marketPrice;
+	}
 	
 	
 

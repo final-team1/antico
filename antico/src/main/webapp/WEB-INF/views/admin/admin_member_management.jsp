@@ -68,19 +68,23 @@
     </table>
 </div>
 
+<div style="height: 20px;">
+	<jsp:include page="../paging.jsp"></jsp:include>
+</div>
+
 <jsp:include page="../footer/footer.jsp" />
-<jsp:include page="../tab/tab.jsp"></jsp:include>
 
 <script>
 $(document).ready(function() {
 	// 유저 상태 변경 이벤트
     $('table tbody tr .status').on('click', function() {
         const member_no = $(this).data('member-no');
+        const member_name = $(this).parent("tr").find("td:nth-child(3)").text()
         const status_text = $(this).find('.status-text');
         const status_dropdown = $(this).find('.status-dropdown');
         const current_status = status_text.text().trim();
-
-        $('table tbody tr .status-dropdown').not(status_dropdown).hide();  // 다른 드롭다운 숨기기
+        
+        $('table tbody tr .status-dropdown').not(status_dropdown).hide();
         $('table tbody tr .status-text').not(status_text).show();
         
         if (status_dropdown.is(":hidden")) {
@@ -104,6 +108,7 @@ $(document).ready(function() {
                             status_text.text(status_dropdown.find('option:selected').text());
                             status_dropdown.hide();
                             status_text.show();
+                            showAlert("success", member_name + "님이 상태가 변경 되었습니다");
                         } 
                         else {
                             alert('상태 변경 실패');
@@ -117,6 +122,13 @@ $(document).ready(function() {
         }
     });
 });
+
+//페이징 처리 버튼 이벤트
+$(document).on("click", "a.page_button", function() {
+   const page = $(this).data("page");
+
+   location.href = "<%= ctxPath%>/admin/admin_member_management?cur_page="+ page;
+});
 </script>
 
 <style>
@@ -124,6 +136,7 @@ $(document).ready(function() {
 	    display: flex;
 	    width: 70%;
 	    margin: 0 auto;
+	    margin-bottom: 2%;
 	}
 	
 	table {
