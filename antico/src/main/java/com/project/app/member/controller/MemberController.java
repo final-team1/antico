@@ -18,15 +18,14 @@ import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.member.service.MemberService;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping("/member/*")
+@RequiredArgsConstructor
 public class MemberController {
 	
-	@Autowired
 	private MemberService service;
-	
-	@Autowired
-	private GetMemberDetail get_member_detail;
 	
 	@GetMapping("login")
 	public ModelAndView showLoginPage(
@@ -35,8 +34,6 @@ public class MemberController {
 		
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		System.out.println(authentication.getAuthorities());
 		
 		if("[ROLE_ANONYMOUS]".equals(String.valueOf(authentication.getAuthorities()))) {
 			
@@ -81,11 +78,12 @@ public class MemberController {
 		mvo.setMember_tel(member_tel);
 		mvo.setMember_name(member_name);
 		
-		int n = service.registerMember(mvo);
+		service.registerMember(mvo);
 		
 		mav.setViewName("main/index");
 		
 		return mav;
 	}
+	
 	
 }

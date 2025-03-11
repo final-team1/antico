@@ -203,6 +203,26 @@ $(document).ready(function () {
             Search();
         }
     });
+
+	// 작성 후기 클릭 이벤트
+	$("button.review_btn").on("click", function(){
+		const pk_trade_no = $(this).parent("div.sell_history").find("input[name='pk_trade_no']").val();
+		$.ajax({
+			url : "<%=ctx_Path%>/review/seller/details",
+			dataType : "json",
+			data : {
+				pk_trade_no : pk_trade_no
+			},
+			success : function(json) {
+				// 후기 아이콘
+				const icon_url = "<%=ctx_Path%>/images/icon/review.svg";
+				showReviewModal(json, icon_url);
+			},
+			error: function(request, status, error){
+				errorHandler(request, status, error);
+			}
+		});
+	});
     
 });
 
@@ -238,7 +258,7 @@ function Search() {
                                 <strong class="sell_price">\${formattedPrice}</strong>
                             </div>
                         </div>
-                        <button class="review_btn">받은 후기</button>
+                        <button class="review_btn">작성한 후기</button>
                     </div>`;
             });
             $("div.search_sell_list").html(v_html); // 한 번만 업데이트
