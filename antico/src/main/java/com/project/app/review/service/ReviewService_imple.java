@@ -3,7 +3,6 @@ package com.project.app.review.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +20,9 @@ import com.project.app.review.model.ReviewDAO;
 import com.project.app.trade.domain.TradeVO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService_imple implements ReviewService {
@@ -157,6 +158,15 @@ public class ReviewService_imple implements ReviewService {
 	public Map<String, String> getConsumeReviewDetails(String pk_review_no) {		
 		return reviewDAO.selectConsumerReviewDetails(pk_review_no)
 				.orElseThrow(() -> new BusinessException(ExceptionCode.REVIEW_NOT_FOUND));
+	}
+
+	/*
+	 * 후기 상세 내역 조회 거래 일련번호로 조회
+	 */
+	@Override
+	public Map<String, String> getSellerReviewDetailsByTradeNo(String pk_trade_no) {
+		return reviewDAO.getSellerReviewDetailsByTradeNo(pk_trade_no)
+			.orElseThrow(() -> new BusinessException(ExceptionCode.REVIEW_NOT_FOUND));
 	}
 
 	/*

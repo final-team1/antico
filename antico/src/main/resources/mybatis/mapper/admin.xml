@@ -204,6 +204,7 @@
 		where rnum between #{paging_dto.first_row} and #{paging_dto.last_row}
 	</select>
 
+	<!-- 상품상세보기 -->
 	<resultMap id="getProductInfoMap" type="HashMap">
 	    <result property="pk_product_no" column="pk_product_no" javaType="String"/>
 	    <result property="fk_member_no" column="fk_member_no" javaType="String"/>
@@ -247,6 +248,12 @@
 	    WHERE P.pk_product_no = #{pk_product_no} 
 	    AND I.prod_img_is_thumbnail = 1
 	</select>
+
+	<!-- 상품삭제하기 -->
+	<delete id="admin_deleteproduct" parameterType="String">
+		delete from tbl_product 
+		where pk_product_no = #{pk_product_no}
+	</delete>
 
 	<!-- 일별 방문자 차트 --> 
 	<resultMap type="HashMap" id="visitantchat_map">
@@ -302,6 +309,71 @@
 		group by c.pk_category_no, c.category_name
 		order by percentage desc
 	</select>
+
+	<!-- 캘린더 일정 등록하기 -->
+	<insert id="admin_registercalendar" parameterType="HashMap">
+		insert into tbl_calendar(pk_calendar_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content, fk_member_no) 
+    	values(seq_calendar.nextval, to_date(#{calendar_startdate}, 'yyyymmddhh24miss'), to_date(#{calendar_enddate}, 'yyyymmddhh24miss'), #{calendar_title}, #{calendar_place}, #{calendar_content}, #{pk_member_no})   
+	</insert>
+
+    <!-- 캘린더를 불러오는것 -->
+	<select id="admin_selectcalendar" resultType="CalendarVO" parameterType="String">
+		select pk_calendar_no, fk_member_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content
+		from tbl_calendar
+		where fk_member_no = #{pk_member_no}
+		order by pk_calendar_no asc
+	</select>
+	
+	<!-- 일정상세보기 -->
+	<resultMap type="HashMap" id="detailcalendar_map">
+		<result property="pk_calendar_no" 	column="pk_calendar_no" 	javaType="String" />
+		<result property="calendar_startdate" 	column="calendar_startdate" 		javaType="String" />
+		<result property="calendar_enddate" 		column="calendar_enddate" 		javaType="String" />
+		<result property="calendar_title" 		column="calendar_title" 		javaType="String" />
+		<result property="calendar_place" 		column="calendar_place" 			javaType="String" />
+		<result property="calendar_content" 		column="calendar_content" 			javaType="String" />
+		<result property="fk_member_no" 	column="fk_member_no" 		javaType="String" />
+	</resultMap>
+	<select id="admin_detailcalendar" parameterType="String" resultMap="detailcalendar_map">
+		select pk_calendar_no, fk_member_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content
+		from tbl_calendar
+		where pk_calendar_no = #{pk_calendar_no}
+	</select>	
+	
+	<!-- 일정삭제하기 -->
+	<delete id="admin_deletecalendar" parameterType="String">
+		delete from tbl_calendar 
+		where pk_calendar_no = #{pk_calendar_no}
+	</delete>
+
+	<!-- 일정 수정하기 -->
+	<update id="admin_editcalendar_end" parameterType="CalendarVO">
+	    update tbl_calendar
+	    set calendar_startdate = to_date(#{calendar_startdate}, 'yyyymmddhh24miss'),
+	        calendar_enddate = to_date(#{calendar_enddate}, 'yyyymmddhh24miss'),
+	        calendar_title = #{calendar_title},
+	        calendar_place = #{calendar_place},
+	        calendar_content = #{calendar_content}
+	    where pk_calendar_no = #{pk_calendar_no}
+	</update>
+	
+	<!-- 일정 검색 -->
+	<resultMap type="HashMap" id="searchcalendar_map">
+		<result property="pk_calendar_no" 	column="pk_calendar_no" 	            javaType="String" />
+		<result property="calendar_startdate" 	column="calendar_startdate" 		javaType="String" />
+		<result property="calendar_enddate" 		column="calendar_enddate" 		javaType="String" />
+		<result property="calendar_title" 		column="calendar_title" 			javaType="String" />
+		<result property="calendar_place" 		column="calendar_place" 		    javaType="String" />
+		<result property="calendar_content" 		column="calendar_content" 		javaType="String" />
+	</resultMap>
+	<select id="admin_searchcalendar" parameterType="HashMap" resultMap="searchcalendar_map">
+	    select pk_calendar_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content
+	    from tbl_calendar
+	    where (to_char(calendar_startdate, 'YYYY-MM-DD') between #{calendar_startdate} and #{calendar_enddate})
+	    and (to_char(calendar_enddate, 'YYYY-MM-DD') between #{calendar_startdate} and #{calendar_enddate})
+	    and lower(${searchType}) like '%' || lower(#{searchWord}) || '%'
+	</select>
+
 
 </mapper>
 
