@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.admin.model.AdminDAO">
+	
+	<!-- 파일첨부가 없는 경우의 공지사항작성 -->
+	<insert id="add" parameterType="NoticeVO">
+		insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date)
+        values(notice_seq.nextval, #{fk_member_no}, #{notice_title}, #{notice_content}, default)
+	</insert>
+
+	<!-- 파일첨부가 있는 경우의 공지사항작성 -->
+	<insert id="add_withFile" parameterType="NoticeVO">
+		insert into tbl_notice(pk_notice_no, fk_member_no, notice_title, notice_content, notice_date,
+							    notice_orgfilename, notice_filename, notice_filesize)  
+        values(notice_seq.nextval, #{fk_member_no}, #{notice_title}, #{notice_content}, default, #{notice_orgfilename}, #{notice_filename}, #{notice_filesize})
+	</insert>
+	
+	<resultMap id="InquireResultMap" type="HashMap">
+	    <result property="pk_inquire_no" column="pk_inquire_no"/>
+	    <result property="fk_member_no" column="fk_member_no"/>
+	    <result property="inquire_title" column="inquire_title"/>
+	    <result property="inquire_content" column="inquire_content"/>
+	    <result property="inquire_filename" column="inquire_filename"/>
+	    <result property="inquire_orgfilename" column="inquire_orgfilename"/>
+	    <result property="inquire_file_size" column="inquire_file_size"/>
+	    <result property="inquire_status" column="inquire_status"/>
+	    <result property="inquire_secret" column="inquire_secret"/>
+	    <result property="inquire_regdate" column="inquire_regdate"/>
+	    <result property="member_name" column="member_name"/>
+	</resultMap>
+	
+	<!-- 미답변 1:1문의 내역 조회 -->
+	<select id="uninquire_list" resultMap="InquireResultMap">
+		select pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
+			   , member_name, inquire_orgfilename, inquire_filename
+		from
+			(
+				SELECT rownum AS rnum, a.*
+				from
+					(
+						SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
+								, member_name, inquire_orgfilename, inquire_filename
+						FROM tbl_inquire i join tbl_member m
+				        on i.fk_member_no = m.pk_member_no
+						order by pk_inquire_no desc
+					) a
+			)
+		WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
+	</select>
+	
+	<!-- 공지사항 조회 -->
+	<select id="notice_list" resultType="NoticeVO" parameterType="HashMap">
+	    SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	           , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	           , notice_date
+	           , notice_update_date
+	    FROM 
+	        ( 
+	        SELECT rownum AS rnum, a.*
+	        FROM 
+	            ( 
+	                SELECT pk_notice_no, fk_member_no, notice_title, notice_content
+	                       , notice_filename, notice_orgfilename, notice_fileSize, notice_views
+	                       , TO_CHAR(notice_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_date
+	                       , TO_CHAR(notice_update_date, 'yyyy-MM-dd HH24:mi:ss') AS notice_update_date
+	                FROM tbl_notice
+	                ORDER BY pk_notice_no DESC
+	            ) a
+	        )
+	    WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
+	</select>
+	
+	<!-- 공지사항 총 개수 -->
+	<select id="getNoticeCount" resultType="int">
+		select count(*)
+		from tbl_notice
+	</select>
+
+	<!-- 삭제시 파일 조회 -->
+    <select id="getView_delete" parameterType="String" resultType="NoticeVO">
+       select nvl(notice_filename, ' ') AS notice_filename
+            , nvl(notice_orgfilename, ' ') AS notice_orgfilename
+       from tbl_notice
+       where pk_notice_no = #{pk_notice_no}
+    </select>  
+	
+	<!-- 공지삭제 -->
+	<delete id="notice_delete" parameterType="String">
+       delete from tbl_notice
+       where pk_notice_no = to_number(#{pk_notice_no})
+    </delete>
+	
+	<!-- 1:1문의 총 개수 -->
+	<select id="getInquireCount" resultType="int">
+		select count(*)
+		from tbl_inquire
+	</select>
+	
+	<!-- 유저 총 수 -->
+	<select id="getmember_count" resultType="int">
+		select count(*)
+		from tbl_member
+	</select>
+	
+	<!-- 유저 조회 -->
+	<select id="admin_member_management" resultType="MemberVO" parameterType="HashMap">
+		select pk_member_no, member_user_id, member_name, member_tel, member_point, member_score, member_status
+		from
+		(
+			select rownum as rnum, a.*
+		    from
+		    (
+				select *
+				from tbl_member
+				order by member_regdate desc
+			) a
+		)
+		WHERE rnum BETWEEN #{paging_dto.first_row} AND #{paging_dto.last_row}
+	</select>
+	
+	<!-- 유저 상태 변경 -->
+	<update id="update_member_status" parameterType="HashMap">
+		update tbl_member
+	    set member_status = #{status}
+	    where pk_member_no = #{member_no}	
+	</update>
+		
+	<!-- 상품 총 개수 -->
+	<select id="getproduct_count" resultType="int">
+		select count(*)
+		from tbl_product
+	</select>
+	
+	<!-- 상품 조회 맵 -->
+	<resultMap id="getProductMap" type="HashMap">
+	    <result property="pk_product_no" 			column="pk_product_no"			javaType="String"/>
+	    <result property="fk_member_no" 			column="fk_member_no" 			javaType="String"/>
+	    <result property="fk_region_no" 			column="fk_region_no" 			javaType="String"/>
+	    <result property="fk_category_no" 			column="fk_category_no" 		javaType="String"/>
+	    <result property="fk_category_detail_no" 	column="fk_category_detail_no" 	javaType="String"/>  
+	    <result property="product_title" 			column="product_title" 			javaType="String"/>
+	    <result property="product_contents" 		column="product_contents" 		javaType="String"/>
+	    <result property="product_price" 			column="product_price" 			javaType="String"/>
+	    <result property="product_status" 			column="product_status" 		javaType="String"/>
+	    <result property="product_sale_status" 		column="product_sale_status" 	javaType="String"/>
+	    <result property="product_regdate" 			column="product_regdate" 		javaType="String"/>
+	    <result property="product_update_date" 		column="product_update_date" 	javaType="String"/>
+	    <result property="product_sale_type" 		column="product_sale_type" 		javaType="String"/>
+	    <result property="product_views" 			column="product_views" 			javaType="String"/>
+	    <result property="pk_prod_img_no" 			column="pk_prod_img_no" 		javaType="String"/>
+	    <result property="prod_img_name" 			column="prod_img_name" 			javaType="String"/>
+	    <result property="prod_img_org_name" 		column="prod_img_org_name" 		javaType="String"/>
+	    <result property="prod_img_is_thumbnail" 	column="prod_img_is_thumbnail" 	javaType="String"/>
+	</resultMap>
+	
+	<select id="get_admin_product_list" parameterType="HashMap" resultMap="getProductMap">
+		select pk_product_no, 
+		       fk_member_no, 
+		       fk_region_no, 
+		       fk_category_no, 
+		       fk_category_detail_no, 
+		       product_title, 
+		       product_contents, 
+		       product_price,
+		       product_status, 
+		       product_sale_status,
+		       product_update_date, 
+		       product_sale_type, 
+		       product_views,
+		       pk_prod_img_no,
+		       prod_img_name,
+		       prod_img_org_name,
+		       prod_img_is_thumbnail
+		from
+		(
+			select rownum as rnum, a.*
+		    from
+		    (
+				select P.pk_product_no, 
+				       P.fk_member_no, 
+				       P.fk_region_no, 
+				       P.fk_category_no, 
+				       P.fk_category_detail_no, 
+				       P.product_title, 
+				       P.product_contents, 
+				       P.product_price,
+				       P.product_status, 
+				       P.product_sale_status,
+				       P.product_update_date, 
+				       P.product_sale_type, 
+				       P.product_views,
+				       I.pk_prod_img_no,
+				       I.prod_img_name,
+				       I.prod_img_org_name,
+				       I.prod_img_is_thumbnail
+				from tbl_product P 
+				JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+				where I.prod_img_is_thumbnail = 1
+			)a
+		)
+		where rnum between #{paging_dto.first_row} and #{paging_dto.last_row}
+	</select>
+
+	<!-- 상품상세보기 -->
+	<resultMap id="getProductInfoMap" type="HashMap">
+	    <result property="pk_product_no" column="pk_product_no" javaType="String"/>
+	    <result property="fk_member_no" column="fk_member_no" javaType="String"/>
+	    <result property="product_title" column="product_title" javaType="String"/>
+	    <result property="product_contents" column="product_contents" javaType="String"/>
+	    <result property="product_price" column="product_price" javaType="String"/> <!-- Check if this should be numeric -->
+	    <result property="product_status" column="product_status" javaType="String"/>
+	    <result property="product_sale_status" column="product_sale_status" javaType="String"/>
+	    <result property="product_regdate" column="product_regdate" javaType="String"/>
+	    <result property="product_update_date" column="product_update_date" javaType="String"/>
+	    <result property="product_sale_type" column="product_sale_type" javaType="String"/>
+	    <result property="product_views" column="product_views" javaType="String"/> <!-- Should be numeric if it's a count -->
+	    <result property="pk_prod_img_no" column="pk_prod_img_no" javaType="String"/>
+	    <result property="prod_img_org_name" column="prod_img_org_name" javaType="String"/>
+	    <result property="prod_img_is_thumbnail" column="prod_img_is_thumbnail" javaType="String"/>
+	    <result property="prod_img_name" column="prod_img_name" javaType="String"/>
+	    <result property="member_name" column="member_name" javaType="String"/>
+	</resultMap>
+	
+	<select id="admin_product_detail" parameterType="HashMap" resultMap="getProductInfoMap">
+	    SELECT 
+	        P.pk_product_no, 
+	        P.fk_member_no, 
+	        P.product_title, 
+	        P.product_contents, 
+	        P.product_price, 
+	        P.product_status, 
+	        P.product_sale_status, 
+	        P.product_regdate, 
+	        P.product_update_date, 
+	        P.product_sale_type, 
+	        P.product_views,
+	        I.pk_prod_img_no,
+	        I.prod_img_org_name,
+	        I.prod_img_name,
+	        I.prod_img_is_thumbnail,
+	        M.member_name
+	    FROM tbl_product P 
+	    JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
+	    JOIN tbl_member M ON M.pk_member_no = P.fk_member_no
+	    WHERE P.pk_product_no = #{pk_product_no} 
+	    AND I.prod_img_is_thumbnail = 1
+	</select>
+
+	<!-- 상품삭제하기 -->
+	<delete id="admin_deleteproduct" parameterType="String">
+		delete from tbl_product 
+		where pk_product_no = #{pk_product_no}
+	</delete>
+
+	<!-- 일별 방문자 차트 --> 
+	<resultMap type="HashMap" id="visitantchat_map">
+	   <result property="login_history_date" 	column="login_history_date" 	javaType="String" />
+	   <result property="login_count" 				column="login_count" 				javaType="String" />
+	</resultMap>
+	<select id="admin_visitantchat" resultMap="visitantchat_map">
+		select to_char(login_history_date, 'yyyy-mm-dd') as login_history_date, count(fk_member_no) as login_count
+		from  tbl_loginhistory
+		group by login_history_date
+		order by login_history_date
+	</select>
+	
+	<!-- 월별 방문자 차트 -->
+	<select id="admin_visitant_monthchat" resultMap="visitantchat_map">
+		select to_char(login_history_date, 'yyyy-mm') as login_history_date, count(fk_member_no) as login_count
+		from tbl_loginhistory
+		group by to_char(login_history_date, 'yyyy-mm')
+		order by login_history_date
+	</select>
+
+	<!-- 월별 방문자 차트 -->
+	<select id="admin_visitant_yearchat" resultMap="visitantchat_map">
+		select to_char(login_history_date, 'yyyy') as login_history_date, count(fk_member_no) as login_count
+		from tbl_loginhistory
+		group by to_char(login_history_date, 'yyyy')
+		order by login_history_date
+	</select>
+
+	<!-- 일별 매출액 -->	
+	<resultMap type="HashMap" id="saleschat_map">
+	   <result property="charge_regdate" 	column="charge_regdate" 	javaType="String" />
+	   <result property="price_to_commission" 				column="price_to_commission" 				javaType="String" />
+	</resultMap>
+	<select id="admin_saleschat" resultMap="saleschat_map">
+		select sum(charge_price) / (100 / sum(charge_commission)) as price_to_commission, to_char(charge_regdate, 'yyyy-mm-dd') as charge_regdate
+		from tbl_charge
+		group by to_char(charge_regdate, 'yyyy-mm-dd')
+		order by charge_regdate
+	</select>
+	
+	<!-- 카테고리별 상품 조회수 -->
+	<resultMap type="HashMap" id="product_total_views_map">
+	   <result property="category_name" 	column="category_name" 	javaType="String" />
+	   <result property="cnt" 				column="cnt" 				javaType="String" />
+	   <result property="percentage" 		column="percentage" 		javaType="String" />
+	</resultMap>
+	<select id="admin_product_total_views" resultMap="product_total_views_map">
+		select c.category_name, count(*) as cnt,
+               round( coalesce(sum(p.product_views), 0) / (select sum(product_views) from tbl_product) * 100, 2) as percentage
+		from tbl_category c
+		left join tbl_product p on c.pk_category_no = p.fk_category_no
+		group by c.pk_category_no, c.category_name
+		order by percentage desc
+	</select>
+
+	<!-- 캘린더 일정 등록하기 -->
+	<insert id="admin_registercalendar" parameterType="HashMap">
+		insert into tbl_calendar(pk_calendar_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content, fk_member_no) 
+    	values(seq_calendar.nextval, to_date(#{calendar_startdate}, 'yyyymmddhh24miss'), to_date(#{calendar_enddate}, 'yyyymmddhh24miss'), #{calendar_title}, #{calendar_place}, #{calendar_content}, #{pk_member_no})   
+	</insert>
+
+    <!-- 캘린더를 불러오는것 -->
+	<select id="admin_selectcalendar" resultType="CalendarVO" parameterType="String">
+		select pk_calendar_no, fk_member_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content
+		from tbl_calendar
+		where fk_member_no = #{pk_member_no}
+		order by pk_calendar_no asc
+	</select>
+	
+	<!-- 일정상세보기 -->
+	<resultMap type="HashMap" id="detailcalendar_map">
+		<result property="pk_calendar_no" 	column="pk_calendar_no" 	javaType="String" />
+		<result property="calendar_startdate" 	column="calendar_startdate" 		javaType="String" />
+		<result property="calendar_enddate" 		column="calendar_enddate" 		javaType="String" />
+		<result property="calendar_title" 		column="calendar_title" 		javaType="String" />
+		<result property="calendar_place" 		column="calendar_place" 			javaType="String" />
+		<result property="calendar_content" 		column="calendar_content" 			javaType="String" />
+		<result property="fk_member_no" 	column="fk_member_no" 		javaType="String" />
+	</resultMap>
+	<select id="admin_detailcalendar" parameterType="String" resultMap="detailcalendar_map">
+		select pk_calendar_no, fk_member_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content
+		from tbl_calendar
+		where pk_calendar_no = #{pk_calendar_no}
+	</select>	
+	
+	<!-- 일정삭제하기 -->
+	<delete id="admin_deletecalendar" parameterType="String">
+		delete from tbl_calendar 
+		where pk_calendar_no = #{pk_calendar_no}
+	</delete>
+
+	<!-- 일정 수정하기 -->
+	<update id="admin_editcalendar_end" parameterType="CalendarVO">
+	    update tbl_calendar
+	    set calendar_startdate = to_date(#{calendar_startdate}, 'yyyymmddhh24miss'),
+	        calendar_enddate = to_date(#{calendar_enddate}, 'yyyymmddhh24miss'),
+	        calendar_title = #{calendar_title},
+	        calendar_place = #{calendar_place},
+	        calendar_content = #{calendar_content}
+	    where pk_calendar_no = #{pk_calendar_no}
+	</update>
+	
+	<!-- 일정 검색 -->
+	<resultMap type="HashMap" id="searchcalendar_map">
+		<result property="pk_calendar_no" 	column="pk_calendar_no" 	            javaType="String" />
+		<result property="calendar_startdate" 	column="calendar_startdate" 		javaType="String" />
+		<result property="calendar_enddate" 		column="calendar_enddate" 		javaType="String" />
+		<result property="calendar_title" 		column="calendar_title" 			javaType="String" />
+		<result property="calendar_place" 		column="calendar_place" 		    javaType="String" />
+		<result property="calendar_content" 		column="calendar_content" 		javaType="String" />
+	</resultMap>
+	<select id="admin_searchcalendar" parameterType="HashMap" resultMap="searchcalendar_map">
+	    select pk_calendar_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content
+	    from tbl_calendar
+	    where (to_char(calendar_startdate, 'YYYY-MM-DD') between #{calendar_startdate} and #{calendar_enddate})
+	    and (to_char(calendar_enddate, 'YYYY-MM-DD') between #{calendar_startdate} and #{calendar_enddate})
+	    and lower(${searchType}) like '%' || lower(#{searchWord}) || '%'
+	</select>
+
+
+</mapper>
+
+

@@ -5,7 +5,7 @@
     <!-- domain(VO) package -->
 	<typeAliases>
 		<typeAlias type="com.project.app.member.domain.MemberVO" alias="MemberVO"/>
-		<typeAlias type="com.project.app.mypage.domain.TradeVO" alias="TradeVO"/>
+		<typeAlias type="com.project.app.trade.domain.TradeVO" alias="TradeVO"/>
 		<typeAlias type="com.project.app.review.domain.ReviewVO" alias="ReviewVO"/>
 		<typeAlias type="com.project.app.review.domain.SurveyVO" alias="SurveyVO"/>
 		<typeAlias type="com.project.app.review.domain.BlacklistVO" alias="BlacklistVO"/>
@@ -15,6 +15,11 @@
 		<typeAlias type="com.project.app.product.domain.CategoryDetailVO" alias="CategoryDetailVO"/>
 		<typeAlias type="com.project.app.notice.domain.NoticeVO" alias="NoticeVO"/>
 		<typeAlias type="com.project.app.inquire.domain.InquireVO" alias="InquireVO"/>
+		<typeAlias type="com.project.app.comment.domain.CommentVO" alias="CommentVO"/>
+		<typeAlias type="com.project.app.chat.domain.ProductChatDTO" alias="ProductChatDTO"/>
+		<typeAlias type="com.project.app.mypage.domain.LoginHistoryVO" alias="LoginHistoryVO"/>
+		<typeAlias type="com.project.app.admin.domain.CalendarVO" alias="CalendarVO"/>
+		<typeAlias type="com.project.app.auction.domain.AuctionVO" alias="AuctionVO"/>
 	</typeAliases>
 
 </configuration>

@@ -1,24 +1,22 @@
 package com.project.app.product.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.project.app.product.domain.CategoryVO;
@@ -26,11 +24,9 @@ import com.project.app.product.domain.ProductImageVO;
 import com.project.app.product.domain.ProductVO;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.service.ProductService;
-import com.project.app.common.FileManager;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
+import com.project.app.common.PagingDTO;
+import com.project.app.component.GetMemberDetail;
+import com.project.app.member.domain.MemberVO;
 
 /*
  * 상품 컨트롤러
@@ -38,178 +34,368 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/product/*")
 public class ProductController {
-	
+
 	@Autowired
 	ProductService service;
-	
-	// 파일업로드 및 파일다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) === 
-	@Autowired
-	private FileManager fileManager; 
-	
-	
-	// 상품등록 form 페이지 요청 
-	@GetMapping("add")
-	public ModelAndView add(HttpServletRequest request, ModelAndView mav) {
-		
 
-		// 상품등록 form 페이지에 상위 카테고리명 보여주기
+	@Autowired
+	private GetMemberDetail get_member_detail;
+	
+	// 카카오 api키
+	@Value("${kakao.apikey}")
+	private String kakao_api_key;
+
+	// 상품등록 form 페이지 요청
+	@GetMapping("add")
+	public ModelAndView add(ModelAndView mav) {
+
+		// 상위 카테고리 정보 가져오기
 		List<CategoryVO> category_list = service.getCategory();
-		
-		// 상품등록 form 페이지에 하위 카테고리명 보여주기
+
+		// 하위 카테고리 정보 가져오기
 		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
 		
+		// 로그인 회원정보 가져오기
+		MemberVO login_member_vo = get_member_detail.MemberDetail();
+
 		mav.addObject("category_list", category_list);
 		mav.addObject("category_detail_list", category_detail_list);
-		
+		mav.addObject("login_member_vo", login_member_vo);
+
 		mav.setViewName("product/add");
 
 		return mav;
 	}
-	
-	
-	// 상품등록 완료 요청
+
+	// 상품 등록 완료 요청
 	@PostMapping("add")
-	@Transactional(value="transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
-	public ModelAndView add(Map<String, String> paraMap, ModelAndView mav
-			              , ProductVO productvo, ProductImageVO product_imgvo, MultipartHttpServletRequest mrequest) {
+	public ModelAndView add(ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
+	      	
+		  // 로그인한 회원의 회원번호 값 가져오기
+		  String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		  productvo.setFk_member_no(fk_member_no); // 회원 번호 값 담기
+		  // System.out.println("확인용 fk_member_no : " + fk_member_no);
+		  	  
+		  // 상품번호 채번해오기
+		  String c_product_no = service.getNo();
+	      productvo.setPk_product_no(c_product_no); // 채번 해온 값 담기
+		  // System.out.println(productvo.getFk_member_no());
 		
-		/*
-	    form 태그의 name 명과  ProductVO 의 필드명이 같다라면 
-	    request.getParameter("form 태그의 name명"); 을 사용하지 않더라도
-	    자동적으로 ProductVO productvo 에 set 되어진다.
-		*/
-		
-		// 상품번호 채번해오기
-		String c_product_no = service.getNo();
-		
-		productvo.setPk_product_no(c_product_no); // 채번 해온 값 담기
-		
-		// 상품 테이블에 상품 정보 저장
-		int n = service.addProduct(productvo);
-		
-		
-		if(n > 0) { // 상품 테이블에 저장이 성공한 경우
-			// 첨부파일 작업 시작
-			List<MultipartFile> attachList = product_imgvo.getAttach(); 
-			
-			// System.out.println("파일 사이즈: " + attachList.size());
-		
-		    if (attachList != null && !attachList.isEmpty()) {
-		    	
-		    	int index = 0; // 이미지 순서를 나타내는 변수
-		    	
-		        for (MultipartFile attach : attachList) {
-		        	
-		            if (!attach.isEmpty()) {
-		            	
-		                // System.out.println("파일 이름: " + attach.getOriginalFilename());
-		                // System.out.println("파일 크기: " + attach.getSize());
-		                
-		        		// 1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.	
-		        		// WAS 의 webapp 의 절대경로를 알아와야 한다.
-		        		HttpSession session = mrequest.getSession();
-		        		String root = session.getServletContext().getRealPath("/");
-		        		
-		        		String path =  root+"resources"+File.separator+"productImages";
-		        		//String path = root + "WEB-INF" + File.separator + "classes" + File.separator + "static" + File.separator + "images" + File.separator + "product";
-		        		/* 
-		        		   File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
-		        	       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
-		        	       운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
-		        	    */
-		        		
-		        		// 2. 파일첨부를 위한 변수의 설정 및 값을 초기화 한 후 파일 올리기
-		        		String newFileName = "";
-		        		// WAS(톰캣)의 디스크에 저장될 파일명
-		        		
-		        		byte[] bytes = null;
-		        		// 첨부파일의 내용물을 담는 것
+	      // 이미지 정보 가져오기 
+	      List<MultipartFile> attach_list = product_imgvo.getAttach();
+	      
+	      // System.out.println(attach_list);
+	      // System.out.println(attach_list.size());
+	      
+	      // 상품 등록 완료 후 상품 테이블 및 이미지 테이블에 상품 정보 저장
+	      int n = service.addProduct(productvo, product_imgvo, attach_list);
 
-		        		try {
+	      if (n > 0) { // 저장이 성공한 경우 성공 페이지로 이동한다.
+	    	  
+	    	 String product_no = productvo.getPk_product_no();
+	    	 mav.addObject("product_no", product_no); // 상품 번호 전달
+	         mav.setViewName("redirect:/product/add_success"); // 상품 등록 완료 페이지
 
-		        			// 첨부파일의 내용물을 읽어오는 것
-		        			bytes = attach.getBytes();
-		        			
-		        			// attach.getOriginalFilename() 이 첨부파일명의 파일명(예: 강아지.png) 이다. 
-		        			String originalFilename = attach.getOriginalFilename();
-		        							
-		        			// 첨부되어진 파일을 업로드 하는 것이다.
-		        			newFileName = fileManager.doFileUpload(bytes, originalFilename, path);
-		        			
-		                    //fileName 값과 orgFilename 값을 넣어주기
-		                    
-		                    product_imgvo.setProd_img_name(newFileName);  				// 저장된 파일명
-		                    // EX) WAS(톰캣)에 저장된 파일명(2025020709291535243254235235234.png)
-		                    
-		                    product_imgvo.setProd_img_org_name(originalFilename);  		// 원본 파일명
-		        			// 페이지에서 첨부된 파일(EX) 강아지.png)을 보여줄 때 사용.
-		        			// 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
-		                    
-		                    // 첫 번째 이미지는 대표사진, 나머지는 일반사진
-		                    product_imgvo.setProd_img_is_thumbnail(index == 0 ? "1" : "0");
-		                            
-		        			// 이미지VO에 상품번호를 추가하여 저장
-		        	        product_imgvo.setFk_product_no(c_product_no);
-		        	
+	      } // end of if(n > 0)
+	      else {
+	    	  mav.setViewName("product/add");
+	      }
+	      
+	      return mav;
+	      	      
+	}
 	
-		        			// 이미지 테이블에 파일 넣어주기
-		        			service.addImage(product_imgvo);
-		                    
-		                    index++; // 첫 번째 이미지 이후는 일반 사진으로 설정
-		        	                    
-		        		} catch (Exception e) {
-		        			e.printStackTrace();
-		        		}
-	  
-		            } // end of if (!attach.isEmpty())
-		            
-		        } // end of for (MultipartFile attach : attachList)
-		        
-		    } // end of if (attachList != null && !attachList.isEmpty())
-		    
-		    mav.setViewName("product/add_success");
-		    
-		} // end of if(n > 0) 
-	    
-		return mav;
+	// 상품 등록 성공 페이지(새로 고침 시 중복등록 방지)
+	@GetMapping("add_success")
+	public String addSuccess(@RequestParam("product_no") String product_no, Model model) {
+	    model.addAttribute("product_no", product_no);
+	    return "product/add_success"; 
 	}
 	
 	
-	
-
+			
 	// 지역 추가 버튼 클릭 시 사이드바 지역 검색창 요청
 	@GetMapping("regionlist")
-	public ModelAndView region(HttpServletRequest request, ModelAndView mav) {
-		
+	public ModelAndView region(ModelAndView mav) {
+
 		mav.setViewName("product/regionlist");
 		return mav;
-		
+
 	}
-	
-	
+
 	// 지역 검색창에서 지역 검색 시 자동글 완성하기 및 정보 가져오기
 	@GetMapping("region_search")
 	@ResponseBody
-	public List<Map<String, String>> region_search(@RequestParam Map<String, String> paraMap) {
-	    
-	    List<Map<String, Object>> region_list = service.regionSearch(paraMap); 
-	    
-	    List<Map<String, String>> map_list = new ArrayList<>();
-	    
-	    if(region_list != null) {
-	        for(Map<String, Object> region : region_list) {
-	            Map<String, String> map = new HashMap<>();
-	            map.put("word", region.get("full_address").toString());  		// full_address 값을 word로 저장
-	            map.put("region_town", region.get("region_town").toString());	// 읍면동 
-	            map.put("fk_region_no", region.get("pk_region_no").toString()); // 지역번호
-	            map.put("region_lat", region.get("region_lat").toString());     // 위도 값
-	            map.put("region_lng", region.get("region_lng").toString());     // 경도 값
-	            map_list.add(map);
-	        }
-	    }
+	public List<Map<String, String>> regionSearch(@RequestParam Map<String, String> paraMap) {
 
-	    return map_list;
+		List<Map<String, Object>> region_list = service.regionSearch(paraMap);
+
+		List<Map<String, String>> map_list = new ArrayList<>();
+
+		if (region_list != null) {
+			for (Map<String, Object> region : region_list) {
+				Map<String, String> map = new HashMap<>();
+				map.put("word", region.get("full_address").toString()); // full_address 값을 word로 저장
+				map.put("region_town", region.get("region_town").toString()); // 읍면동
+				map.put("fk_region_no", region.get("pk_region_no").toString()); // 지역번호
+				map.put("region_lat", region.get("region_lat").toString()); // 위도 값
+				map.put("region_lng", region.get("region_lng").toString()); // 경도 값
+				map_list.add(map);
+			}
+		}
+		return map_list;
 	}
+
+
+	
+	// 상품 목록 조회해오기 (검색어, 카테고리번호, 가격대, 정렬, 페이징 포함)
+	@GetMapping("prodlist")
+	public ModelAndView prodlist(ModelAndView mav, 
+								@RequestParam(defaultValue = "") String search_prod,
+								@RequestParam(defaultValue = "") String category_no,
+								@RequestParam(defaultValue = "") String category_detail_no,
+								@RequestParam(defaultValue = "") String min_price,
+								@RequestParam(defaultValue = "") String max_price,
+								@RequestParam(defaultValue = "") String region,
+								@RequestParam(defaultValue = "") String town,
+								@RequestParam(defaultValue = "") String sort_type,
+								@RequestParam(defaultValue = "") String sale_type,
+								@RequestParam(defaultValue = "1") int cur_page) {
+
+		// View 페이지 출력을 위한 정보 가져오기 시작 //
+		// 로그인한 회원의 회원번호 값 가져오기
+		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		mav.addObject("fk_member_no", fk_member_no);
+	
+		
+		// 상위 카테고리 정보 가져오기
+		List<CategoryVO> category_list = service.getCategory();	
+			
+		// 하위 카테고리 정보 가져오기
+		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
+		
+		// 좋아요 정보 가져오기
+		List<Map<String, String>> wish_list = service.getWish();
+		
+		// 지역 정보 가져오기
+		List<Map<String, String>> region_list = service.getRegion();
+		
+        mav.addObject("category_list", category_list); 			 	 // 상위 카테고리 정보 전달
+        mav.addObject("category_detail_list", category_detail_list); // 하위 카테고리 정보 전달
+        mav.addObject("wish_list", wish_list); 						 // 좋아요 정보 전달
+		mav.addObject("region_list", region_list);					 // 지역 정보 전달
+		// View 페이지 출력을 위한 정보 가져오기 끝 //
+
+		       
+		search_prod = search_prod.trim(); // 검색어 공백 없애주기
+		
+		// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
+        
+        // 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
+        
+        mav.addObject("product_list_cnt", product_list_cnt); 	     // 총 개수 전달
+        mav.addObject("prodcut_price_info", prodcut_price_info);     // 가격 정보 전달 
+        mav.addObject("search_prod", search_prod); 	 		 	     // 검색어 전달
+        
+        // 페이징 DTO 생성 및 설정
+        PagingDTO paging_dto = PagingDTO.builder()
+	             .cur_page(cur_page)            	// 현재 페이지
+	             .row_size_per_page(16)         	// 한 페이지당 10개씩 출력 (필요에 따라 조절)
+	             .page_size(5)                  	// 페이지 리스트에서 보여줄 페이지 개수 (1~5, 6~10 형태)
+	             .total_row_count(product_list_cnt) // 전체 상품 개수
+	             .build();
+        
+        paging_dto.pageSetting(); // 페이징 정보 계산
+        
+        mav.addObject("paging_dto", paging_dto); // 페이징 정보 전달
+        
+        
+        if(product_list_cnt > 0) { // 상품이 존재한다면
+        	
+        	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
+            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto); 
+            
+            mav.addObject("product_list", product_list); // 상품 정보 전달	   
+        }
+               
+        mav.setViewName("product/prodlist");
+        
+		return mav;
+	}
+
+	
+	// 상품 목록에서 지역 선택하는 
+	@GetMapping("regionlist_lat_lng")
+	public ModelAndView regionLatLng(ModelAndView mav) {
+
+		mav.setViewName("product/regionlist_lat_lng");
+		return mav;
+
+	}
+	
+	
+	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기 
+	@GetMapping("near_region")
+	@ResponseBody
+	public List<Map<String, Object>> nearRegion(@RequestParam(defaultValue = "") String current_lat,
+												@RequestParam(defaultValue = "") String current_lng) {
+		List<Map<String, Object>> near_region_list = service.nearRegion(current_lat, current_lng);
+		return near_region_list;
+	}
+	
+	
+	// 관심상품에 상품 추가하기 
+	@PostMapping("wish_insert")
+	@ResponseBody
+	public int wishInsert(@RequestParam(defaultValue = "") String fk_product_no,
+						   @RequestParam(defaultValue = "") String fk_member_no) {
+		
+		int result = service.wishInsert(fk_product_no, fk_member_no);
+		return result;
+	}
+	
+
+	// 상품 상세 페이지 조회
+	@GetMapping("prod_detail/{pk_product_no}")
+	public ModelAndView prodDeatil(ModelAndView mav,
+								   @PathVariable String pk_product_no) {
+		
+		
+	    // pk_product_no가 favicon.ico일 경우 처리하지 않도록 조건 추가
+	    if ("favicon.ico".equals(pk_product_no)) {
+	    	// System.out.println("favicon.ico 요청을 필터링했습니다.");
+	        return mav; // 빈 mav 반환
+	    }
+		
+	    //System.out.println("1111 pk_product_no " + pk_product_no);
+	    //System.out.println("2222 pk_product_no " + pk_product_no);
+	
+		// 로그인한 회원의 회원번호 값 가져오기
+		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		mav.addObject("fk_member_no", fk_member_no);
+		
+		// 좋아요 정보 가져오기
+		List<Map<String, String>> wish_list = service.getWish();
+		mav.addObject("wish_list", wish_list);
+		
+		// 특정 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
+		mav.addObject("product_img_list", product_img_list);		
+
+		// 특정 상품에 대한 정보 가져오기(지역, 회원, 카테고리, 경매정보)
+		Map<String, String> product_map = service.getProductDetail(pk_product_no);
+		mav.addObject("product_map", product_map);
+		
+		String fk_member_no2 = product_map.get("fk_member_no"); // 상품 올린 사람 회원번호 가져오기
+		
+		// 상품 올린 회원에 대한 다른 상품 정보 가져오기
+		List<Map<String, String>> product_list_one_member = service.getProdcutOneMember(fk_member_no2, pk_product_no);
+		mav.addObject("product_list_one_member", product_list_one_member);
+		
+		// 카카오 api key 전달 (페이지 공유를 위한)
+		mav.addObject("kakao_api_key", kakao_api_key);
+	
+		mav.setViewName("product/prod_detail");
+		
+		return mav;
+	}
+	
+
+	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	@PostMapping("reg_update")
+	@ResponseBody
+	public int regDateUpdate(@RequestParam(defaultValue = "") String pk_product_no) {
+		int result = service.regDateUpdate(pk_product_no);
+		return result;
+	}
+	
+	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	@PostMapping("sale_status_update")
+	@ResponseBody
+	public int saleStatusUpdate(@RequestParam(defaultValue = "") String pk_product_no,
+								@RequestParam(defaultValue = "") String sale_status_no) {
+		int result = service.saleStatusUpdate(pk_product_no, sale_status_no);
+		return result;
+	}
+	
+	
+	// "상품수정" form 페이지 요청
+	@PostMapping("update")
+	public ModelAndView update(ModelAndView mav,
+							   @RequestParam(defaultValue = "") String pk_product_no) {
+
+		// 상위 카테고리 정보 가져오기
+		List<CategoryVO> category_list = service.getCategory();
+
+		// 하위 카테고리 정보 가져오기
+		List<CategoryDetailVO> category_detail_list = service.getCategoryDetail();
+
+		mav.addObject("category_list", category_list);
+		mav.addObject("category_detail_list", category_detail_list);
+		
+		// 상품 정보 가져오기
+		Map<String, String> product_map = service.getProductDetail(pk_product_no);
+		mav.addObject("product_map", product_map);
+		
+		// 특정 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = service.getProductImg(pk_product_no);
+		mav.addObject("product_img_list", product_img_list);
+
+		mav.setViewName("product/update");
+
+		return mav;
+	}
+	
+	
+	// "상품 수정" 완료 요청
+	@PostMapping("update_end")
+	public ModelAndView update_end(ModelAndView mav, ProductVO productvo, ProductImageVO product_imgvo) {
+		
+		// 새로 업로드된 이미지 정보 가져오기 
+		List<MultipartFile> attach_list = product_imgvo.getAttach();
+		
+		// 상품 수정
+		service.updateProduct(productvo, product_imgvo, attach_list);
+		
+		String pk_product_no = productvo.getPk_product_no();
+		mav.setViewName("redirect:/product/prod_detail/" + pk_product_no);
+		
+		return mav;
+	}
+	
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	@PostMapping("delete")
+	@ResponseBody
+	public int delete(@RequestParam(defaultValue = "") String pk_product_no) {
+		int result = service.delete(pk_product_no);
+		return result;
+	}
+	
+	
+	// 시세조회 페이지	
+	@GetMapping("market_price")
+	public ModelAndView marketPriceCheck(ModelAndView mav) {
+		
+		mav.setViewName("product/market_price");
+		
+		return mav;
+	}
+	
+	// 검색어에 따른 시세조회 해오기
+	@GetMapping("market_price_search")
+	@ResponseBody
+	public List<Map<String, String>> marketPriceSearch(@RequestParam(defaultValue = "") String search_price) {
+		
+		// 검색어에 맞는 시세 조회
+		List<Map<String, String>> marketPrice = service.getMargetPrice(search_price);
+		return marketPrice;
+	}
+	
 	
 
 } // end of public class ProductController

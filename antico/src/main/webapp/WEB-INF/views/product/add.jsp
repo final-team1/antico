@@ -6,7 +6,11 @@
 
 <jsp:include page=".././header/header.jsp"></jsp:include>
 
+<%-- 로그인 회원 정보 --%>
+<c:set var="login_member_vo" value="${requestScope.login_member_vo}" />
 
+<%-- 로그인 회원 등급 --%>
+<c:set var="login_member_role" value="${login_member_vo.member_role}" />
 
 <style type="text/css">
 
@@ -22,11 +26,12 @@
 }
 
 
-/* div 전체 틀 */
+/* div 전체 틀 */ 
 div#container {
 	width: 50%;
 	margin: 0 auto;
 }
+
 
 /* 상품이미지 */
 div#prod_img_container {
@@ -178,7 +183,7 @@ input.used, input.general {
 	font-size: 10pt;
 }
 
-input.new, input.action {
+input.new, input.auction {
 	border: solid 1px black;
 	border-radius: 6px;
 	margin-left: 10px;
@@ -232,8 +237,8 @@ button.add {
 
 
 /* 경매 날짜 필드 관련 */
-input[type='date'] {
-    width: 150px;
+input[type='datetime-local'] {
+    width: 185px;
    	height: 40px;
     background-color: white;
     border: solid 1px #cccccc;
@@ -244,19 +249,13 @@ input[type='date'] {
     visibility: hidden;
     position: relative; /* position을 relative로 설정 */
     z-index: 1; /* 날짜 입력 필드가 위로 오도록 설정 */
+    cursor : pointer;
 }
 
-
-/* placehodler 넣어주기 */
-input[type='date']::before {
-    color: #444444;
-    content: attr(placeholder);
-    position: absolute;
-    top: 50%; /* 수 직 중앙 정렬 */
-    left: 10px; /* 왼쪽 여백 */
-    transform: translateY(-50%); /* 정확한 수직 중앙 정렬 */
-    pointer-events: none; /* 텍스트가 클릭되지 않도록 */
-    z-index: 0; /* ::before 텍스트가 아래에 오도록 설정 */
+span.auction_warning {
+	font-size: 10pt;
+	color: red;
+	visibility: hidden;
 }
 
 </style>
@@ -267,8 +266,6 @@ input[type='date']::before {
 
 	<!-- 상품 등록 시작 -->
 	<form name="prod_add_frm" enctype="multipart/form-data">	
-		
-		<input type="hidden" name="fk_member_no" value="${sessionScope.loginuser.pk_member_no}" />
 		
 		<!-- 상품 이미지  -->
 		<div id="prod_img_container">
@@ -346,11 +343,11 @@ input[type='date']::before {
 			<span class="cm_span_title">판매 유형</span>
 			<div class="button">
 				<input type="button" class="general" value="일반판매" data-value="0" />
-				<input type="button" class="action" value="경매" data-value="1" />
+				<input type="button" class="auction" value="경매" data-value="1" />
 				<input type="hidden" id="prod_sale_type_value" name="product_sale_type" value="" />
 				
-				<input type="date" class="action_end_date" name="auction_enddate" placeholder="경매 마감 날짜" required />
-				
+				<input type="datetime-local" class="auction_start_date" name="auction_start_date" placeholder="경매 시작 날짜" required />
+				<span class="auction_warning">경매 시작 시간 (시작 시간으로부터 1시간 후가 마감 시간입니다.)</span>
 			</div>
 		</div>
 		
@@ -380,11 +377,6 @@ input[type='date']::before {
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
 
-<jsp:include page="../tab/tab.jsp">
-	<jsp:param name="tabTitle" value="" />
-</jsp:include>
-
-
 <script>
 
 
@@ -404,15 +396,13 @@ $(document).ready(function(){
         let files = Array.from(e.target.files);
         let image_previews = $("#image_previews");
         let img_count_text = $("#img_count");
-
+		
         
-        // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
         $(this).val("");
-        
         
         // 파일 개수 제한
         if (fileArr.length + files.length > maxFiles) {
-            alert("최대 10개의 이미지만 업로드 가능합니다.");
+            showAlert('error', '최대 10개의 이미지만 업로드 가능합니다.');
             return;
         }
 		
@@ -428,12 +418,12 @@ $(document).ready(function(){
         	*/
         	
             if (!(file.type === 'image/jpeg' || file.type === 'image/png')) {
-                alert("jpg 또는 png 파일만 업로드 가능합니다.");
+                showAlert('error', 'jpg 또는 png 파일만 업로드 가능합니다.');
                 return;
             }
             
             if (file.size > 10 * 1024 * 1024) { // 10MB 제한
-                alert("각 이미지 파일 크기는 최대 10MB까지 가능합니다.");
+                showAlert('error', '각 이미지 파일 크기는 최대 10MB까지 가능합니다.');
                 return;
             }
 
@@ -501,6 +491,8 @@ $(document).ready(function(){
                 dataTransfer.items.add(file); // 선택한 파일을 DataTransfer 객체에 추가
                 input_file.files = dataTransfer.files; // input 요소에 파일 업데이트
                 
+                // 파일 선택 후 input 초기화 (같은 파일 다시 업로드 가능하게)
+                e.target.value = '';
                 
                 // 삭제 버튼 클릭 시 이벤트
                 close_button.on("click", function () {
@@ -537,7 +529,7 @@ $(document).ready(function(){
  		// console.log(contents.length);
  		
  		if(contents.length > 2000) {
- 			alert("상품 내용은 최대 2000자까지 입력 가능합니다.");
+ 			showAlert('error', '상품 내용은 최대 2000자까지 입력 가능합니다.');
  		}
  		
  	}); // end of $("textarea#prod_contents_textarea").keyup(function(e)		
@@ -610,14 +602,17 @@ $(document).ready(function(){
         });
 
         // 경매 버튼 스타일 (흰색 배경, 검은색 글씨)
-        $("input.action").css({
+        $("input.auction").css({
             "color": "black",
             "background-color": "white",
             "border": "1px solid black"
         });
         
         // 경매 종료 날짜 숨기기
-        $("input.action_end_date").css({"visibility": "hidden"});
+        $("input.auction_start_date").css({"visibility": "hidden"});
+        
+        // 경매 시간 문구 숨기기
+        $("span.auction_warning").css({"visibility": "hidden"});
         
         // 선택한 상품 상태 값 변경
         $("#prod_sale_type_value").val($(this).data("value"));
@@ -628,7 +623,16 @@ $(document).ready(function(){
     		
     		
     // 경매 버튼 클릭 시
-    $("input.action").click(function(){
+    $("input.auction").click(function(){
+    	
+    	// 로그인 사용자 등급
+    	const role = "${login_member_role}";
+    	
+    	// 실버 등급 이상인 판매자만 경매 판매 가능
+    	if(role == "" || role < 1) {
+    		showAlert("warning", "경매 판매는 회원 등급이 실버 이상부터 진행하실 수 있습니다.");
+    		return;
+    	}
 		
     	// 경매 버튼 스타일 (초록색 배경, 흰색 글씨)
         $(this).css({
@@ -637,8 +641,11 @@ $(document).ready(function(){
             "border": "none"
         });
     	
-        // 경매 종료 날짜 보이기
-        $("input.action_end_date").css({"visibility" : "visible"});
+        // 경매 시작 날짜 보이기
+        $("input.auction_start_date").css({"visibility" : "visible"});
+        
+        // 경매 시간 문구 보이기
+        $("span.auction_warning").css({"visibility": "visible"});
 
         // 일반 판매 버튼 스타일 (흰색 배경, 검은색 글씨)
         $("input.general").css({
@@ -652,7 +659,7 @@ $(document).ready(function(){
         
         // console.log($("#prod_sale_type_value").val());
     
-    }); // end of $("input.action").click(function()			
+    }); // end of $("input.auction").click(function()			
     		
     				
     
@@ -738,6 +745,30 @@ $(document).ready(function(){
     		return false;
     	}
     	
+    	// 경매 시작 시간 유효성 검사
+    	const auction_start_date_value = $("input.auction_start_date").val();
+    	if(prod_sale_type_value == 1) { 
+    		// 경매 시작 시간이 존재하지 않는 경우
+    		if(auction_start_date_value == "") {
+    			showAlert('error', '경매 시작 시간은 필수 선택사항입니다.');
+        		prod_infoData_OK = false;
+        		return false;
+    		}
+    		
+      		// 현재 시간
+    		const now = new Date();
+    		now.setSeconds(0, 0); // 초와 밀리초 제거
+      		
+      		// 입력된 경매 시작 날짜 및 시간을 Date 객체로 변환
+      		const auction_start_date = new Date(auction_start_date_value.replace("T", " ") + ":00"); // 초까지 맞춰서 변환
+    		
+    		// 경매 시작 시간이 현재 시간 이전인 경우
+    		if (now >= auction_start_date){
+    			showAlert('error', '경매 시작 시간은 현재 시간보다 이후여야 합니다.');
+        		prod_infoData_OK = false;
+        		return false;
+    		}
+    	}
     	
     	// 희망 거래 동네 유효성 검사
     	const fk_region_no = $("input#fk_region_no").val();
@@ -747,14 +778,23 @@ $(document).ready(function(){
     		return false;
     	}	
     	
-    	
     	if(prod_infoData_OK) { // 유효성 검사 통과했으면 상품 등록 시작한다.
-    		
-  	      // 폼(form)을 전송(submit)
-  	      const frm = document.prod_add_frm;
-  	      frm.method = "post";
-  	      frm.action = "<%= ctxPath%>/product/add";
-  	      frm.submit();
+    	  // 경매상품 등록
+    	  if($("input#prod_sale_type_value").val() == 1)	 {
+    		// 폼(form)을 전송(submit)
+     	    const frm = document.prod_add_frm;
+     	    frm.method = "post";
+     	    frm.action = "<%= ctxPath%>/auction/add";
+     	    frm.submit();
+    	  }
+    	  // 일반상품 등록
+    	  else {
+    		// 폼(form)을 전송(submit)
+   	        const frm = document.prod_add_frm;
+   	        frm.method = "post";
+   	        frm.action = "<%= ctxPath%>/product/add";
+   	        frm.submit();  
+    	  }
   	      
     	} // end of if(prod_infoData_OK)
     	
@@ -857,16 +897,13 @@ function showRegionSearchTab() {
 		type : "get",
 		success : function(html) {
 			// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-			openSideTab(html);
+			openSideTab(html, "");
 		},
 		 error: function(request, status, error){
 			 console.log(request.responseText);
 			 
 			 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-			 let response = request.responseText;
-			 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-			 
-		     showAlert("error", message);
+			 errorHandler(request, status, error); 
 		     
 		     // 사이드 탭 닫기
 		     closeSideTab();
