@@ -1,6 +1,18 @@
 
 select * from tab;
 
+delete from TBL_LEAVE
+where fk_member_no = 189;
+
+commit;
+
+select *
+from TBL_LEAVE
+
+select *
+from tbl_member
+
+UPDATE tbl_member SET member_status = 1 WHERE  member_status = 0;
 
 
 delete from tbl_member
@@ -582,11 +594,17 @@ CONSTRAINT account_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_me
 
 CREATE SEQUENCE acc_seq;
 
+select * from tab;
 
+select * 
+from tbl_loginhistory
 
 show user;
 
 
+select *
+from tbl_region
+where region_lat = 37.5586816
 
 
 ALTER TABLE tbl_member 
@@ -611,26 +629,11 @@ where pk_member_no = 188;
 desc tbl_member;
 
 
+select *
+from tbl_loginhistory;
+
+update tbl_loginhistory
+set login_history_date = to_date('25/03/01')
+where fk_member_no = 61;
 
 
-
-create table tbl_calendar 
-(pk_calendar_no    number                 -- 일정관리 번호
-,fk_member_no      number  not null  -- 캘린더 일정 작성자 유저아이디
-,calendar_startdate     date                   -- 시작일자
-,calendar_enddate       date                   -- 종료일자
-,calendar_title       varchar2(400)          -- 제목
-,calendar_place         varchar2(200)          -- 장소
-,calendar_content       varchar2(4000)         -- 내용	
-,constraint calendar_pk_calendar_no primary key(pk_calendar_no)
-,constraint calendar_fk_member_no foreign key(fk_member_no) references tbl_member(pk_member_no)
-);
--- Table TBL_CALENDAR_SCHEDULE이(가) 생성되었습니다.
-
-create sequence seq_calendar
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;

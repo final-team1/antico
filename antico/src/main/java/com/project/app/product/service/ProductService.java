@@ -73,8 +73,6 @@ public interface ProductService {
 	// "상품삭제" 클릭 시 상품 삭제하기
 	int delete(String pk_product_no);
 	
-	// 검색어에 맞는 시세 조회
-	List<Map<String, String>> getMargetPrice(String search_price);
 	
 	
 	// 모든 상품 조회 해오기(이미지, 지역)
@@ -82,10 +80,13 @@ public interface ProductService {
 	
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list);
+	
 
-	// 경매 상품 등록
-	int addAuctionProduct(ProductVO productvo);
 
-	// 경매 이미지 상품 등록
-	int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo);
+	
+
+	
+	
+
+	
 }

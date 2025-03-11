@@ -29,4 +29,10 @@ public interface ChatService {
 	// 사용자 별 최근 읽은 메시지 식별자 변경
 	List<Chat> updateUnReadCount(String chatId, String roomId, String memberNo);
 
+	// 경매 채팅방 생성
+	ChatRoom createAuctionChatRoom(Map<String, String> map);
+
+	// 상품 일련번호 및 구매자 일련번호를 통한 채팅방 조회
+	// Optional<ChatRoom> getChatRoomByProductNoAndMemberNo(String pk_product_no, String fk_consumer_no);
+
 }

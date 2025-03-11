@@ -11,9 +11,7 @@
 	        i.pk_inquire_no, 
 	        i.fk_member_no, 
 	        i.inquire_title, 
-	        i.inquire_content,
-	        i.inquire_filename,
-	        i.inquire_orgfilename,
+	        i.inquire_content, 
 	        i.inquire_file_size, 
 	        i.inquire_regdate, 
 	        i.inquire_status, 
@@ -32,22 +30,21 @@
 
 	<!-- 파일첨부가 있는 경우의 1:1문의 -->
 	<insert id="add_withFile" parameterType="InquireVO">
-		insert into tbl_inquire(pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_status, inquire_secret, inquire_regdate
-							    , inquire_filename, inquire_orgfilename)  
+		insert into tbl_inquire(pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_status, inquire_secret, inquire_regdate,
+							    inquire_orgfilename, inquire_filename, inquire_file_size)  
         values(inquire_seq.nextval, #{fk_member_no}, #{inquire_title}, #{inquire_content}, default, #{inquire_secret}, default,
-        	   #{inquire_filename}, #{inquire_orgfilename})
+        	   #{inquire_filename}, #{inquire_orgfilename}, #{inquire_file_size})
 	</insert>
 	
 	<!-- 문의 상세보기 -->
 	<select id="inquire_detail" resultType="InquireVO" parameterType="HashMap">
-		SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status
-				, inquire_secret, inquire_orgfilename, inquire_filename
+		SELECT pk_inquire_no, fk_member_no, inquire_title, inquire_content, inquire_file_size, inquire_regdate, inquire_status, inquire_secret
 		FROM tbl_inquire
 		where pk_inquire_no = #{pk_inquire_no}
 	</select>
 	
 	<select id="get_inquire_comment" resultType="CommentVO" parameterType="String">
-		select comment_content, comment_regdate, member_name, comment_orgfilename, c.fk_member_no, comment_filename
+		select comment_content, comment_regdate, member_name, comment_orgfilename, c.fk_member_no
 	    from tbl_comment c
 	    join tbl_inquire i ON i.pk_inquire_no = c.fk_inquire_no
         join tbl_member m on m.pk_member_no = c.fk_member_no
