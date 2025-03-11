@@ -413,6 +413,15 @@ public class ProductService_imple implements ProductService {
 
 	
 	
+	// 검색어에 맞는 시세 조회
+	@Override
+	public List<Map<String, String>> getMargetPrice(String search_price) {
+		List<Map<String, String>> marketPrice = productDAO.getMargetPrice(search_price);
+		return marketPrice;
+	}
+
+	
+	
 	//모든 상품 조회 해오기(이미지, 지역)
 	@Override
 	public List<Map<String, String>> getProductList(String sort_views_week) {
@@ -428,6 +437,23 @@ public class ProductService_imple implements ProductService {
 	@Override
 	public List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
+	}
+
+	/*
+	 * 경매 상품 등록
+	 */
+	@Override
+	@Transactional
+	public int addAuctionProduct(ProductVO productvo) {
+		return productDAO.addProduct(productvo);
+	}
+
+	/*
+	 * 경매 상품 이미지 등록
+	 */
+	@Override
+	public int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo) {
+		return productDAO.insertAuctionProductImage(fileList, cProductNo);
 	}
 
 

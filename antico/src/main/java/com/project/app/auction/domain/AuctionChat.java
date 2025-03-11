@@ -1,4 +1,4 @@
-package com.project.app.chat.domain;
+package com.project.app.auction.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,12 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "chat_messages")
+@Document(collection = "auction_chat_messages")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat {
+public class AuctionChat {
 
 	@Id
 	private String id; // 채팅 식별자

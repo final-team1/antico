@@ -11,6 +11,9 @@
 <%-- 채팅방 정보 --%>
 <c:set var="chat_room" value="${requestScope.chat_room}"/>
 
+<%-- 경매 최고 입찰가 --%>
+<c:set var="highestBid" value="${requestScope.highestBid > product_map.product_price ? requestScope.highestBid : product_map.product_price}"/>
+
 <%-- 참여자 정보 --%>
 <c:set var="participants" value="${chat_room.participants}"/>
 
@@ -19,6 +22,13 @@
 
 <%-- 현재 로그인 사용자명 --%>
 <c:set var="login_member_name" value="${requestScope.login_member_vo.member_name}"/>
+
+<%-- 현재 로그인 사용자 포인트 --%>
+<c:set var="login_member_point" value="${requestScope.login_member_vo.member_point}"/>
+
+<%-- 경매 내역 --%>
+<c:set var="auctionVO" value="${requestScope.auctionVO}"/>
+
 
 <style>
     div#chat_container {
@@ -41,6 +51,7 @@
     div#chat_header {
         margin-bottom: 10px;
         display: flex;
+        position: relative;
     }
 
     div#product_detail {
@@ -208,18 +219,68 @@
         align-items: flex-start;
         text-align: start;
     }
+
+    button#participants_button {
+        margin: auto 0 auto auto;
+        background-color: transparent;
+        border: none;
+    }
+
+    div#participants {
+        display: none;
+        position: absolute;
+        right: -100px;
+        transform: translateX(-50%);
+        top: 90%;
+        width: 200px;
+        background: white;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+
+    div#participants ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
 </style>
 
 <div id="chat_container">
     <div id="chat_header">
         <img src="${product_map.prod_img_name}" height=70/>
         <div id="product_detail">
-			<span id="product_price"> 
-				<fmt:formatNumber type="number" maxFractionDigits="3" value="${product_map.product_price}"/>원
-			</span>
             <span id="chat_product_title">
                 ${product_map.product_title}
             </span>
+            <span>
+				초기 입찰가 : <fmt:formatNumber type="number" maxFractionDigits="3" value="${product_map.product_price}"/>원
+			</span>
+            <span id="product_price">
+                최고 입찰가 : <span id="bid_price" data-price="${highestBid.bid}">0</span>원
+            </span>
+            <span id="highest_bidder_name">
+                ${highestBid.bidderName}
+            </span>
+            <div id="auction_timer"></div>
+        </div>
+
+        <span>내 포인트 : <fmt:formatNumber type="number" maxFractionDigits="3" value="${login_member_point}"/></span>
+
+        <c:if test="${login_member_no eq product_map.fk_member_no}">
+            <button onclick="closeAuction()">경매 종료하기</button>
+        </c:if>
+
+        <button id="participants_button">참여자</button>
+        <div id="participants">
+            <ul>
+                <c:forEach items="${chat_room.participants}" var="participant">
+                    <li data-member-no=${participant.memberNo}>${participant.memberName}</li>
+                </c:forEach>
+            </ul>
         </div>
     </div>
 
@@ -230,58 +291,116 @@
         <button id="go">보내기</button>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countdown/2.6.0/countdown.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        // 엔터키 입력시 채팅 전송 처리
-        $("input#message").keydown(function (e) {
-            if (e.keyCode == 13) {
+
+        // 참여자 확인 토글
+        $("button#participants_button").click(function () {
+            $("div#participants").slideToggle(300);
+        });
+        if ("${auctionVO.auction_closed}" == 0) {
+
+            // 엔터키 입력시 채팅 전송 처리
+            $("input#message")
+                .on("keydown", function (e) {
+                    if (e.keyCode == 13) {
+                        if ($.trim($("#message").val()) !== "") {
+                            sendMessage();
+                        }
+                    }
+                })// 입찰가 작성 시 input 색상 변경
+                .on("input", function (e) {
+                    const priceRegExp = /^@\d+$/; // @로 시작하는 값은 입찰가 제시
+
+                    if (priceRegExp.test($(this).val())) {
+                        $(this).css("color", "#0DCC5A");
+                    } else {
+                        $(this).css("color", "black");
+                    }
+                });
+
+            // 보내기 버튼 클릭시 채팅 전송 처리
+            $("button#go").click(function () {
                 if ($.trim($("#message").val()) !== "") {
                     sendMessage();
                 }
-            }
-        });
+            });
 
-        // 보내기 버튼 클릭시 채팅 전송 처리
-        $("button#go").click(function () {
-            if ($.trim($("#message").val()) !== "") {
-                sendMessage();
-            }
-        });
+            // 실시간 최고 입찰가 변동 애니메이션
+            let currentBid = parseInt($("#bid_price").data("price"));
+            $("#bid_price").text(currentBid.toLocaleString("ko-KR"));
 
-        // 웹소켓 연결 모듈을 통하여 연결 및 구독
-        WebSocketManager.connect("${ctx_path}/ws-stomp", function () {
-            const roomId = "${chat_room.roomId}";
+            // 경매 남은 시간 타이머
+            updateTimer("${auctionVO.auction_enddate}");
 
-            if (roomId == "") {
-                showAlert("error", "채팅방 입장을 실패하였습니다");
-                closeSideTab();
-                return;
-            }
+            // 웹소켓 연결 모듈을 통하여 연결 및 구독
+            WebSocketManager.connect("${ctx_path}/ws-stomp", function () {
+                const roomId = "${chat_room.roomId}";
+
+                if (roomId == "") {
+                    showAlert("error", "채팅방 입장을 실패하였습니다");
+                    closeSideTab();
+                    return;
+                }
+
+                // 이전 채팅 내역 불러오기
+                $.ajax({
+                    url: "${ctx_path}/auction/load_chat_history/" + roomId,
+                    success: function (json) {
+                        console.log(json);
+                        loadChat(json);
+                    },
+                    error: function (error) {
+                        showAlert("error", "채팅방 입장을 실패하였습니다");
+                        WebSocketManager.disconnect();
+                        closeSideTab();
+                    }
+                });
+
+                // 채팅방에 구독 처리 후 메시지 수신 시 채팅 내역에 보여주기
+                WebSocketManager.subscribeMessage("/room/" + roomId + "/auction", function (message) {
+                    showChat(message);
+                });
+
+                // 채팅 읽음 카운트 구독 처리, 갱신된 읽음 개수 전파
+                WebSocketManager.subscribeReadStatus("/room/" + roomId + "/auction/read", function (chatList) {
+                    updateReadStatus(chatList);
+                });
+
+                // 채팅방 변경내역 구독
+                WebSocketManager.subscribeReadStatus("/room/" + roomId + "/auction/participant", function (participants) {
+                    updateParticipant(participants);
+                });
+
+                // 채팅방 변경내역 구독
+                WebSocketManager.subscribeReadStatus("/room/" + roomId + "/auction/bid", function (bid) {
+                    updateBidPrice(bid);
+                });
+            });
+
+        }
+        else {
+
+            let currentBid = parseInt($("#bid_price").data("price"));
+            $("#bid_price").text(currentBid.toLocaleString("ko-KR"));
+
+            // 경매 남은 시간 타이머
+            $("div.input-container").hide();
+            $("#auction_timer").text("경매 종료");
 
             // 이전 채팅 내역 불러오기
             $.ajax({
-                url: "${ctx_path}/chat/load_chat_history/" + roomId,
+                url: "${ctx_path}/auction/load_chat_history/" + "${chat_room.roomId}",
                 success: function (json) {
                     loadChat(json);
                 },
-                error: function (error) {
-                    showAlert("error", "채팅방 입장을 실패하였습니다");
-                    WebSocketManager.disconnect();
-                    closeSideTab();
+                error: function (xhr, status, error) {
+                    errorHandler(xhr, status, error);
                 }
             });
-
-            // 채팅방에 구독 처리 후 메시지 수신 시 채팅 내역에 보여주기
-            WebSocketManager.subscribeMessage("/room/" + roomId, function (message) {
-                showChat(message);
-            });
-
-            // 채팅 읽음 카운트 구독 처리, 갱신된 읽음 개수 전파
-            WebSocketManager.subscribeReadStatus("/room/" + roomId + "/read", function (chatList) {
-                updateReadStatus(chatList);
-            });
-        });
+        }
     });
 
     // 브라우저를 닫거나 페이지를 떠나기 전 소켓 연결 해제 처리
@@ -296,6 +415,8 @@
         const roomId = "${chat_room.roomId}";
         const loginMemberNo = "${login_member_no}";
         const loginMemberName = "${login_member_name}";
+        const priceRegExp = /^@\d+$/; // @로 시작하는 값은 입찰가 제시
+        const message = $("#message").val();
 
         // 채팅방 및 사용자 식별자가 존재하지 않을 경우
         if (roomId == "" || loginMemberNo == "") {
@@ -303,9 +424,29 @@
             return;
         }
 
+        // 입찰가 유효성 검사
+        if (priceRegExp.test(message)) {
+            if ("${login_member_no}" == "${product_map.fk_member_no}") {
+                showAlert("warning", "판매자는 입찰을 할 수 없습니다.");
+                return;
+            }
+
+            if (Number("${login_member_point}") < Number(message.substring(1))) {
+                showAlert("warning", "보유하고 있는 포인트보다 많은 입찰가입니다");
+                return;
+            }
+
+            let currentBid = parseInt($("#bid_price").text().replace(/,/g, "")) || 0;
+
+            if (Number(message.substring(1)) < currentBid) {
+                showAlert("warning", "입찰가가 최고 입찰가보다 적습니다");
+                return;
+            }
+        }
+
         // 채팅 내용 유효성 검사 후 송신
-        if ($("#message").val() != "") {
-            WebSocketManager.send("/send/" + roomId,
+        if (message != "") {
+            WebSocketManager.send("/send/auction/" + roomId,
                 {
                     'senderId': loginMemberNo,
                     'senderName': loginMemberName,
@@ -329,16 +470,26 @@
             return;
         }
 
-        if (chatId == undefined || chatId == null) {
+        if (chatId === undefined || chatId == null) {
             return;
         }
 
-        WebSocketManager.sendReadStatus("/send/read/" + roomId,
+        WebSocketManager.sendReadStatus("/send/auction/read/" + roomId,
             {
                 'memberNo': loginMemberNo,
                 'chatId': chatId
             });
 
+    }
+
+    // 경매 참여자 변경내역
+    function updateParticipant(participant) {
+        let html = ``;
+        $.each(participant, function (index, item) {
+            html += `<li data-member-no=\${item.memberNo}>\${item.memberName}</li>`;
+        });
+
+        $("div#participants ul").html(html);
     }
 
     // 채팅 내역 보여주기
@@ -353,7 +504,7 @@
 
             // 판매 상태 서버 알림 메시지
             if (chat.chatType == "1") {
-                handleProductNoticeForm(chat);
+                handleNotificationMessage(chat.message);
             } else {
                 // 년/월/일 형태 문자열 추출
                 const sendDate = chat.sendDate.substring(11, 16);
@@ -396,6 +547,7 @@
 
             for (let chat of chatList) {
                 if (chat && chat.message) {
+
                     // 송신날짜를 시/분으로 저장
                     const sendDate = chat.sendDate.substring(11, 16);
 
@@ -410,7 +562,7 @@
                     }
 
                     if (chat.chatType == "1") {
-                        handleProductNoticeForm(chat);
+                        handleNotificationMessage(chat.message);
                     } else {
 
                         const chatDiv = $(`<div data-chat_id = \${chat.id}>`)
@@ -444,129 +596,78 @@
 
     // 사용자 읽음 상태수정
     function updateReadStatus(chatList) {
-        const loginMemberNo = "${login_member_no}";
-
         chatList.forEach(function (item, index) {
             $chat_div = $("div.chatting_own[data-chat_id = '" + item.id + "']").find("span.read_status").text(item.unReadCount == 0 ? "" : item.unReadCount);
         });
     }
 
-    // 판매상태변경 내역 폼 생성 함수
-    function handleProductNoticeForm(chat) {
-        const loginMemberNo = "${login_member_no}";
-        const sendDate = chat.sendDate.substring(11, 16);
-
-        const chatDiv = $(`<div data-chat_id = \${chat.id}>`)
-            // 자신이 보낸 메시지인지 상대가 보낸 메시지인지 확인
-            .addClass('chatting')
-            .append($("<div>").addClass("message-wrapper")
-                .append($("<div>").addClass("product_sale_status_chat")
-                    .append($("<div>")
-                        .append($("<h4>").addClass("chat_h4").text(chat.message))
-                        .append($("<div>").addClass("product_info")
-                            .append($("<img class='chat_product_image' src='${product_map.prod_img_name}'>"))
-                            .append($("<div id='product_detail'>")
-                                .append($("<span id='product_price'>").text(Number("${product_map.product_price}").toLocaleString("ko-KR") + "원"))
-                                .append($("<span id='chat_product_title'>").text("${product_map.product_title}"))
-                            )
-                        )
-                    )
-                )
-                .append($("<span class='send_date'>").text(sendDate))
-            );
-
-        // 판매 상태에 따른 버튼 추가
-        const additionalButton = handleProductSaleStatusUpdateMessage(chat.message);
-        console.log(additionalButton);
-
-        chatDiv.find("div.product_sale_status_chat").append(additionalButton);
-
-        $("#chatting").append(chatDiv);
-    }
-
     // 판매상태변경 메시지
-    function handleProductSaleStatusUpdateMessage(message) {
-        // 구매자만 버튼이 보이게 처리
-        if ("${product_map.fk_member_no}" !== "${login_member_no}") {
-            let v_html = ``;
-            switch (message) {
-                case "결제완료" : {
-                    v_html += `<div><p class="status_chat_p">결제가 완료되었습니다. <br> 상품 수령 시 구매 확정을 눌러주세요</p><button type="button" class="order_complete_button" onclick="completeOrder()">구매 확정하기</button>`;
-                    v_html += `<button type="button" class="order_cancel_button" onclick="tradeCancel()">구매 취소하기</button></div>`;
-                    break;
-                }
-                case "구매확정" : {
-                    v_html += `<button type="button" class="review_button" onclick="showReviewRegisterTab()">후기 작성하기</button>`;
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-            return v_html;
-        }
+    function handleNotificationMessage(message) {
+        $("#chatting").append($("<span class='chat_date'>").text(message));
     }
 
-    // 구매 확정 요청
-    function completeOrder() {
+    function updateBidPrice(newBid) {
+        let currentBid = parseInt($("#bid_price").text().replace(/,/g, "")) || 0;
+
+        gsap.fromTo("#bid_price", {innerHTML: currentBid}, {
+            duration: 1,  // 애니메이션 지속 시간 (초)
+            innerHTML: newBid.bid,
+            snap: {innerHTML: 100},
+            onUpdate: function () {
+                $("#bid_price").text(Math.floor(this.targets()[0].innerHTML).toLocaleString("ko-KR"));
+            }
+        });
+
+        $("span#highest_bidder_name").text(newBid.bidderName);
+    }
+
+    function updateTimer(auctionEndTime) {
         $.ajax({
-            url: "${ctx_path}/trade/order_completed",
-            type: "post",
-            data: {
-                pk_product_no: "${product_map.pk_product_no}",
-                fk_member_no: "${product_map.fk_member_no}",
-                product_price: "${product_map.product_price}",
-            },
+            url: "${ctx_path}/auction/timer",
             dataType: "json",
-            success: function (n) {
-                if (n == 1) {
-                    showAlert('success', '구매가 확정되었습니다.');
+            success: function (data) {
+                const endTime = new Date(auctionEndTime);
+                const serverTime = new Date(data);
+
+                const remainingTime = countdown(serverTime, endTime, countdown.HOURS | countdown.MINUTES | countdown.SECONDS);
+
+                $("#auction_timer").text(`\${remainingTime.hours}시간 \${remainingTime.minutes}분 \${remainingTime.seconds}초 남음`);
+
+                // 1초마다 타이머 갱신
+                if (remainingTime.value > 0) {
+                    setTimeout(() => updateTimer(auctionEndTime), 1000);
                 } else {
-                    showAlert('error', '구매확정이 실패하였습니다.');
+                    $("#auction_timer").text("경매 종료");
+                    closeAuction();
                 }
+
             },
-            error: function (request, status, error) {
-                errorHandler(request, status, error);
+            error: function () {
+
             }
         });
     }
 
-    //후기 등록 함수
-    function showReviewRegisterTab() {
+    function closeAuction() {
+        $("div.input-container").hide();
+
         $.ajax({
-            url: "${ctx_path}/review/register",
-            data: {
-                "pk_product_no": "${product_map.pk_product_no}"
+            url: "${ctx_path}/auction/close",
+            type: "post",
+            data : {
+                "room_id" : "${chat_room.roomId}",
+                "pk_auction_no" : "${auctionVO.pk_auction_no}"
             },
-            success: function (html) {
-                openSideTab(html);
+            success: function (e) {
+                showAlert("info", "경매가 종료되었습니다.");
             },
-            error: function (request, status, error) {
-                errorHandler(request, status, error);
+            error: function (xhr, status, error) {
+                console.log(xhr, status, error);
+                errorHandler(xhr, status, error);
             }
         });
+
+        WebSocketManager.disconnect();
     }
-    
-    
-    // 구매취소를 눌렀을 경우
-    function tradeCancel() {
-    	$.ajax({
-    		url: "${ctx_path}/trade/Cancel",
-    		type: "post",
-    		data: {"product_price":"${product_map.product_price}",
-    			   "pk_product_no": "${product_map.pk_product_no}"
-    		},
-    		 dataType: "json",
-             success: function (n) {
-                 if (n == 1) {
-                     showAlert('success', '구매취소가 완료되었습니다.');
-                 } else {
-                     showAlert('error', '구매취소가 실패되었습니다.');
-                 }
-             },
-             error: function (request, status, error) {
-                 errorHandler(request, status, error);
-             }
-    	});
-    }
+
 </script>
