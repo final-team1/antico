@@ -171,6 +171,8 @@ public class ReviewController {
 		String str_pk_survey_resp_no =  request.getParameter("arr_pk_survey_resp_no"); 	// 사용자가 선택한 설문문항 테이블 일련번호 문자열
 		String pk_trade_no = request.getParameter("pk_trade_no");					   	// 거래 일련번호
 		String review_content = request.getParameter("review_content");				   	// 후기 내역			// 후기 타입 0 : 구매후기, 1 : 판매 홍보 후기
+
+		String feedback_type = request.getParameter("feedback_type"); // 피드백 선택 타입 (최고에요, 좋아요, 아쉬워요)
 		
 		Map<String, String> para_map = new HashMap<>();
 		

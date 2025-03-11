@@ -57,30 +57,5 @@ public interface MypageDAO {
 	// 단골의 고객수를 알아오기 위함.
 	String vipConsumer(String member_no);
 
-	// 계좌테이블 insert
-	int registerAccount(String pk_member_no, String account_num, String bank_name, String account_type);
-
-	// 회원의 등록계좌 수를 알아오는 용도
-	int accountCnt(String pk_member_no);
-
-	// 동일한 계좌번호를 입력했을 때
-	List<Map<String, String>> accountMap(String pk_member_no);
-
-	// 대표계좌로 설정했다라면
-	int changeType(String account_no);
-
-	// 계좌 삭제
-	int accountDelete(String account_no);
-
-	// 현재 대표계좌를 알아오기
-	String main_account(String pk_member_no);
-
-	// 대표계좌 변경
-	int accountTypeUpdate(String account_no);
-
-	// 기존의 대표계좌를 해제
-	int notMain(String main_account);
-
-
 
 }

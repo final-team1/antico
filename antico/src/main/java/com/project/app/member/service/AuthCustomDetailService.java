@@ -1,14 +1,28 @@
 package com.project.app.member.service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.project.app.component.oauth2member.GoogleUser;
 import com.project.app.component.oauth2member.KakaoUser;
@@ -17,6 +31,7 @@ import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
 import com.project.app.security.CustomUserDetails;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +47,7 @@ public class AuthCustomDetailService extends DefaultOAuth2UserService{
 	
 	private final GoogleUser google_user;
 	
-	private final MemberDAO member_dao;
+	private final MemberDAO member_service;
 	
 	private final MemberVO member_vo;
 	
@@ -58,59 +73,41 @@ public class AuthCustomDetailService extends DefaultOAuth2UserService{
         if("kakao".equals(userRequest.getClientRegistration().getRegistrationId())){
         	extra_member_vo = kakao_user.oauth2User(oAuth2User);
         	
-        	if(member_dao.selectMemberByUserId(String.valueOf(user_info.get("id"))) == null) {
-        		member_dao.registerMember(extra_member_vo);
+        	if(member_service.selectMemberByUserId(String.valueOf(user_info.get("id"))) == null) {
+        		member_service.registerMember(extra_member_vo);
         	}
         	name_attribute_key = "id";
-        	extra_member_vo = member_dao.selectMemberByUserId(String.valueOf(user_info.get("id")));
+        	extra_member_vo = member_service.selectMemberByUserId(String.valueOf(user_info.get("id")));
         	
         }else if("naver".equals(userRequest.getClientRegistration().getRegistrationId())){
         	extra_member_vo  = naver_user.oauth2User(oAuth2User);
         	
-        	if(member_dao.selectMemberByUserId(String.valueOf(response.get("id"))) == null) {
+        	if(member_service.selectMemberByUserId(String.valueOf(response.get("id"))) == null) {
         		
-        		member_dao.registerMember(extra_member_vo);
+        		member_service.registerMember(extra_member_vo);
         		
         	}
         	
         	name_attribute_key = "response";
-        	extra_member_vo = member_dao.selectMemberByUserId(String.valueOf(response.get("id")));
+        	extra_member_vo = member_service.selectMemberByUserId(String.valueOf(response.get("id")));
         	
         }else if("google".equals(userRequest.getClientRegistration().getRegistrationId())){
         	
         	extra_member_vo = google_user.oauth2User(oAuth2User);
         	
-        	if(member_dao.selectMemberByUserId(String.valueOf(google_info.get("sub"))) == null) {
+        	if(member_service.selectMemberByUserId(String.valueOf(google_info.get("sub"))) == null) {
         		
-        		member_dao.registerMember(extra_member_vo);
+        		member_service.registerMember(extra_member_vo);
         		
         	}
         	
         	extra_member_vo.setMember_tel(userRequest.getAccessToken().getTokenValue());
-        	extra_member_vo = member_dao.selectMemberByUserId(String.valueOf(google_info.get("sub")));
+        	extra_member_vo = member_service.selectMemberByUserId(String.valueOf(google_info.get("sub")));
         	name_attribute_key = "sub";
         }
         
         member_vo.setMember_role(extra_member_vo.getMember_role());
         member_vo.setMember_oauth_type(extra_member_vo.getMember_oauth_type());
-        
-        String leave_member_no = member_dao.leaveCheck(extra_member_vo.getPk_member_no());
-
-		if (leave_member_no != null) { // 탈퇴신청한 회원이 존재한다면
-
-			String fk_member_no = member_dao.loginCheck(leave_member_no); // 로그인시 탈퇴신청 후 72시간이 지난 회원이 있는지 조회
-
-			log.warn("탈퇴신청을 했지만 72시간이 지났는지 조회" + fk_member_no);
-
-			if (fk_member_no == null) { // 탈퇴는 했지만 72시간이 지나지 않은 회원이 로그인을 했다면
-
-				member_dao.leaveDelete(leave_member_no); // 탈퇴테이블에서 값을 지우기
-
-				member_dao.rollback(leave_member_no); // 상태를 다시 돌려놓기
-			} else { // 탈퇴를 했으면서 72시간이 지난 회원이 로그인을 했더라면
-				throw new AccountExpiredException("탈퇴&nbsp;후&nbsp;72시간이&nbsp;지나&nbsp;로그인이&nbsp;불가능합니다.");
-			}
-		}
         
         CustomUserDetails user_detail = new CustomUserDetails(member_vo);
         

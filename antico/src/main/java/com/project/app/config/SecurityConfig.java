@@ -20,6 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.project.app.common.AES256;
 import com.project.app.common.Constants;
+import com.project.app.member.service.AuthCustomDetailService;
 import com.project.app.security.CoustomSuccessHandle;
 import com.project.app.security.CustomAccessHandler;
 import com.project.app.security.CustomEntryPoint;
