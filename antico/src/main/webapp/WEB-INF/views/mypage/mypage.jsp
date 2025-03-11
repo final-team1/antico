@@ -701,7 +701,11 @@ function timeAgo(reg_date) {
 			<li><a href="#" onclick="myBank()">계좌 관리</a></li>
 			<li><a href="javascript:pointcharge('<%= ctx_Path%>')">포인트 충전</a></li>
 			<li><a href="#" onclick="myreview()">거래 후기</a></li>
-			<li><a href="#" onclick="memberDelete()">탈퇴하기</a></li>
+			<li>
+			
+				<a href="#" onclick="memberDelete()">탈퇴하기</a>
+			
+			</li>
 		</ul>
 	</aside>
 

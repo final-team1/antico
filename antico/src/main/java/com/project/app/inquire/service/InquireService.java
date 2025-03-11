@@ -3,8 +3,6 @@ package com.project.app.inquire.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.project.app.comment.domain.CommentVO;
 import com.project.app.inquire.domain.InquireVO;
 
@@ -17,7 +15,7 @@ public interface InquireService {
 	int add(InquireVO inquirevo);
 	
 	// 파일첨부가 있는 경우의 1:1문의
-	int add_withFile(InquireVO inquirevo, MultipartFile attach);
+	int add_withFile(InquireVO inquirevo);
 
 	// 문의 상세보기
 	InquireVO inquire_detail(Map<String, String> paraMap);

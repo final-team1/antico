@@ -121,13 +121,6 @@
 	    	    return; // 종료
 	        }
 	        
-/* 	        const attach = $(e.target)[0].files[0];
-			// 이미지 파일 크기 제한 최대 5MB
-			if(attach.size > 1024 * 1024 * 5) {
-				showAlert("warning", "업로드 이미지는 최대 5MB까지 가능합니다.");
-				return;
-			} */
-	        
 	        // 폼(form)을 전송(submit)
 		    const frm = document.addFrm;
 		    frm.method = "post";
