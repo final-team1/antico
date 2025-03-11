@@ -3,8 +3,8 @@ package com.project.app.mypage.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +13,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
+import com.project.app.member.service.Oauth2Service;
 import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.service.MypageService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,13 +29,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
-
+@RequiredArgsConstructor
 @Controller
 @RequestMapping(value="/mypage/*")
 public class MypageController {
 	
-	@Autowired
-	private GetMemberDetail get_member_detail;
+	
+	private final GetMemberDetail get_member_detail;
+	
+	private final Oauth2Service oauth2_service;
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -40,8 +47,7 @@ public class MypageController {
 	@Value("${pointcharge.chargekey}")
 	private String pointcharge_chargekey;
 	
-	@Autowired
-	private MypageService service;
+	private final MypageService service;
 	
 	@GetMapping("/mypagecheck")
 	@ResponseBody
@@ -314,15 +320,27 @@ public class MypageController {
 	// 탈퇴 신청시 탈퇴테이블에 insert
 	@PostMapping("delete_submit")
 	@ResponseBody
-	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo) {
+	public Map<String, Integer> delete_submit(@RequestBody LeaveVO lvo, HttpServletRequest request) {
+		
+		MemberVO member_vo = get_member_detail.MemberDetail();
+		
 		String fk_member_no = lvo.getFk_member_no();
 	    String leave_reason = lvo.getLeave_reason();
 
 	    Map<String, String> paraMap = new HashMap<>();
 	    paraMap.put("fk_member_no", fk_member_no);
 	    paraMap.put("leave_reason", leave_reason);
-
-	    int n = service.delete_submit(paraMap);
+		
+		if(member_vo.getMember_oauth_type() != null) {
+			
+			HttpSession session = request.getSession();
+			
+			String ck = oauth2_service.unlinkOauthUser(String.valueOf(session.getAttribute("access_token")), member_vo.getMember_user_id());
+			
+			System.out.println(ck);
+		}
+		
+		int n = service.delete_submit(paraMap);
 
 	    Map<String, Integer> response = new HashMap<>();
 	    response.put("n", n);
@@ -330,11 +348,57 @@ public class MypageController {
 	    return response;
 	}
 
-	
+	// 계좌변경 리스트
 	@GetMapping("mybank_list")
 	public ModelAndView mybank_list(ModelAndView mav) {
 		mav.setViewName("mypage/mybank_list");
 		return mav;
 	}
+	
+	// 계좌등록시 은행테이블 insert, 대표계좌 유무체크, 계좌테이블 등록
+	@PostMapping("register_account")
+	@ResponseBody
+	public int registerAccount(@RequestParam String account_num, @RequestParam String bank_name, @RequestParam String account_type) {
+	    System.out.println("bank_num: " + bank_name);  // 서버에서 확인
+	    System.out.println("bank_num: " + account_num);  // 서버에서 확인
+	    System.out.println("bank_num: " + account_type);  // 서버에서 확인
+	    MemberVO member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = member_vo.getPk_member_no();
+	    int n = service.register_account(pk_member_no, account_num, bank_name, account_type);
+	    System.out.println(n+"확인");
+	    return n;
+	}
+
+	// 계좌 편집
+	@GetMapping("edit_bank")
+	public ModelAndView editBank(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = member_vo.getPk_member_no();
+	    String member_name = member_vo.getMember_name();
+		List<Map<String, String>> bank_list = service.bankList(pk_member_no); // 회원의 게좌 리스트 조회
+		mav.addObject("bank_list", bank_list);
+		mav.addObject("member_name", member_name);
+		mav.setViewName("mypage/edit_bank");
+		return mav;
+	}
+	
+	// 계좌 삭제
+	@PostMapping("account_delete")
+	@ResponseBody
+	public int accountDelete(@RequestParam String account_no, @RequestParam String account_type) {
+		int response = service.accountDelete(account_no, account_type);
+		return response;
+	}
+	
+	// 대표계좌 변경
+	@PostMapping("account_type_update")
+	@ResponseBody
+	public int accountTypeUpdate(@RequestParam String account_no) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = member_vo.getPk_member_no();
+		int response = service.accountTypeUpdate(account_no, pk_member_no);
+		return response;
+	}
+	
 	
 }
