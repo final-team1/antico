@@ -68,7 +68,11 @@ window.WebSocketManager = (() => {
                 console.log("websocket not connected");
             }
         },
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 		// 채팅방을 기준으로 읽음 상태 구독 요청 (구독 주소, 콜백 함수)
 		subscribeReadStatus: function (url, callback) {
 		    if (stompClient && stompClient.connected) {
@@ -80,7 +84,11 @@ window.WebSocketManager = (() => {
 		    else {
 		        console.log("websocket not connected");
 		    }
+<<<<<<< HEAD
 		},		
+=======
+		},
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 
 		// 웹소켓으로 이미 연결되었는지 확인하는 함수
         isConnected: function () {

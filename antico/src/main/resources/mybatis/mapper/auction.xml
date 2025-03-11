@@ -16,11 +16,20 @@
 		<result column="pk_member_no" property="pk_member_no" javaType="String"/>
 		<result column="member_name" property="member_name" javaType="String"/>
 		<result column="pk_auction_no" property="pk_auction_no" javaType="String"/>
+<<<<<<< HEAD
+=======
+		<result column="product_price" property="product_price" javaType="String"/>
+		<result column="product_title" property="product_title" javaType="String"/>
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	</resultMap>
 	
 	<!-- 경매 시작 시간인 경매 상품 조회 -->
 	<select id="selectProductNoListByAuctionStartDate" resultMap="testMap">
+<<<<<<< HEAD
 		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no
+=======
+		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no, p.product_price, p.product_title
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 		from tbl_product p join tbl_member m on p.fk_member_no = m.pk_member_no 
 			 join tbl_auction a on p.pk_product_no = a.fk_product_no 
 			 and p.product_sale_status = 3 and <![CDATA[a.auction_startdate <= (sysdate + 1/24/60)]]>
@@ -35,6 +44,20 @@
 		</foreach>
 	</update>
 
+<<<<<<< HEAD
+=======
+	<select id="selectAuctionProductNo" resultType="AuctionVO">
+		select pk_auction_no, auction_startdate, auction_enddate, auction_closed
+		from tbl_auction
+		where fk_product_no = #{productNo}
+	</select>
+
+	<update id="updateAuctionClosed" parameterType="String">
+		update tbl_auction set auction_closed = 1
+		where pk_auction_no = #{pkAuctionNo}
+	</update>
+
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 </mapper>
 
 

@@ -66,7 +66,13 @@ public enum ExceptionCode {
 	
 	////////////////////////////////// 경매 관련 예외 /////////////////////////////////////////////
 	
+<<<<<<< HEAD
 	AUCTION_CREATE_FAILD(500, "경매 상품 등록을 실패하였습니다.");
+=======
+	AUCTION_CREATE_FAILD(500, "경매 상품 등록을 실패하였습니다."),
+
+	AUCTION_NOT_FOUND(404, "경매 내역을 찾을 수 없습니다.");
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 	private final int status;
 	

@@ -37,10 +37,48 @@
             가격:&nbsp;<fmt:formatNumber value="${requestScope.product_vo.product_price}" pattern="#,###" /> 원
         </div>
 
+<<<<<<< HEAD
         <button class="delete-button">삭제하기</button>
     </div>
 </div>
 
+=======
+        <button class="delete-button" onclick="delcalendar('${requestScope.product_vo.pk_product_no}')">삭제하기</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+	//상품 삭제하기
+	function delcalendar(pk_product_no){
+	
+		const bool = confirm("상품을 삭제하시겠습니까?");
+		
+		if(bool){
+			$.ajax({
+				url: "<%= ctxPath%>/admin/admin_deleteproduct",
+				type: "post",
+				data: {"pk_product_no":pk_product_no},
+				dataType: "json",
+				success:function(json){
+					if(json.n==1){
+						alert("상품을 삭제하였습니다.");
+					}
+					else {
+						alert("상품을 삭제하지 못했습니다.");
+					}
+					
+					location.href="<%= ctxPath%>/admin/admin_product_list";
+				},
+				error: function(request, status, error){
+		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        }
+			});
+		}		
+	};
+</script>
+
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 <style>
     .container {
         display: flex;

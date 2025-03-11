@@ -183,6 +183,7 @@ public class ChatService_imple implements ChatService {
 		updatedChats = customChatRoomRepository.updateUnReadCount(chatId, roomId, memberNo);
 		return updatedChats;
 	}
+<<<<<<< HEAD
 
 	/*
 	 	경매 시작 시 판매자만 존재하는 경매 채팅방 생성
@@ -224,4 +225,6 @@ public class ChatService_imple implements ChatService {
 
 		return chatRoomRepository.save(chatRoom);
 	}
+=======
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 }

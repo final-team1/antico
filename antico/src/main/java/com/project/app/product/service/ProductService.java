@@ -48,6 +48,7 @@ public interface ProductService {
 	
 	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기
 	List<Map<String, Object>> nearRegion(String current_lat, String current_lng);
+<<<<<<< HEAD
 	
 	// 관심상품에 상품 추가하기
 	int wishInsert(String fk_product_no, String fk_member_no);
@@ -81,12 +82,55 @@ public interface ProductService {
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list);
 	
+=======
+	
+	// 관심상품에 상품 추가하기
+	int wishInsert(String fk_product_no, String fk_member_no);
+	
+	// 특정 회원에 대한 다른 상품 정보 가져오기
+	List<Map<String, String>> getProdcutOneMember(String fk_member_no2, String pk_product_no);
+	
+	// 특정 상품에 대한 이미지 정보 가져오기
+	List<ProductImageVO> getProductImg(String pk_product_no);
+	
+	// 특정 상품에 대한 정보 가져오기(지역, 회원, 카테고리, 경매)
+	Map<String, String> getProductDetail(String pk_product_no);
+	
+	// "위로올리기" 클릭 시 상품 등록일자 업데이트 하기
+	int regDateUpdate(String pk_product_no);
+	
+	// "상태변경" 클릭 시 상품 상태 업데이트 하기
+	int saleStatusUpdate(String pk_product_no, String sale_status_no);
+	
+	// 상품 수정하기
+	int updateProduct(ProductVO productvo, ProductImageVO product_imgvo, List<MultipartFile> attach_list);
+	
+	// "상품삭제" 클릭 시 상품 삭제하기
+	int delete(String pk_product_no);
+	
+	// 검색어에 맞는 시세 조회
+	List<Map<String, String>> getMargetPrice(String search_price);
+	
+	
+	// 모든 상품 조회 해오기(이미지, 지역)
+	List<Map<String, String>> getProductList(String sort_views_week);
+	
+	// 상품 요약 정보 목록 조회
+	List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list);
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 
+	// 경매 상품 등록
+	int addAuctionProduct(ProductVO productvo);
 
+<<<<<<< HEAD
 	
 
 	
 	
 
 	
+=======
+	// 경매 이미지 상품 등록
+	int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo);
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 }

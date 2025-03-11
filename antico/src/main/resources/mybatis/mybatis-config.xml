@@ -18,6 +18,11 @@
 		<typeAlias type="com.project.app.comment.domain.CommentVO" alias="CommentVO"/>
 		<typeAlias type="com.project.app.chat.domain.ProductChatDTO" alias="ProductChatDTO"/>
 		<typeAlias type="com.project.app.mypage.domain.LoginHistoryVO" alias="LoginHistoryVO"/>
+<<<<<<< HEAD
+=======
+		<typeAlias type="com.project.app.admin.domain.CalendarVO" alias="CalendarVO"/>
+		<typeAlias type="com.project.app.auction.domain.AuctionVO" alias="AuctionVO"/>
+>>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	</typeAliases>
 
 </configuration>
