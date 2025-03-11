@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.project.app.exception.BusinessException;
+import com.project.app.exception.ExceptionCode;
 import com.project.app.mypage.model.MypageDAO;
 
 @Service
@@ -109,12 +111,64 @@ public class MypageService_imple implements MypageService {
 		if(vip_consumber == null) {
 			vip_consumber = "0";
 		}
-		System.out.println("vip_consumber"+vip_consumber);
 		trade_map.put("trade_cnt", trade_cnt);
 		trade_map.put("vip_consumber", vip_consumber);
 		return trade_map;
 	}
 
+	// 계좌등록시 은행테이블 insert, 대표계좌 유무체크, 계좌테이블 등록
+	@Override
+	public int register_account(String pk_member_no, String account_num, String bank_name, String account_type) {
+		int cnt = mypagedao.accountCnt(pk_member_no); // 회원의 등록계좌 수를 알아오는 용도
+		if(cnt >= 2) { // 등록계좌가 2개 이상일 때
+			throw new BusinessException(ExceptionCode.ACCOUNT_CREATE_FAILD);
+		}
+		List<Map<String, String>> account_map = mypagedao.accountMap(pk_member_no); // 동일한 계좌번호를 입력했을 때
+		if(account_map.size() == 0 && "0".equals(account_type)) { // 등록계좌가 없으면서 첫 등록을 대표계좌로 하지 않았을 경우
+			throw new BusinessException(ExceptionCode.ACCOUNT_INSERT_FAILD);
+		}
+		if(account_map != null && !account_map.isEmpty()) { // 등록 계좌가 존재할 경우
+			String account_no = account_map.get(0).get("account_no");
+				
+			if(account_num.equals(account_no)) { // 동일한계좌번호 입력 예외처리
+				throw new BusinessException(ExceptionCode.ACCOUNT_ALREADY_EXISTS);
+			}
+			if("1".equals(account_type)) { // 대표계좌로 설정했다라면
+				int change_type = mypagedao.changeType(account_no); // 기존 계좌를 0으로 해제
+			}
+		}
+		int account = mypagedao.registerAccount(pk_member_no, account_num, bank_name, account_type);
+		return account;
+	}
 
+	// 회원의 게좌 리스트 조회
+	@Override
+	public List<Map<String, String>> bankList(String pk_member_no) {
+		List<Map<String, String>> bankList = mypagedao.accountMap(pk_member_no);
+		return bankList;
+	}
+
+	// 계좌 삭제
+	@Override
+	public int accountDelete(String account_no, String account_type) {
+		if("1".equals(account_type)) {
+			throw new BusinessException(ExceptionCode.ACCOUNT_DELETE_FAILD);
+		}
+		int response = mypagedao.accountDelete(account_no);
+		return response;
+	}
+
+	// 대표계좌 변경
+	@Override
+	public int accountTypeUpdate(String account_no, String pk_member_no) {
+		String main_account = mypagedao.main_account(pk_member_no); // 현재 대표계좌의 pk번호를 알아오기
+		System.out.println(main_account+"main_account");
+		int response = mypagedao.accountTypeUpdate(account_no);
+		if(main_account != "") { // 기존의 대표계좌가 존재한다라면
+			int not_main = mypagedao.notMain(main_account); // 기존의 대표계좌를 해제
+			System.out.println("not_main"+not_main);
+		}
+		return response;
+	}
 	
 }

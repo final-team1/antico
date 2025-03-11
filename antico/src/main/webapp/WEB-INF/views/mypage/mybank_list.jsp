@@ -136,98 +136,124 @@
         <div class="mypage_hidden" id="new_account_form">
             <div class="mypage_title" style="margin-top: 20px;">신규 계좌 등록</div>
 
-            <!-- 계좌 등록 폼 시작 -->
-            <form id="account_form" action="<%=ctx_Path%>/mypage/register_account" method="POST">
-                <!-- 예금주명은 수정 불가 -->
-                <input type="text" class="mypage_input_box" id="new_owner" name="owner" value="장민규" readonly placeholder="예금주명 입력">
-                <!-- 은행명 변경을 위한 셀렉트 태그 -->
-                <select class="mypage_input_box" id="new_bank_name" name="bank_name">
-                    <option value="0">토스뱅크</option>
-                    <option value="1">카카오뱅크</option>
-                    <option value="2">신한은행</option>
-                    <option value="3">국민은행</option>
-                    <option value="4">농협은행</option>
-                    <!-- 추가적인 은행들을 추가 가능 -->
-                </select>
+            <!-- 계좌 등록을 위한 입력 필드 -->
+            <input type="text" class="mypage_input_box" id="new_owner" name="owner" value="장민규" readonly placeholder="예금주명 입력">
+            <select class="mypage_input_box" id="new_bank_name" name="bank_name">
+                <option value="0">토스뱅크</option>
+                <option value="1">카카오뱅크</option>
+                <option value="2">신한은행</option>
+                <option value="3">국민은행</option>
+                <option value="4">농협은행</option>
+            </select>
 
-                <input type="text" class="mypage_input_box" id="new_account_num" name="account_num" placeholder="계좌번호 입력" pattern="^[^ㄱ-ㅎ가-힣]*$" maxlength="14" required>
+            <input type="text" class="mypage_input_box" id="new_account_num" name="account_num" placeholder="계좌번호 입력" pattern="^[^ㄱ-ㅎ가-힣]*$" maxlength="14" required>
 
-                <button type="submit" class="mypage_btn" id="register_account_btn">등록</button>
-            </form>
-            <!-- 계좌 등록 폼 끝 -->
+            <button type="button" class="mypage_btn" id="register_account_btn">등록</button>
 
             <div>
-                <button class="check-btn">
+                <button class="check-btn checked" id="representative_account_btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                         <path d="M9 16.2l-4.2-4.2 1.4-1.4L9 13.4l9.8-9.8 1.4 1.4z"/>
                     </svg>
                 </button>
                 <span style="font-size: 10pt;">대표 계좌로 설정</span>
             </div>
-            <div style="padding:8px; ">
+            <div style="padding:8px;">
                 <span style="font-size: 8pt; color: gray;">안전한 중고거래를 위해 회원 가입시 본인 인증한<br>
                 명의의 계좌만 사용하실 수 있습니다.</span>
             </div>
         </div>
         
     </div>
-<div>
-
-
-</div>
 <script>
-    // 페이지가 로드될 때 폼 상태를 로컬 스토리지에서 확인하여 폼을 표시할지 말지 결정
-    window.onload = function() {
-        const isFormVisible = localStorage.getItem('isNewAccountFormVisible') === 'true';
-        if (isFormVisible) {
-            document.getElementById("new_account_form").classList.remove("mypage_hidden");
-        }
+$(document).ready(function() {
+    // 페이지 로드 시 폼 상태 로컬 스토리지에서 확인하여 표시 여부 결정
+    const isFormVisible = localStorage.getItem('isNewAccountFormVisible') === 'true';
+    const $newAccountForm = $("#new_account_form");
+
+    if (isFormVisible) {
+        $newAccountForm.removeClass("mypage_hidden");
+    } else {
+        $newAccountForm.addClass("mypage_hidden");
     }
 
-    // 신규 계좌 등록 버튼 클릭시 폼 토글
-    document.getElementById("add_account_btn").addEventListener("click", function() {
-        let newAccountForm = document.getElementById("new_account_form");
-        newAccountForm.classList.toggle("mypage_hidden");
+    // 신규 계좌 등록 버튼 클릭 시 폼 토글
+    $("#add_account_btn").on("click", function() {
+        $newAccountForm.toggleClass("mypage_hidden");
         
-        // 폼의 현재 상태를 로컬 스토리지에 저장
-        localStorage.setItem('isNewAccountFormVisible', !newAccountForm.classList.contains("mypage_hidden"));
+        // 폼 상태를 로컬 스토리지에 저장
+        localStorage.setItem('isNewAccountFormVisible', !$newAccountForm.hasClass("mypage_hidden"));
     });
 
-    // 계좌 등록 폼을 제출할 때 데이터 유효성 검사
-    document.getElementById("account_form").addEventListener("submit", function(event) {
-        let accountNum = document.getElementById("new_account_num").value.trim();
-        
-        // 숫자를 제외한 문자가 있는지 확인
+    // 계좌 등록 버튼 클릭 시 AJAX 처리
+    $("#register_account_btn").on("click", function() {
+    	
+
+        const bankName = $("#new_bank_name option:selected").text();
+        const accountNum = $("#new_account_num").val().trim();
+        const isChecked = $("#representative_account_btn").hasClass("checked") ? 1 : 0; // 체크 상태 값
+        // 계좌번호가 비어있으면 오류 메시지
+        if (!accountNum) {
+            showAlert("error", "계좌번호를 올바르게 입력하세요.");
+            return;
+        }
+
+        // 계좌번호에 숫자만 있는지 확인
         const nonNumericRegex = /[^0-9]/;
         if (nonNumericRegex.test(accountNum)) {
-            alert("계좌번호에는 숫자만 입력할 수 있습니다.");
-            event.preventDefault(); // 폼 제출을 중지
+            showAlert("error", "계좌번호에는 숫자만 입력할 수 있습니다.");
+            return;
         }
-    });
-
-    // 편집 클릭시 AJAX 호출
-    function edit_bank() {
-        var tabTitle = "변경";
         
         $.ajax({
-            url: "<%=ctx_Path%>/mypage/edit_bank",
-            success: function(html) {
-                openSideTab(html, tabTitle);
+            url: "<%=ctx_Path%>/mypage/register_account",
+            type: "post",
+            data: {
+                "bank_name": bankName,
+                "account_num": accountNum,
+                "account_type": isChecked // 체크 상태 전송
             },
-            error: function(e) {
-                console.log(e);
-                alert("불러오기 실패");
-                closeSideTab();
+            dataType: "json",
+            success: function(response) {
+                if (response  == 1) {
+                    showAlert("success", "계좌가 등록되었습니다.");
+                    $newAccountForm.addClass("mypage_hidden");
+                    localStorage.setItem('isNewAccountFormVisible', false); // 폼 상태 저장
+                } else {
+                	showAlert('error', '계좌등록을 실패하였습니다.');
+                }
+            },
+            error: function (request, status, error) {
+                errorHandler(request, status, error);
             }
         });
-    }
-    
-    const checkBtn = document.querySelector(".check-btn");
 
-    checkBtn.addEventListener("click", function() {
-        checkBtn.classList.toggle("checked"); /* 체크 상태 변경 */
+
     });
-</script>
 
+    // 체크 버튼 클릭 시 체크 상태 토글
+    $(".check-btn").on("click", function() {
+        $(this).toggleClass("checked"); // 체크 상태 변경
+    });
+});
+
+
+function edit_bank() {
+	
+	var tabTitle = "계좌 편집";
+    
+    $.ajax({
+       url : "<%=ctx_Path%>/mypage/edit_bank",
+       success : function(html) {
+          openSideTab(html, tabTitle);
+       },
+       error : function(e) {
+          console.log(e);
+          closeSideTab();
+       }
+    });
+	
+}
+</script>
 </body>
 </html>
