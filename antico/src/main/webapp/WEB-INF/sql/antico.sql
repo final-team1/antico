@@ -1,18 +1,6 @@
 
 select * from tab;
 
-delete from TBL_LEAVE
-where fk_member_no = 189;
-
-commit;
-
-select *
-from TBL_LEAVE
-
-select *
-from tbl_member
-
-UPDATE tbl_member SET member_status = 1 WHERE  member_status = 0;
 
 
 delete from tbl_member
@@ -591,20 +579,24 @@ CONSTRAINT account_pk_acc_no PRIMARY KEY (pk_acc_no),
 CONSTRAINT account_fk_bank_no FOREIGN KEY (fk_bank_no) REFERENCES tbl_bank(pk_bank_no) on delete cascade,
 CONSTRAINT account_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_mem_no) on delete cascade
 );
-
+ALTER TABLE tbl_account
+ADD account_type NUMBER(1) DEFAULT 1;
+ALTER TABLE tbl_account
+ADD account_no NUMBER(16) not null;
+commit;
 CREATE SEQUENCE acc_seq;
+DROP TABLE tbl_bank CASCADE CONSTRAINTS;
+ALTER TABLE tbl_account DROP COLUMN fk_bank_no;
+ALTER TABLE tbl_account ADD account_bank nVARCHAR2(10);
 
-select * from tab;
+select *
+from tbl_account;
 
-select * 
-from tbl_loginhistory
+commit;
 
 show user;
 
 
-select *
-from tbl_region
-where region_lat = 37.5586816
 
 
 ALTER TABLE tbl_member 
@@ -627,13 +619,3 @@ where pk_member_no = 188;
 
 
 desc tbl_member;
-
-
-select *
-from tbl_loginhistory;
-
-update tbl_loginhistory
-set login_history_date = to_date('25/03/01')
-where fk_member_no = 61;
-
-
