@@ -336,6 +336,7 @@
                 <textarea name="review_content"></textarea>
                 <input type="hidden" name="arr_pk_survey_resp_no"/>
                 <input type="hidden" name="pk_trade_no" value="${trade_vo.pk_trade_no}"/>
+                <input type="hidden" name="feedback_type" />
 
                 <div id="image_preview"></div>
 
@@ -574,6 +575,9 @@
 
         // 후기 등록 form에서 formData 가져오기
         const formData = new FormData($("form#reviewFrm")[0]);
+
+        // 피드백 타입 저장
+        $("div.feedback_btn").index()
 
         $.ajax({
             url: "${ctxPath}/review/register",

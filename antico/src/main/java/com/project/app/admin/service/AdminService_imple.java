@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.project.app.admin.domain.CalendarVO;
 import com.project.app.admin.model.AdminDAO;
 import com.project.app.common.FileManager;
 import com.project.app.member.domain.MemberVO;
@@ -130,6 +131,13 @@ public class AdminService_imple implements AdminService {
 		return product_vo;
 	}
 
+	// 상품삭제하기
+	@Override
+	public int admin_deleteproduct(String pk_product_no) {
+		int n = dao.admin_deleteproduct(pk_product_no);
+		return n;
+	}
+
 	// 일별 방문자 차트
 	@Override
 	public List<Map<String, String>> admin_visitantchat() {
@@ -164,6 +172,50 @@ public class AdminService_imple implements AdminService {
 		List<Map<String, String>> admin_product_total_views = dao.admin_product_total_views();
 		return admin_product_total_views;
 	}
+
+	// 캘린더 일정 등록하기
+	@Override
+	public int admin_registercalendar(Map<String, String> paraMap) {
+		int n = dao.admin_registercalendar(paraMap);
+		return n;
+	}
+
+	// 캘린더를 불러오는것
+	@Override
+	public List<CalendarVO> admin_selectcalendar(String pk_member_no) {
+		List<CalendarVO> calendar_list = dao.admin_selectcalendar(pk_member_no);
+		return calendar_list;
+	}
+
+	// 일정상세보기
+	@Override
+	public Map<String, String> admin_detailcalendar(String pk_calendar_no) {
+		Map<String,String> map = dao.admin_detailcalendar(pk_calendar_no);
+		return map;
+	}
+
+	// 일정삭제하기
+	@Override
+	public int admin_deletecalendar(String pk_calendar_no) {
+		int n = dao.admin_deletecalendar(pk_calendar_no);
+		return n;
+	}
+
+	// 일정 수정하기
+	@Override
+	public int admin_editcalendar_end(CalendarVO cvo) {
+		int n = dao.admin_editcalendar_end(cvo);
+		return n;
+	}
+
+	// 검색 기능
+	@Override
+	public List<Map<String, String>> admin_searchcalendar(Map<String, String> paraMap) {
+		List<Map<String,String>> calendar_list = dao.admin_searchcalendar(paraMap);
+		return calendar_list;
+	}
+
+
 
 	
 

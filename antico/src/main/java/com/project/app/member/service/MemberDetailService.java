@@ -39,8 +39,6 @@ public class MemberDetailService implements UserDetailsService {
 
 		// 탈퇴신청을 한 회원인지 체크
 		String leave_member_no = member_dao.leaveCheck(member_vo.getPk_member_no());
-		
-		System.out.println(leave_member_no);
 
 		if (leave_member_no != null) { // 탈퇴신청한 회원이 존재한다면
 

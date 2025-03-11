@@ -185,4 +185,14 @@ public class ReviewService_imple implements ReviewService {
 		return reviewDAO.selectCountReview(pk_review_no);
 	}
 
+	// /*
+	//  * 후기의 피드백에 따른 등급 점수 계산
+	//  */
+	// private int calculateMemberScore(String feedback_type) {
+	// 	switch(feedback_type) {
+	// 		case "0" : return 1
+	// 	}
+	//
+	// }
+
 }
