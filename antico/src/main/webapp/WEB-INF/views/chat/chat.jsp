@@ -396,22 +396,22 @@
 
             for (let chat of chatList) {
                 if (chat && chat.message) {
-                    // 송신날짜를 시/분으로 저장
-                    const sendDate = chat.sendDate.substring(11, 16);
-
-                    // 각 채팅을 표시하기 전에 날짜가 바뀌면 상단에 날짜를 표시
-                    if (chat.sendDate.substring(0, 10) != current_date) {
-                        const chatDate = chat.sendDate
-                            .substring(0, 10)
-                            .replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$1년 $2월 $3일');
-
-                        $("#chatting").append($("<span class='chat_date'>").text(chatDate));
-                        current_date = chat.sendDate.substring(0, 10);
-                    }
 
                     if (chat.chatType == "1") {
                         handleProductNoticeForm(chat);
                     } else {
+                        // 송신날짜를 시/분으로 저장
+                        const sendDate = chat.sendDate.substring(11, 16);
+
+                        // 각 채팅을 표시하기 전에 날짜가 바뀌면 상단에 날짜를 표시
+                        if (chat.sendDate.substring(0, 10) != current_date) {
+                            const chatDate = chat.sendDate
+                                .substring(0, 10)
+                                .replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$1년 $2월 $3일');
+
+                            $("#chatting").append($("<span class='chat_date'>").text(chatDate));
+                            current_date = chat.sendDate.substring(0, 10);
+                        }
 
                         const chatDiv = $(`<div data-chat_id = \${chat.id}>`)
                             // 자신이 보낸 메시지인지 상대가 보낸 메시지인지 확인

@@ -13,8 +13,5 @@ public interface MemberService {
 	MemberVO getMember(String member_user_id);
 
 	void google_tel_add(String member_tel);
-
-	// oauth 회원 탈퇴
-	void oauthMemberDeilte();
 	
 }

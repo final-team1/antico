@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,8 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 	private final MemberDAO member_dao;
 	
 	private final GetMemberDetail get_member_detail;
+	
+	private final OAuth2AuthorizedClientService authorizedClientService;
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -51,9 +56,14 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 		MemberVO member_vo = get_member_detail.MemberDetail();
 		
 		if(member_vo.getMember_oauth_type() != null) {
-	        String access_token = String.valueOf(authentication.getPrincipal());
-
-	        session.setAttribute("access_token", access_token);
+			
+			OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+			
+			OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                    oAuth2AuthenticationToken.getAuthorizedClientRegistrationId(),
+                    oAuth2AuthenticationToken.getName()
+                    );
+	        session.setAttribute("access_token", authorizedClient.getAccessToken().getTokenValue());
 		}
 		
 		LoginHistoryVO login_history_vo = new LoginHistoryVO();

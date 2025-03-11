@@ -1095,33 +1095,6 @@ span.sold_out_text {
    				}
    			});
 	   	});
-
-		// 채팅 버튼 이벤트 등록
-		$("button#join_bidding").click(function() {
-			const pk_product_no = "${product_map.pk_product_no}";
-
-			// 삭제 예정
-			if(pk_product_no == ""){
-				showAlert("error", "상품이 존재하지 않습니다.");
-				return;
-			}
-
-			// 채팅방 생성 및 입장
-			$.ajax({
-				url : "${ctx_path}/auction/chatroom",
-				type : "post",
-				data : {
-					"pk_product_no" : pk_product_no
-				},
-				success : function(html) {
-					// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-					openSideTab(html, "경매");
-				},
-				error: function(request, status, error){
-					errorHandler(request, status, error);
-				}
-			});
-		});
 		
 		
 	}); // end of $(document).ready(function()

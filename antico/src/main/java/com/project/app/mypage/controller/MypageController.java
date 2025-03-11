@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
-
 @RequiredArgsConstructor
 @Controller
 @RequestMapping(value="/mypage/*")
@@ -37,6 +35,8 @@ public class MypageController {
 	
 	
 	private final GetMemberDetail get_member_detail;
+	
+	private final Oauth2Service oauth2_service;
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -47,8 +47,6 @@ public class MypageController {
 	private String pointcharge_chargekey;
 	
 	private final MypageService service;
-	
-	private final Oauth2Service oauth2_service;
 	
 	@GetMapping("/mypagecheck")
 	@ResponseBody
@@ -336,7 +334,9 @@ public class MypageController {
 			
 			HttpSession session = request.getSession();
 			
-			oauth2_service.unlinkKakaoUser(String.valueOf(session.getAttribute("access_token")));
+			String ck = oauth2_service.unlinkOauthUser(String.valueOf(session.getAttribute("access_token")), member_vo.getMember_user_id());
+			
+			System.out.println(ck);
 		}
 		
 		int n = service.delete_submit(paraMap);

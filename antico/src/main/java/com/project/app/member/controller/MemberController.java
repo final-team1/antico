@@ -27,8 +27,6 @@ public class MemberController {
 	
 	private MemberService service;
 	
-	private GetMemberDetail get_member_detail;
-	
 	@GetMapping("login")
 	public ModelAndView showLoginPage(
 			 			ModelAndView mav,
@@ -36,8 +34,6 @@ public class MemberController {
 		
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		System.out.println(authentication.getAuthorities());
 		
 		if("[ROLE_ANONYMOUS]".equals(String.valueOf(authentication.getAuthorities()))) {
 			
@@ -89,12 +85,5 @@ public class MemberController {
 		return mav;
 	}
 	
-	@GetMapping
-	public String oauthMemberDeilte(){
-		
-		service.oauthMemberDeilte();
-		
-		return null;
-	}
 	
 }

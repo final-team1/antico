@@ -1,6 +1,18 @@
 
 select * from tab;
 
+delete from TBL_LEAVE
+where fk_member_no = 189;
+
+commit;
+
+select *
+from TBL_LEAVE
+
+select *
+from tbl_member
+
+UPDATE tbl_member SET member_status = 1 WHERE  member_status = 0;
 
 
 delete from tbl_member

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,17 +16,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.project.app.admin.domain.CalendarVO;
 import com.project.app.admin.service.AdminService;
 import com.project.app.common.FileManager;
-import com.project.app.common.MyUtil;
 import com.project.app.common.PagingDTO;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -333,22 +328,7 @@ public class AdminController {
 	    mav.setViewName("admin/admin_product_detail");
 	    return mav;
 	}
-	
-	// 상품삭제하기
-	@ResponseBody
-	@PostMapping("admin_deleteproduct")
-	public String admin_deleteproduct(HttpServletRequest request) throws Throwable {
 		
-		String pk_product_no = request.getParameter("pk_product_no");
-				
-		int n = service.admin_deleteproduct(pk_product_no);
-		
-		JSONObject jsObj = new JSONObject();
-		jsObj.put("n", n);
-			
-		return jsObj.toString();
-	}
-	
 	// 관리자 통계페이지
 	@GetMapping("admin_statistics")
 	public ModelAndView admin_statistics(ModelAndView mav) {		
@@ -405,233 +385,6 @@ public class AdminController {
 		
 		return admin_product_total_views;
 	}
-
-	// 캘린더를 불러오는것
-	@ResponseBody
-	@GetMapping(value="admin_selectcalendar")
-	public String admin_selectcalendar(HttpServletRequest request) {
-
-		member_vo = getMemberDetail.MemberDetail();
-		
-		String pk_member_no = member_vo.getPk_member_no();
-				
-		List<CalendarVO> calendar_list = service.admin_selectcalendar(pk_member_no);
-		
-		JSONArray jsArr = new JSONArray();
-		
-		if(calendar_list != null && calendar_list.size() > 0) {
-			
-			for(CalendarVO cvo : calendar_list) {
-				JSONObject jsObj = new JSONObject();
-				jsObj.put("calendar_title", cvo.getCalendar_title());
-				jsObj.put("calendar_startdate", cvo.getCalendar_startdate());
-				jsObj.put("calendar_enddate", cvo.getCalendar_enddate());
-				jsObj.put("pk_calendar_no", cvo.getPk_calendar_no());
-				jsObj.put("pk_member_no", pk_member_no);
-				
-				jsArr.put(jsObj);
-			}// end of for-------------------------------------
-		
-		}
-		
-		return jsArr.toString();
-	}
-
-	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정 등록창으로 넘어간다)
-	@PostMapping("admin_insertcalendar")
-	public ModelAndView insertSchedule(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) { 
-		
-		// form 에서 받아온 날짜
-		String choose_date = request.getParameter("choose_date");
-		
-		mav.addObject("choose_date", choose_date);
-		mav.setViewName("admin/admin_insertcalendar");
-		
-		return mav;
-	}
-
-	// 캘린더 일정 등록하기
-	@PostMapping("admin_registercalendar")
-	public ModelAndView admin_registercalendar(ModelAndView mav, HttpServletRequest request) throws Throwable {
-		
-		member_vo = getMemberDetail.MemberDetail();
-		
-		String pk_member_no = member_vo.getPk_member_no();
-		String calendar_startdate= request.getParameter("calendar_startdate");   	    
-		String calendar_enddate = request.getParameter("calendar_enddate");
-		String calendar_title = request.getParameter("calendar_title");
-		String calendar_place = request.getParameter("calendar_place");		
-		String calendar_content = request.getParameter("calendar_content");
-
-		Map<String,String> paraMap = new HashMap<String, String>();
-		paraMap.put("calendar_startdate", calendar_startdate);
-		paraMap.put("calendar_enddate", calendar_enddate);
-		paraMap.put("calendar_title", calendar_title);
-		paraMap.put("calendar_place", calendar_place);
-		paraMap.put("calendar_content", calendar_content);
-		paraMap.put("pk_member_no", pk_member_no);
-		
-		int n = service.admin_registercalendar(paraMap);
-
-		if(n == 0) {
-			mav.addObject("message", "일정 등록에 실패하였습니다.");
-		}
-		else {
-			mav.addObject("message", "일정 등록에 성공하였습니다.");
-		}
-		
-		mav.setViewName("admin/admin_page");
-		
-		return mav;
-	}
-		
-	// 일정상세보기
-	@GetMapping(value="admin_detailcalendar")
-	public ModelAndView admin_detailcalendar(ModelAndView mav, HttpServletRequest request) {
-		
-		String pk_calendar_no = request.getParameter("pk_calendar_no");
-		
-		// 검색하고 나서 취소 버튼 클릭했을 때 필요함
-		String listgobackURL_calendar = request.getParameter("listgobackURL_schedule");
-		mav.addObject("listgobackURL_calendar",listgobackURL_calendar);
-
-		
-		// 일정상세보기에서 일정수정하기로 넘어갔을 때 필요함
-		String gobackURL_detailSchedule = MyUtil.getCurrentURL(request);
-		mav.addObject("gobackURL_detailSchedule", gobackURL_detailSchedule);
-		
-		try {
-			Integer.parseInt(pk_calendar_no);
-			Map<String,String> map = service.admin_detailcalendar(pk_calendar_no);
-			mav.addObject("map", map);
-			mav.setViewName("admin/admin_detailcalendar");
-		} catch (NumberFormatException e) {
-			mav.setViewName("admin/admin_page");
-		}
-		
-		return mav;
-	}
-
-	// 일정삭제하기
-	@ResponseBody
-	@PostMapping("admin_deletecalendar")
-	public String admin_deletecalendar(HttpServletRequest request) throws Throwable {
-		
-		String pk_calendar_no = request.getParameter("pk_calendar_no");
-				
-		int n = service.admin_deletecalendar(pk_calendar_no);
-		
-		JSONObject jsObj = new JSONObject();
-		jsObj.put("n", n);
-			
-		return jsObj.toString();
-	}
-	
-	// 일정 수정하기 폼
-	@PostMapping("admin_editcalendar")
-	public ModelAndView admin_editcalendar(ModelAndView mav, HttpServletRequest request) {
-		
-		String pk_calendar_no= request.getParameter("pk_calendar_no");
-   		
-		try {
-			Integer.parseInt(pk_calendar_no);
-			
-			Map<String,String> map = service.admin_detailcalendar(pk_calendar_no);
-
-			mav.addObject("map", map);
-			
-			mav.setViewName("admin/admin_editcalendar");
-
-		} catch (NumberFormatException e) {
-			mav.setViewName("admin/admin_page");
-		}
-		
-		return mav;		
-	}
-	
-	// 일정 수정하기 
-	@PostMapping("admin_editcalendar_end")
-	public ModelAndView admin_editcalendar_end(CalendarVO cvo, HttpServletRequest request, ModelAndView mav) {
-		
-		try {
-			 int n = service.admin_editcalendar_end(cvo);
-			 
-			 if(n==1) {
-				 mav.addObject("message", "일정을 수정하였습니다.");
-				 mav.setViewName("admin/admin_page");
-			 }
-			 else {
-				 mav.addObject("message", "일정 수정에 실패하였습니다.");
-				 mav.setViewName("admin/admin_page");
-			 }
-		} catch (Throwable e) {	
-			e.printStackTrace();
-			mav.setViewName("admin/admin_page");
-		}
-			
-		return mav;
-	}
-
-	// 검색 기능
-	@GetMapping("admin_searchcalendar")
-	public ModelAndView admin_searchcalendar(HttpServletRequest request, ModelAndView mav) { 
-		
-		List<Map<String,String>> calendar_list = null;
-		
-		String calendar_startdate = request.getParameter("calendar_startdate");
-		String calendar_enddate = request.getParameter("calendar_enddate");
-		String searchType = request.getParameter("searchType");
-		String searchWord = request.getParameter("searchWord");
-		
-		if(searchType==null || (!"calendar_title".equals(searchType) && !"calendar_content".equals(searchType))) {  
-			searchType="";
-		}
-		
-		if(searchWord==null || "".equals(searchWord) || searchWord.trim().isEmpty()) {  
-			searchWord="";
-		}
-		
-		if(calendar_startdate==null || "".equals(calendar_startdate)) {
-			calendar_startdate="";
-		}
-		
-		if(calendar_enddate==null || "".equals(calendar_enddate)) {
-			calendar_enddate="";
-		}
-
-		Map<String, String> paraMap = new HashMap<String, String>();
-		paraMap.put("calendar_startdate", calendar_startdate);
-		paraMap.put("calendar_enddate", calendar_enddate);
-		paraMap.put("searchType", searchType);
-		paraMap.put("searchWord", searchWord);
-		
-		System.out.println("calendar_startdate: " + calendar_startdate);
-		System.out.println("calendar_enddate: " + calendar_enddate);
-		System.out.println("searchType: " + searchType);
-		System.out.println("searchWord: " + searchWord);
-		
-		calendar_list = service.admin_searchcalendar(paraMap);
-
-		mav.addObject("paraMap", paraMap);
-		// 검색대상 컬럼과 검색어를 유지시키기 위한 것임.
-		
-		String listgobackURL_schedule = MyUtil.getCurrentURL(request);
-		
-		mav.addObject("listgobackURL_schedule",listgobackURL_schedule);
-		mav.addObject("calendar_list", calendar_list);
-		mav.setViewName("admin/admin_searchcalendar");
-
-		return mav;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

@@ -1,0 +1,53 @@
+with
+e as
+(
+    select employee_id ,department_id, nvl(salary + (salary * commission_pct), salary) * 12 as year_salary
+    , RANK() OVER(PARTITION BY department_id ORDER BY NVL(salary + (salary * commission_pct), salary) * 12 DESC) AS dep_RANK 
+    , case when sysdate - to_date( to_char(sysdate, 'yyyy') || substr(jubun, 3, 4), 'yyyymmdd') >= 0
+              then extract(year from sysdate) - to_number( case when substr(jubun, 7, 1) in('1','2') then '19' else '20' end || substr(jubun, 1, 2) ) 
+              else extract(year from sysdate) - to_number( case when substr(jubun, 7, 1) in('1','2') then '19' else '20' end || substr(jubun, 1, 2) ) - 1 end 
+              as age
+    , case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end as gender
+    , first_name || ' ' || last_name as name
+    , rank() over(order by to_char(nvl(salary + (salary * commission_pct), salary) * 12, '999,999')desc) as RANK
+    from employees
+)
+,
+p as
+(
+    select department_id, avg(nvl(salary + (salary * commission_pct), salary) * 12) as salary_avg
+    from employees     
+    group by department_id
+) 
+,
+d AS
+(
+    SELECT  departments.department_id
+        ,   first_name || ' ' || last_name AS manager_name
+        ,   department_name
+        ,   locations.state_province || ' ' || locations.city || ' ' || locations.street_address AS location
+    FROM    departments JOIN locations 
+                ON departments.location_id = locations.location_id
+            JOIN employees
+                ON departments.manager_id = employees.employee_id
+)
+select d.department_name as 부서번호
+        , d.department_name as 부서명
+        , d.location AS 부서주소
+        , d.manager_name as 부서장성명
+        , e.employee_id AS 사원번호
+        , e.name as 사원명
+        , e.gender AS 성별
+        , e.age AS 만나이
+        , to_char(e.year_salary, '999,999') as 연봉
+        , to_char(e.year_salary * taxpercent, '99,999') as 연봉소득세액       
+        , to_char(e.year_salary - p.salary_avg, '999,999') as 부서내연봉평균차액
+        , e.dep_rank AS 부서내연봉등수 
+        , e.rank as 전체연봉등수
+from d right join e 
+ON e.department_id = d.department_id
+join tbl_taxindex t
+on e.year_salary between lowerincome and highincome
+join p 
+on nvl( e.department_id, -9999) = nvl(p.department_id, -9999)
+order by 11;
