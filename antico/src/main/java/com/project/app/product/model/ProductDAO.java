@@ -80,11 +80,8 @@ public interface ProductDAO {
 	// 상품 삭제 관련 부분
 	int delete(String pk_product_no); 
 	
-<<<<<<< HEAD
-=======
 	// 검색어에 맞는 시세 조회
 	List<Map<String, String>> getMargetPrice(String search_price);
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 	// 모든 상품 조회 해오기(이미지, 지역)
 	List<Map<String, String>> getProductList(String sort_views_week);
@@ -95,8 +92,5 @@ public interface ProductDAO {
 	// 경매 상품 이미지 등록
 	int insertAuctionProductImage(List<Map<String, String>> fileList, String c_product_no);
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 }

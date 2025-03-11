@@ -1095,8 +1095,6 @@ span.sold_out_text {
    				}
    			});
 	   	});
-<<<<<<< HEAD
-=======
 
 		// 채팅 버튼 이벤트 등록
 		$("button#join_bidding").click(function() {
@@ -1124,7 +1122,6 @@ span.sold_out_text {
 				}
 			});
 		});
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 		
 		
 	}); // end of $(document).ready(function()

@@ -204,10 +204,7 @@
 		where rnum between #{paging_dto.first_row} and #{paging_dto.last_row}
 	</select>
 
-<<<<<<< HEAD
-=======
 	<!-- 상품상세보기 -->
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	<resultMap id="getProductInfoMap" type="HashMap">
 	    <result property="pk_product_no" column="pk_product_no" javaType="String"/>
 	    <result property="fk_member_no" column="fk_member_no" javaType="String"/>
@@ -252,15 +249,12 @@
 	    AND I.prod_img_is_thumbnail = 1
 	</select>
 
-<<<<<<< HEAD
-=======
 	<!-- 상품삭제하기 -->
 	<delete id="admin_deleteproduct" parameterType="String">
 		delete from tbl_product 
 		where pk_product_no = #{pk_product_no}
 	</delete>
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	<!-- 일별 방문자 차트 --> 
 	<resultMap type="HashMap" id="visitantchat_map">
 	   <result property="login_history_date" 	column="login_history_date" 	javaType="String" />
@@ -316,8 +310,6 @@
 		order by percentage desc
 	</select>
 
-<<<<<<< HEAD
-=======
 	<!-- 캘린더 일정 등록하기 -->
 	<insert id="admin_registercalendar" parameterType="HashMap">
 		insert into tbl_calendar(pk_calendar_no, calendar_startdate, calendar_enddate, calendar_title, calendar_place, calendar_content, fk_member_no) 
@@ -383,7 +375,6 @@
 	</select>
 
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 </mapper>
 
 

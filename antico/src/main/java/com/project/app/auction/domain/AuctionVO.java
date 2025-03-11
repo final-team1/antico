@@ -26,12 +26,8 @@ public class AuctionVO {
 	
 	private String auction_startdate; // 경매 시작시간
 	
-<<<<<<< HEAD
-	private String auction_enddate; // 경매 마감시간 
-=======
 	private String auction_enddate; // 경매 마감시간
 
 	private String auction_closed;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 }

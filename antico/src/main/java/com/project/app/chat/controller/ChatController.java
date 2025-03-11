@@ -53,20 +53,6 @@ public class ChatController {
 	@ResponseBody
 	public ModelAndView showChatMainPage(ModelAndView mav) {
 		MemberVO login_member_vo = detail.MemberDetail(); // 현재 사용자 VO
-<<<<<<< HEAD
-		
-		String pk_member_no = login_member_vo.getPk_member_no(); // 현재 로그인 사용자 일련번호
-		
-		// 현재 로그인 사용자가 참여하고 있는 채팅방 목록 불러오기
-		List<ChatRoomRespDTO> chatRoomRespDTOList = chatService.getChatRoomList(pk_member_no);
-		
-		mav.addObject("chatRoomRespDTOList", chatRoomRespDTOList);
-		mav.addObject("login_member_vo", login_member_vo); // 로그인 사용자 일련번호
-		
-		mav.setViewName("chat/chat_main");
-		return mav;
-	}
-=======
 		mav.addObject("login_member_vo", login_member_vo); // 로그인 사용자 일련번호
 		mav.setViewName("chat/chat_main");
 		return mav;
@@ -80,7 +66,6 @@ public class ChatController {
 		List<ChatRoomRespDTO> chatRoomRespDTOList = chatService.getChatRoomList(login_member_vo.getPk_member_no());
 		return chatRoomRespDTOList;
 	}
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 	/*
 	 * 1대1 채팅 채팅방 개설

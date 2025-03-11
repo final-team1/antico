@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
-=======
 import org.json.JSONArray;
 import org.json.JSONObject;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,25 +18,17 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-<<<<<<< HEAD
-import com.project.app.admin.service.AdminService;
-import com.project.app.common.FileManager;
-=======
 import com.project.app.admin.domain.CalendarVO;
 import com.project.app.admin.service.AdminService;
 import com.project.app.common.FileManager;
 import com.project.app.common.MyUtil;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import com.project.app.common.PagingDTO;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
 import jakarta.servlet.http.HttpServletRequest;
-<<<<<<< HEAD
-=======
 import jakarta.servlet.http.HttpServletResponse;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -344,9 +333,6 @@ public class AdminController {
 	    mav.setViewName("admin/admin_product_detail");
 	    return mav;
 	}
-<<<<<<< HEAD
-		
-=======
 	
 	// 상품삭제하기
 	@ResponseBody
@@ -363,7 +349,6 @@ public class AdminController {
 		return jsObj.toString();
 	}
 	
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	// 관리자 통계페이지
 	@GetMapping("admin_statistics")
 	public ModelAndView admin_statistics(ModelAndView mav) {		
@@ -420,8 +405,6 @@ public class AdminController {
 		
 		return admin_product_total_views;
 	}
-<<<<<<< HEAD
-=======
 
 	// 캘린더를 불러오는것
 	@ResponseBody
@@ -649,7 +632,6 @@ public class AdminController {
 	
 	
 	
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 	
 	

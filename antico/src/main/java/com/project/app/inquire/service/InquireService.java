@@ -3,11 +3,8 @@ package com.project.app.inquire.service;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
-=======
 import org.springframework.web.multipart.MultipartFile;
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import com.project.app.comment.domain.CommentVO;
 import com.project.app.inquire.domain.InquireVO;
 

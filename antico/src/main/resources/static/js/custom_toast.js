@@ -92,8 +92,6 @@ function errorHandler(request, status, error) {
 	// 사이드 탭 닫기
 	closeSideTab();
 }
-<<<<<<< HEAD
-=======
 
 // ajax 공통 에러 핸들러 함수 및 토스트 처리
 function errorHandlerWithNoClose(request, status, error) {
@@ -105,4 +103,3 @@ function errorHandlerWithNoClose(request, status, error) {
 
 	showAlert("error", message);
 }
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)

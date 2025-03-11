@@ -6,10 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
-=======
 import com.project.app.admin.domain.CalendarVO;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import com.project.app.admin.model.AdminDAO;
 import com.project.app.common.FileManager;
 import com.project.app.member.domain.MemberVO;
@@ -134,8 +131,6 @@ public class AdminService_imple implements AdminService {
 		return product_vo;
 	}
 
-<<<<<<< HEAD
-=======
 	// 상품삭제하기
 	@Override
 	public int admin_deleteproduct(String pk_product_no) {
@@ -143,7 +138,6 @@ public class AdminService_imple implements AdminService {
 		return n;
 	}
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	// 일별 방문자 차트
 	@Override
 	public List<Map<String, String>> admin_visitantchat() {
@@ -179,8 +173,6 @@ public class AdminService_imple implements AdminService {
 		return admin_product_total_views;
 	}
 
-<<<<<<< HEAD
-=======
 	// 캘린더 일정 등록하기
 	@Override
 	public int admin_registercalendar(Map<String, String> paraMap) {
@@ -225,7 +217,6 @@ public class AdminService_imple implements AdminService {
 
 
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 
 

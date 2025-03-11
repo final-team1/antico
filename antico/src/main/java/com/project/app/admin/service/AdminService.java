@@ -3,10 +3,7 @@ package com.project.app.admin.service;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
-=======
 import com.project.app.admin.domain.CalendarVO;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
@@ -52,12 +49,9 @@ public interface AdminService {
 	// 상품 상세정보
 	Map<String, String> admin_product_detail(Map<String, String> paraMap);
 
-<<<<<<< HEAD
-=======
 	// 상품삭제하기
 	int admin_deleteproduct(String pk_product_no);
 	
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	// 일별 방문자 차트
 	List<Map<String, String>> admin_visitantchat();
 
@@ -73,8 +67,6 @@ public interface AdminService {
 	// 카테고리별 상품 조회수	
 	List<Map<String, String>> admin_product_total_views();
 
-<<<<<<< HEAD
-=======
 	// 캘린더 일정 등록하기
 	int admin_registercalendar(Map<String, String> paraMap);
 
@@ -96,7 +88,6 @@ public interface AdminService {
 
 
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 
 
 

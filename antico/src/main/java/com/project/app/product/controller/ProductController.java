@@ -377,8 +377,6 @@ public class ProductController {
 	}
 	
 	
-<<<<<<< HEAD
-=======
 	// 시세조회 페이지	
 	@GetMapping("market_price")
 	public ModelAndView marketPriceCheck(ModelAndView mav) {
@@ -398,7 +396,6 @@ public class ProductController {
 		return marketPrice;
 	}
 	
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 
 } // end of public class ProductController

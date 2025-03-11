@@ -413,8 +413,6 @@ public class ProductService_imple implements ProductService {
 
 	
 	
-<<<<<<< HEAD
-=======
 	// 검색어에 맞는 시세 조회
 	@Override
 	public List<Map<String, String>> getMargetPrice(String search_price) {
@@ -424,7 +422,6 @@ public class ProductService_imple implements ProductService {
 
 	
 	
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	//모든 상품 조회 해오기(이미지, 지역)
 	@Override
 	public List<Map<String, String>> getProductList(String sort_views_week) {
@@ -441,8 +438,6 @@ public class ProductService_imple implements ProductService {
 	public List<ProductChatDTO> getProdcutSummaryList(List<String> pk_product_no_list) {
 		return productDAO.selectProductSummaryList(pk_product_no_list);
 	}
-<<<<<<< HEAD
-=======
 
 	/*
 	 * 경매 상품 등록
@@ -460,7 +455,6 @@ public class ProductService_imple implements ProductService {
 	public int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo) {
 		return productDAO.insertAuctionProductImage(fileList, cProductNo);
 	}
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 
 
 }

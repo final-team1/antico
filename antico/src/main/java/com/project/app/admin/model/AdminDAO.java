@@ -5,10 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-<<<<<<< HEAD
-=======
 import com.project.app.admin.domain.CalendarVO;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
 
@@ -72,8 +69,6 @@ public interface AdminDAO {
 	// 카테고리별 상품 조회수
 	List<Map<String, String>> admin_product_total_views();
 
-<<<<<<< HEAD
-=======
 	// 캘린더 일정 등록하기
 	int admin_registercalendar(Map<String, String> paraMap);
 
@@ -95,7 +90,6 @@ public interface AdminDAO {
 	// 검색 기능
 	List<Map<String, String>> admin_searchcalendar(Map<String, String> paraMap);
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 
 
 

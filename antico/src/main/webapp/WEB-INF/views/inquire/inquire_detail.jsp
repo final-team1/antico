@@ -11,11 +11,8 @@
         <span class="inquire-label">문의 내용 :</span>
         <span class="inquire-text">${requestScope.inquirevo.inquire_content}</span>
         <span class="inquire-date">${requestScope.inquirevo.inquire_regdate}</span>
-<<<<<<< HEAD
-=======
         &nbsp;|&nbsp;
         <span class="inquire-date"><a href="${requestScope.inquirevo.inquire_filename}">${requestScope.inquirevo.inquire_orgfilename}</a></span>
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
     </div>
 </div>
 
@@ -32,11 +29,8 @@
 		        <span class="answer-date">${comment.comment_regdate}</span>
 		        &nbsp;|&nbsp;
 		        <span class="answer-date">${comment.member_name}</span>
-<<<<<<< HEAD
-=======
 		        &nbsp;|&nbsp;
 		        <span class="answer-date"><a href="${comment.comment_filename}">${comment.comment_orgfilename}</a></span>
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 		    </div>    
 		</div>
 </c:forEach>

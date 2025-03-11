@@ -37,12 +37,6 @@
             가격:&nbsp;<fmt:formatNumber value="${requestScope.product_vo.product_price}" pattern="#,###" /> 원
         </div>
 
-<<<<<<< HEAD
-        <button class="delete-button">삭제하기</button>
-    </div>
-</div>
-
-=======
         <button class="delete-button" onclick="delcalendar('${requestScope.product_vo.pk_product_no}')">삭제하기</button>
     </div>
 </div>
@@ -78,7 +72,6 @@
 	};
 </script>
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 <style>
     .container {
         display: flex;

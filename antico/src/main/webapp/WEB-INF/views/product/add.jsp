@@ -343,11 +343,7 @@ span.auction_warning {
 			<span class="cm_span_title">판매 유형</span>
 			<div class="button">
 				<input type="button" class="general" value="일반판매" data-value="0" />
-<<<<<<< HEAD
-				<input type="button" class="auction" value="경매" data-value="3" />
-=======
 				<input type="button" class="auction" value="경매" data-value="1" />
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 				<input type="hidden" id="prod_sale_type_value" name="product_sale_type" value="" />
 				
 				<input type="datetime-local" class="auction_start_date" name="auction_start_date" placeholder="경매 시작 날짜" required />

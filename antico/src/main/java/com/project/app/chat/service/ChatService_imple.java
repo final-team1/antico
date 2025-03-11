@@ -183,48 +183,4 @@ public class ChatService_imple implements ChatService {
 		updatedChats = customChatRoomRepository.updateUnReadCount(chatId, roomId, memberNo);
 		return updatedChats;
 	}
-<<<<<<< HEAD
-
-	/*
-	 	경매 시작 시 판매자만 존재하는 경매 채팅방 생성
-	 	map
-	 	pk_product_no : 경매 상품 일련번호
-		pk_member_no :  판매자 일련번호
-		member_name : 판매자 이름
-		pk_auction_no : 경매 일련번호
-
-	 */
-	@Override
-	public ChatRoom createAuctionChatRoom(Map<String, String> product_map) {
-		// 상품 판매자 정보 불러오기 (이름, 일련번호, 점수)
-		String seller_no = product_map.get("pk_member_no");
-
-		if (StringUtils.isBlank(seller_no)) {
-			log.error("[ERROR] : 채팅 경매 상품 정보 조회 실패");
-			throw new BusinessException(ExceptionCode.CREATE_CHATROOM_FAILD);
-		}
-
-		// 이미 경매 채팅방이 생성되었는지 확인
-		Optional<ChatRoom> existRoom = chatRoomRepository.findChatRoomByProductNoAndParticipant(product_map.get("pk_product_no"), seller_no);
-		if (existRoom.isPresent()) {
-			return existRoom.get();
-		}
-
-		// 채팅 참여자 회원 번호, 회원 이름
-		List<Participant> participants = new ArrayList<>();
-
-		// 판매자
-		Participant seller = Participant.createParticipant(seller_no, product_map.get("member_name"));
-		participants.add(seller);
-
-		ChatRoom chatRoom = ChatRoom.builder()
-			.participants(participants)
-			.productNo(product_map.get("pk_product_no"))
-			.regdate(LocalDateTime.now())
-			.build();
-
-		return chatRoomRepository.save(chatRoom);
-	}
-=======
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 }

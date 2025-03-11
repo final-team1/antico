@@ -1,17 +1,5 @@
 package com.project.app.auction.controller;
 
-<<<<<<< HEAD
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.project.app.auction.service.AuctionService;
-import com.project.app.product.domain.ProductImageVO;
-import com.project.app.product.domain.ProductVO;
-
-import lombok.RequiredArgsConstructor;
-=======
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +33,11 @@ import com.project.app.product.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 
 /*
  * 경매 기능 컨트롤러
  */
-<<<<<<< HEAD
-=======
 @Slf4j
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/auction/*")
@@ -61,27 +45,14 @@ public class AuctionController {
 	
 	private final AuctionService auctionService;
 
-<<<<<<< HEAD
-=======
 	private final GetMemberDetail getMemberDetail;
 
 	private final ProductService productService;
 
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	/*
 	 * 경매 상품 등록
 	 */
 	@PostMapping("add")
-<<<<<<< HEAD
-	public ModelAndView addAuction(ProductVO productvo, ProductImageVO product_imgvo, ModelAndView mav) {
-	      // 경매 상품 등록 완료 후 상품 일련번호 반환 
-	      String product_no = auctionService.addAuctionProduct(productvo, product_imgvo);
-
-	      mav.addObject("product_no", product_no); // 상품 번호 전달
-	      mav.setViewName("redirect:/product/add_success"); // 상품 등록 완료 페이
-	      return mav;
-	}
-=======
 	public ModelAndView addAuction(ProductVO productVO, ProductImageVO productImageVO, ModelAndView mav) {
 	      // 경매 상품 등록 완료 후 상품 일련번호 반환 
 	      String productNo = auctionService.addAuctionProduct(productVO, productImageVO);
@@ -210,6 +181,5 @@ public class AuctionController {
 
 		return ResponseEntity.ok().build();
 	}
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	
 }

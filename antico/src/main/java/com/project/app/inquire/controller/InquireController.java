@@ -80,11 +80,7 @@ public class InquireController {
 		
 		inquirevo.setFk_member_no(pk_member_no);
 		
-<<<<<<< HEAD
-		MultipartFile attach = inquirevo.getAttach();
-=======
 		MultipartFile attach = mrequest.getFile("attach");
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 		
 		int n = 0;
 

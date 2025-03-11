@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-
-<%
-	String ctxPath = request.getContextPath();
-%>
-
-<jsp:include page=".././header/header.jsp" />
-
-<div style="width: 70%; margin: 0 auto;">
-
-	<jsp:include page=".././admin/admin_sidemenu.jsp" />
-	
-	<div>
-		
-	</div>
-</div>
-
-<jsp:include page=".././footer/footer.jsp" />
-
-<script type="text/javascript">
-	$(document).ready(function() {
-
-	});
-</script>
-	
-<style>
-
-=======
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -259,5 +229,4 @@
         border-radius: 10px;
         overflow: hidden;
     }
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 </style>

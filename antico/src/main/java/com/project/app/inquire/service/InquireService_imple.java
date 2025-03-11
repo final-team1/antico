@@ -8,11 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.app.comment.domain.CommentVO;
-<<<<<<< HEAD
-=======
 import com.project.app.common.FileType;
 import com.project.app.component.S3FileManager;
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.model.InquireDAO;
 
@@ -22,12 +19,9 @@ public class InquireService_imple implements InquireService {
 	@Autowired
 	private InquireDAO dao;
 
-<<<<<<< HEAD
-=======
 	@Autowired
 	private S3FileManager s3FileManager;
 	
->>>>>>> 753c43e (Merge branch 'dev' of https://github.com/wogurwogur/antico into dev)
 	// 문의 내역 조회
 	@Override
 	public List<InquireVO> inquire_list() {
