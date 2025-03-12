@@ -98,6 +98,7 @@ input.searchBar {
     justify-content: center; /* 가운데 정렬 */
     align-items: center;
     padding: 20px 20px 0 20px;
+    position: relative;  
 }
 
 .searchBest{
@@ -380,6 +381,74 @@ form.search {
 
 
 
+
+/* 검색 결과 전체 틀 */
+div#result_container{
+	margin-top: 3px;
+	position: absolute;
+    justify-content:center; 
+    align-items:center; 
+    height: 450px; 
+    top: 100%;
+    left: 20px;
+   	width: calc(100% - 40px);
+    z-index: 1000;
+   	background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding: 0px 20px; 
+    display: none;
+    overflow: hidden;
+}
+
+/* 검색 결과 버튼 */
+div#button_result {
+/* 	padding: 0px 20px;  */ 
+	display: flex; 
+	heigth: 100px; 
+	width: 100%; 
+	justify-content: space-between;
+}
+
+/* 상품 버튼 */
+button#prouct_btn {
+	width: 100%; 
+	height: 50px;
+	border: none;
+	background-color: white;
+}
+
+/* 판매자 버튼 */
+button#seller_btn {
+	width: 100%; 
+	height: 50px;
+	border: none;
+	background-color: white;
+}
+
+
+/* 각 버튼별 결과 */
+div#search_result {
+	width: 100%;
+	height: 400px;
+	overflow-y: auto;   	/* 내부 스크롤 활성화 */
+    scrollbar-width: none;	/* 스크롤 감추기 */
+    padding: 10px 0px;	
+}
+
+span.result {
+    display: inline-block;
+    width: 100%;
+    padding: 5px 0px;
+    font-size: 12pt;
+}
+
+span.result:hover {
+	background: #f5f5f5;
+}
+
+
+
 /* 카테고리 버튼 시작 */
 /* 전체 드롭다운 */
 div#dropdown{ 
@@ -395,7 +464,6 @@ div#category_dropdown {
     background: white;
     width: 220px; /* 두 개의 카테고리 영역 포함 */
     height: 480px;
-
     overflow-y: auto;
     scrollbar-width: none;
 }
@@ -476,11 +544,24 @@ div.category_detail_container {
 			<div>
 				<%-- 상품 검색 시작 --%>
 				<form name="searchFrm" class="search">
-					<div class="inputContainer" style="">
+					<div class="inputContainer">
 			        	<input type="text" name="search_prod" class="searchBar">
 			        	<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>  
+			        	
+					    <div id="result_container">
+				      		 <div id="button_result">
+				      			 <button id="prouct_btn" type="button">상품</button>
+				      			 <button id="seller_btn" type="button">판매자</button>
+				      	 	 </div>
+				      	 	 <div id="search_result">
+				      	 	 </div>
+				         </div>
 			        </div>
 		        </form>
+		        <%-- 상품 검색 끝 --%>
+		        
+
+		        
 		        <div class="searchBest mt-1 he-3 d-inline-block w-100" style="display:inline;">
 		        		<button type="button" class="btnBest mr-1"><span style="font-size: 8pt; vertical-align: middle;">&lt;</span></button>
 		        		<button type="button" class="btnBest mr-1"><span style="font-size: 8pt;">&gt;</span></button>
@@ -731,12 +812,224 @@ $(document).ready(function(){
 		
 	});
 	
-	// 상품 검색 창 엔터를 친 경우 검색하러 간다.
-   	$("input:text[name='search_prod']").bind("keyup", function(e){
+	
+	
+	/* 검색관련 시작 */
+	let search_type = "product";  // 기본값: 상품 검색
+	
+	// 상품 검색 창 클릭시 자동 완성 검색어 가져오기 및 엔터치는 경우 검색하러 가기
+   	$("input:text[name='search_prod']").on("keyup", function(e){
+		$("div#result_container").css("display", "block");
+		
+	    if (search_type !== "seller") {
+	        $("button#prouct_btn").css("border-bottom", "solid 2px black");
+	        $("button#seller_btn").css("border-bottom", "none");
+	    }
+	
+		
 	   	if(e.keyCode == 13){ // 엔터를 했을 경우
 		   	goSearch();
 	   	}
-	})
+		
+		// 검색어에서 공백을 제거한 길이를 알아온다.
+		const word_length = $(this).val().trim().length;
+		
+		// 검색어가 공백이거나 검색어 입력후 백스페이스키를 눌러서 검색어를 모두 지우면 검색된 내용이 안 나오도록 해야 한다. 
+	    if(word_length == 0) {
+		    $("div#result_container").hide();
+		    
+		    search_type = "product";  // 다시 기본값을 상품 유형으로 변경
+	        $("button#prouct_btn").css("border-bottom", "solid 2px black");
+	        $("button#seller_btn").css("border-bottom", "none");
+		   
+	    }
+	    else {
+	    	
+	    	$.ajax({
+	    		url:"<%= ctxPath%>/product/product_search",
+	    		type:"get",
+	    		data:{"search_prod":$("input[name='search_prod']").val()},
+	    		dataType:"json",
+	    		success:function(json){
+					// console.log(JSON.stringify(json));
+					
+					let v_html = ``;
+					
+					if(json.length > 0) { // 검색된 데이터가 있는 경우에
+					
+						$.each(json, function(index, item){
+						   const pk_product_no = item.pk_product_no; // 상품번호 가져오기
+						   const product_title = item.product_title; // 상품명 가져오기
+						   
+						   const idx = product_title.indexOf($("input[name='search_prod']").val());
+						   const len = $("input[name='search_prod']").val().length;
+			               
+						   const result = product_title.substring(0, idx) + "<span style='color:#0dcc5a;'>"+ product_title.substring(idx, idx+len)+"</span>" + product_title.substring(idx+len);
+						   
+			               v_html += `<span style='width: 100%; cursor:pointer;' class='result prd' data-product-no='\${pk_product_no}' >\${result}</span><br>`;
+
+						});
+  					   
+					}
+					else {
+						v_html = "<span style='display: block; text-align: center; padding: 5px 0px;'>검색결과가 없습니다.</span>";  // 결과가 없으면 "데이터가 없습니다." 메시지 표시
+					}
+					
+					 $("div#search_result").html(v_html).show();
+	    		},
+	    		error: function(request, status, error){
+	    			errorHandler(request, status, error);
+				} 
+	    		
+	    	}); // end of $.ajax		
+	    }
+
+
+	}) // end of $("input:text[name='search_prod']").on("keyup", function(e){
+	
+	
+	// 상품 버튼 클릭 시
+	$("button#prouct_btn").on("click", function(){
+		$("button#prouct_btn").css("border-bottom", "solid 2px black"); // 밑에 테두리 추가
+		$("button#seller_btn").css("border-bottom", "none");			// 판매자 버튼 테두리 제거
+		
+		search_type = "product";
+		
+		// 검색어에서 공백을 제거한 길이를 알아온다.
+		const word_length = $("input:text[name='search_prod']").val().trim().length;
+		
+		// 검색어가 공백이거나 검색어 입력후 백스페이스키를 눌러서 검색어를 모두 지우면 검색된 내용이 안 나오도록 해야 한다. 
+	    if(word_length == 0) {
+		    $("div#result_container").hide();
+		   
+	    }
+	    else {
+	    	
+	    	$.ajax({
+	    		url:"<%= ctxPath%>/product/product_search",
+	    		type:"get",
+	    		data:{"search_prod":$("input[name='search_prod']").val()},
+	    		dataType:"json",
+	    		success:function(json){
+					// console.log(JSON.stringify(json));
+					
+					let v_html = ``;
+					
+					if(json.length > 0) { // 검색된 데이터가 있는 경우에
+					
+						$.each(json, function(index, item){
+						   const pk_product_no = item.pk_product_no; // 상품번호 가져오기
+						   const product_title = item.product_title; // 상품명 가져오기
+						   
+						   const idx = product_title.indexOf($("input[name='search_prod']").val());
+						   const len = $("input[name='search_prod']").val().length;
+			               
+						   const result = product_title.substring(0, idx) + "<span style='color:#0dcc5a;'>"+ product_title.substring(idx, idx+len)+"</span>" + product_title.substring(idx+len);
+						   
+			               v_html += `<span style='width: 100%; cursor:pointer;' class='result prd' data-product-no='\${pk_product_no}' >\${result}</span><br>`;
+
+						});
+  					   
+					}
+					else {
+						v_html = "<span style='display: block; text-align: center; padding: 5px 0px;'>검색결과가 없습니다.</span>";  // 결과가 없으면 "데이터가 없습니다." 메시지 표시
+					}
+					
+					 $("div#search_result").html(v_html).show();
+	    		},
+	    		error: function(request, status, error){
+	    			errorHandler(request, status, error);
+				} 
+	    		
+	    	}); // end of $.ajax		
+	    }		
+		
+	});
+	
+	
+	// 판매자 버튼 클릭 시
+	$("button#seller_btn").on("click", function(){
+		$("button#seller_btn").css("border-bottom", "solid 3px black"); // 밑에 테두리 추가
+		$("button#prouct_btn").css("border-bottom", "none");			// 상품 버튼 테두리 제거
+		
+		
+		search_type = "seller";
+		
+		// 검색어에서 공백을 제거한 길이를 알아온다.
+		const word_length = $("input:text[name='search_prod']").val().trim().length;
+		
+		// 검색어가 공백이거나 검색어 입력후 백스페이스키를 눌러서 검색어를 모두 지우면 검색된 내용이 안 나오도록 해야 한다. 
+	    if(word_length == 0) {
+		   $("div#result_container").hide(); 
+	    }
+	    else {
+	    	
+	    	$.ajax({
+	    		url:"<%= ctxPath%>/product/seller_search",
+	    		type:"get",
+	    		data:{"search_prod":$("input[name='search_prod']").val()},
+	    		dataType:"json",
+	    		success:function(json){
+					// console.log(JSON.stringify(json));
+					
+					let v_html = ``;
+					
+					if(json.length > 0) { // 검색된 데이터가 있는 경우에
+					
+						$.each(json, function(index, item){
+						   const pk_member_no = item.pk_member_no; // 회원번호 가져오기
+						   const member_name = item.member_name;   // 상품명 가져오기
+						   
+
+						   const idx = member_name.indexOf($("input[name='search_prod']").val());
+						   const len = $("input[name='search_prod']").val().length;
+			               
+						   const result = member_name.substring(0, idx) + "<span style='color:#0dcc5a;'>"+ member_name.substring(idx, idx+len)+"</span>" + member_name.substring(idx+len);
+						   
+			               v_html += `<span style='width: 100%; cursor:pointer;' class='result seller' data-member-no='\${pk_member_no}' >\${result}</span><br>`;
+
+						});
+  					   
+					}
+					else {
+						v_html = "<span style='display: block; text-align: center; padding: 5px 0px;'>검색결과가 없습니다.</span>";  // 결과가 없으면 "데이터가 없습니다." 메시지 표시
+					}
+					
+					 $("div#search_result").html(v_html).show();
+	    		},
+	    		error: function(request, status, error){
+	    			errorHandler(request, status, error);
+				} 
+	    		
+	    	}); // end of $.ajax		
+	    }
+		
+	}); // end of $("button#seller_btn").on("click", function()
+	
+			
+	// 검색 시 검색된 상품을 클릭 할 경우 해당 상품 페이지로 이동
+    $(document).on("click", "span.prd", function(e){
+    	let pk_product_no = $(this).data("product-no");
+    	location.href = '<%= ctxPath%>/product/prod_detail/' + pk_product_no;
+    });
+	
+	
+	// 검색 시 검색된 판매자 클릭 할 경우 해당 판매자 페이지로 이동
+    $(document).on("click", "span.seller", function(e){
+    	let pk_member_no = $(this).data("member-no");
+    	location.href = '<%= ctxPath%>/mypage/mypagemain/' + pk_member_no;    	
+    });
+	
+	
+	// 다른 곳을 클릭하면 result_container를 숨김
+	$(document).bind("click", function(e) {
+	    // 클릭한 요소가 input:text[name='search_prod'] 또는 div#result_container이 아니면 숨김
+	    if (!$(e.target).closest("input:text[name='search_prod']").length && 
+	        !$(e.target).closest("div#result_container").length) {
+	        $("div#result_container").css("display", "none");
+	    }
+	});
+   	/* 검색관련 끝 */
 	
 	
 	/* 상품 카테고리 시작 */
@@ -824,4 +1117,6 @@ function myPage() {
 
 
 </script>
+
+
 

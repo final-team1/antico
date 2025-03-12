@@ -78,6 +78,30 @@ public class ProductService_imple implements ProductService {
 	}
 	
 	
+	// 상품 올린 회원에 대한 거래 횟수 알아오기
+	@Override
+	public String getTradeCntOneMember(String fk_member_no2) {
+		String trade_cnt = productDAO.getTradeCntOneMember(fk_member_no2);
+		return trade_cnt;
+	}
+
+	
+	// 상품 올린 회원에 대한 후기 수 알아오기
+	@Override
+	public String getReviewCntOneMember(String fk_member_no2) {
+		String review_cnt = productDAO.getReviewCntOneMember(fk_member_no2);
+		return review_cnt;
+	}
+	
+	
+	// 상품 올린 회원에 대한 단골 수 알아오기
+	@Override
+	public String getRegularCustomerCnt(String fk_member_no2) {
+		String regular_customer_cnt = productDAO.getRegularCustomerCnt(fk_member_no2);
+		return regular_customer_cnt;
+	}
+	
+	
 	// 특정 회원에 대한 다른 상품 정보 가져오기
 	@Override
 	public List<Map<String, String>> getProdcutOneMember(String fk_member_no2, String pk_product_no) {
@@ -420,6 +444,20 @@ public class ProductService_imple implements ProductService {
 		return marketPrice;
 	}
 
+	// 메인 검색창에서 상품 검색 시 자동글 완성하기 및 정보 가져오기
+	@Override
+	public List<Map<String, Object>> productSearch(Map<String, String> paraMap) {
+		List<Map<String, Object>> product_list = productDAO.productSearch(paraMap);
+		return product_list;
+	}
+	
+
+	// 메인 검색창에서 판매자 검색 시 자동글 완성하기 및 정보 가져오기
+	@Override
+	public List<Map<String, Object>> sellerSearch(Map<String, String> paraMap) {
+		List<Map<String, Object>> seller_list = productDAO.sellerSearch(paraMap);
+		return seller_list;
+	}
 	
 	
 	//모든 상품 조회 해오기(이미지, 지역)
