@@ -182,9 +182,9 @@
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},
-			error : function(e) {
-				console.log(e);
-				alert("불러오기 실패");
+			error : function(request, status, error) {
+				errorHandler(JSON.parse(request.responseText).message);
+				
 				closeSideTab();
 			}
 		});
@@ -200,9 +200,9 @@
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},
-			error : function(e) {
-				console.log(e);
-				alert("불러오기 실패");
+			error : function(request, status, error) {
+				errorHandler(JSON.parse(request.responseText).message);
+				
 				closeSideTab();
 			}
 		});

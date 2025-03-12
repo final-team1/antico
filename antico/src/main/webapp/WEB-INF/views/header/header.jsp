@@ -1088,7 +1088,7 @@ $(document).ready(function(){
 				openSideTab(html, "채팅방 목록");
 			},
 			 error: function(request, status, error){
-				 errorHandler(request, status, error);
+				 errorHandler(JSON.parse(request.responseText).message);
 			}
 		});
 	});
