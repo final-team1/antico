@@ -40,10 +40,6 @@ public class CustomAccessHandler implements AccessDeniedHandler {
 			response.sendError(600, "msg/경매는 실버회원부터 가능합니다.");
 			
 			return;
-		}else if(request_uri.startsWith(ctx_path+"/inquire/inquire_add")) {
-			response.sendError(600, "msg/문의는 일반회원만 가능합니다.");
-			
-			return;
 		}
 		
 		response.sendRedirect(ctx_path+"/index");

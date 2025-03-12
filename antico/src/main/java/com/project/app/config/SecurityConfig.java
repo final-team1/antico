@@ -91,9 +91,11 @@ public class SecurityConfig {
 		
 		.requestMatchers("/auction/chatroom").hasAnyRole("USER_2","USER_3")
 		
-		.requestMatchers("/comment/comment_add").hasAnyRole("USER_1","USER_2","USER_3")
+		.requestMatchers("/comment/comment_add").authenticated()
 		
 		.requestMatchers("/inquire/inquire_add").authenticated()
+		
+		.requestMatchers("/trade/**").authenticated()
 		
 		.requestMatchers("/notice/notice_list").permitAll()
 		

@@ -65,6 +65,14 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 			response.sendError(500, "msg/문의는 로그인 후에 보실수 있습니다.");
 			
 			return;
+		}else if(request_uri.startsWith(ctx_path+"/inquire/inquire_add")) {
+			response.sendError(600, "msg/문의는 로그인 후에 가능합니다.");
+			
+			return;
+		}else if(request_uri.startsWith(ctx_path+"/trade")) {
+			response.sendError(600, "msg/구매는 로그인 후에 가능합니다.");
+			
+			return;
 		}
 		
 		response.sendRedirect(ctx_path+"/member/login");
