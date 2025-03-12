@@ -347,9 +347,25 @@ i#share {
     background-color: rgba(169, 169, 169, 0.7);  /* 판매완료 상태 오버레이 */
 }
  
- .cardname:hover {
- 	color: green;
- }
+.cardname:hover {
+	color: green;
+}
+ 
+.btn_more {
+    background-color: black; /* 배경색: 검은색 */
+    color: white; /* 글씨색: 흰색 */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px; /* 테두리 살짝 둥글게 */
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn_more:hover {
+    background-color: #333; /* 마우스 올렸을 때 연한 검은색 */
+}
+
 </style>
 
 
@@ -366,6 +382,27 @@ $(document).ready(function() {
 
 	SSEManager.connect("<%=ctx_Path%>/sse/${requestScope.pk_member_no}");
 	SSEManager.addEvent("auction", "info");
+	
+	 let offset = 20; // 처음 20개는 보여줌
+     const productItems = $(".product_item"); // 모든 상품 아이템 가져오기
+
+     // 초기 20개만 표시
+     productItems.slice(offset).hide();
+
+     $("#load_more").click(function () {
+         let nextOffset = offset + 20;
+
+         // 다음 20개만 표시
+         productItems.slice(offset, nextOffset).fadeIn();
+
+         offset = nextOffset; // offset 갱신
+
+         // 모든 상품이 표시되면 버튼 숨김
+         if (offset >= productItems.length) {
+             $("#load_more").hide();
+         }
+     });
+	
 });
 
     
@@ -794,6 +831,9 @@ function timeAgo(reg_date) {
 				                        <input type="hidden" name="prod_orderby" value="${pvoList.fk_member_no}"/>
 				            </c:forEach>
 				        </ul>
+				        <div class="btn_wrap" style="text-align: center; margin-top: 20px;">
+						    <button id="load_more" class="btn_more">더보기</button>
+						</div>
 				    </c:if>
 				</div>
 				<c:if test="${empty requestScope.myproduct_list}">

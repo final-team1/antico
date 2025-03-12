@@ -79,6 +79,7 @@
 		on p.pk_product_no = i.fk_product_no
 		where p.fk_member_no = #{mvo}
 		and   i.prod_img_is_thumbnail = 1
+		order by product_regdate asc
 	</select>
 	
 	<resultMap id="seller_info" type="HashMap">
