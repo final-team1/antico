@@ -234,6 +234,12 @@
 		order by account_type desc
 	</select>
 	
+	<select id="bankMap"  parameterType="String" resultMap="accountMap">
+		select pk_account_no, fk_member_no, account_type, account_no, account_bank
+		from tbl_account
+		where fk_member_no = #{pk_member_no} and account_type = 1
+	</select>
+	
 	<update id="changeType" parameterType="String">
 		update tbl_account set account_type = 0
 		where account_no = #{account_no}
@@ -258,6 +264,23 @@
 		update tbl_account set account_type = 0
 		where pk_account_no = #{main_account}
 	</update>
+	
+	<resultMap type="HashMap" id="pointHistory">
+		<result property="pk_point_history_no" 			column="pk_point_history_no"			javaType="String"/>
+		<result property="fk_member_no" 				column="fk_member_no"					javaType="String"/>
+		<result property="point_history_reason" 		column="point_history_reason"			javaType="String"/>
+		<result property="point_history_point" 			column="point_history_point"			javaType="String"/>
+		<result property="point_history_point_before" 	column="point_history_point_before"		javaType="String"/>
+		<result property="point_history_point_after" 	column="point_history_point_after"		javaType="String"/>
+		<result property="point_history_regdate" 		column="point_history_regdate"			javaType="String"/>
+	</resultMap>
+	
+	<select id="pointHistory" resultMap="pointHistory" parameterType="String">
+		select pk_point_history_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate
+		from tbl_point_history
+		where fk_member_no = #{pk_member_no}
+		order by point_history_regdate desc
+	</select>
 	
 </mapper>
 

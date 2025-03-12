@@ -81,6 +81,12 @@ public interface MypageDAO {
 	// 기존의 대표계좌를 해제
 	int notMain(String main_account);
 
+	// 회원의 대표계좌 조회
+	Map<String, String> bankMap(String pk_member_no);
+
+	// 회원의 포인트 사용내역
+	List<Map<String, String>> pointHistory(String pk_member_no);
+
 
 
 }
