@@ -143,7 +143,7 @@ public class MypageService_imple implements MypageService {
 		return account;
 	}
 
-	// 회원의 게좌 리스트 조회
+	// 회원의 계좌 리스트 조회
 	@Override
 	public List<Map<String, String>> bankList(String pk_member_no) {
 		List<Map<String, String>> bankList = mypagedao.accountMap(pk_member_no);
@@ -164,13 +164,25 @@ public class MypageService_imple implements MypageService {
 	@Override
 	public int accountTypeUpdate(String account_no, String pk_member_no) {
 		String main_account = mypagedao.main_account(pk_member_no); // 현재 대표계좌의 pk번호를 알아오기
-		System.out.println(main_account+"main_account");
 		int response = mypagedao.accountTypeUpdate(account_no);
 		if(main_account != "") { // 기존의 대표계좌가 존재한다라면
 			int not_main = mypagedao.notMain(main_account); // 기존의 대표계좌를 해제
-			System.out.println("not_main"+not_main);
 		}
 		return response;
+	}
+
+	// 회원의 대표계좌 조회
+	@Override
+	public Map<String, String> bankMap(String pk_member_no) {
+		Map<String, String> bank_map = mypagedao.bankMap(pk_member_no);
+		return bank_map;
+	}
+
+	// 회원의 포인트 사용내역
+	@Override
+	public List<Map<String, String>> pointHistory(String pk_member_no) {
+		List<Map<String, String>> point_history_list = mypagedao.pointHistory(pk_member_no);
+		return point_history_list;
 	}
 	
 }

@@ -175,6 +175,14 @@ function toggleMainAccount(account_no) {
             success: function(response) {
                 if (response == 1) {
                 	showAlert("success", "대표 계좌로 설정되었습니다.");
+                	
+                	 // ✅ 모든 대표 계좌 표시 제거
+                    $(".main_account .mark").hide();
+                    $("input[name='account_type']").val("0");
+
+                    // ✅ 선택한 계좌만 대표 계좌로 설정
+                    $(".main_account[data-account-id='" + account_no + "'] .mark").show();
+                    $("input:hidden[data-account-id='" + account_no + "']").val("1");
                 } else {
                     showAlert('error', '대표 계좌 설정 실패!!');
                 }

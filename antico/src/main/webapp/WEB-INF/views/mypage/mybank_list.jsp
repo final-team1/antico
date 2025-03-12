@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     String ctx_Path = request.getContextPath();
 %>
+<c:set var="bank_map" value="${requestScope.bank_map}"/>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -126,9 +128,9 @@
             <img class="edit" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAqhaRDRUFQF_rEAT9NoCV-yEtFHvMM_3z8g&s" onclick="edit_bank()" style="height:4%; width: 6%; float: right;"/>
         </div>
         <div class="mypage_account_info">
-            <div>예금주 <span>장민규</span></div>
-            <div>은행명 <span>토스뱅크</span></div>
-            <div>계좌번호 <span>100032806150</span></div>
+			<div>예금주 <span>${requestScope.member_name}</span></div>
+			<div>은행명 <span>${bank_map.account_bank}</span></div>
+			<div>계좌번호 <span>${bank_map.account_no}</span></div>
         </div>
         <button class="mypage_btn mypage_btn_secondary" id="add_account_btn">+ 계좌 신규 등록</button>
 

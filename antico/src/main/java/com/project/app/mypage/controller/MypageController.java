@@ -303,6 +303,14 @@ public class MypageController {
 	// 계좌관리
 	@GetMapping("mybank")
 	public ModelAndView myBank(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = member_vo.getPk_member_no();
+	    String member_name = member_vo.getMember_name();
+		Map<String, String> bank_map = service.bankMap(pk_member_no); // 회원의 대표계좌 조회
+		List<Map<String, String>> point_history_list = service.pointHistory(pk_member_no); // 회원의 포인트 사용내역
+		mav.addObject("point_history_list", point_history_list);
+		mav.addObject("bank_map", bank_map);
+		mav.addObject("member_name", member_name);
 		mav.setViewName("mypage/myBank");
 		return mav;
 	}
@@ -352,6 +360,12 @@ public class MypageController {
 	// 계좌변경 리스트
 	@GetMapping("mybank_list")
 	public ModelAndView mybank_list(ModelAndView mav) {
+		MemberVO member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = member_vo.getPk_member_no();
+	    String member_name = member_vo.getMember_name();
+		Map<String, String> bank_map = service.bankMap(pk_member_no); // 회원의 대표계좌 조회
+		mav.addObject("bank_map", bank_map);
+		mav.addObject("member_name", member_name);
 		mav.setViewName("mypage/mybank_list");
 		return mav;
 	}
@@ -376,7 +390,7 @@ public class MypageController {
 		MemberVO member_vo = get_member_detail.MemberDetail();
 	    String pk_member_no = member_vo.getPk_member_no();
 	    String member_name = member_vo.getMember_name();
-		List<Map<String, String>> bank_list = service.bankList(pk_member_no); // 회원의 게좌 리스트 조회
+		List<Map<String, String>> bank_list = service.bankList(pk_member_no); // 회원의 계좌 리스트 조회
 		mav.addObject("bank_list", bank_list);
 		mav.addObject("member_name", member_name);
 		mav.setViewName("mypage/edit_bank");
