@@ -1,7 +1,6 @@
 package com.project.app.product.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,9 +163,16 @@ public class ProductController {
 
 		// View 페이지 출력을 위한 정보 가져오기 시작 //
 		// 로그인한 회원의 회원번호 값 가져오기
-		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String fk_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+
+		if (member_vo != null) {
+		    String login_fk_member_no = member_vo.getPk_member_no();
+		    if (login_fk_member_no != null && !login_fk_member_no.isEmpty()) {
+		        fk_member_no = login_fk_member_no;
+		    }
+		}
 		mav.addObject("fk_member_no", fk_member_no);
-	
 		
 		// 상위 카테고리 정보 가져오기
 		List<CategoryVO> category_list = service.getCategory();	
@@ -273,8 +279,16 @@ public class ProductController {
 	    //System.out.println("2222 pk_product_no " + pk_product_no);
 	
 		// 로그인한 회원의 회원번호 값 가져오기
-		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String fk_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String login_fk_member_no = member_vo.getPk_member_no();
+		    if (login_fk_member_no != null && !login_fk_member_no.isEmpty()) {
+		        fk_member_no = login_fk_member_no;
+		    }
+		}
 		mav.addObject("fk_member_no", fk_member_no);
+		
 		
 		// 좋아요 정보 가져오기
 		List<Map<String, String>> wish_list = service.getWish();
@@ -450,7 +464,6 @@ public class ProductController {
 		}
 		return map_list;
 	}
-	
-	
+
 	
 } // end of public class ProductController
