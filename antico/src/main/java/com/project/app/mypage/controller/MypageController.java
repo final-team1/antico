@@ -335,9 +335,10 @@ public class MypageController {
 			
 			HttpSession session = request.getSession();
 			
+			System.out.println("access_token -> "+session.getAttribute("access_token"));
+			
 			String ck = oauth2_service.unlinkOauthUser(String.valueOf(session.getAttribute("access_token")), member_vo.getMember_user_id());
 			
-			System.out.println(ck);
 		}
 		
 		int n = service.delete_submit(paraMap);

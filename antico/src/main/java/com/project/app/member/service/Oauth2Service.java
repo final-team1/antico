@@ -48,8 +48,6 @@ public class Oauth2Service{
         body.add("target_id_type", "user_id");  // 사용자 ID 타입 (user_id, email 등)
         body.add("target_id", user_id);  // 카카오에서 부여한 사용자 ID
         
-        System.out.println(user_id);
-        
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
         
         // 요청 보내기
