@@ -105,11 +105,9 @@ div#no_search {
 }
 
 
-
 </style>
 
 <div id="container">
-		
 	
 	<div id="price_check_title">
 		<span id="price_check_title">시세조회</span>
@@ -141,10 +139,10 @@ div#no_search {
     <div id="no_search">
     	<span>검색 결과가 없습니다.</span>
     </div>	
-	
-	
+
 	
 </div>
+
 
 <jsp:include page=".././footer/footer.jsp"></jsp:include>
 
@@ -248,8 +246,8 @@ function goSearchPrice() {
 						borderWidth: 2,
 						fill: false,
 					    pointStyle: 'circle',
-					    pointRadius: 7,
-					    pointHoverRadius: 9
+					    pointRadius: 9,
+					    pointHoverRadius: 11
 		    	      }
 		    	    ]
 		    	  },

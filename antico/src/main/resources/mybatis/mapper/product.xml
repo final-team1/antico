@@ -412,6 +412,38 @@
 	</insert>
 	
 	
+	<!-- 상품 올린 회원에 대한 거래 횟수 알아오기 -->
+	<select id="getTradeCntOneMember" parameterType="String" resultType="String">
+		select count(*) as trade_cnt
+		from tbl_trade
+		where (fk_seller_no = #{fk_member_no2} or fk_consumer_no = #{fk_member_no2}) 
+		and trade_status = 2
+	</select>
+	
+	
+	<!-- 상품 올린 회원에 대한 후기 수 알아오기 -->
+	<select id="getReviewCntOneMember" parameterType="String" resultType="String">
+		select count(*) as review_cnt
+		from tbl_trade T JOIN tbl_review R
+		ON T.pk_trade_no = R.fk_trade_no
+		where (fk_seller_no = #{fk_member_no2} or fk_consumer_no = #{fk_member_no2}) 
+		and trade_status = 2
+	</select>
+	
+	
+	<!-- 상품 올린 회원에 대한 단골 수 알아오기 -->
+	<select id="getRegularCustomerCnt" parameterType="String" resultType="String">
+		select count(*) as regular_customer_cnt
+		from (
+		    select fk_consumer_no
+		    from tbl_trade
+		    where fk_seller_no = #{fk_member_no2}   <!-- 특정 회원이 판매자로서 거래한 경우만 조회 -->
+		    and trade_status = 2         			<!-- 거래 완료 상태만 조회 -->
+		    group by fk_consumer_no
+		    having count(*) >= 3         			<!-- 3회 이상 거래한 고객만 필터링 -->
+		) regular_customers
+	</select>
+	
 	
 	<!-- 특정 회원에 대한 상품 정보 가져오기 -->
 	<resultMap id="getProdcutOneMemberMap" type="HashMap">
@@ -713,6 +745,37 @@
 	</select>
 	
 	
+	<!-- 메인 검색창에서 상품 검색 시 자동글 완성하기 및 정보 가져오기 -->
+	<resultMap id="ProductSearchMap" type="HashMap">
+		<result property="pk_product_no" column="pk_product_no" javaType="String"/>
+	    <result property="product_title" column="product_title" javaType="String"/>
+	</resultMap>
+	<select id="productSearch" parameterType="HashMap" resultMap="ProductSearchMap">
+		select pk_product_no, product_title
+		from tbl_product
+		where lower(product_title) like '%'||lower(#{search_prod})||'%'
+		and product_sale_status IN (0, 1, 3, 4)
+		order by product_title asc
+	</select>	
+	
+	
+	
+	<!-- 메인 검색창에서 판매자 검색 시 자동글 완성하기 및 정보 가져오기 -->
+	<resultMap id="SellerSearchMap" type="HashMap">
+		<result property="pk_member_no" column="pk_member_no" javaType="String"/>
+	    <result property="member_name"  column="member_name"  javaType="String"/>
+	</resultMap>
+	<select id="sellerSearch" parameterType="HashMap" resultMap="SellerSearchMap">
+		select pk_member_no, member_name
+		from tbl_member
+		where lower(member_name) like '%'||lower(#{search_prod})||'%'
+		and member_status = 1
+		and member_role IN (0, 1, 3)
+		order by member_name asc
+	</select>		
+	
+	
+
 	
 	<!-- 상품 요약 정보 목록 조회 (이미지명 포함) -->
 	<select id="selectProductSummaryList" resultType="productChatDTO">
