@@ -20,6 +20,7 @@ import com.project.app.component.GetMemberDetail;
 import com.project.app.component.ProductSaleStatusEventListener;
 import com.project.app.component.ProductStatusChangedEvent;
 import com.project.app.component.S3FileManager;
+import com.project.app.member.domain.MemberVO;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
 import com.project.app.product.domain.ProductImageVO;
@@ -263,7 +264,15 @@ public class ProductService_imple implements ProductService {
 		Map<String, String> product_map = productDAO.getProductDetail(pk_product_no);
 		
 		
-		String login_member_no = get_member_detail.MemberDetail().getPk_member_no(); // 로그인 한 유저번호 가져오기
+		// 로그인 한 유저번호 가져오기
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String login_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String fk_member_no = member_vo.getPk_member_no();
+		    if (fk_member_no != null && !fk_member_no.isEmpty()) {
+		    	login_member_no = fk_member_no;
+		    }
+		}
 		
 		// 상품 조회수 증가는 로그인을 한 상태에서 다른 사람의 상품을 볼때만 증가하도록 한다.
 		if(login_member_no != null && !product_map.isEmpty() && !login_member_no.equals(product_map.get("fk_member_no"))) {
