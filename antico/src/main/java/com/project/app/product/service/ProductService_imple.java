@@ -503,5 +503,12 @@ public class ProductService_imple implements ProductService {
 		return productDAO.insertAuctionProductImage(fileList, cProductNo);
 	}
 
+	// 찜한 상품보기
+	@Override
+	public List<Map<String, String>> wish_list(String pk_member_no) {
+		List<Map<String, String>> product_vo = productDAO.wish_list(pk_member_no);
+		return product_vo;
+	}
+
 
 }

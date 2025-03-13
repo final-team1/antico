@@ -805,6 +805,68 @@
 	    ) a
 	</insert>
 
+	<resultMap id="getwishwithproductandimagemap" type="HashMap">
+	    <!-- tbl_wish 테이블의 컬럼 -->
+	    <result property="pk_wish_no"      column="pk_wish_no"        javaType="String"/>
+	    <result property="fk_product_no"   column="fk_product_no"     javaType="String"/>
+	    <result property="fk_member_no"    column="fk_member_no"      javaType="String"/>
+	
+	    <!-- tbl_product 테이블의 컬럼 -->
+	    <result property="pk_product_no"   column="pk_product_no"     javaType="String"/>
+	    <result property="fk_member_no"    column="product_fk_member_no" javaType="String"/>
+	    <result property="fk_region_no"    column="fk_region_no"      javaType="String"/>
+	    <result property="fk_category_no"  column="fk_category_no"    javaType="String"/>
+	    <result property="fk_category_detail_no" column="fk_category_detail_no" javaType="String"/>
+	    <result property="product_title"   column="product_title"     javaType="String"/>
+	    <result property="product_contents" column="product_contents" javaType="String"/>
+	    <result property="product_price"   column="product_price"     javaType="String"/>
+	    <result property="product_status"  column="product_status"    javaType="String"/>
+	    <result property="product_sale_status" column="product_sale_status" javaType="String"/>
+	    <result property="product_regdate" column="product_regdate"  javaType="String"/>
+	    <result property="product_update_date" column="product_update_date" javaType="String"/>
+	    <result property="product_sale_type" column="product_sale_type" javaType="String"/>
+	    <result property="product_views"   column="product_views"     javaType="String"/>
+	
+	    <!-- tbl_prod_img 테이블의 컬럼 -->
+	    <result property="pk_prod_img_no"  column="pk_prod_img_no"    javaType="String"/>
+	    <result property="prod_img_org_name" column="prod_img_org_name" javaType="String"/>
+	    <result property="prod_img_name"   column="prod_img_name"     javaType="String"/>
+	    <result property="prod_img_is_thumbnail" column="prod_img_is_thumbnail" javaType="String"/>
+	</resultMap>
+
+	
+	<select id="wish_list" parameterType="HashMap" resultMap="getwishwithproductandimagemap">
+	    select w.pk_wish_no, w.fk_product_no, w.fk_member_no,	
+	           p.pk_product_no,
+	           p.fk_member_no as product_fk_member_no,
+	           p.fk_region_no,
+	           p.fk_category_no,
+	           p.fk_category_detail_no,
+	           p.product_title,
+	           p.product_contents,
+	           p.product_price,
+	           p.product_status,
+	           p.product_sale_status,
+	           p.product_regdate,
+	           p.product_update_date,
+	           p.product_sale_type,
+	           p.product_views,
+	
+	           i.pk_prod_img_no,
+	           i.prod_img_org_name,
+	           i.prod_img_name,
+	           i.prod_img_is_thumbnail	
+	    from tbl_wish w
+	    left join tbl_product p on w.fk_product_no = p.pk_product_no
+	    left join tbl_prod_img i on p.pk_product_no = i.fk_product_no
+	    where w.fk_member_no = #{fk_member_no}
+	</select>
+
+
+
+
+
+
 </mapper>
 
 

@@ -106,6 +106,9 @@ public interface ProductDAO {
 
 	// 경매 상품 이미지 등록
 	int insertAuctionProductImage(List<Map<String, String>> fileList, String c_product_no);
+
+	// 찜한 상품보기
+	List<Map<String, String>> wish_list(String pk_member_no);
 	
 
 	
