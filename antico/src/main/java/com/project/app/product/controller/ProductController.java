@@ -464,6 +464,19 @@ public class ProductController {
 		}
 		return map_list;
 	}
+	
+	// 찜한 상품보기 
+	@GetMapping("wish_list")
+	public ModelAndView wish_list(ModelAndView mav) {
+	    MemberVO login_member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = login_member_vo.getPk_member_no();
+	    
+	    List<Map<String, String>> product_vo = service.wish_list(pk_member_no);
+	    
+	    mav.addObject("product_vo", product_vo);
+	    mav.setViewName("product/wish_list");
+	    return mav;
+	}
 
 	
 } // end of public class ProductController

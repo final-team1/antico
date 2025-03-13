@@ -1114,7 +1114,26 @@ function myPage() {
     });
 }
 
-
+	// 찜한 상품 클릭 이벤트
+	$('.menuStyle').click(function() {
+		showwishlistTab();
+	});
+	
+	function showwishlistTab() {
+		var tabTitle = "찜한 상품";
+		
+		$.ajax({
+			url : "<%=ctxPath%>/product/wish_list",
+			success : function(html) {
+				openSideTab(html, tabTitle);
+			},
+			error : function(request, status, error) {
+				errorHandler(JSON.parse(request.responseText).message);
+				
+				closeSideTab();
+			}
+		});
+	}
 
 </script>
 

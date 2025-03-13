@@ -102,4 +102,7 @@ public interface ProductService {
 
 	// 경매 이미지 상품 등록
 	int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo);
+
+	// 찜한 상품보기
+	List<Map<String, String>> wish_list(String pk_member_no);
 }
