@@ -779,7 +779,7 @@ function timeAgo(reg_date) {
 					<div class="stat_box score_level mt-2">
 						<p style="font-weight: bold; color: ${requestScope.role_color};">${requestScope.member_role}</p>
 						<div class="trust_bar">
-							<div class="trust_progress" style="width: ${requestScope.member_score/10}%; background-color:${requestScope.role_color};"></div>
+							<div class="trust_progress" style="width: ${requestScope.member_score > 3000 ? 100 : requestScope.member_score / 30}%; background-color:${requestScope.role_color};"></div>
 						</div>
 						<span>${requestScope.member_score}</span>
 					</div>
