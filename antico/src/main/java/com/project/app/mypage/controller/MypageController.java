@@ -96,6 +96,8 @@ public class MypageController {
 	        String role = Integer.parseInt(member_score) < 2000 ? "1" : "2";
 	        service.role_update(role, pk_member_no);
 	    }
+	    
+	    member_role = member_vo.getMember_score();
 
 	    Map<String, String> trade_map = service.tradeCnt(member_no); // 거래횟수와 단골을 알아오기 위함.
 		String role_color; // 회원등급별 색상을 주기 위한 것.
