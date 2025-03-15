@@ -13,7 +13,7 @@ public interface MemberDAO {
 	MemberVO selectMemberByUserId(String member_user_id);
 
 	// memberNo를 통한 단일 사용자 조회
-	MemberVO selectMemberByMemberNo(String memberNo);
+	MemberVO selectMemberByMemberNo(String pk_member_no);
 
 	// 탈퇴신청을 한 회원인지 체크
 	String leaveCheck(String pk_member_no);
@@ -39,6 +39,5 @@ public interface MemberDAO {
 	 // 탈퇴신청은 했지만 72시간 이내에 접속한 경우
 	void rollback(String leave_member_no);
 
-
-
+	void updateScore(String fk_seller_no, int score);
 }

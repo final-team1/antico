@@ -29,4 +29,9 @@ public interface ChatService {
 	// 사용자 별 최근 읽은 메시지 식별자 변경
 	List<Chat> updateUnReadCount(String chatId, String roomId, String memberNo);
 
+	// 읽지 않은 채팅 개수 조회
+	int getUnReadCount(String pk_member_no);
+
+	// 경매채팅 및 일반 채팅 삭제
+	void delete(String pk_product_no);
 }

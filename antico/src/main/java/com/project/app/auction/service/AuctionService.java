@@ -20,6 +20,9 @@ public interface AuctionService {
 	// 경매 시작 시간인 경매 상품 일련번호 목록 조회 및 판매 상태 수정
 	List<Map<String, String>> updateProductSaleStatusByAuctionStartDate();
 
+	// 경매 종료 시간인 경매 상품 일련번호 목록 조회 및 판매 상태 수정
+	List<Map<String, String>> updateProductSaleStatusByAuctionEndDate();
+
 	void createAuctionChatRoom(Map<String, String> product_map);
 
 	AuctionChat createAuctionChat(AuctionChat auctionChat);
@@ -38,6 +41,10 @@ public interface AuctionService {
 
 	AuctionVO getAuction(String productNo);
 
-	void closeAuction(String pkAuctionNo, String room_id);
+	void closeAuction(Map<String, String> product_map);
+
+	Map<String, String> selectAuctionProduct(String pk_product_no);
+
+	void delete(String pkProductNo);
 
 }

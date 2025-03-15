@@ -183,7 +183,7 @@
 				openSideTab(html, tabTitle);
 			},
 			error : function(request, status, error) {
-				errorHandler(JSON.parse(request.responseText).message);
+				errorAlert(JSON.parse(request.responseText).message);
 				
 				closeSideTab();
 			}
@@ -201,7 +201,7 @@
 				openSideTab(html, tabTitle);
 			},
 			error : function(request, status, error) {
-				errorHandler(JSON.parse(request.responseText).message);
+				errorAlert(JSON.parse(request.responseText).message);
 				
 				closeSideTab();
 			}

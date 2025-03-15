@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -45,7 +46,8 @@ public class ChatController {
 	private final ProductService productService;
 	
 	private final GetMemberDetail detail; // security login member 조회
-	
+	private final GetMemberDetail getMemberDetail;
+
 	/*
 	 * 채팅 메인 페이지
 	 */
@@ -159,6 +161,19 @@ public class ChatController {
 	@ResponseBody
 	public List<Chat> loadChatHistory(@PathVariable String roomId) {
 		return chatService.loadChatHistory(roomId);
+	}
+
+	/*
+	 * 읽지 않은 채팅 개수 조회
+	 */
+	@GetMapping("unReadCount")
+	@ResponseBody
+	public int getUnReadCount() {
+		MemberVO memberVO = getMemberDetail.MemberDetail();
+		if(StringUtils.isBlank(memberVO.getPk_member_no())) {
+			return 0;
+		}
+		return chatService.getUnReadCount(memberVO.getPk_member_no());
 	}
 
 }

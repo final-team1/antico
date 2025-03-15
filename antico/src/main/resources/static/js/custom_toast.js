@@ -94,7 +94,7 @@ function errorHandler(request, status, error) {
 }
 
 // ajax 공통 에러 핸들러 함수 및 토스트 처리
-function errorHandler(message) {
+function errorAlert(message) {
 	let msg = message.substring(0, 4) === "msg/" ? message.substr(4) : "";
 
 	showAlert("error", msg);

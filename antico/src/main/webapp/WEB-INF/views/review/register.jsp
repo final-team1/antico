@@ -573,11 +573,13 @@
         // input 태그에 저장
         $("input[name='arr_pk_survey_resp_no']").val(arr_pk_survey_resp_no.join(","));
 
+        // 피드백 타입 저장
+        const feedback_type = $("div.feedback_btn").filter(".clicked").index();
+
+        $("input[name='feedback_type']").val(feedback_type);
+
         // 후기 등록 form에서 formData 가져오기
         const formData = new FormData($("form#reviewFrm")[0]);
-
-        // 피드백 타입 저장
-        $("div.feedback_btn").index()
 
         $.ajax({
             url: "${ctxPath}/review/register",

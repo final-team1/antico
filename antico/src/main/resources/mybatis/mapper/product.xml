@@ -863,9 +863,11 @@
 	</select>
 
 
-
-
-
+	<!--경매 낙찰가로 상품가격 변경-->
+	<update id="updateProductPrice" parameterType="String">
+		update tbl_product set product_price = #{product_price}
+		where pk_product_no = #{pk_product_no}
+	</update>
 
 </mapper>
 

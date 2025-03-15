@@ -14,6 +14,7 @@ public interface AuctionChatRepository extends MongoRepository<AuctionChat, Stri
 	@Query("{ 'roomId' : ?0, 'sendDate' : { $gte: ?1 } }")
 	List<AuctionChat> findAuctionChatByRoomId(String roomId, LocalDateTime startDate);
 
-	//AuctionChat findTopByRoomIdOrderBySendDateDesc(String roomId);
+	// 채팅 내역 삭제
+	void deleteByRoomId(String roomId);
 
 }

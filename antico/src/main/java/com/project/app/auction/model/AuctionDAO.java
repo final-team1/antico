@@ -17,11 +17,16 @@ public interface AuctionDAO {
 	// 경매 시작 시간인 경매 상품 조회
 	List<Map<String, String>> selectProductNoListByAuctionStartDate();
 
+	// 경매 종료 시간인 경매 상품 조회
+	List<Map<String, String>> selectProductNoListByAuctionEndDate();
+
 	// 경매 시작 시간인 경매 상품 판매 상태 수정
-	void updateProductSaleStatus(List<String> productNoList);
+	void updateProductSaleStatus(List<String> productNoList, int type);
 
 	Optional<AuctionVO> selectAuctionProductNo(String productNo);
 
-	void updateAuctionClosed(String pkAuctionNo);
+	Map<String, String> selectAuctionProduct(String pk_product_no);
+
+	void updateAuctionEndDate(String pk_product_no);
 
 } 

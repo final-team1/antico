@@ -9,10 +9,12 @@ import com.project.app.member.domain.MemberVO;
 import com.project.app.member.model.MemberDAO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * MemberService 구현체
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MemberService_imple implements MemberService {
@@ -50,5 +52,14 @@ public class MemberService_imple implements MemberService {
 		member_dao.google_tel_add(member_tel);
 	}
 
+	@Override
+	public MemberVO getMemberByMemberNo (String pk_member_no) {
+		return member_dao.selectMemberByMemberNo(pk_member_no);
+	}
+
+	@Override
+	public void updateScore(String fk_seller_no, int score) {
+		member_dao.updateScore(fk_seller_no, score);
+	}
 
 }

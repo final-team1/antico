@@ -105,4 +105,8 @@ public interface ProductService {
 
 	// 찜한 상품보기
 	List<Map<String, String>> wish_list(String pk_member_no);
+	
+	// 경매 낙찰가를 상품가격으로 변경
+	int updateProductPrice(String pk_product_no, String product_price);
+
 }

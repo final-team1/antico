@@ -1,7 +1,11 @@
 package com.project.app.chat.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,10 +23,12 @@ import com.project.app.chat.domain.ChatRoom;
 import com.project.app.chat.domain.ChatRoomRespDTO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * 직접 쿼리를 제어하기 위한 사용자 정의 mongodb 레포지토리
  */
+@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class CustomChatRoomRepository {
@@ -34,9 +40,9 @@ public class CustomChatRoomRepository {
 	 */
 	public List<ChatRoomRespDTO> findAllWithLatestChatByMemberNo(String memberNo) {		
 	    Aggregation aggregation = Aggregation.newAggregation(
-	        
-	        // 최신 채팅으로 정렬
-	        Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendDate")),
+
+			// 최신 채팅으로 정렬
+			Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendDate")),
 
 	        // 채팅 메시지를 roomId(String) 기준으로 그룹화하고, 최신 메시지 정보 추출
 	        Aggregation.group("roomId")
@@ -66,6 +72,9 @@ public class CustomChatRoomRepository {
 
 	        // 사용자가 참여한 채팅방만 필터링
 	        Aggregation.match(Criteria.where("chatRoom.participants").elemMatch(Criteria.where("memberNo").is(memberNo))),
+
+			// 최신 채팅으로 정렬
+			Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendDate")),
 
 	        // 필요한 필드만 유지하여 최종 반환 데이터 구조 정의
 	        Aggregation.project()
@@ -111,4 +120,40 @@ public class CustomChatRoomRepository {
 		return mongoTemplate.find(findUpdatedChats, Chat.class);	
 				
 	}
+
+	public int findUnReadCountByMemberNo(String pk_member_no) {
+		Aggregation aggregation = Aggregation.newAggregation(
+			Aggregation.match(Criteria.where("participants.memberNo").is(pk_member_no)),
+
+			Aggregation.addFields()
+				.addField("roomIdObj")
+				.withValue(
+					ConvertOperators.ToString.toString("$_id")
+				)
+				.build(),
+
+			Aggregation.lookup("chat_messages", "roomIdObj", "roomId", "messages"),
+
+			Aggregation.match(Criteria.where("messages").ne(null)),
+
+			Aggregation.unwind("messages"),
+
+			Aggregation.match(
+				new Criteria().orOperator(
+					Criteria.where("messages.readMembers").exists(false),
+					Criteria.where("messages.readMembers").not().elemMatch(Criteria.where("$eq").is(pk_member_no))
+				)
+			),
+
+			Aggregation.count().as("unReadMessageCount")
+		);
+
+		AggregationResults<Map> results = mongoTemplate.aggregate(aggregation, "chat_room", Map.class);
+
+		return Optional.ofNullable(results.getUniqueMappedResult())
+			.map(map -> map.get("unReadMessageCount"))
+			.map(num -> (num instanceof Number) ? ((Number) num).intValue() : Integer.parseInt(num.toString()))
+			.orElse(0);
+	}
+
 }

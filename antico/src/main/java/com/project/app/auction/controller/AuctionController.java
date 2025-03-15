@@ -26,6 +26,8 @@ import com.project.app.auction.domain.AuctionChatRoom;
 import com.project.app.chat.domain.ChatRoomRespDTO;
 import com.project.app.chat.domain.Participant;
 import com.project.app.component.GetMemberDetail;
+import com.project.app.exception.BusinessException;
+import com.project.app.exception.ExceptionCode;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.product.domain.ProductImageVO;
 import com.project.app.product.domain.ProductVO;
@@ -176,13 +178,17 @@ public class AuctionController {
 		return LocalDateTime.now();
 	}
 
-	@PostMapping("close")
+	@GetMapping("close")
 	@ResponseBody
-	public ResponseEntity closeAuction(@RequestParam String room_id, @RequestParam String pk_auction_no) {
+	public void close(@RequestParam String pk_product_no) {
+		MemberVO memberVO = getMemberDetail.MemberDetail();
+		Map<String, String> productMap = auctionService.selectAuctionProduct(pk_product_no);
 
-		auctionService.closeAuction(pk_auction_no, room_id);
+		if(!memberVO.getPk_member_no().equals(productMap.get("pk_member_no"))){
+			throw new BusinessException(ExceptionCode.AUCTION_NOT_SELLER);
+		}
 
-		return ResponseEntity.ok().build();
+		auctionService.closeAuction(productMap);
 	}
 	
 }

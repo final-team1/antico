@@ -244,12 +244,6 @@ span.sold_out_text {
 <jsp:include page=".././header/header.jsp" />
 
 <div class="container mt-5">
-
-
-
-<!-- 사이트 탭 테스트용  -->
-<button onclick="showReviewTab()">후기확인</button>
-<button onclick="showReviewRegisterTab()">후기 등록 확인</button>
 	
 <!-- Slider main container -->
 <div class="mainImgContainer">
@@ -446,59 +440,6 @@ span.sold_out_text {
 	</div>
 </div>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-	<h2>대서리 점심메뉴</h2>
-	<div class="table-container">
-	    <table class="table">
-	        <thead>
-	            <tr>
-	                <th></th>
-	                <th>월요일</th>
-	                <th>화요일</th>
-	                <th>수요일</th>
-	                <th>목요일</th>
-	                <th>금요일</th>
-	            </tr>
-	        </thead>
-	        <tbody>
-	            <tr>
-	                <th scope="row">밥</th>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	            </tr>
-	            <tr>
-	                <th scope="row">국</th>
-	                <td>된장찌개</td>
-	                <td>감자멸치수제비국</td>
-	                <td>계란국</td>
-	                <td>콩나물국</td>
-	                <td>유부소미국</td>
-	            </tr>
-	            <tr>
-	                <th scope="row">메인메뉴</th>
-	                <td>주인장은 월요일 휴가임으로 안함<br>
-	                <td>돼지숙주볶음<br>너비아니구이<br>굴소스 가지볶음<br>김치꽁치fuck<br></td>
-	                <td>고기듬뿍짜장(good)<br>돈까스<br>계란후라이<br>꽈멸볶</td>
-	                <td>돼지갈비조림(goat)<br>매콤소야<br>오징어튀김<br>빨간어묵볶음</td>
-	                <td>닭강정<br>떡볶이<br>배추전</td>
-	            </tr>
-	        </tbody>
-	    </table>
-	</div>
-</div>
-
-
- 
-
-
 <script type="module">
 import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs';
 
@@ -614,67 +555,7 @@ $(document).ready(function(){
 	        return "오래 전";
 	    }
 	} // end of function timeAgo(reg_date)
-	
-	
-	
-
-	
-	//후기 확인 테스트 함수
-	function showReviewTab() {
-		$.ajax({
-			url : "<%=ctxPath%>/review/",
-			data : {
-				"pk_member_no" : "1"
-			},
-			success : function(html) {
-				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-				openSideTab(html);
-			},
-			error : function(e) {
- 				 console.log(request.responseText);
-				 
- 				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-				 // 사이드 탭 닫기
-			     showAlert("error", message);
-			     closeSideTab();
-			}
-		});
-	}
-	
-	//후기 등록 테스트 함수
-	function showReviewRegisterTab() {
-		$.ajax({
-			url : "<%=ctxPath%>/review/register",
-			data : {
-				"pk_trade_no" : "1"
-			},
-			success : function(html) {
-				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-				openSideTab(html);
-			},
-			 error: function(request, status, error){
-				 console.log(request.responseText);
-				 
-				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-			     showAlert("error", message);
-			     
-			     // 사이드 탭 닫기
-			     closeSideTab();
-			}
-		});
-	}
-	
-	
-	
 </script>
-
-
 
 <jsp:include page=".././footer/footer.jsp" />
 
