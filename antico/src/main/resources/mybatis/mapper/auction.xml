@@ -11,26 +11,44 @@
 			   to_date(#{auction_startdate}, 'yyyy-mm-dd"T"hh24:mi') + 1/24)
 	</insert>
 	
-	<resultMap type="HashMap" id="testMap">
+	<resultMap type="HashMap" id="auctionProductMap">
 		<result column="pk_product_no" property="pk_product_no" javaType="String"/>
 		<result column="pk_member_no" property="pk_member_no" javaType="String"/>
 		<result column="member_name" property="member_name" javaType="String"/>
+		<result column="member_user_id" property="member_user_id" javaType="String"/>
 		<result column="pk_auction_no" property="pk_auction_no" javaType="String"/>
 		<result column="product_price" property="product_price" javaType="String"/>
 		<result column="product_title" property="product_title" javaType="String"/>
+		<result column="auction_startdate" property="1" javaType="String"/>
+		<result column="sysdate" property="2" javaType="String"/>
 	</resultMap>
 	
 	<!-- 경매 시작 시간인 경매 상품 조회 -->
-	<select id="selectProductNoListByAuctionStartDate" resultMap="testMap">
-		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no, p.product_price, p.product_title
+	<select id="selectProductNoListByAuctionStartDate" resultMap="auctionProductMap">
+		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no, p.product_price, p.product_title, m.member_user_id, a.auction_startdate, sysdate
 		from tbl_product p join tbl_member m on p.fk_member_no = m.pk_member_no 
 			 join tbl_auction a on p.pk_product_no = a.fk_product_no 
-			 and p.product_sale_status = 3 and <![CDATA[a.auction_startdate <= (sysdate + 1/24/60)]]>
+			 and p.product_sale_status = 3 and <![CDATA[trunc(a.auction_startdate, 'MI') <= trunc(sysdate, 'MI')]]>
+	</select>
+
+	<!-- 경매 종료 시간인 경매 상품 조회 -->
+	<select id="selectProductNoListByAuctionEndDate" resultMap="auctionProductMap">
+		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no, p.product_price, p.product_title, m.member_user_id
+		from tbl_product p join tbl_member m on p.fk_member_no = m.pk_member_no
+						   join tbl_auction a on p.pk_product_no = a.fk_product_no
+			and p.product_sale_status = 4 and <![CDATA[trunc(a.auction_enddate, 'MI') <= trunc(sysdate, 'MI')]]>
+	</select>
+
+	<select id="selectAuctionProduct" parameterType="String" resultMap="auctionProductMap">
+		select p.pk_product_no, m.pk_member_no, m.member_name, a.pk_auction_no, p.product_price, p.product_title, m.member_user_id
+		from tbl_product p join tbl_member m on p.fk_member_no = m.pk_member_no
+						   join tbl_auction a on p.pk_product_no = a.fk_product_no
+			and p.product_sale_status = 4 and p.pk_product_no = #{pk_product_no}
 	</select>
 
 	<!-- 경매 시작 시간인 경매 상품 판매 상태 수정 -->
 	<update id="updateProductSaleStatus">
-		update tbl_product set product_sale_status = 4
+		update tbl_product set product_sale_status = #{type}
 		where pk_product_no in 
 		<foreach item="productNo" collection="productNoList" open="(" close=")" separator=",">
 			#{productNo}
@@ -38,14 +56,14 @@
 	</update>
 
 	<select id="selectAuctionProductNo" resultType="AuctionVO">
-		select pk_auction_no, auction_startdate, auction_enddate, auction_closed
+		select pk_auction_no, auction_startdate, auction_enddate
 		from tbl_auction
 		where fk_product_no = #{productNo}
 	</select>
 
-	<update id="updateAuctionClosed" parameterType="String">
-		update tbl_auction set auction_closed = 1
-		where pk_auction_no = #{pkAuctionNo}
+	<update id="updateAuctionEndDate" parameterType="String">
+		update tbl_auction set auction_enddate = sysdate
+		where fk_product_no = #{pk_product_no}
 	</update>
 
 </mapper>

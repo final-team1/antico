@@ -66,7 +66,7 @@ public class TradeService_imple implements TradeService {
 
 		// tradedao.holdProduct(pk_product_no); // 상품상태를 예약중으로 변경하기
 		// 위의 기능이 정상적으로 동작하여 커밋이 완료되면 채팅 알림 이벤트 실행
-		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, "1"));
+		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, "1", pk_member_no));
 
 		return a*b*c*d;
 	}
@@ -103,7 +103,7 @@ public class TradeService_imple implements TradeService {
 
 		// tradedao.completedProduct(pk_product_no); // 판매상태를 구매확정으로 업데이트
 		// 위의 기능이 정상적으로 동작하여 커밋이 완료되면 채팅 알림 이벤트 실행
-		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, "2"));
+		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, "2", pk_member_no));
 
 		return a*b*c*d;
 	}

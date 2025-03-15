@@ -173,12 +173,15 @@ public class ReviewController {
 		String review_content = request.getParameter("review_content");				   	// 후기 내역			// 후기 타입 0 : 구매후기, 1 : 판매 홍보 후기
 
 		String feedback_type = request.getParameter("feedback_type"); // 피드백 선택 타입 (최고에요, 좋아요, 아쉬워요)
-		
+
+		log.info("피드백 타입" + feedback_type);
+
 		Map<String, String> para_map = new HashMap<>();
 		
 		para_map.put("str_pk_survey_resp_no", str_pk_survey_resp_no);
 		para_map.put("pk_trade_no", pk_trade_no);
 		para_map.put("review_content", review_content);
+		para_map.put("feedback_type", feedback_type);
 		
 		// 첨부 이미지가 없는 후기도 작성 가능하기에 빈 값으로 초기화
 		para_map.put("review_img_org_name", ""); 

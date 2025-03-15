@@ -492,7 +492,10 @@
             switch (message) {
                 case "결제완료" : {
                     v_html += `<div><p class="status_chat_p">결제가 완료되었습니다. <br> 상품 수령 시 구매 확정을 눌러주세요</p><button type="button" class="order_complete_button" onclick="completeOrder()">구매 확정하기</button>`;
-                    v_html += `<button type="button" class="order_cancel_button" onclick="tradeCancel()">구매 취소하기</button></div>`;
+                    if(${product_map.product_sale_type eq 0}){
+                        v_html += `<button type="button" class="order_cancel_button" onclick="tradeCancel()">구매 취소하기</button></div>`;
+                    }
+                    v_html += `</div>`;
                     break;
                 }
                 case "구매확정" : {
@@ -526,7 +529,7 @@
                 }
             },
             error: function (request, status, error) {
-                errorHandler(request, status, error);
+                errorHandlerWithNoClose(request, status, error);
             }
         });
     }
@@ -542,7 +545,7 @@
                 openSideTab(html);
             },
             error: function (request, status, error) {
-                errorHandler(request, status, error);
+                errorHandlerWithNoClose(request, status, error);
             }
         });
     }

@@ -13,6 +13,8 @@ import com.project.app.component.GetMemberDetail;
 import com.project.app.component.S3FileManager;
 import com.project.app.exception.BusinessException;
 import com.project.app.exception.ExceptionCode;
+import com.project.app.member.service.MemberService;
+import com.project.app.product.service.ProductService;
 import com.project.app.review.domain.BlacklistVO;
 import com.project.app.review.domain.ReviewVO;
 import com.project.app.review.domain.SurveyVO;
@@ -32,9 +34,11 @@ public class ReviewService_imple implements ReviewService {
 	private final GetMemberDetail memberDetail; // 시큐리티 로그인 회원 정보
 
 	private final S3FileManager s3FileManager; // aws s3 api
-	
+
+	private final MemberService memberService;
+
 	/*
-	 * 후기 설문 문항 정보 조회 
+	 * 후기 설문 문항 정보 조회
 	 */
 	@Override
 	@Transactional(readOnly=true)
@@ -61,14 +65,14 @@ public class ReviewService_imple implements ReviewService {
 
 		// 동일한 거래에서 사용자가 작성힌 후기가 존재하면 예외 발생
 		ReviewVO reviewVO = reviewDAO.selectReview(pk_member_no, para_map.get("pk_trade_no"));
-		
+
 		if(reviewVO != null) {
 			throw new BusinessException(ExceptionCode.REVIEW_AREADY_EXISTS);
 		}
 
 		// 실제로 거래가 진행됬는지 및 후기 작성자가 구매자인지 확인
 		TradeVO tradeVO = reviewDAO.selectTrade(para_map.get("pk_trade_no"))
-				.orElseThrow(() -> new BusinessException(ExceptionCode.TRADE_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ExceptionCode.TRADE_NOT_FOUND));
 
 		if(!tradeVO.getFk_consumer_no().equals(pk_member_no)) {
 			throw new BusinessException(ExceptionCode.NOT_CONSUMER_MEMBER);
@@ -79,24 +83,28 @@ public class ReviewService_imple implements ReviewService {
 			// 2번째 파라미터는 S3 버켓에서 review(후기) 관련 이미지들만 관리하기 위해 추가한 디렉토리 경로
 			// 3번째 파라미터는 저장하는 파일 형식이 image로 확장자 지정을 위한 ENUM
 			Map<String, String> file_map = s3FileManager.upload(file, "review", FileType.IMAGE);
-			
+
 			para_map.put("review_img_org_name", file_map.get("org_file_name"));
-			para_map.put("review_img_file_name", file_map.get("file_name"));	
+			para_map.put("review_img_file_name", file_map.get("file_name"));
 		}
 
 		// 후기 삽입 전 PK로 저장할 seq 일련번호 조회
-		String pk_review_no = reviewDAO.selectPkReviewNo(); 
-		
+		String pk_review_no = reviewDAO.selectPkReviewNo();
+
 		para_map.put("pk_member_no", pk_member_no);
 		para_map.put("pk_review_no", pk_review_no);
 
 		// 후기 테이블 삽입
 		n1 = reviewDAO.insertReview(para_map);
-		
-		String[] arr_pk_survey_resp_no = para_map.get("str_pk_survey_resp_no").split(","); 
-		
+
+		String[] arr_pk_survey_resp_no = para_map.get("str_pk_survey_resp_no").split(",");
+
 		// 사용자 선택 설문 문항 삽입
 		n2 = reviewDAO.insertSurveyResp(arr_pk_survey_resp_no, pk_review_no);
+
+		int score = calculateMemberScore(para_map.get("feedback_type"));
+
+		memberService.updateScore(tradeVO.getFk_seller_no(), score);
 
 		return n1 * n2;
 	}
@@ -108,14 +116,14 @@ public class ReviewService_imple implements ReviewService {
 	@Transactional
 	public int addBlacklist(String pk_target_member_no) {
 		String pk_member_no = memberDetail.MemberDetail().getPk_member_no(); // 후기 작성자 회원 일련번호
-		
+
 		// 이미 블랙리스트에 추가된 경우 예외 발생
 		BlacklistVO blacklistVO = reviewDAO.selectBlacklist(pk_member_no, pk_target_member_no);
-		
+
 		if(blacklistVO != null) {
 			throw new BusinessException(ExceptionCode.BLACKLIST_AREADY_EXISTS);
 		}
-		
+
 		// 사용자 블랙리스트에 저장
 		return reviewDAO.insertBlackList(pk_member_no, pk_target_member_no);
 	}
@@ -132,7 +140,7 @@ public class ReviewService_imple implements ReviewService {
 	public List<Map<String, String>> getConsumerSurveyStatList(String pk_member_no) {
 		return reviewDAO.selectConsumerSurveyStatList(pk_member_no);
 	}
-	
+
 	/*
 	 * 사용자가 받은 구매 후기 전체 개수
 	 */
@@ -155,9 +163,9 @@ public class ReviewService_imple implements ReviewService {
 	 * 후기 상세 내역 조회
 	 */
 	@Override
-	public Map<String, String> getConsumeReviewDetails(String pk_review_no) {		
+	public Map<String, String> getConsumeReviewDetails(String pk_review_no) {
 		return reviewDAO.selectConsumerReviewDetails(pk_review_no)
-				.orElseThrow(() -> new BusinessException(ExceptionCode.REVIEW_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ExceptionCode.REVIEW_NOT_FOUND));
 	}
 
 	/*
@@ -173,7 +181,7 @@ public class ReviewService_imple implements ReviewService {
 	 * 후기에 따른 설문 문항 선택 내역 조회
 	 */
 	@Override
-	public List<SurveyVO> getSurveyRespList(String pk_review_no) {	
+	public List<SurveyVO> getSurveyRespList(String pk_review_no) {
 		return reviewDAO.selectSurveyRespList(pk_review_no);
 	}
 
@@ -185,14 +193,23 @@ public class ReviewService_imple implements ReviewService {
 		return reviewDAO.selectCountReview(pk_review_no);
 	}
 
-	// /*
-	//  * 후기의 피드백에 따른 등급 점수 계산
-	//  */
-	// private int calculateMemberScore(String feedback_type) {
-	// 	switch(feedback_type) {
-	// 		case "0" : return 1
-	// 	}
-	//
-	// }
-
+	/*
+	 * 판매자 회원 등급 점수 변경
+	 */
+	private int calculateMemberScore(String feedback) {
+		switch(feedback) {
+			case "0" : {
+				return 100;
+			}
+			case "1" : {
+				return 50;
+			}
+			case "2" : {
+				return 0;
+			}
+			default: {
+				return 0;
+			}
+		}
+	}
 }

@@ -120,5 +120,6 @@ public interface ProductDAO {
 	
 
 
-
+	// 경매 낙찰가로 상품 가격 변경
+	int updateProductPrice(String pk_product_no, String product_price);
 }

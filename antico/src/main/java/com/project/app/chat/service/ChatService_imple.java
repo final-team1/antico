@@ -10,6 +10,10 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.project.app.auction.repository.AuctionChatRepository;
+import com.project.app.auction.repository.AuctionChatRoomRepository;
+import com.project.app.auction.repository.CustomAuctionChatRoomRepository;
+import com.project.app.auction.service.AuctionService;
 import com.project.app.chat.domain.Chat;
 import com.project.app.chat.domain.ChatRoom;
 import com.project.app.chat.domain.ChatRoomRespDTO;
@@ -41,6 +45,10 @@ public class ChatService_imple implements ChatService {
 	private final CustomChatRoomRepository customChatRoomRepository; // 채팅방 커스텀 레포지토리
 
 	private final ProductService productService;
+	private final AuctionChatRepository auctionChatRepository;
+	private final CustomAuctionChatRoomRepository customAuctionChatRoomRepository;
+	private final AuctionService auctionService;
+	private final AuctionChatRoomRepository auctionChatRoomRepository;
 
 	/*
 	 * 채팅방 목록 불러오기
@@ -182,5 +190,30 @@ public class ChatService_imple implements ChatService {
 
 		updatedChats = customChatRoomRepository.updateUnReadCount(chatId, roomId, memberNo);
 		return updatedChats;
+	}
+
+	/*
+	 * 읽지 않은 채팅 개수 조회
+	 */
+	@Override
+	public int getUnReadCount(String pk_member_no) {
+		int chatUnReadCount = customChatRoomRepository.findUnReadCountByMemberNo(pk_member_no);
+		int auctionChatReadCount = customAuctionChatRoomRepository.findUnReadCountByMemberNo(pk_member_no);
+
+		log.info("chatUnReadCount " + chatUnReadCount + "auctionChatReadCount" + auctionChatReadCount);
+
+		return chatUnReadCount + auctionChatReadCount;
+	}
+
+	@Override
+	public void delete(String pk_product_no) {
+		Optional<ChatRoom> chatRoom = chatRoomRepository.findChatRoomByProductNo(pk_product_no);
+		if(chatRoom.isPresent()) {
+			chatRoomRepository.deleteByProductNo(pk_product_no);
+			chatRepository.deleteByRoomId(chatRoom.get().getRoomId());
+		}
+		else {
+			auctionService.delete(pk_product_no);
+		}
 	}
 }

@@ -20,26 +20,26 @@ public class SseService {
 	/*
 	  사용자 SSE 연결 메소드 
 	 */
-	public SseEmitter connectSSE(String pk_member_no) {
+	public SseEmitter connectSSE(String member_user_id) {
 		SseEmitter emitter = new SseEmitter(300_000L); // SSE 1분 유지
-		sseEmitters.put(pk_member_no, emitter);
+		sseEmitters.put(member_user_id, emitter);
 
-		emitter.onCompletion(() -> sseEmitters.remove(pk_member_no)); // SSE 종료 시 자원 해제
-		emitter.onTimeout(() -> sseEmitters.remove(pk_member_no)); // SSE 연결 시간 종료 시 자원 해제
+		emitter.onCompletion(() -> sseEmitters.remove(member_user_id)); // SSE 종료 시 자원 해제
+		emitter.onTimeout(() -> sseEmitters.remove(member_user_id)); // SSE 연결 시간 종료 시 자원 해제
 		return emitter;
 	}
 
 	/*
 		사용자 SSE 알림 발송 메소드
 	 */
-	public void sendNotification(String pk_member_no, String eventName, String message) {
-		SseEmitter emitter = sseEmitters.get(pk_member_no); // 사용자에게 배정된 SSE 객체 조회
+	public void sendNotification(String member_user_id, String eventName, String message) {
+		SseEmitter emitter = sseEmitters.get(member_user_id); // 사용자에게 배정된 SSE 객체 조회
 		if (emitter != null) {
 			try {
 				emitter.send(SseEmitter.event().name(eventName).data(message));
 			} catch (IOException e) {
 				log.error(e.getMessage());
-				sseEmitters.remove(pk_member_no);
+				sseEmitters.remove(member_user_id);
 			}
 		}
 	}

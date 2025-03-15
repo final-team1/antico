@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -13,7 +14,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.app.auction.domain.AuctionChatRoom;
+import com.project.app.auction.repository.AuctionChatRepository;
+import com.project.app.auction.repository.AuctionChatRoomRepository;
+import com.project.app.chat.domain.ChatRoom;
 import com.project.app.chat.domain.ProductChatDTO;
+import com.project.app.chat.repository.ChatRepository;
+import com.project.app.chat.repository.ChatRoomRepository;
 import com.project.app.common.FileType;
 import com.project.app.common.PagingDTO;
 import com.project.app.component.GetMemberDetail;
@@ -44,7 +51,20 @@ public class ProductService_imple implements ProductService {
 	
 	@Autowired
 	private ProductSaleStatusEventListener productSaleStatusEventListener;
-		
+
+	@Autowired
+	private ChatRoomRepository chatRoomRepository;
+
+	@Autowired
+	private ChatRepository chatRepository;
+
+	@Autowired
+	private AuctionChatRoomRepository auctionChatRoomRepository;
+
+	@Autowired
+	private AuctionChatRepository auctionChatRepository;
+
+
 
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
@@ -440,7 +460,21 @@ public class ProductService_imple implements ProductService {
 		}
 		// #2. 해당 상품 삭제하기 (외래키 설정으로 이미지 테이블 같이 삭제됨)
 		int result = productDAO.delete(pk_product_no);
-		
+
+		// 채팅 내역 삭제 (TODO 후에는 보존 처리)
+		Optional<ChatRoom> chatRoom = chatRoomRepository.findChatRoomByProductNo(pk_product_no);
+		if(chatRoom.isPresent()) {
+			chatRoomRepository.deleteByProductNo(pk_product_no);
+			chatRepository.deleteByRoomId(chatRoom.get().getRoomId());
+		}
+		else {
+			Optional<AuctionChatRoom> auctionChatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(pk_product_no);
+			if(auctionChatRoom.isPresent()) {
+				auctionChatRoomRepository.delete(auctionChatRoom.get());
+				auctionChatRepository.deleteByRoomId(auctionChatRoom.get().getRoomId());
+			}
+		}
+
 		return result;
 	}
 
@@ -510,5 +544,12 @@ public class ProductService_imple implements ProductService {
 		return product_vo;
 	}
 
+	/*
+	 * 경매 낙찰 후 상품 가격을 낙찰가로 변경
+	 */
+	@Override
+	public int updateProductPrice(String pk_product_no, String product_price) {
+		return productDAO.updateProductPrice(pk_product_no, product_price);
+	}
 
 }

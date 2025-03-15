@@ -21,5 +21,10 @@ public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
 	// roomId를 통한 채팅방 조회
 	ChatRoom findChatRoomByRoomId(String room_id);
 
+	Optional<ChatRoom> findChatRoomByProductNo(String productNo);
+
+	// 채팅방 삭제
+	void deleteByProductNo(String productNo);
+
 }
  

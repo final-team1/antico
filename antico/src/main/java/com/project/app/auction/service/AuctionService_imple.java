@@ -32,9 +32,12 @@ import com.project.app.component.S3FileManager;
 import com.project.app.exception.BusinessException;
 import com.project.app.exception.ExceptionCode;
 import com.project.app.member.domain.MemberVO;
+import com.project.app.member.service.MemberService;
 import com.project.app.product.domain.ProductImageVO;
 import com.project.app.product.domain.ProductVO;
 import com.project.app.product.service.ProductService;
+import com.project.app.trade.model.TradeDAO;
+import com.project.app.trade.service.TradeService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +54,8 @@ public class AuctionService_imple implements AuctionService {
 
 	private final AuctionDAO auctionDAO;
 
+	private final TradeService tradeService;
+
 	private final ProductService productService;
 
 	private final S3FileManager s3FileManager;
@@ -66,6 +71,7 @@ public class AuctionService_imple implements AuctionService {
 	private final SimpMessagingTemplate messagingTemplate;
 
 	private static final Pattern BID_PATTERN = Pattern.compile("^@\\d+$");
+	private final MemberService memberService;
 
 	/*
 	 * 경매 상품 추가
@@ -144,7 +150,25 @@ public class AuctionService_imple implements AuctionService {
 
 				log.info(map.get("product_title"));
 			}
-			auctionDAO.updateProductSaleStatus(list);
+			auctionDAO.updateProductSaleStatus(list, 4);
+		}
+
+		return productMapList;
+	}
+
+	@Override
+	@Transactional
+	public List<Map<String, String>> updateProductSaleStatusByAuctionEndDate() {
+		// 경매 종료 시간인 경매 상품 일련번호 목록 조회
+		List<Map<String, String>> productMapList = auctionDAO.selectProductNoListByAuctionEndDate();
+		List<String> list = new ArrayList<>();
+
+		// 경매 시작 시간인 경매 상품 판매 상태 수정
+		if (!productMapList.isEmpty()) {
+			for (Map<String, String> map : productMapList) {
+				list.add(map.get("pk_product_no"));
+			}
+			auctionDAO.updateProductSaleStatus(list, 5);
 		}
 
 		return productMapList;
@@ -188,7 +212,7 @@ public class AuctionService_imple implements AuctionService {
 		// 판매자
 		Participant seller = Participant.createParticipant(sellerNo, sellerName);
 
-		log.info("경매 생성 판매자 startTime " + seller.getStartDate());
+		log.info("startTime " + seller.getStartDate());
 
 		participants.add(seller);
 
@@ -332,6 +356,8 @@ public class AuctionService_imple implements AuctionService {
 			productMap.put(dto.getPk_product_no(), dto);
 		}
 
+		log.info(productMap.keySet().toString());
+
 		// 조회한 정보들을 map에 저장하여 반환
 		for (AucChatRoomRespDTO dto : aucChatRoomList) {
 			String pk_product_no = dto.getAuctionChatRoom().getProductNo();
@@ -343,6 +369,7 @@ public class AuctionService_imple implements AuctionService {
 
 	@Override
 	public AuctionChatRoom joinAuctionChatRoomByProdNo(String pkProductNo, MemberVO loginMember) {
+		// TODO 경매 시작 전이면 알림
 		AuctionChatRoom chatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(pkProductNo)
 			.orElseThrow(() -> new BusinessException(ExceptionCode.JOIN_CHATROOM_FAILD));
 
@@ -387,10 +414,47 @@ public class AuctionService_imple implements AuctionService {
 
 	@Override
 	@Transactional
-	public void closeAuction(String pkAuctionNo, String room_id) {
+	public void closeAuction(Map<String, String> product_map) {
+		AuctionChatRoom chatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(product_map.get("pk_product_no"))
+			.orElseThrow(() -> new BusinessException(ExceptionCode.CHATROOM_NOT_FOUND));
+
+		AuctionBid auctionBid = auctionBidRepository.findFirstByRoomIdOrderByBidDesc(chatRoom.getRoomId());
+
+		log.info("낙찰자 일련번호 {}", auctionBid.getBidderNo());
+		log.info("판매자 일련번호 {}", product_map.get("fk_member_no"));
+
+		// 경매 참여자가 없는 경우
+		if(!auctionBid.getBidderNo().equals(product_map.get("pk_member_no"))) {
+			MemberVO memberVO = memberService.getMemberByMemberNo(auctionBid.getBidderNo());
+
+			// TODO auction 테이블에 정보 넣어야됨
+
+			String pk_product_no = product_map.get("pk_product_no");
+			String seller_no = product_map.get("pk_member_no");
+			String consumer_no = memberVO.getPk_member_no();
+			String product_price = String.valueOf(auctionBid.getBid());
+			String member_point = memberVO.getMember_point();
+
+			int n = productService.updateProductPrice( product_map.get("pk_product_no"), String.valueOf(auctionBid.getBid()));
+
+			if(n != 1) {
+				log.error("[ERROR] : 낙찰가로 상품 가격 변경 실패 : {}", product_map.get("pk_product_no"));
+				throw new BusinessException(ExceptionCode.PAYMENT_EXEC_FAILED);
+			}
+
+			// 결제 처리
+			int n1 = tradeService.purchase(pk_product_no, seller_no, consumer_no, product_price, member_point);
+
+			if(n1 != 1) {
+				throw new BusinessException(ExceptionCode.PAYMENT_EXEC_FAILED);
+			}
+		}
+
+		auctionDAO.updateAuctionEndDate(product_map.get("pk_product_no"));
+		productService.saleStatusUpdate(product_map.get("pk_product_no"), "5");
 
 		AuctionChat chat = AuctionChat.builder()
-			.roomId(room_id)
+			.roomId(chatRoom.getRoomId())
 			.chatType(1)
 			.message("경매가 종료되었습니다.")
 			.sendDate(LocalDateTime.now())
@@ -398,8 +462,27 @@ public class AuctionService_imple implements AuctionService {
 
 		AuctionChat newChat = auctionChatRepository.save(chat);
 
-		messagingTemplate.convertAndSend("/room/" + room_id + "/auction", newChat);
+		messagingTemplate.convertAndSend("/room/" + chatRoom.getRoomId() + "/auction", newChat);
 
-		auctionDAO.updateAuctionClosed(pkAuctionNo);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Map<String, String> selectAuctionProduct(String pk_product_no) {
+		Map<String, String> product_map = auctionDAO.selectAuctionProduct(pk_product_no);
+		if(product_map == null) {
+			throw new BusinessException(ExceptionCode.AUCTION_PRODUCT_NOT_FOUND);
+		}
+
+		return product_map;
+	}
+
+	@Override
+	public void delete(String pkProductNo) {
+		Optional<AuctionChatRoom> chatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(pkProductNo);
+		if(chatRoom.isPresent()) {
+			auctionChatRoomRepository.delete(chatRoom.get());
+			auctionChatRepository.deleteByRoomId(chatRoom.get().getRoomId());
+		}
 	}
 }

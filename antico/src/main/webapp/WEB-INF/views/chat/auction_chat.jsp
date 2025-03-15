@@ -261,7 +261,7 @@
             <span id="chat_product_title">
                 ${product_map.product_title}
             </span>
-            <span>
+            <span id="initial_price">
 				초기 입찰가 : <fmt:formatNumber type="number" maxFractionDigits="3" value="${product_map.product_price}"/>원
 			</span>
             <span id="product_price">
@@ -270,13 +270,13 @@
             <span id="highest_bidder_name">
                 ${highestBid.bidderName}
             </span>
-            <div id="auction_timer"></div>
+            <div id="auction_timer_${chat_room.roomId}"></div>
         </div>
 
         <span>내 포인트 : <fmt:formatNumber type="number" maxFractionDigits="3" value="${login_member_point}"/></span>
 
         <c:if test="${login_member_no eq product_map.fk_member_no}">
-            <button id="close_auction_button" onclick="closeAuction()">경매 종료하기</button>
+            <button id="close_auction_button" onclick="closeAuctionBySeller()">경매 종료하기</button>
         </c:if>
 
         <button id="participants_button">참여자</button>
@@ -296,8 +296,6 @@
         <button id="go">보내기</button>
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/countdown/2.6.0/countdown.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -305,7 +303,7 @@
         $("button#participants_button").click(function () {
             $("div#participants").slideToggle(300);
         });
-        if ("${auctionVO.auction_closed}" == 0) {
+        if ("${product_map.product_sale_status}" == 4) {
 
             // 엔터키 입력시 채팅 전송 처리
             $("input#message")
@@ -339,7 +337,16 @@
             $("#bid_price").text(currentBid.toLocaleString("ko-KR"));
 
             // 경매 남은 시간 타이머
-            updateTimer("${auctionVO.auction_enddate}");
+            $.ajax({
+                url: "${ctx_path}/auction/timer",
+                dataType: "json",
+                success: function (data) {
+                   startTimer("${chat_room.roomId}","${auctionVO.auction_enddate}", data)
+                },
+                error: function () {
+                    showAlert("error", "다시 경매방을 들어와주세요");
+                }
+            });
 
             // 웹소켓 연결 모듈을 통하여 연결 및 구독
             WebSocketManager.connect("${ctx_path}/ws-stomp", function () {
@@ -388,13 +395,14 @@
 
         }
         else {
-
             let currentBid = parseInt($("#bid_price").data("price"));
             $("#bid_price").text(currentBid.toLocaleString("ko-KR"));
+            $("span#initial_price").empty();
+            $("button#close_auction_button").hide();
 
             // 경매 남은 시간 타이머
             $("div.input-container").hide();
-            $("#auction_timer").text("경매 종료");
+            $("#auction_timer_${chat_room.roomId}").text("경매 종료");
 
             // 이전 채팅 내역 불러오기
             $.ajax({
@@ -627,53 +635,91 @@
         $("span#highest_bidder_name").text(newBid.bidderName);
     }
 
-    function updateTimer(auctionEndTime) {
-        $.ajax({
-            url: "${ctx_path}/auction/timer",
-            dataType: "json",
-            success: function (data) {
-                const endTime = new Date(auctionEndTime);
-                const serverTime = new Date(data);
 
-                const remainingTime = countdown(serverTime, endTime, countdown.HOURS | countdown.MINUTES | countdown.SECONDS);
+    if (!window.auctionTimers) {
+        window.auctionTimers = {};
+    }
 
-                $("#auction_timer").text(`\${remainingTime.hours}시간 \${remainingTime.minutes}분 \${remainingTime.seconds}초 남음`);
 
-                // 1초마다 타이머 갱신
-                if (remainingTime.value > 0) {
-                    setTimeout(() => updateTimer(auctionEndTime), 1000);
-                } else {
-                    $("#auction_timer").text("경매 종료");
-                    closeAuction();
-                }
+    function startTimer(roomId, auctionEndTime, serverTime) {
+        const endTime = new Date(auctionEndTime);
+        let now = new Date(serverTime);
 
-            },
-            error: function () {
+        // 기존 타이머가 있으면 삭제
+        clearExistingTimer(roomId);
 
+        function updateCountTimer() {
+            now = new Date(now.getTime() + 1000);
+
+            const remainingTime = Math.max(0, Math.floor((endTime - now) / 1000)); // 남은 초 계산
+            const hours = Math.floor(remainingTime / 3600);
+            const minutes = Math.floor((remainingTime % 3600) / 60);
+            const seconds = remainingTime % 60;
+
+            $(`#auction_timer_${chat_room.roomId}`).text(`\${hours}시 \${minutes}분 \${seconds}초 남음`);
+
+            if (remainingTime <= 0) {
+                console.log("실행됨");
+                $(`#auction_timer_${chat_room.roomId}`).text("경매 종료");
+                clearExistingTimer(roomId);
+                closeAuction(roomId);
+                showAlert("info", "경매가 종료되었습니다.");
             }
+        }
+
+        updateCountTimer();
+
+        // 새로운 타이머 실행 후 객체에 저장
+        window.auctionTimers[roomId] = setInterval(updateCountTimer, 1000);
+    }
+
+    function clearExistingTimer(roomId) {
+        if (window.auctionTimers[roomId]) {
+            clearInterval(window.auctionTimers[roomId]);
+            delete window.auctionTimers[roomId];
+        }
+    }
+
+    // 모든 타이머 제거 (뒤로 가기, 페이지 나갈 때 호출)
+    function clearAllTimers() {
+        Object.keys(window.auctionTimers).forEach((roomId) => {
+            clearExistingTimer(roomId);
         });
     }
 
-    function closeAuction() {
-        $("div.input-container").hide();
+    // 브라우저를 닫거나 페이지를 떠나기 전 소켓 연결 해제 및 모든 타이머 제거
+    window.onbeforeunload = function () {
+        clearAllTimers();
+        if (WebSocketManager.isConnected()) {
+            WebSocketManager.disconnect();
+        }
+    };
 
+    // 경매 종료 시 타이머 삭제
+    function closeAuction(roomId) {
+        $(`div.input-container`).hide();
+        $("span#initial_price").empty();
+        $("button#close_auction_button").hide();
+        clearExistingTimer(roomId);
+        WebSocketManager.disconnect();
+    }
+
+    function closeAuctionBySeller() {
         $.ajax({
-            url: "${ctx_path}/auction/close",
-            type: "post",
+            url : "${ctx_path}/auction/close",
             data : {
-                "room_id" : "${chat_room.roomId}",
-                "pk_auction_no" : "${auctionVO.pk_auction_no}"
+                "pk_product_no" : "${product_map.pk_product_no}"
             },
-            success: function (e) {
+            success : function (json) {
+                $(`#auction_timer_${chat_room.roomId}`).text("경매 종료");
+                closeAuction("${chat_room.roomId}");
+                clearExistingTimer("${chat_room.roomId}")
                 showAlert("info", "경매가 종료되었습니다.");
             },
-            error: function (xhr, status, error) {
-                console.log(xhr, status, error);
-                errorHandler(xhr, status, error);
+            error : function (xhr, status, error) {
+                errorHandlerWithNoClose(xhr, status, error);
             }
         });
-
-        WebSocketManager.disconnect();
     }
 
 </script>

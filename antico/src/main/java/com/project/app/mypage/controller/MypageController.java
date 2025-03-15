@@ -99,6 +99,8 @@ public class MypageController {
 	    
 	    member_role = member_vo.getMember_score();
 
+		member_role = get_member_detail.MemberDetail().getMember_role();
+
 	    Map<String, String> trade_map = service.tradeCnt(member_no); // 거래횟수와 단골을 알아오기 위함.
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {

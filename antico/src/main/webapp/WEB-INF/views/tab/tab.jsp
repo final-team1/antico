@@ -135,7 +135,14 @@
 	function closeSideTab() {
 		// 후기 페이지의 변수 제거
 		delete cur_page;
-		
+
+		if(window.auctionTimers){
+			Object.keys(window.auctionTimers).forEach((roomId) => {
+				clearInterval(window.auctionTimers[roomId]);
+				delete window.auctionTimers[roomId];
+			});
+		}
+
 		$("div#sidetab_content").empty().find("*").off();
 		$("div#sidetab_content").html("").find("script").remove(); // 스크립트 제거 추가
 		

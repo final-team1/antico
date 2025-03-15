@@ -25,5 +25,8 @@ public interface AuctionChatRoomRepository extends MongoRepository<AuctionChatRo
 	// roomId를 통한 채팅방 조회
 	AuctionChatRoom findChatRoomByRoomId(String roomId);
 
+	// 채팅방 삭제
+	void deleteByProductNo(String productNo);
+
 }
  
