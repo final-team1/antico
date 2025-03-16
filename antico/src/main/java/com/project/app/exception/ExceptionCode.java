@@ -79,6 +79,8 @@ public enum ExceptionCode {
 
 	AUCTION_PRODUCT_NOT_FOUND(404, "경매중인 상품이 없습니다."),
 
+	AUCTION_NOT_STARTED(500, "경매중인 상품이 아닙니다."),
+
 	//////////////////////////////////계좌 관련 예외 /////////////////////////////////////////////
 
 	ACCOUNT_INSERT_FAILD(400, "처음 등록하는 계좌는 대표계좌이어야 합니다."),

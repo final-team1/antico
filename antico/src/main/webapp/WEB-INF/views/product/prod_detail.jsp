@@ -1118,7 +1118,12 @@ span.sold_out_text {
 					openSideTab(html, "경매");
 				},
 				error: function(request, status, error){
-					errorAlert(JSON.parse(request.responseText).message);
+					if(request.responseText.substring(0, 4) === "msg/") {
+						errorHandler(request, status, error);
+					}
+					else {
+						errorAlert(JSON.parse(request.responseText).message);
+					}
 				}
 			});
 		});

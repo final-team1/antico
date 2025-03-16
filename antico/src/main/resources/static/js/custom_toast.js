@@ -48,7 +48,7 @@ function showReviewModal(json, icon_url) {
 				<img src="${icon_url}" width=100 height=100/>
 				
 				<span class="review_detail_title">
-					${review.consumer_name}님과 거래한 거래 후기
+					${review.seller_name}님이 ${review.consumer_name}님과의 거래 후기
 				</span>
 				
 				<div class="review_detail_product_title_box">
@@ -61,6 +61,8 @@ function showReviewModal(json, icon_url) {
 				
 	v_html += `	<div class="review_detail_cotent_box">
 					${review.review_regdate}
+					<span>구매자 : ${review.consumer_name}</span>
+					<span>판매자 : ${review.seller_name}</span>
 					<p class="review_detail_content">${review.review_content}</p>
 					<hr/>			
 				`;
@@ -85,7 +87,7 @@ function errorHandler(request, status, error) {
 
 	// 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
 	let response = request.responseText;
-	let message = response.substring(0, 4) === "msg/" ? response.substr(4) : "";
+	let message = response.substring(0, 4) === "msg/" ? response.substring(4) : "";
 
 	showAlert("error", message);
 
