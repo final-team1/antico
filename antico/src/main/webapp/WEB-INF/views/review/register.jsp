@@ -569,6 +569,10 @@
             return;
         }
 
+        if($("textarea[name='review_content']").text()=="" || $("textarea[name='review_content']").text().length < 1) {
+            showAlert("warning", "설문 내용을 작성해주세요");
+            return;
+        };
 
         // input 태그에 저장
         $("input[name='arr_pk_survey_resp_no']").val(arr_pk_survey_resp_no.join(","));

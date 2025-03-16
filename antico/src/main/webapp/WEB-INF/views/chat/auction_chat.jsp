@@ -617,6 +617,9 @@
 
     // 판매상태변경 메시지
     function handleNotificationMessage(message) {
+        if(message == "경매가 종료되었습니다.") {
+            closeAuction("{chat_room.roomId}");
+        }
         $("#chatting").append($("<span class='chat_date'>").text(message));
     }
 
@@ -626,7 +629,7 @@
         gsap.fromTo("#bid_price", {innerHTML: currentBid}, {
             duration: 1,  // 애니메이션 지속 시간 (초)
             innerHTML: newBid.bid,
-            snap: {innerHTML: 100},
+            snap: {innerHTML: 1},
             onUpdate: function () {
                 $("#bid_price").text(Math.floor(this.targets()[0].innerHTML).toLocaleString("ko-KR"));
             }
@@ -659,11 +662,7 @@
             $(`#auction_timer_${chat_room.roomId}`).text(`\${hours}시 \${minutes}분 \${seconds}초 남음`);
 
             if (remainingTime <= 0) {
-                console.log("실행됨");
-                $(`#auction_timer_${chat_room.roomId}`).text("경매 종료");
-                clearExistingTimer(roomId);
                 closeAuction(roomId);
-                showAlert("info", "경매가 종료되었습니다.");
             }
         }
 
@@ -697,11 +696,13 @@
 
     // 경매 종료 시 타이머 삭제
     function closeAuction(roomId) {
+        $(`#auction_timer_${chat_room.roomId}`).text("경매 종료");
         $(`div.input-container`).hide();
         $("span#initial_price").empty();
         $("button#close_auction_button").hide();
         clearExistingTimer(roomId);
         WebSocketManager.disconnect();
+        showAlert("info", "경매가 종료되었습니다.");
     }
 
     function closeAuctionBySeller() {
@@ -711,10 +712,7 @@
                 "pk_product_no" : "${product_map.pk_product_no}"
             },
             success : function (json) {
-                $(`#auction_timer_${chat_room.roomId}`).text("경매 종료");
                 closeAuction("${chat_room.roomId}");
-                clearExistingTimer("${chat_room.roomId}")
-                showAlert("info", "경매가 종료되었습니다.");
             },
             error : function (xhr, status, error) {
                 errorHandlerWithNoClose(xhr, status, error);

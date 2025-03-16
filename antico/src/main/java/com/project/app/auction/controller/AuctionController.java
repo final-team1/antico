@@ -184,6 +184,8 @@ public class AuctionController {
 		MemberVO memberVO = getMemberDetail.MemberDetail();
 		Map<String, String> productMap = auctionService.selectAuctionProduct(pk_product_no);
 
+		productMap.put("fk_member_no", productMap.get("pk_member_no"));
+
 		if(!memberVO.getPk_member_no().equals(productMap.get("pk_member_no"))){
 			throw new BusinessException(ExceptionCode.AUCTION_NOT_SELLER);
 		}
