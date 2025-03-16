@@ -19,5 +19,6 @@ public class MemberVO {
 	private String member_status; 				// 사용자 상태 (0 : 탈퇴, 1 : 가입, 2 : 정지)
 	private String member_name;					// 사용자 이름
 	private String member_oauth_type;			// 사용자 oauth유저인지 확인
+	private String member_img_name;
 	
 }
