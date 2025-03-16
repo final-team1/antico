@@ -90,7 +90,15 @@ $(document).ready(function() {
         if (status_dropdown.is(":hidden")) {
             status_dropdown.show();
             status_text.hide();
-
+            
+            if (current_status == '비활동') {
+                status_dropdown.val('0');
+            } else if (current_status == '활동') {
+                status_dropdown.val('1');
+            } else if (current_status == '정지') {
+                status_dropdown.val('2');
+            }
+            
             status_dropdown.change(function() {
                 const new_status = $(this).val();
 
@@ -119,6 +127,16 @@ $(document).ready(function() {
                     }
                 });
             });
+        }
+    });
+	
+ 	// 드롭다운 외부 클릭 시 닫기
+    $(document).click(function(e) {
+        if ($('.status-dropdown').is(":visible")) {
+            if (!$(e.target).closest('.status-dropdown').length && !$(e.target).closest('.status-text').length) {
+                $('.status-dropdown').hide();
+                $('.status-text').show();
+            }
         }
     });
 });

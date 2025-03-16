@@ -136,7 +136,7 @@
 	        
 	     	// 조회기간 시작일자가 종료일자 보다 크면 경고
 	        if (Number(endDate) - Number(startDate) < 0) {
-	         	alert("종료일이 시작일 보다 작습니다."); 
+	        	showAlert("click", "종료일이 시작일 보다 작습니다.");
 	         	return;
 	        }
 	        
@@ -144,16 +144,16 @@
 	        else if(Number(endDate) == Number(startDate)) {
 	        	
 	        	if(Number(startHour) > Number(endHour)){
-	        		alert("종료일이 시작일 보다 작습니다."); 
+	        		showAlert("click", "종료일이 시작일 보다 작습니다.");
 	        		return;
 	        	}
 	        	else if(Number(startHour) == Number(endHour)){
 	        		if(Number(startMinute) > Number(endMinute)){
-	        			alert("종료일이 시작일 보다 작습니다."); 
+	        			showAlert("click", "종료일이 시작일 보다 작습니다.");
 	        			return;
 	        		}
 	        		else if(Number(startMinute) == Number(endMinute)){
-	        			alert("시작일과 종료일이 동일합니다."); 
+	        			showAlert("click", "시작일과 종료일이 동일합니다.");
 	        			return;
 	        		}
 	        	}
@@ -162,7 +162,7 @@
 			// 제목 유효성 검사
 			var calendar_title = $("input#calendar_title").val().trim();
 	        if(calendar_title==""){
-				alert("제목을 입력하세요."); 
+	        	showAlert("click", "제목을 입력하세요.");
 				return;
 			}
 

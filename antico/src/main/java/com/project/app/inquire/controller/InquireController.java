@@ -1,6 +1,5 @@
 package com.project.app.inquire.controller;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,17 +14,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.project.app.comment.domain.CommentVO;
-import com.project.app.common.FileManager;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.inquire.domain.InquireVO;
 import com.project.app.inquire.service.InquireService;
 import com.project.app.member.domain.MemberVO;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 
 @Controller
 @RequestMapping("/inquire/*")
@@ -39,9 +33,7 @@ public class InquireController {
 	
 	@Autowired
 	private GetMemberDetail getMemberDetail;
-	
-	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
-	private FileManager fileManager;
+
 	
 	// 문의 내역
 	@GetMapping("inquire_list")

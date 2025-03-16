@@ -17,18 +17,18 @@
         <!-- 공지사항 목록 -->
         <c:if test="${not empty requestScope.notice_list}">
             <ul class="notice-list">
-                <c:forEach var="NoticeVO" items="${requestScope.notice_list}">
-                    <li class="notice-item">
-                        <button class="notice-item-button">
-                            <span class="notice-title">${NoticeVO.notice_title}</span>
-
-                            <span class="delete-btn" onclick="delete_Notice('${NoticeVO.pk_notice_no}')">
-                                삭제
-                            </span>
-                        </button>
-                    </li>
-                </c:forEach>
-            </ul>
+			    <c:forEach var="NoticeVO" items="${requestScope.notice_list}">
+			        <li class="notice-item" id="notice_${NoticeVO.pk_notice_no}">
+			            <button class="notice-item-button">
+			                <span class="notice-title">${NoticeVO.notice_title}</span>
+			
+			                <span class="delete-btn" onclick="delete_Notice('${NoticeVO.pk_notice_no}')">
+			                    삭제
+			                </span>
+			            </button>
+			        </li>
+			    </c:forEach>
+			</ul>
         </c:if>
 
         <c:if test="${empty requestScope.notice_list}">
@@ -56,23 +56,25 @@
     });
     
     function delete_Notice(pk_notice_no) {
+        $.ajax({
+            url: "<%= ctxPath %>/admin/admin_notice_delete",
+            type: "post",
+            data: {"pk_notice_no": pk_notice_no},
+            dataType: "json",
+            success: function(json) {
+                if (json.n == 1) {
+                    $('#notice_' + pk_notice_no).remove();
+                    showAlert("success", "공지사항을 삭제하였습니다.");
+                } else {
+                    showAlert("error", "공지사항 삭제에 실패하였습니다.");
+                }
+            },
+            error: function(e) {
+                showAlert("error", "공지사항 삭제에 실패하였습니다.");
+            }
+        });
+    }
 
-		$.ajax({
-			url : "<%= ctxPath%>/admin/admin_notice_delete",
-			type:"post",
-			data : {"pk_notice_no": pk_notice_no},
-			dataType:"json",
-			success : function(json) {
-				if(json.n == 1) {
-					alert("성공");
-					location.href = "<%= ctxPath %>/admin/admin_notice_delete";
-				}
-			},
-			error : function(e) {
-				alert("실패");
-			}
-		});
-	}
     
 </script>
 
