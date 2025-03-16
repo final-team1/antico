@@ -11,10 +11,10 @@
 <div class="main-container">
     <jsp:include page="../admin/admin_sidemenu.jsp" />
     
-    <div id="product_list" class="row" style="margin-left: 3%;">
+    <div id="product_list" class="product-list-container">
         <c:if test="${not empty requestScope.admin_product_list}">
             <c:forEach var="prod_list" items="${requestScope.admin_product_list}" varStatus="status">
-                <div id="card_wrap" class="col-md-6 col-lg-3 mb-4">
+                <div id="card_wrap" class="product-card" style="height: 250px;">
                     <div class="card shadow-sm border-0">
                         <div class="img_div">
                             <img src="${prod_list.prod_img_name}" id="prod_img" class="card-img-top" onclick="goProductDetail('${prod_list.pk_product_no}')" alt="${prod_list.product_title}" />
@@ -56,32 +56,30 @@
 <jsp:include page="../footer/footer.jsp" />
 
 <script type="text/javascript">
-	
-	// 상품상세보기
-	function goProductDetail(pk_product_no) {
-		var tabTitle = "상품 상세";
-		
-		$.ajax({
-			url : "<%= ctxPath%>/admin/admin_product_detail",
-			data : {"pk_product_no": pk_product_no},
-			success : function(html) {
-				openSideTab(html, tabTitle);
-			},
-			error : function(e) {
-				console.log(e);
-				alert("불러오기 실패");
-				closeSideTab();
-			}
-		});		
-	}
-	
-	//페이징 처리 버튼 이벤트
-	$(document).on("click", "a.page_button", function() {
-	   const page = $(this).data("page");
+    // 상품상세보기
+    function goProductDetail(pk_product_no) {
+        var tabTitle = "상품 상세";
+        
+        $.ajax({
+            url : "<%= ctxPath%>/admin/admin_product_detail",
+            data : {"pk_product_no": pk_product_no},
+            success : function(html) {
+                openSideTab(html, tabTitle);
+            },
+            error : function(e) {
+                console.log(e);
+                alert("불러오기 실패");
+                closeSideTab();
+            }
+        });        
+    }
+    
+    //페이징 처리 버튼 이벤트
+    $(document).on("click", "a.page_button", function() {
+       const page = $(this).data("page");
 
-	   location.href = "<%= ctxPath%>/admin/admin_product_list?cur_page="+ page;
-	});
-	
+       location.href = "<%= ctxPath%>/admin/admin_product_list?cur_page="+ page;
+    });
 </script>
 
 <style>
@@ -91,7 +89,20 @@
         margin: 0 auto;
     }
 
+    .product-list-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-left: 20px;
+    }
+
+    .product-card {
+        width: 100%;
+        height: 100%;
+    }
+
     .card {
+        height: 100%;
         border-radius: 10px;
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -104,7 +115,7 @@
 
     .img_div {
         position: relative;
-        height: 200px;
+        height: 50%;
         overflow: hidden;
     }
 
@@ -149,7 +160,11 @@
     }
 
     .card-body {
-        padding: 15px;
+        padding: 10px;
+        height: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     #is_no_product {

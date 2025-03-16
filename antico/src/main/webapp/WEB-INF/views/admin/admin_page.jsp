@@ -127,7 +127,7 @@
    			            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
    			      }	
                                                
-             }); // end of $.ajax()--------------------------------
+             });
            
            },
             // 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정 등록창으로 넘어간다)

@@ -107,32 +107,44 @@
 	$(document).ready(function(){
 		// 제출 버튼 클릭 시
 		$("button.inquire-add-btn").click(function(){
-			// === 글제목 유효성 검사 === 
+			
+			// 글제목 유효성 검사
 	        const title = $("input[name='inquire_title']").val().trim();	  
 	        if(title === "") {
-	    	    alert("글제목을 입력하세요!!");
+	        	showAlert("warning", "글제목을 입력하세요!!");
 	    	    $("input[name='inquire_title']").val("");
 	    	    return; // 종료
+	        }
+	        if (title.length > 50) {
+	            showAlert("warning", "글제목은 50글자 이하로 입력해주세요.");
+	            return; // 종료
 	        }
 	        
 	        const content = $("textarea[name='inquire_content']").val().trim();
 	        if(content.length === 0) {
-	    	    alert("글내용을 입력하세요!!");
+	        	showAlert("warning", "글내용을 입력하세요!!");
 	    	    return; // 종료
 	        }
+	        if (content.length > 2000) {
+	            showAlert("warning", "글내용은 2000글자 이하로 입력해주세요.");
+	            return; // 종료
+	        }
 	        
-/* 	        const attach = $(e.target)[0].files[0];
-			// 이미지 파일 크기 제한 최대 5MB
-			if(attach.size > 1024 * 1024 * 5) {
-				showAlert("warning", "업로드 이미지는 최대 5MB까지 가능합니다.");
-				return;
-			} */
-	        
+	     	// 첨부파일 크기 검사
+	        const attach = $("#file-upload")[0].files[0]; // 파일 가져오기
+	        if (attach) { // 파일이 존재하는 경우
+	            if (attach.size > 1024 * 1024 * 5) {  // 5MB 크기 제한
+	            	showAlert("warning", "업로드 이미지는 최대 5MB까지 가능합니다.");
+	                return; // 종료
+	            }
+	        }
+
 	        // 폼(form)을 전송(submit)
 		    const frm = document.addFrm;
 		    frm.method = "post";
 		    frm.action = "<%= ctxPath %>/inquire/inquire_add";
 		    frm.submit();
+		    showAlert("success", "문의 완료");
 		});
 	});
 </script>
