@@ -238,7 +238,6 @@ function goSearchPrice() {
 		    	  data: {
 		    	    labels: date_list, // X축 
 		    	    datasets: [{ 
-		    	        // data: price_list, // 값
 		    	        data: price_list,
 		    	        label: "",
 						borderColor: '#0DCC5A',
@@ -274,7 +273,6 @@ function goSearchPrice() {
 			                    stepSize: (Math.ceil(Math.max(...price_list) / 10000) - Math.floor(Math.min(...price_list) / 10000)) / 6 * 10000, // 간격 계산
 			                    padding: 10 // y축 값과 눈금 간의 여백 추가 (간격 조정)
 			                },
-			        		// offset: true // y축의 오프셋을 활성화하여 축이 데이터 포인트에 더 여유를 둡니다.
 				        }
 				    },
 				    plugins: {

@@ -775,12 +775,12 @@
 
 
 			// 상품 검색하는 함수
-			function goSearch() {
+			function goSearchProd() {
 				const frm = document.searchFrm;
 				frm.method = "get";
 				frm.action = "<%= ctxPath%>/product/prodlist";
 				frm.submit();
-			} // end of function goSearch()
+			} // end of function goSearchProd()
 
 
 			$(document).ready(function(){
@@ -836,7 +836,7 @@
 
 
 					if(e.keyCode == 13){ // 엔터를 했을 경우
-						goSearch();
+						goSearchProd();
 					}
 
 					// 검색어에서 공백을 제거한 길이를 알아온다.
@@ -957,7 +957,7 @@
 
 				// 판매자 버튼 클릭 시
 				$("button#seller_btn").on("click", function(){
-					$("button#seller_btn").css("border-bottom", "solid 3px black"); // 밑에 테두리 추가
+					$("button#seller_btn").css("border-bottom", "solid 2px black"); // 밑에 테두리 추가
 					$("button#prouct_btn").css("border-bottom", "none");			// 상품 버튼 테두리 제거
 
 
