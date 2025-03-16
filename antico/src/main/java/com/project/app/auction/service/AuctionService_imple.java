@@ -369,9 +369,8 @@ public class AuctionService_imple implements AuctionService {
 
 	@Override
 	public AuctionChatRoom joinAuctionChatRoomByProdNo(String pkProductNo, MemberVO loginMember) {
-		// TODO 경매 시작 전이면 알림
 		AuctionChatRoom chatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(pkProductNo)
-			.orElseThrow(() -> new BusinessException(ExceptionCode.JOIN_CHATROOM_FAILD));
+			.orElseThrow(() -> new BusinessException(ExceptionCode.AUCTION_NOT_STARTED));
 
 		Participant participant = Participant.createParticipant(loginMember.getPk_member_no(), loginMember.getMember_name());
 
