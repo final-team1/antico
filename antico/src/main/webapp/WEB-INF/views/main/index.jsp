@@ -330,7 +330,14 @@ span.sold_out_text {
 	                        <span class="sold_out_text">경매중</span>
 	                    </div>
 	                </c:if>
-
+					
+					<%-- 상품 상태가 경매완료이면 오버레이 추가 --%>
+					<c:if test="${reg_date_list.product_sale_status == 5}">
+					    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${reg_date_list.pk_product_no}'">
+					        <span class="sold_out_text">경매완료</span>
+					    </div>
+					</c:if>	
+					
                 </div>
 
 	    		<div class="prod_info">
@@ -407,7 +414,14 @@ span.sold_out_text {
 	                    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${reg_date_list.pk_product_no}'">
 	                        <span class="sold_out_text">경매중</span>
 	                    </div>
-	                </c:if>	                
+	                </c:if>	  
+					
+					<%-- 상품 상태가 경매완료이면 오버레이 추가 --%>
+					<c:if test="${views_week_list.product_sale_status == 5}">
+					    <div class="sold_out_overlay" onclick="location.href='${pageContext.request.contextPath}/product/prod_detail/${reg_date_list.pk_product_no}'">
+					        <span class="sold_out_text">경매완료</span>
+					    </div>
+					</c:if>					              
                 </div>
 	    		
 	    		<div class="prod_info">

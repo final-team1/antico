@@ -17,13 +17,13 @@ public interface ProductDAO {
 	
 	
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-	int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type);
+	int getProductCnt(String fk_member_no, String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type);
 	
 	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-	Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type);
+	Map<String, String> getProductPrice(String fk_member_no, String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type);
 			
 	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 포함)
-	List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type, PagingDTO paging_dto);
+	List<Map<String, String>> getProduct(String fk_member_no, String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type, PagingDTO paging_dto);
 		
 	// 상품 목록 지역 선택창에서 현재 위치 클릭하여 근처 동네 5개 알아오기
 	List<Map<String, Object>> nearRegion(String current_lat, String current_lng);	
@@ -99,7 +99,7 @@ public interface ProductDAO {
 	List<Map<String, Object>> sellerSearch(Map<String, String> paraMap);
 	
 	// 모든 상품 조회 해오기(이미지, 지역)
-	List<Map<String, String>> getProductList(String sort_views_week);
+	List<Map<String, String>> getProductList(String sort_views_week, String login_member_no);
 	
 	// 상품 요약 정보 목록 조회
 	List<ProductChatDTO> selectProductSummaryList(List<String> pk_product_no_list);

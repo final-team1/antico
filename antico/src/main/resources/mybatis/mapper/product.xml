@@ -11,8 +11,11 @@
 		from tbl_product P 
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+		LEFT JOIN tbl_blacklist B ON P.fk_member_no = B.fk_target_member_no 
+    						  AND B.fk_member_no = #{fk_member_no} <!-- 로그인한 회원이 차단한 회원만 필터링 -->
 		where I.prod_img_is_thumbnail = 1
 		and P.product_sale_status IN (0, 1, 3, 4)
+		and B.fk_target_member_no IS NULL <!-- 차단된 회원의 상품은 제외 -->
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -62,8 +65,11 @@
 		FROM tbl_product P 
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_region_no
+		LEFT JOIN tbl_blacklist B ON P.fk_member_no = B.fk_target_member_no 
+      						  AND B.fk_member_no = #{fk_member_no} <!-- 로그인한 회원이 차단한 회원만 필터링 -->
 		WHERE I.prod_img_is_thumbnail = 1
 		and P.product_sale_status IN (0, 1, 3, 4)
+		and B.fk_target_member_no IS NULL <!-- 차단된 회원의 상품은 제외 -->
 		<!-- 검색어가 있는 경우 -->
 		<if test='search_prod != null and search_prod != ""'>
         	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -161,9 +167,12 @@
 					       R.region_lng
 					from tbl_product P 
 					JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
-					JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+					JOIN tbl_region R ON P.fk_region_no = R.pk_region_No
+					LEFT JOIN tbl_blacklist B ON P.fk_member_no = B.fk_target_member_no 
+				       						  AND B.fk_member_no = #{fk_member_no} <!-- 로그인한 회원이 차단한 회원만 필터링 -->
 					where I.prod_img_is_thumbnail = 1
 					and P.product_sale_status IN (0, 1, 3, 4)
+					and B.fk_target_member_no IS NULL <!-- 차단된 회원의 상품은 제외 -->
 					<!-- 검색어가 있는 경우 -->
 					<if test='search_prod != null and search_prod != ""'>
 			        	and lower(P.product_title) like '%'||lower(#{search_prod})||'%'
@@ -694,8 +703,11 @@
 		from tbl_product P 
 		JOIN tbl_prod_img I ON P.pk_product_no = I.fk_product_no
 		JOIN tbl_region R ON P.fk_region_no = R.pk_Region_No
+		LEFT JOIN tbl_blacklist B ON P.fk_member_no = B.fk_target_member_no 
+  						  AND B.fk_member_no = #{login_member_no} <!-- 로그인한 회원이 차단한 회원만 필터링 -->
 		where I.prod_img_is_thumbnail = 1
 		and P.product_sale_status IN (0, 1, 3, 4)
+		and B.fk_target_member_no IS NULL <!-- 차단된 회원의 상품은 제외 -->
 		<if test='sort_views_week != null and sort_views_week != ""'>
 			and product_update_date >= trunc(sysdate) -7 <!-- 최근 7일 이내 등록된 상품 -->
 		</if>
@@ -752,9 +764,12 @@
 	</resultMap>
 	<select id="productSearch" parameterType="HashMap" resultMap="ProductSearchMap">
 		select pk_product_no, product_title
-		from tbl_product
+		from tbl_product P
+		LEFT JOIN tbl_blacklist B ON P.fk_member_no = B.fk_target_member_no 
+						  		AND B.fk_member_no = #{fk_member_no} <!-- 로그인한 회원이 차단한 회원만 필터링 -->
 		where lower(product_title) like '%'||lower(#{search_prod})||'%'
 		and product_sale_status IN (0, 1, 3, 4)
+		and B.fk_target_member_no IS NULL <!-- 차단된 회원의 상품은 제외 -->
 		order by product_title asc
 	</select>	
 	
@@ -767,10 +782,13 @@
 	</resultMap>
 	<select id="sellerSearch" parameterType="HashMap" resultMap="SellerSearchMap">
 		select pk_member_no, member_name
-		from tbl_member
+		from tbl_member M
+		LEFT JOIN tbl_blacklist B ON M.pk_member_no = B.fk_target_member_no 
+				  		AND B.fk_member_no = #{fk_member_no} <!-- 로그인한 회원이 차단한 회원만 필터링 -->
 		where lower(member_name) like '%'||lower(#{search_prod})||'%'
 		and member_status = 1
 		and member_role IN (0, 1, 3)
+		and B.fk_target_member_no IS NULL <!-- 차단된 회원의 상품은 제외 -->
 		order by member_name asc
 	</select>		
 	
