@@ -17,7 +17,6 @@
         font-family: "Pretendard Variable", sans-serif;
     }
 
-    /* 사이드탭 전체 스타일 */
     .side-tab-container {
         width: 100%;
         height: 100%;
@@ -25,8 +24,6 @@
         padding: 30px 20px;
         overflow-y: auto;
     }
-
-    /* 판매 내역 스타일 */
     .trade-wrap {
         background: #fff;
         border-radius: 12px;
@@ -35,7 +32,6 @@
         margin-bottom: 30px;
     }
 
-    /* 상품 타임라인 */
     .trade-timeline {
         display: flex;
         gap: 20px;
@@ -101,7 +97,6 @@
         align-self: center;
     }
 
-    /* 판매자 정보 */
     .seller-info {
         background: #fff;
         padding: 20px;
@@ -121,7 +116,6 @@
         margin-bottom: 5px;
     }
 
-    /* 버튼 */
     .review-btn {
         background-color: white;
         color: rgb(13, 204, 90);

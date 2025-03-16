@@ -48,6 +48,8 @@ public enum ExceptionCode {
 
 	RPODUCT_NOT_ON_SALE(400, "판매중인 상품이 아닙니다."), // 결제창 불러오기 예외
 
+	ALREADY_RESERVED_ERROR(400, "이미 예약중인 상품입니다."), // 결제창 불러오기 예외
+
 	NOT_PAYMENT_CONSUMER(400, "구매를 하지 않은 상품은 구매확정이 불가합니다."), // 결제를 하지 않고 구매확정을 할 경우
 
 	PAYMENT_ALREADY_EXISTS(400, "이미 구매확정이 완료되었습니다."), // 이미 구매확정을 했던 상품을 다시 누를 경우

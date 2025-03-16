@@ -58,6 +58,14 @@ public class TradeService_imple implements TradeService {
 	@Override
 	@Transactional
 	public int purchase(String pk_product_no, String member_no, String pk_member_no, String product_price, String member_point) {
+		
+		String statusCheck = tradedao.statusCheck(pk_product_no); // 구매상태 조회
+		
+		if("1".equals(statusCheck)) {
+			log.error("이미 예약중인 상태");
+			throw new BusinessException(ExceptionCode.ALREADY_RESERVED_ERROR);
+		}
+		
 		String reason = "상품구매";
 		int a = tradedao.deductPoint(product_price, pk_member_no); // 구매를 하면 포인트를 차감하기
 		int b = tradedao.holdProduct(pk_product_no); // 상품상태를 예약중으로 변경하기

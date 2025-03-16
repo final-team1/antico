@@ -274,7 +274,6 @@ function Search() {
 function sell_list_info(element) {
     let pk_trade_no = $(element).closest(".sell_history").find("input:hidden[name='pk_trade_no']").val();
 
-    console.log("pk_trade_no:", pk_trade_no);
 
     if (!pk_trade_no) {
         showAlert("error", "거래 번호가 없습니다.");

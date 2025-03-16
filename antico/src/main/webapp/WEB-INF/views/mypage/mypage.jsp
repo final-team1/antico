@@ -53,8 +53,8 @@ div.container {
 }
 
 .sidebar ul li:hover {
-    transform: translateX(5px); /* 오른쪽으로 5px 이동 */
-    transition: transform 0.2s ease-in-out; /* 부드러운 애니메이션 */
+    transform: translateX(5px);
+    transition: transform 0.2s ease-in-out; 
     font-weight: bold;
 }
 
@@ -138,20 +138,17 @@ div.container {
 
 hr {
 	border: none;
-	border-top: 1px solid #ddd; /* 연한 회색 실선 */
+	border-top: 1px solid #ddd; 
 	margin: 10px 0;
 	width: 80%;
 }
 
 
-/* 공유 아이콘 스타일 */
 i#share {
 	cursor: pointer;
 }
 
 
-
-/* 모달 스타일 */
 .modal {
 	display: none;
 	position: fixed;
@@ -159,7 +156,7 @@ i#share {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.5); /* 배경 투명화 */
+	background: rgba(0, 0, 0, 0.5);
 	justify-content: center;
 	align-items: center;
 }
@@ -179,7 +176,7 @@ i#share {
 	background-color: white;
 }
 
-.close_btn { /* 공유하기 닫기버튼 */
+.close_btn { 
 	width: 100%;
 	height: 48px;
 	background-color: #000;
@@ -190,7 +187,6 @@ i#share {
 	align-items: center;
 }
 
-/* 신뢰지수 막대기 */
 .score_level {
 	display: flex;
 	flex-direction: column;
@@ -328,9 +324,9 @@ i#share {
     top: 8px;
     bottom: 0;
     left: 8px;
-    width: 90%;  /* 이미지 크기만큼 */
-    height: 50%;  /* 이미지 크기만큼 */
-    background-color: rgba(128, 128, 128, 0.5);  /* 기본 회색 오버레이 */
+    width: 90%; 
+    height: 50%; 
+    background-color: rgba(128, 128, 128, 0.5);  
     display: none;
     align-items: center;
     justify-content: center;
@@ -340,11 +336,11 @@ i#share {
 }
 
 .overlay.reservation {
-    background-color: rgba(128, 128, 128, 0.7);  /* 예약중 상태 오버레이 */
+    background-color: rgba(128, 128, 128, 0.7);  
 }
 
 .overlay.soldout {
-    background-color: rgba(169, 169, 169, 0.7);  /* 판매완료 상태 오버레이 */
+    background-color: rgba(169, 169, 169, 0.7); 
 }
  
 .cardname:hover {
@@ -352,18 +348,18 @@ i#share {
 }
  
 .btn_more {
-    background-color: black; /* 배경색: 검은색 */
-    color: white; /* 글씨색: 흰색 */
+    background-color: black;
+    color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px; /* 테두리 살짝 둥글게 */
+    border-radius: 5px; 
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
 }
 
 .btn_more:hover {
-    background-color: #333; /* 마우스 올렸을 때 연한 검은색 */
+    background-color: #333;
 }
 
 </style>
@@ -411,8 +407,6 @@ function timeAgo(reg_date) {
     const now = new Date(); 					 // 현재 시간
     const product_reg_date = new Date(reg_date); // 상품 등록일
     
-    // console.log("현재 시간:", now);
-    // console.log("상품 등록일:", product_reg_date);
 
     const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
     const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
@@ -447,9 +441,6 @@ function timeAgo(reg_date) {
 	            openSideTab(html, tabTitle);
 	         },
 	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
 	            closeSideTab();
 	         }
 	      });
@@ -465,9 +456,6 @@ function timeAgo(reg_date) {
 	            openSideTab(html, tabTitle);
 	         },
 	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
 	            closeSideTab();
 	         }
 	      });
@@ -483,9 +471,6 @@ function timeAgo(reg_date) {
 	            openSideTab(html, tabTitle);
 	         },
 	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
 	            closeSideTab();
 	         }
 	      });
@@ -501,9 +486,6 @@ function timeAgo(reg_date) {
 	            openSideTab(html, tabTitle);
 	         },
 	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
 	            closeSideTab();
 	         }
 	      });
@@ -536,9 +518,6 @@ function timeAgo(reg_date) {
 	            openSideTab(html, tabTitle);
 	         },
 	         error : function(e) {
-	            console.log(e);
-	            // 예외처리 필요
-	            alert("불러오기 실패");
 	            closeSideTab();
 	         }
 	      });
@@ -640,7 +619,6 @@ function timeAgo(reg_date) {
     function desc() {
         const product_list = document.getElementById('product_list');
         if (!product_list) {
-            console.error('product_list 요소를 찾을 수 없습니다.');
             return;
         }
 
@@ -661,7 +639,6 @@ function timeAgo(reg_date) {
     function highPrice() {
         const product_list = document.getElementById('product_list');
         if (!product_list) {
-            console.error('product_list 요소를 찾을 수 없습니다.');
             return;
         }
 
@@ -681,7 +658,6 @@ function timeAgo(reg_date) {
     function lowPrice() {
         const product_list = document.getElementById('product_list');
         if (!product_list) {
-            console.error('product_list 요소를 찾을 수 없습니다.');
             return;
         }
 
@@ -716,6 +692,23 @@ function timeAgo(reg_date) {
             }
         });
     });
+    
+    function wishList() {
+		var tabTitle = "찜한 상품";
+		
+		$.ajax({
+			url : "<%=ctx_Path%>/product/wish_list",
+			success : function(html) {
+				openSideTab(html, tabTitle);
+			},
+			error : function(request, status, error) {
+				errorHandler(JSON.parse(request.responseText).message);
+				
+				closeSideTab();
+			}
+		});
+	}
+    
     
 </script>
 
