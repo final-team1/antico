@@ -243,7 +243,8 @@ CONSTRAINT lh_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_mem_no)
 
 CREATE SEQUENCE login_history_seq;
 
-
+select *
+from tbl_loginhistory
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 후기 테이블
