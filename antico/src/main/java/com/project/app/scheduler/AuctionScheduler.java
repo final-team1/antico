@@ -46,8 +46,7 @@ public class AuctionScheduler {
 		for (Map<String, String> map : auction_start_product_map) {
 
 			// // 판매자에게 경매 시작 알림 발송
-			String memberName = map.get("member_name"); // 회원 이름
-			String productNo = map.get("pk_product_no"); // 경매 상품 일련 번호
+			String product_title = map.get("product_title");
 			String member_user_id = map.get("member_user_id");
 
 			log.info("상품 " + map.get("product_name") + "의 경매가 시작되었습니다.");
@@ -57,12 +56,12 @@ public class AuctionScheduler {
 			// 채팅방 생성
 			auctionService.createAuctionChatRoom(map);
 
-			sseService.sendNotification(member_user_id, "auction", memberName + "님 " + productNo + "상품 경매가 시작되었습니다.");
+			sseService.sendNotification(member_user_id, "auction", product_title + "상품 경매가 시작되었습니다.");
 		}
 
 		// 상품 목록을 순회하며 판매자에게 경매 시작 알림 발송 및 채팅방 생성
 		 for(Map<String, String> map : auction_end_product_map) {
-			auctionService.closeAuction(map);
+			 auctionService.closeAuction(map);
 		}
 	}
 }

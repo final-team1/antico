@@ -787,6 +787,7 @@
 				if(${pageContext.request.userPrincipal.name != null}) {
 					SSEManager.connect("<%=ctxPath%>/sse/${pageContext.request.userPrincipal.name}");
 					SSEManager.addEvent("auction", "info");
+					SSEManager.addModalEvent("auction_end", "info");
 				}
 
 				getChatUnReadCount();
