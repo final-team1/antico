@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.project.app.admin.domain.CalendarVO;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
+import com.project.app.product.domain.ProductImageVO;
 
 @Mapper
 public interface AdminDAO {
@@ -89,6 +90,9 @@ public interface AdminDAO {
 
 	// 검색 기능
 	List<Map<String, String>> admin_searchcalendar(Map<String, String> paraMap);
+
+	// 해당 상품에 대한 이미지 정보 가져오기
+	List<ProductImageVO> getproductimg(String pk_product_no);
 
 
 
