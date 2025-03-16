@@ -250,7 +250,6 @@ function edit_bank() {
           openSideTab(html, tabTitle);
        },
        error : function(e) {
-          console.log(e);
           closeSideTab();
        }
     });

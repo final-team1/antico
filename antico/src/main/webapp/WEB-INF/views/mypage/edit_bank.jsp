@@ -123,9 +123,6 @@
 
 
 <script>
-$(document).ready(function() {
-    
-});
 
 function deleteAccount(account_no) {
 	let type = $("input:hidden[data-account-id='" + account_no + "']").val();

@@ -347,8 +347,6 @@ public class MypageController {
 			
 			HttpSession session = request.getSession();
 			
-			System.out.println("access_token -> "+session.getAttribute("access_token"));
-			
 			String ck = oauth2_service.unlinkOauthUser(String.valueOf(session.getAttribute("access_token")), member_vo.getMember_user_id());
 			
 		}
@@ -378,13 +376,9 @@ public class MypageController {
 	@PostMapping("register_account")
 	@ResponseBody
 	public int registerAccount(@RequestParam String account_num, @RequestParam String bank_name, @RequestParam String account_type) {
-	    System.out.println("bank_num: " + bank_name);  // 서버에서 확인
-	    System.out.println("bank_num: " + account_num);  // 서버에서 확인
-	    System.out.println("bank_num: " + account_type);  // 서버에서 확인
 	    MemberVO member_vo = get_member_detail.MemberDetail();
 	    String pk_member_no = member_vo.getPk_member_no();
 	    int n = service.register_account(pk_member_no, account_num, bank_name, account_type);
-	    System.out.println(n+"확인");
 	    return n;
 	}
 
