@@ -1,6 +1,6 @@
 const Toast = Swal.mixin({
 	  toast: true,
-	  position: "top-end",
+	  position: "top-start",
 	  showConfirmButton: false,
 	  color: "white",
 	  background : "black",
@@ -23,6 +23,17 @@ function showAlert(type, msg) {
 	Toast.fire({
 		icon: type,
 		title: msg.trim() == "" ? "오류가 발생했습니다. 다시 시도하여 주십시오" : msg 
+	});
+}
+
+function showAlertModal(type, msg) {
+	if(msg.trim() == "") {
+		return;
+	}
+	Swal.fire({
+		text: msg,
+		confirmButtonText: "확인",
+		icon: type
 	});
 }
 

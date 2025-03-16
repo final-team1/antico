@@ -618,7 +618,7 @@
     // 판매상태변경 메시지
     function handleNotificationMessage(message) {
         if(message == "경매가 종료되었습니다.") {
-            closeAuction("{chat_room.roomId}");
+            closeAuction("${chat_room.roomId}");
         }
         $("#chatting").append($("<span class='chat_date'>").text(message));
     }

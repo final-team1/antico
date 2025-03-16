@@ -182,7 +182,8 @@
 
                     <%-- 채팅방에 아무도 매시지를 보내지 않은 경우 로그인 사용자 이름 표시 --%>
                     if (item.latestChat) {
-                        html += item.latestChat.senderName;
+                        html += item.latestChat.senderName + " ";
+                        html += item.productChatDTO.product_title + "<br>";
                         html += item.latestChat.sendDate.substring(0, 10);
                     } else {
                         html += "${login_member_name}";
@@ -233,7 +234,8 @@
                     <%-- 채팅방에 아무도 매시지를 보내지 않은 경우 로그인 사용자 이름 표시 --%>
                     if (item.latestChat) {
                         const senderName = item.latestChat.senderName == null ? "" : item.latestChat.senderName;
-                        html += item.latestChat.chatType === 1 ? "사용자 알림 " : senderName
+                        html += item.latestChat.chatType === 1 ? "사용자 알림 " : senderName + " "
+                        html += item.productChatDTO.product_title + "<br>";
                         html += item.latestChat.sendDate.substring(0, 10);
                     } else {
                         html += `${item.auctionChatRoom.regDate.substring(0, 10)}`;
