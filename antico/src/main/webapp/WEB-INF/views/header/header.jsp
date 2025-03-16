@@ -546,7 +546,7 @@
 						<div class="flex-fill">
 							<div>
 								<%-- 상품 검색 시작 --%>
-								<form name="searchFrm" class="search">
+								<form name="searchProdFrm" class="search">
 									<div class="inputContainer">
 										<input type="text" name="search_prod" class="searchBar">
 										<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
@@ -776,10 +776,10 @@
 
 			// 상품 검색하는 함수
 			function goSearchProd() {
-				const frm = document.searchFrm;
-				frm.method = "get";
-				frm.action = "<%= ctxPath%>/product/prodlist";
-				frm.submit();
+				const prod_frm = document.searchProdFrm;
+				prod_frm.method = "get";
+				prod_frm.action = "<%= ctxPath%>/product/prodlist";
+				prod_frm.submit();
 			} // end of function goSearchProd()
 
 
