@@ -58,6 +58,9 @@ public interface MypageService {
 	// 회원의 포인트 사용내역
 	List<Map<String, String>> pointHistory(String pk_member_no);
 
+	// 판매상품 개수 알아오기
+	Map<String, String> saleCount(String member_no);
+
 
 
 

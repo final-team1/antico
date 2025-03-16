@@ -184,5 +184,18 @@ public class MypageService_imple implements MypageService {
 		List<Map<String, String>> point_history_list = mypagedao.pointHistory(pk_member_no);
 		return point_history_list;
 	}
+
+	// 판매상품 개수 알아오기
+	@Override
+	public Map<String, String> saleCount(String member_no) {
+		Map<String, String> sale_count = new HashMap<>();
+		String sale = mypagedao.sale(member_no); // 판매중
+		String reserved = mypagedao.reserved(member_no); // 예약중
+		String submit = mypagedao.submit(member_no); // 판매완료
+		sale_count.put("sale", sale);
+		sale_count.put("reserved", reserved);
+		sale_count.put("submit", submit);
+		return sale_count;
+	}
 	
 }

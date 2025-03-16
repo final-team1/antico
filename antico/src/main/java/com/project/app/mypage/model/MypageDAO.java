@@ -87,6 +87,15 @@ public interface MypageDAO {
 	// 회원의 포인트 사용내역
 	List<Map<String, String>> pointHistory(String pk_member_no);
 
+	// 판매중
+	String sale(String member_no);
+	
+	// 예약중
+	String reserved(String member_no);
+
+	// 판매완료
+	String submit(String member_no);
+
 
 
 }

@@ -320,7 +320,7 @@ function sell_list_info(element) {
 						</strong>
 			        </div>
 			    </div>
-			    <button class="review_btn">받은 후기</button>
+			    <button class="review_btn">보낸 후기</button>
 			</div>
 		</c:forEach>
 	</c:if>

@@ -50,7 +50,7 @@ public enum ExceptionCode {
 
 	ALREADY_RESERVED_ERROR(400, "이미 예약중인 상품입니다."), // 결제창 불러오기 예외
 
-	NOT_PAYMENT_CONSUMER(400, "구매를 하지 않은 상품은 구매확정이 불가합니다."), // 결제를 하지 않고 구매확정을 할 경우
+	NOT_PAYMENT_CONSUMER(400, "구매를 하지 않은 상품입니다."), // 결제를 하지 않은 상태에서 확정, 취소를 할 경우
 
 	PAYMENT_ALREADY_EXISTS(400, "이미 구매확정이 완료되었습니다."), // 이미 구매확정을 했던 상품을 다시 누를 경우
 
