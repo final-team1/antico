@@ -13,7 +13,7 @@
 	</div>
 	
 	<div class="" style="width:500px; margin:4% auto 10% auto; border: solid 1.5px #E6E6E6; border-radius: 3%; padding: 20px 20px">
-		<form action="${ctxPath}/member/register" method="post" name="registerFrom">
+		<form action="${ctxPath}/member/register" method="post" name="registerForm">
 		<div class="textSpan">
 			<span class="block">중고나라에 오신 것을</span>
 			<span>환영합니다.</span>
@@ -22,7 +22,7 @@
 		<div style="padding:8% 2% 1% 2%; width:100%; margin-bottom: 5%;">
 			<p>아이디</p>
 			<input type="text" name="member_user_id" class="textbox" placeholder="아이디"/>
-			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="idCheck">아이디는 영문, 숫자를 포함해야하며 특수문자 8~20글자만 가능합니다.</p>
+			<p style="color:red; padding-left:8px; margin-top:10px; display:none; font-size:10pt;" id="idCheck">아이디는 영문, 숫자를 포함해야하며 8~20글자만 가능합니다.</p>
 		</div>
 		<div style="padding:1% 2% 1% 2%; margin-bottom: 5%;">
 			<p>비밀번호</p>
@@ -56,9 +56,9 @@
 		<div style="width:100%; text-align: center; padding-bottom: 3%;">
 			
 		</div>			
-		<div style="padding:1% 2% 1% 2%;"">
+		<div style="padding:1% 2% 1% 2%;">
 			<button type="button" class="BtnStyle btnSubmit">회원가입하기</button>
-			<button type="button" style="display:none"></button>
+			<input type="submit" style="display: none"/>
 		</div>
 		
 
@@ -113,114 +113,66 @@ Kakao.init('61202bdbe397ec06765ee5a7cb40b414');
 
 $(document).ready(function(){
 	
-	const user_id_reg = /^[a-zA-Z](?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$/g;
-	const user_passwd_reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~@#$!%*?&])[a-zA-Z\d~@#$!%*?&]{8,20}$/ ;
+	const user_id_reg = /^[a-zA-Z][a-zA-Z0-9]{7,19}$/;
+	const user_passwd_reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~@#$!%*?&])[a-zA-Z\d~@#$!%*?&]{8,20}$/;
 	const user_tel_reg = /^010\d{8}$/;
 	const user_name_reg = /^[가-힣]{2,5}$/;
-	
-	$("input:text[name='member_user_id']").bind("blur", function(e){
-		
-		 const user_id = $(e.target).val();
-		 
-		 if(user_id_reg.test(user_id)){
-			 
-			 $("#idCheck").css("display","none");
-			 
-		 }else{
-			 
-			 $("#idCheck").css("display","block");
-			 
-		 }
-		 
+
+	// 아이디 검사
+	$("input:text[name='member_user_id']").on("change", function(e){
+		const user_id = $(e.target).val().trim();
+		$("#idCheck").toggle(!user_id_reg.test(user_id));
 	});
-	
-	$("input:password[name='member_passwd']").bind("blur", function(e){
-		
-		 const passwd = $(e.target).val();
-		 
-		 if(user_passwd_reg.test(passwd)){
-			 
-			 $("#passCheck").css("display","none");
-			 
-		 }else{
-			 
-			 $("#passCheck").css("display","block");
-			 
-		 }
-		 
+
+	// 비밀번호 검사
+	$("input:password[name='member_passwd']").on("change", function(e){
+		const passwd = $(e.target).val().trim();
+		$("#passCheck").toggle(!user_passwd_reg.test(passwd));
 	});
-	
-	$("input:password[name='member_passwd_ck']").bind("blur", function(e){
-		
-		 const passwd_ck = $(e.target).val();
-		 
-		 const passwd = $("input:password[name='member_passwd']").val();
-		 
-		 if(passwd_ck == passwd){
-			 $("#passCheckResult").css("display","none");
-		 }else{
-			 $("#passCheckResult").css("display","block");
-		 }
-		 
+
+	// 비밀번호 확인 검사
+	$("input:password[name='member_passwd_ck']").on("change", function(e){
+		const passwd_ck = $(e.target).val().trim();
+		const passwd = $("input:password[name='member_passwd']").val().trim();
+		$("#passCheckResult").toggle(passwd_ck == "" || passwd_ck != passwd);
 	});
-	
-	$("input:text[name='member_tel']").bind("blur", function(e){
-		
-		 const tel = $(e.target).val();
-		 
-		 if(user_tel_reg.test(tel)){
-			 
-			 $("#telCheck").css("display","none");
-			 
-		 }else{
-			 
-			 $("#telCheck").css("display","block");
-			 
-		 }
-		 
+
+	// 전화번호 검사
+	$("input:text[name='member_tel']").on("change", function(e){
+		const tel = $(e.target).val().trim();
+		$("#telCheck").toggle(!user_tel_reg.test(tel));
 	});
-	
-	$("input:text[name='member_name']").bind("blur", function(e){
-		
-		 const name = $(e.target).val();
-		 
-		 if(user_name_reg.test(name)){
-			 
-			 $("#nameCheck").css("display","none");
-			 
-		 }else{
-			 
-			 $("#nameCheck").css("display","block");
-			 
-		 }
-		 
+
+	// 이름 검사
+	$("input:text[name='member_name']").on("change", function(e){
+		const name = $(e.target).val().trim();
+		$("#nameCheck").toggle(!user_name_reg.test(name));
 	});
-	
-	
-	$("button.btnSubmit").bind("click", function(){
-		
-		const passwd_ck = $("input:password[name='member_passwd_ck']").val();
-		const tel = $("input:text[name='member_tel']").val();
-		const name = $("input:text[name='member_name']").val();
-		const passwd =$("input:password[name='member_passwd']").val();
-		const user_id = $("input:text[name='member_user_id']").val();
-		
-		if(tel	!= "" || name != "" || passwd != "" || user_id != "" ){
-			
-			if(user_id_reg.test(user_id) && user_passwd_reg.test(passwd) 
-					&&user_tel_reg.test(tel) && user_name_reg.test(name) && passwd_ck == passwd){
-				document.registerFrom.submit();
-			}else{
-				alert("모든 항목을 형식에 맞게 작성해주세요.");
-			}
-			
-		}else{
+
+	// 제출 버튼 클릭 이벤트
+	$(".btnSubmit").on("click", function(){
+		const user_id = $("input:text[name='member_user_id']").val().trim();
+		const passwd = $("input:password[name='member_passwd']").val().trim();
+		const passwd_ck = $("input:password[name='member_passwd_ck']").val().trim();
+		const tel = $("input:text[name='member_tel']").val().trim();
+		const name = $("input:text[name='member_name']").val().trim();
+
+		// 모든 필드가 채워졌는지 확인
+		if (user_id === "" || passwd === "" || passwd_ck === "" || tel === "" || name === "") {
 			alert("입력하지 않은 항목이 있습니다. 다시 입력해주세요.");
+			return;
 		}
-		
+
+		// 유효성 검사 통과 여부 확인
+		if (user_id_reg.test(user_id) && user_passwd_reg.test(passwd) 
+				&& user_tel_reg.test(tel) && user_name_reg.test(name) && passwd_ck === passwd) {
+			$("form[name='registerForm']").submit();
+		} else {
+			alert("모든 항목을 형식에 맞게 작성해주세요.");
+		}
 	});
-	
 });
+
 
 </script>
 

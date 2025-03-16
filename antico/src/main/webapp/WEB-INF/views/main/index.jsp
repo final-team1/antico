@@ -515,6 +515,11 @@ breakpoints: {
 
 $(document).ready(function(){
 	
+	
+	if('${sessionScope.member_status}' == 2){
+		location.href = "/antico/logout";
+	}
+	
 	// 상품 등록일자 계산 해주기
 	$("span.prod_time").each(function() {
 	    const prod_town_time = $(this).attr('data-date'); // 등록일

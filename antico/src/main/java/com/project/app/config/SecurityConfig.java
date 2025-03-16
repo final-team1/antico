@@ -89,7 +89,7 @@ public class SecurityConfig {
 					  
 		.requestMatchers("/mypage/**").permitAll()
 		
-		.requestMatchers("/auction/chatroom").hasAnyRole("USER_2","USER_3")
+		.requestMatchers("/auction/chatroom").hasAnyRole("USER_2","USER_3","ADMIN_1","ADMIN_2")
 		
 		.requestMatchers("/comment/comment_add").authenticated()
 		
