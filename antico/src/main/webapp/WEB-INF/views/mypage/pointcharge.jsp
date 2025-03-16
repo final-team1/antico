@@ -183,11 +183,10 @@ const ctx_Path = "<%= ctx_Path %>";
             const charge_commission = "${requestScope.charge_commission}";
 
             if (!chargeAmount || chargeAmount < 1000) {
-                alert("충전 금액을 1000원 이상 입력해주세요.");
+                showAlert("error", "충전 금액을 1000원 이상 입력해주세요.");
                 return;
             }
 
-            console.log("결제 요청 시작:", chargeAmount);
 
             IMP.request_pay(
                 {
@@ -198,7 +197,6 @@ const ctx_Path = "<%= ctx_Path %>";
                     amount: chargeAmount,
                 },
                 function (rsp) {
-                    console.log("결제 응답:", rsp);
                     if (rsp.success) {
                         goCoinUpdate(ctx_Path, pk_member_no, chargeAmount, charge_commission, true);
                     } else {
@@ -223,7 +221,7 @@ const ctx_Path = "<%= ctx_Path %>";
 	        dataType: "json",
 	        success: function (json) {
 	            if (json.n == 1) {
-	                alert("충전이 완료되었습니다.");
+	                showAlert("success", "충전이 완료되었습니다.");
 	                if (closePopup) {
 	                    window.open('', '_self').close(); // 팝업 닫기
 	                } else {

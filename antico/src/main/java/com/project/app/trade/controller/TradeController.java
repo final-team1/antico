@@ -51,8 +51,6 @@ public class TradeController {
 		Map<String, String> show_payment_map = service.getProduct(pk_product_no, pk_member_no);
 		
 		
-	//	System.out.println("성공함");
-		
 		mav.addObject("member_vo", member_vo);
 		mav.addObject("show_payment_map", show_payment_map);
 		mav.setViewName("trade/show_payment");

@@ -80,7 +80,6 @@ $(document).ready(function() {
            }
        });
 
-       console.log("선택된 탈퇴 사유:", selected_reasons);
    });
 
    $("#confirmButton").click(function () {
@@ -98,12 +97,11 @@ $(document).ready(function() {
 	        data: JSON.stringify(formData),
 	        dataType: "json",
 	        success: function (json) {
-	            console.log("응답 데이터:", JSON.stringify(json));
 	            if (json.n == 1) {
-	                alert("탈퇴 신청이 완료되었습니다.");
+	                showAlert("success", "탈퇴 신청이 완료되었습니다.");
 	                location.href = "<%= ctx_path %>/logout";
 	            } else {
-	                alert("탈퇴 실패!!");
+	                showAlert("error", "탈퇴 실패!!");
 	            }
 	        },
 	        error: function (request, status, error) {

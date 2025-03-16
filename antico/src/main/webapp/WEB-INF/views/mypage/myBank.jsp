@@ -60,9 +60,6 @@ function mybank_list() {
             openSideTab(html, tabTitle);
          },
          error : function(e) {
-            console.log(e);
-            // 예외처리 필요
-            alert("불러오기 실패");
             closeSideTab();
          }
       });
