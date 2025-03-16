@@ -455,9 +455,6 @@ function timeAgo(reg_date) {
     const now = new Date(); 					 // 현재 시간
     const product_reg_date = new Date(reg_date); // 상품 등록일
     
-    // console.log("현재 시간:", now);
-    // console.log("상품 등록일:", product_reg_date);
-
     const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
     const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
     const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
@@ -721,7 +718,7 @@ function timeAgo(reg_date) {
 						<div class="stat_box score_level mt-2">
 							<p style="font-weight: bold; color: ${requestScope.seller_role_color};">${requestScope.seller_role}</p>
 							<div class="trust_bar">
-								<div class="trust_progress" style="width: ${seller_info.member_score/10}%; background-color:${requestScope.seller_role_color};"></div>
+								<div class="trust_progress" style="width: ${seller_info.member_score > 3000 ? 100 : seller_info.member_score / 30}%; background-color:${requestScope.seller_role_color};"></div>
 							</div>
 							<span>${seller_info.member_score}</span>
 						</div>

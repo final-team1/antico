@@ -1,5 +1,6 @@
 package com.project.app.component;
 
+import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +84,11 @@ public class ProductSaleStatusEventListener {
 	 * 구매자 및 판매자에게 상품 판매 상태 변경 채팅 발송
 	 */
 	private void broadcastProductSaleStatusChat(String pk_product_no, String sellerNo, String message) {
-		MemberVO memberVO = memberDetail.MemberDetail();
-		if(StringUtils.isBlank(memberVO.getPk_member_no())) {
-			log.info("이벤트 발생 구매자 번호 : " + sellerNo);
-			memberVO = memberService.getMemberByMemberNo(sellerNo);
-			log.info(memberVO.getPk_member_no());
+		MemberVO memberVO = null;
+		memberVO = memberService.getMemberByMemberNo(sellerNo);
+
+		if(StringUtils.isBlank(sellerNo)) {
+			memberVO = memberDetail.MemberDetail();
 		}
 
 		String roomId = null;
