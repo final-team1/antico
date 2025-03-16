@@ -717,6 +717,23 @@ function timeAgo(reg_date) {
         });
     });
     
+    function wishList() {
+		var tabTitle = "찜한 상품";
+		
+		$.ajax({
+			url : "<%=ctx_Path%>/product/wish_list",
+			success : function(html) {
+				openSideTab(html, tabTitle);
+			},
+			error : function(request, status, error) {
+				errorHandler(JSON.parse(request.responseText).message);
+				
+				closeSideTab();
+			}
+		});
+	}
+    
+    
 </script>
 
 <jsp:include page=".././header/header.jsp"/>
