@@ -48,8 +48,20 @@
 	
 	<select id="purchaseSelect" parameterType="String" resultType="String">
 		select pk_trade_no
+		from (
+		    select pk_trade_no
+		    from tbl_trade
+		    where fk_product_no = #{pk_product_no} 
+		      and fk_consumer_no = #{pk_member_no}
+		    order by pk_trade_no desc
+		)
+		where rownum = 1
+	</select>
+	
+	<select id="canceled" parameterType="String" resultType="String">
+		select pk_trade_no
 		from tbl_trade
-		where fk_product_no = #{pk_product_no} and fk_consumer_no = #{pk_member_no}
+		where fk_product_no = #{pk_product_no} and fk_consumer_no = #{pk_member_no} and trade_status = 1
 	</select>
 
 	<!--상품 일련번호를 통한 거래내역 조회-->
@@ -62,7 +74,7 @@
 	<select id="statusCheck" parameterType="String" resultType="String">
 		select trade_status
 		from tbl_trade
-		where fk_product_no = #{pk_product_no}
+		where pk_trade_no = #{pk_trade_no}
 	</select>
 	
 	<!-- 구매취소시 포인트를 돌려주기 -->
@@ -85,8 +97,13 @@
 	
 	<update id="buyCancel">
 		update tbl_trade set trade_status = 0, trade_cancel_date = sysdate
-		where fk_product_no = #{pk_product_no}
+		where pk_trade_no = #{pk_trade_no}
 	</update>
 	
+	<select id="productSaleStatus" parameterType="String">
+		select product_sale_status
+		from tbl_product
+		where pk_product_no = #{pk_product_no}
+	</select>
 	
 </mapper>

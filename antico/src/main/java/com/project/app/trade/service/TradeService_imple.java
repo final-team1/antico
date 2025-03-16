@@ -90,14 +90,16 @@ public class TradeService_imple implements TradeService {
 		
 		String reason = "상품판매";
 		String pk_trade_no = tradedao.purchaseSelect(pk_product_no, pk_member_no); // 구매를 먼저 했는지 조회
-		String statusCheck = tradedao.statusCheck(pk_product_no); // 이미 구매 확정을 했는지 조회
 
 		if(pk_trade_no != null) { //구매를 먼저 한 상태라면
+			String statusCheck = tradedao.statusCheck(pk_trade_no); // 이미 구매 확정을 했는지 조회
 			if ("2".equals(statusCheck)) { // 이미 구매확정이라면
 				log.error("이미 구매확정 상태");
 				throw new BusinessException(ExceptionCode.PAYMENT_ALREADY_EXISTS);
+			} else if ("0".equals(statusCheck)) {
+				log.error("구매취소 상태");
+				throw new BusinessException(ExceptionCode.CANCEL_AREADY_EXISTS);
 			}
-
 			Map<String, String> member_select = mydao.member_select(fk_member_no);
 			String member_point = member_select.get("member_point");
 			a = tradedao.plusPoint(product_price, fk_member_no); // 판매자 포인트 증가 업데이트
@@ -108,7 +110,8 @@ public class TradeService_imple implements TradeService {
 		else { // 구매를 안 한 경우라면
 			throw new BusinessException(ExceptionCode.NOT_PAYMENT_CONSUMER);
 		}
-
+		
+		
 		// tradedao.completedProduct(pk_product_no); // 판매상태를 구매확정으로 업데이트
 		// 위의 기능이 정상적으로 동작하여 커밋이 완료되면 채팅 알림 이벤트 실행
 		eventPublisher.publishEvent(new ProductStatusChangedEvent(pk_product_no, "2", pk_member_no));
@@ -128,20 +131,27 @@ public class TradeService_imple implements TradeService {
 	public int Cancel(String product_price, String pk_product_no, String pk_member_no, String reason) {
 		int n = 0;
 		String pk_trade_no = tradedao.purchaseSelect(pk_product_no, pk_member_no); // 구매를 먼저 했는지 조회
-		String statusCheck = tradedao.statusCheck(pk_product_no); // 이미 구매 확정을 했는지 조회
+		String product_sale_status = tradedao.productSaleStatus(pk_product_no); // 판매완료인 상품을 조회
 		if(pk_trade_no != null) { //구매를 먼저 한 상태라면
+			String statusCheck = tradedao.statusCheck(pk_trade_no); // 이미 구매 확정을 했는지 조회
+			if ("2".equals(statusCheck) || "2".equals(product_sale_status)) { // 이미 구매확정이라면
+				log.error("이미 구매확정 상태");
+				throw new BusinessException(ExceptionCode.PAYMENT_ALREADY_EXISTS);
+			} else if ("0".equals(statusCheck)) {
+				log.error("구매취소 상태");
+				throw new BusinessException(ExceptionCode.CANCEL_AREADY_EXISTS);
+			}
 			Map<String, String> member_select = mydao.member_select(pk_member_no);
 			String member_point = member_select.get("member_point");
 			int point = tradedao.returnPoint(product_price, pk_member_no); // 결제한 금액만큼 포인트를 돌려준다.
 			int sell = tradedao.onSell(pk_product_no); // 판매중으로 다시 변경
 			int cancel_data = tradedao.cancelData(pk_member_no, product_price, member_point, reason); // 포인트내역에 기록을 남기기
-			int buy_cancel = tradedao.buyCancel(pk_product_no); // 거래를 구매취소로 변경하고, 거래취소날짜 업데이트
-			n = point*sell*cancel_data*buy_cancel;
-		} else if ("0".equals(statusCheck)) {
-			throw new BusinessException(ExceptionCode.CANCEL_AREADY_EXISTS);
-		} else if ("2".equals(statusCheck)) {
-			throw new BusinessException(ExceptionCode.PAYMENT_ALREADY_EXISTS);
+			int buy_cancel = tradedao.buyCancel(pk_trade_no); // 거래를 구매취소로 변경하고, 거래취소날짜 업데이트
+			n = point*sell*cancel_data;
+		} else {
+			throw new BusinessException(ExceptionCode.NOT_PAYMENT_CONSUMER);
 		}
+		
 		return n;
 	}
 
