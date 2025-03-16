@@ -119,7 +119,7 @@ $(document).ready(function(){
 					 $("div#search_result").html(v_html).show();
 	    		},
 	    		error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	    			errorHandler(request, status, error);
 				} 
 	    		
 	    	}); // end of $.ajax

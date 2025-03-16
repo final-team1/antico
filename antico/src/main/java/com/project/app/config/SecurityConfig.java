@@ -83,16 +83,26 @@ public class SecurityConfig {
 					
 		.requestMatchers("/chat/**").authenticated()
 					 
-		.requestMatchers("/product/**").authenticated()
-					  
-		.requestMatchers("/mypage/**").authenticated()
+		.requestMatchers("/product/add").authenticated()
 		
-		.requestMatchers("/notice/notice_list").authenticated()
+		.requestMatchers("/product/**").permitAll()
+					  
+		.requestMatchers("/mypage/**").permitAll()
+		
+		.requestMatchers("/auction/chatroom").hasAnyRole("USER_2","USER_3")
+		
+		.requestMatchers("/comment/comment_add").authenticated()
+		
+		.requestMatchers("/inquire/inquire_add").authenticated()
+		
+		.requestMatchers("/trade/**").authenticated()
+		
+		.requestMatchers("/notice/notice_list").permitAll()
 		
 		.requestMatchers("/review/**").permitAll()
 		
 		.requestMatchers("/admin/**").hasAnyRole("ADMIN_1","ADMIN_2")
-          
+        
         .requestMatchers("/**").permitAll()
           
         .requestMatchers("/login/oauth2/**").permitAll()

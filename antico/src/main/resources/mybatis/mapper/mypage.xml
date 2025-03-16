@@ -7,7 +7,7 @@
 
 	<!-- 탈퇴 신청시 탈퇴테이블에 insert -->
     <insert id="delete_submit" parameterType="Map">
-	    insert into tbl_leave sets(pk_leave_no, fk_member_no, leave_reason, leave_date)
+	    insert into tbl_leave (pk_leave_no, fk_member_no, leave_reason, leave_date)
 	    values (leave_seq.nextval, to_number(#{fk_member_no}), #{leave_reason}, sysdate)
 	</insert>
 
@@ -18,7 +18,7 @@
 	</update>
 	
     <insert id="pointcharge" parameterType="Map">
-	    insert into tbl_charge sets(pk_charge_no, fk_member_no, charge_price, charge_regdate, charge_commission)
+	    insert into tbl_charge (pk_charge_no, fk_member_no, charge_price, charge_regdate, charge_commission)
 		values (cha_no.nextval, #{fk_member_no}, #{charge_price}, sysdate, #{charge_commission})
 	</insert>
 	
@@ -30,7 +30,7 @@
 	
 	<!-- 충전한 포인트의 내역을 insert -->
 	<insert id="point_history" parameterType="Map">
-		insert into tbl_point_history sets(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
+		insert into tbl_point_history(pk_point_history_no, fk_member_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate)
 		values (point_history_seq.nextval, #{fk_member_no}, #{point_history_reason}, #{point_insert}, #{member_point}, #{point_insert}+#{member_point}, sysdate)
 	</insert>
 	
@@ -79,6 +79,7 @@
 		on p.pk_product_no = i.fk_product_no
 		where p.fk_member_no = #{mvo}
 		and   i.prod_img_is_thumbnail = 1
+		order by product_regdate asc
 	</select>
 	
 	<resultMap id="seller_info" type="HashMap">
@@ -206,6 +207,80 @@
 		group by 
 		    case when fk_seller_no = #{member_no} then fk_consumer_no end
 		having count(*) >= 3
+	</select>
+	
+	<insert id="registerAccount" parameterType="String">
+		insert into tbl_account(pk_account_no, account_no, account_bank, fk_member_no, account_type)
+		values(acc_seq.nextval, #{account_num}, #{bank_name}, #{pk_member_no}, #{account_type})
+	</insert>
+	
+	<select id="accountCnt" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_account
+		where fk_member_no = #{pk_member_no}
+	</select>
+	
+	<resultMap type="HashMap" id="accountMap">
+		<result property="pk_account_no" 			column="pk_account_no"			javaType="String"/>
+		<result property="fk_member_no" 			column="fk_member_no"			javaType="String"/>
+		<result property="account_type" 			column="account_type"			javaType="String"/>
+		<result property="account_no" 				column="account_no"				javaType="String"/>
+		<result property="account_bank" 			column="account_bank"			javaType="String"/>
+	</resultMap>
+	
+	<select id="accountMap" parameterType="String" resultMap="accountMap">
+		select pk_account_no, fk_member_no, account_type, account_no, account_bank
+		from tbl_account
+		where fk_member_no = #{pk_member_no}
+		order by account_type desc
+	</select>
+	
+	<select id="bankMap"  parameterType="String" resultMap="accountMap">
+		select pk_account_no, fk_member_no, account_type, account_no, account_bank
+		from tbl_account
+		where fk_member_no = #{pk_member_no} and account_type = 1
+	</select>
+	
+	<update id="changeType" parameterType="String">
+		update tbl_account set account_type = 0
+		where account_no = #{account_no}
+	</update>
+	
+	<delete id="accountDelete" parameterType="String">
+		delete tbl_account where account_no = #{account_no}
+	</delete>
+	
+	<select id="main_account" resultType="String" parameterType="String">
+		select pk_account_no
+		from tbl_account
+		where fk_member_no = #{pk_member_no} and account_type = 1
+	</select>
+	
+	<update id="accountTypeUpdate" parameterType="String">
+		update tbl_account set account_type = 1
+		where account_no = #{account_no}
+	</update>
+	
+	<update id="notMain" parameterType="String">
+		update tbl_account set account_type = 0
+		where pk_account_no = #{main_account}
+	</update>
+	
+	<resultMap type="HashMap" id="pointHistory">
+		<result property="pk_point_history_no" 			column="pk_point_history_no"			javaType="String"/>
+		<result property="fk_member_no" 				column="fk_member_no"					javaType="String"/>
+		<result property="point_history_reason" 		column="point_history_reason"			javaType="String"/>
+		<result property="point_history_point" 			column="point_history_point"			javaType="String"/>
+		<result property="point_history_point_before" 	column="point_history_point_before"		javaType="String"/>
+		<result property="point_history_point_after" 	column="point_history_point_after"		javaType="String"/>
+		<result property="point_history_regdate" 		column="point_history_regdate"			javaType="String"/>
+	</resultMap>
+	
+	<select id="pointHistory" resultMap="pointHistory" parameterType="String">
+		select pk_point_history_no, point_history_reason, point_history_point, point_history_point_before, point_history_point_after, point_history_regdate
+		from tbl_point_history
+		where fk_member_no = #{pk_member_no}
+		order by point_history_regdate desc
 	</select>
 	
 </mapper>

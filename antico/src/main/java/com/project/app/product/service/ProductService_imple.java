@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -13,13 +14,20 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.app.auction.domain.AuctionChatRoom;
+import com.project.app.auction.repository.AuctionChatRepository;
+import com.project.app.auction.repository.AuctionChatRoomRepository;
+import com.project.app.chat.domain.ChatRoom;
 import com.project.app.chat.domain.ProductChatDTO;
+import com.project.app.chat.repository.ChatRepository;
+import com.project.app.chat.repository.ChatRoomRepository;
 import com.project.app.common.FileType;
 import com.project.app.common.PagingDTO;
 import com.project.app.component.GetMemberDetail;
 import com.project.app.component.ProductSaleStatusEventListener;
 import com.project.app.component.ProductStatusChangedEvent;
 import com.project.app.component.S3FileManager;
+import com.project.app.member.domain.MemberVO;
 import com.project.app.product.domain.CategoryDetailVO;
 import com.project.app.product.domain.CategoryVO;
 import com.project.app.product.domain.ProductImageVO;
@@ -43,7 +51,20 @@ public class ProductService_imple implements ProductService {
 	
 	@Autowired
 	private ProductSaleStatusEventListener productSaleStatusEventListener;
-		
+
+	@Autowired
+	private ChatRoomRepository chatRoomRepository;
+
+	@Autowired
+	private ChatRepository chatRepository;
+
+	@Autowired
+	private AuctionChatRoomRepository auctionChatRoomRepository;
+
+	@Autowired
+	private AuctionChatRepository auctionChatRepository;
+
+
 
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
@@ -75,6 +96,30 @@ public class ProductService_imple implements ProductService {
 	public List<Map<String, Object>> nearRegion(String current_lat, String current_lng) {
 		List<Map<String, Object>> near_region_list = productDAO.nearRegion(current_lat, current_lng);
 		return near_region_list;
+	}
+	
+	
+	// 상품 올린 회원에 대한 거래 횟수 알아오기
+	@Override
+	public String getTradeCntOneMember(String fk_member_no2) {
+		String trade_cnt = productDAO.getTradeCntOneMember(fk_member_no2);
+		return trade_cnt;
+	}
+
+	
+	// 상품 올린 회원에 대한 후기 수 알아오기
+	@Override
+	public String getReviewCntOneMember(String fk_member_no2) {
+		String review_cnt = productDAO.getReviewCntOneMember(fk_member_no2);
+		return review_cnt;
+	}
+	
+	
+	// 상품 올린 회원에 대한 단골 수 알아오기
+	@Override
+	public String getRegularCustomerCnt(String fk_member_no2) {
+		String regular_customer_cnt = productDAO.getRegularCustomerCnt(fk_member_no2);
+		return regular_customer_cnt;
 	}
 	
 	
@@ -239,7 +284,15 @@ public class ProductService_imple implements ProductService {
 		Map<String, String> product_map = productDAO.getProductDetail(pk_product_no);
 		
 		
-		String login_member_no = get_member_detail.MemberDetail().getPk_member_no(); // 로그인 한 유저번호 가져오기
+		// 로그인 한 유저번호 가져오기
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String login_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String fk_member_no = member_vo.getPk_member_no();
+		    if (fk_member_no != null && !fk_member_no.isEmpty()) {
+		    	login_member_no = fk_member_no;
+		    }
+		}
 		
 		// 상품 조회수 증가는 로그인을 한 상태에서 다른 사람의 상품을 볼때만 증가하도록 한다.
 		if(login_member_no != null && !product_map.isEmpty() && !login_member_no.equals(product_map.get("fk_member_no"))) {
@@ -407,7 +460,21 @@ public class ProductService_imple implements ProductService {
 		}
 		// #2. 해당 상품 삭제하기 (외래키 설정으로 이미지 테이블 같이 삭제됨)
 		int result = productDAO.delete(pk_product_no);
-		
+
+		// 채팅 내역 삭제 (TODO 후에는 보존 처리)
+		Optional<ChatRoom> chatRoom = chatRoomRepository.findChatRoomByProductNo(pk_product_no);
+		if(chatRoom.isPresent()) {
+			chatRoomRepository.deleteByProductNo(pk_product_no);
+			chatRepository.deleteByRoomId(chatRoom.get().getRoomId());
+		}
+		else {
+			Optional<AuctionChatRoom> auctionChatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(pk_product_no);
+			if(auctionChatRoom.isPresent()) {
+				auctionChatRoomRepository.delete(auctionChatRoom.get());
+				auctionChatRepository.deleteByRoomId(auctionChatRoom.get().getRoomId());
+			}
+		}
+
 		return result;
 	}
 
@@ -420,6 +487,20 @@ public class ProductService_imple implements ProductService {
 		return marketPrice;
 	}
 
+	// 메인 검색창에서 상품 검색 시 자동글 완성하기 및 정보 가져오기
+	@Override
+	public List<Map<String, Object>> productSearch(Map<String, String> paraMap) {
+		List<Map<String, Object>> product_list = productDAO.productSearch(paraMap);
+		return product_list;
+	}
+	
+
+	// 메인 검색창에서 판매자 검색 시 자동글 완성하기 및 정보 가져오기
+	@Override
+	public List<Map<String, Object>> sellerSearch(Map<String, String> paraMap) {
+		List<Map<String, Object>> seller_list = productDAO.sellerSearch(paraMap);
+		return seller_list;
+	}
 	
 	
 	//모든 상품 조회 해오기(이미지, 지역)
@@ -456,5 +537,19 @@ public class ProductService_imple implements ProductService {
 		return productDAO.insertAuctionProductImage(fileList, cProductNo);
 	}
 
+	// 찜한 상품보기
+	@Override
+	public List<Map<String, String>> wish_list(String pk_member_no) {
+		List<Map<String, String>> product_vo = productDAO.wish_list(pk_member_no);
+		return product_vo;
+	}
+
+	/*
+	 * 경매 낙찰 후 상품 가격을 낙찰가로 변경
+	 */
+	@Override
+	public int updateProductPrice(String pk_product_no, String product_price) {
+		return productDAO.updateProductPrice(pk_product_no, product_price);
+	}
 
 }

@@ -924,21 +924,21 @@ span.sold_out_text {
 				<ul id="review_container_ul">
 					<li class="review_cnt">
 						<span class="review_cnt_title">거래량</span>
-						<span class="review_cnt">1</span>
+						<span class="review_cnt">${requestScope.trade_cnt}</span>
 					</li>
 					
 					<li class="bar"></li>	
 
 					<li class="review_cnt">
 						<span class="review_cnt_title">후기</span>
-						<span class="review_cnt">1</span>
+						<span class="review_cnt">${requestScope.review_cnt}</span>
 					</li>
 					
 					<li class="bar"></li>	
 					
 					<li class="review_cnt">
 						<span class="review_cnt_title">단골</span>
-						<span class="review_cnt">1</span>
+						<span class="review_cnt">${requestScope.regular_customer_cnt}</span>
 					</li>												
 					
 				</ul>
@@ -1118,7 +1118,7 @@ span.sold_out_text {
 					openSideTab(html, "경매");
 				},
 				error: function(request, status, error){
-					errorHandler(request, status, error);
+					errorAlert(JSON.parse(request.responseText).message);
 				}
 			});
 		});

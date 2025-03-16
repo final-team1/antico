@@ -336,6 +336,7 @@
                 <textarea name="review_content"></textarea>
                 <input type="hidden" name="arr_pk_survey_resp_no"/>
                 <input type="hidden" name="pk_trade_no" value="${trade_vo.pk_trade_no}"/>
+                <input type="hidden" name="feedback_type" />
 
                 <div id="image_preview"></div>
 
@@ -571,6 +572,11 @@
 
         // input 태그에 저장
         $("input[name='arr_pk_survey_resp_no']").val(arr_pk_survey_resp_no.join(","));
+
+        // 피드백 타입 저장
+        const feedback_type = $("div.feedback_btn").filter(".clicked").index();
+
+        $("input[name='feedback_type']").val(feedback_type);
 
         // 후기 등록 form에서 formData 가져오기
         const formData = new FormData($("form#reviewFrm")[0]);

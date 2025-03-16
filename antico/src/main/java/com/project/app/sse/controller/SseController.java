@@ -31,10 +31,9 @@ public class SseController {
 	/*
 	 * 알림 등록
 	 */
-	@GetMapping(value = "{pk_member_no}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public ResponseEntity<SseEmitter> connectSSE(@PathVariable String pk_member_no) {
-		log.info("connectSSE pk_member_no = " + pk_member_no);
-		SseEmitter emitter = sseService.connectSSE(pk_member_no);
+	@GetMapping(value = "{member_user_id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public ResponseEntity<SseEmitter> connectSSE(@PathVariable String member_user_id) {
+		SseEmitter emitter = sseService.connectSSE(member_user_id);
 		return ResponseEntity.ok(emitter);
 	}
 	
@@ -43,9 +42,8 @@ public class SseController {
 	 */
 	@PostMapping("broadcast")
 	@ResponseBody
-	public ResponseEntity<String> sendNotification(@RequestParam String pk_member_no, String eventName ,@RequestBody String message) {
-		log.info("sendNotification pk_member_no = " + pk_member_no);
-		sseService.sendNotification(pk_member_no, eventName, message);
-		return ResponseEntity.ok("notification to " + pk_member_no);
+	public ResponseEntity<String> sendNotification(@RequestParam String member_user_id, String eventName ,@RequestBody String message) {
+		sseService.sendNotification(member_user_id, eventName, message);
+		return ResponseEntity.ok("notification to " + member_user_id);
 	}
 }

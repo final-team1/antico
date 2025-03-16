@@ -40,6 +40,24 @@ public interface MypageService {
 	 // 거래횟수와 단골을 알아오기 위함.
 	Map<String, String> tradeCnt(String member_no);
 
+	// 계좌등록시 은행테이블 insert, 대표계좌 유무체크, 계좌테이블 등록
+	int register_account(String pk_member_no, String account_num, String bank_name, String account_type);
+
+	// 회원의 계좌 리스트 조회
+	List<Map<String, String>> bankList(String pk_member_no);
+
+	// 계좌 삭제
+	int accountDelete(String account_no, String account_type);
+
+	// 대표계좌 변경
+	int accountTypeUpdate(String account_no, String pk_member_no);
+
+	// 회원의 대표계좌 조회
+	Map<String, String> bankMap(String pk_member_no);
+
+	// 회원의 포인트 사용내역
+	List<Map<String, String>> pointHistory(String pk_member_no);
+
 
 
 

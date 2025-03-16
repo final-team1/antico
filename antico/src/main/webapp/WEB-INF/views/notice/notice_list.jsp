@@ -10,7 +10,7 @@
 <script src="https://kit.fontawesome.com/0c69fdf2c0.js" crossorigin="anonymous"></script>
 <jsp:include page=".././header/header.jsp" />
 
-<div class="container" style="padding: 30px; position: relative;">
+<div class="container_notice" style="padding: 30px; position: relative; margin: 0 auto; width: 80%;">
 	<h2 style="text-align: center;">고객센터</h2>
 	
 	<hr style="border: 1.5px solid black; width: 90%;">	
@@ -182,9 +182,9 @@
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},
-			error : function(e) {
-				console.log(e);
-				alert("불러오기 실패");
+			error : function(request, status, error) {
+				errorAlert(JSON.parse(request.responseText).message);
+				
 				closeSideTab();
 			}
 		});
@@ -200,9 +200,9 @@
 			success : function(html) {
 				openSideTab(html, tabTitle);
 			},
-			error : function(e) {
-				console.log(e);
-				alert("불러오기 실패");
+			error : function(request, status, error) {
+				errorAlert(JSON.parse(request.responseText).message);
+				
 				closeSideTab();
 			}
 		});

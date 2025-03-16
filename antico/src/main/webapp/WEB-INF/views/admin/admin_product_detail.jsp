@@ -55,14 +55,13 @@
 				data: {"pk_product_no":pk_product_no},
 				dataType: "json",
 				success:function(json){
-					if(json.n==1){
-						alert("상품을 삭제하였습니다.");
+					if(json.n == 1){						
+						closeSideTab();
+						location.reload();
 					}
 					else {
-						alert("상품을 삭제하지 못했습니다.");
-					}
-					
-					location.href="<%= ctxPath%>/admin/admin_product_list";
+						showAlert("success", "상품을 삭제하지 못했습니다.");		
+					}				
 				},
 				error: function(request, status, error){
 		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);

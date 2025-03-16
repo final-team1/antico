@@ -191,10 +191,12 @@
 
                     html += `	</div>`;
 
-                    if (item.latestChat.message.length > 27) {
-                        html += item.latestChat.message.substring(0, 27) + "...";
+                    const msg = sanitizeMessage(item.latestChat.message);
+
+                    if (msg.length > 27) {
+                        html += msg.substring(0, 27) + "...";
                     } else {
-                        html += item.latestChat.message;
+                        html += msg;
                     }
 
                     html += `	</div>
@@ -220,7 +222,6 @@
             success: function (list) {
                 let html = '';
                 $.each(list, function (index, item) {
-
                     html += `
 					<div class="auction_chatroom_item" data-room-id="\${item.auctionChatRoom.roomId}">
 						<img src="${ctx_path}/images/icon/user_circle.svg" width="50" />
@@ -240,10 +241,12 @@
 
                     html += `	</div>`;
 
-                    if (item.latestChat.message.length > 27) {
-                        html += item.latestChat.message.substring(0, 27) + "...";
+                    const msg = sanitizeMessage(item.latestChat.message);
+
+                    if (msg.length > 27) {
+                        html += msg.substring(0, 27) + "...";
                     } else {
-                        html += item.latestChat.message;
+                        html += msg;
                     }
 
                     html += `</div>
@@ -260,6 +263,10 @@
                 errorHandler(xhr, status, error);
             }
         });
+    }
+
+    function sanitizeMessage(message) {
+        return message.replace(/<\/?[^>]+(>|$)/g, ""); // HTML 태그 제거
     }
 
 </script>

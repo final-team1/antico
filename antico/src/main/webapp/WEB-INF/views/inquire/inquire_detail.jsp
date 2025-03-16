@@ -45,7 +45,7 @@
 
 	        <div class="form-group">
 	            <label for="comment_content">내용</label>
-	            <textarea name="comment_content" id="comment_content" class="textarea-field" placeholder="답변을 작성하세요..." required></textarea>
+	            <textarea name="comment_content" id="comment_content" class="textarea-field" maxlength="2000" placeholder="답변을 작성하세요..." required></textarea>
 	        </div>
 
 	        <div class="form-group">
@@ -60,6 +60,7 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		// 문의 답변
 	    $("button.submit-btn").click(function() {
 	        const frm = document.addFrm;
 	        const pk_inquire_no = $("input[name='pk_inquire_no']").val();

@@ -121,13 +121,13 @@
                         	});
 
                         }                                                  
-                        successCallback(events);                               
+                        successCallback(events);                   
                      },
    				  error: function(request, status, error){
    			            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
    			      }	
                                                
-             }); // end of $.ajax()--------------------------------
+             });
            
            },
             // 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정 등록창으로 넘어간다)
@@ -151,6 +151,7 @@
       		 goSearch();
       	 }
         });
+
     });
     
  	// === 검색 기능 === //
@@ -229,4 +230,21 @@
         border-radius: 10px;
         overflow: hidden;
     }
+     .fc-daygrid-day-number {
+        color: black !important;
+    }
+
+    #calendar > div.fc-view-harness.fc-view-harness-active > div > table > thead > tr > th > div > div > table > thead > tr > th > div > a {
+        color: #0DCC5A !important;
+        font-weight: bold;
+    }
+    
+    .fc-day-sat a {
+    	color: blue !important;
+    }
+    
+    .fc-day-sun a {
+    	color: red !important;
+	}
+
 </style>

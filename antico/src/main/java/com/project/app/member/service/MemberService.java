@@ -14,5 +14,8 @@ public interface MemberService {
 
 	void google_tel_add(String member_tel);
 
-	
+	MemberVO getMemberByMemberNo (String pk_member_no);
+
+	void updateScore(String fkSellerNo, int score);
+
 }

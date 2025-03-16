@@ -244,12 +244,6 @@ span.sold_out_text {
 <jsp:include page=".././header/header.jsp" />
 
 <div class="container mt-5">
-
-
-
-<!-- 사이트 탭 테스트용  -->
-<button onclick="showReviewTab()">후기확인</button>
-<button onclick="showReviewRegisterTab()">후기 등록 확인</button>
 	
 <!-- Slider main container -->
 <div class="mainImgContainer">
@@ -446,67 +440,6 @@ span.sold_out_text {
 	</div>
 </div>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-	<h2>대서리 점심메뉴</h2>
-	<div class="table-container">
-	    <table class="table">
-	        <thead>
-	            <tr>
-	                <th></th>
-	                <th>월요일</th>
-	                <th>화요일</th>
-	                <th>수요일</th>
-	                <th>목요일</th>
-	                <th>금요일</th>
-	            </tr>
-	        </thead>
-	        <tbody>
-	            <tr>
-	                <th scope="row">밥</th>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	                <td>백미<br>흑미</td>
-	            </tr>
-	            <tr>
-	                <th scope="row">국</th>
-	                <td>김치찌개</td>
-	                <td>배추된장국</td>
-	                <td>얼큰 콩나물국</td>
-	                <td>오징어 뭇국</td>
-	                <td>매콤어묵탕</td>
-	            </tr>
-	            <tr>
-	                <th scope="row">메인메뉴</th>
-	                <td>돼지불고기<br>생선까스<br>애호박새송이볶음<br>
-	                <td>찜닭<br>미트볼비엔나 케찹볶음<br>계란말이<br>양파튀김<br>어묵볶음</td>
-	                <td>훈제오리야채볶음<br>타코야끼<br>알감자조림<br>청경채양파볶음</td>
-	                <td>궁중떡볶이<br>두부조림<br>동그랑땡<br>계란곤약간장조림</td>
-	                <td>보쌈<br>코다리조림</td>
-	            </tr>
-	            <tr>
-	                <th scope="row">반찬</th>
-	                <td>청포묵무침<br>오징어젓갈<br>쌈<br>쌈장</td>
-	                <td>숙주무침<br>오이야채 초무침<br>콩자반<br>조미김</td>
-	                <td>깻잎지<br>쌈무<br>단무지무침<br>부추무침</td>
-	                <td>시금치무침<br>미역줄기초무침<br>콘감자마요<br>조미김</td>
-	                <td>오징어 야채무침<br>콩나물무침<br>고추장아찌<br>쌈/쌈장<br>조미김</td>
-	            </tr>
-	        </tbody>
-	    </table>
-	</div>
-</div>
-
-
- 
-
-
 <script type="module">
 import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs';
 
@@ -622,67 +555,7 @@ $(document).ready(function(){
 	        return "오래 전";
 	    }
 	} // end of function timeAgo(reg_date)
-	
-	
-	
-
-	
-	//후기 확인 테스트 함수
-	function showReviewTab() {
-		$.ajax({
-			url : "<%=ctxPath%>/review/",
-			data : {
-				"pk_member_no" : "1"
-			},
-			success : function(html) {
-				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-				openSideTab(html);
-			},
-			error : function(e) {
- 				 console.log(request.responseText);
-				 
- 				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-				 // 사이드 탭 닫기
-			     showAlert("error", message);
-			     closeSideTab();
-			}
-		});
-	}
-	
-	//후기 등록 테스트 함수
-	function showReviewRegisterTab() {
-		$.ajax({
-			url : "<%=ctxPath%>/review/register",
-			data : {
-				"pk_trade_no" : "1"
-			},
-			success : function(html) {
-				// 서버로부터 받은 html 파일을 tab.jsp에 넣고 tab 열기
-				openSideTab(html);
-			},
-			 error: function(request, status, error){
-				 console.log(request.responseText);
-				 
-				 // 서버에서 예외 응답 메시지에서 "msg/"가 포함되어 있다면 사용자 알림을 위한 커스텀 메시지로 토스트 알림 처리
-				 let response = request.responseText;
-				 let message = response.substr(0, 4) == "msg/" ? response.substr(4) : "";
-				 
-			     showAlert("error", message);
-			     
-			     // 사이드 탭 닫기
-			     closeSideTab();
-			}
-		});
-	}
-	
-	
-	
 </script>
-
-
 
 <jsp:include page=".././footer/footer.jsp" />
 

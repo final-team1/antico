@@ -92,7 +92,7 @@ public class NoticeController {
 				Map<String, String> map = new HashMap<>();
 				map.put("word", word);
 				searchshow_mapList.add(map);
-			}// end of for-------------
+			}
 		}
 		
 		return searchshow_mapList;
@@ -113,7 +113,6 @@ public class NoticeController {
 		response.setContentType("text/html; charset=UTF-8");
 
 		PrintWriter out = null;
-		// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
 
 		NoticeVO noticeVO = service.getnotice_file(paraMap);
 		
@@ -137,7 +136,6 @@ public class NoticeController {
 				e.printStackTrace();
 			}
 			// out 은 웹브라우저에 기술하는 대상체
-
 			out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
 		}
 

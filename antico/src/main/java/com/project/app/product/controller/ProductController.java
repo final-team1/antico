@@ -1,7 +1,6 @@
 package com.project.app.product.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,9 +163,16 @@ public class ProductController {
 
 		// View 페이지 출력을 위한 정보 가져오기 시작 //
 		// 로그인한 회원의 회원번호 값 가져오기
-		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String fk_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+
+		if (member_vo != null) {
+		    String login_fk_member_no = member_vo.getPk_member_no();
+		    if (login_fk_member_no != null && !login_fk_member_no.isEmpty()) {
+		        fk_member_no = login_fk_member_no;
+		    }
+		}
 		mav.addObject("fk_member_no", fk_member_no);
-	
 		
 		// 상위 카테고리 정보 가져오기
 		List<CategoryVO> category_list = service.getCategory();	
@@ -273,8 +279,16 @@ public class ProductController {
 	    //System.out.println("2222 pk_product_no " + pk_product_no);
 	
 		// 로그인한 회원의 회원번호 값 가져오기
-		String fk_member_no = get_member_detail.MemberDetail().getPk_member_no();
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String fk_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String login_fk_member_no = member_vo.getPk_member_no();
+		    if (login_fk_member_no != null && !login_fk_member_no.isEmpty()) {
+		        fk_member_no = login_fk_member_no;
+		    }
+		}
 		mav.addObject("fk_member_no", fk_member_no);
+		
 		
 		// 좋아요 정보 가져오기
 		List<Map<String, String>> wish_list = service.getWish();
@@ -290,9 +304,22 @@ public class ProductController {
 		
 		String fk_member_no2 = product_map.get("fk_member_no"); // 상품 올린 사람 회원번호 가져오기
 		
+		// 상품 올린 회원에 대한 거래 횟수 알아오기
+		String trade_cnt = service.getTradeCntOneMember(fk_member_no2);
+		mav.addObject("trade_cnt", trade_cnt);
+		
+		// 상품 올린 회원에 대한 후기 수 알아오기
+		String review_cnt = service.getReviewCntOneMember(fk_member_no2);
+		mav.addObject("review_cnt", review_cnt);
+		
+		// 상품 올린 회원에 대한 단골 수 알아오기
+		String regular_customer_cnt = service.getRegularCustomerCnt(fk_member_no2);
+		mav.addObject("regular_customer_cnt", regular_customer_cnt);
+		
 		// 상품 올린 회원에 대한 다른 상품 정보 가져오기
 		List<Map<String, String>> product_list_one_member = service.getProdcutOneMember(fk_member_no2, pk_product_no);
 		mav.addObject("product_list_one_member", product_list_one_member);
+		
 		
 		// 카카오 api key 전달 (페이지 공유를 위한)
 		mav.addObject("kakao_api_key", kakao_api_key);
@@ -397,5 +424,59 @@ public class ProductController {
 	}
 	
 	
+	
+	// 메인 검색창에서 상품 검색 시 자동글 완성하기 및 정보 가져오기
+	@GetMapping("product_search")
+	@ResponseBody
+	public List<Map<String, String>> productSearch(@RequestParam Map<String, String> paraMap) {
 
+		List<Map<String, Object>> product_list = service.productSearch(paraMap);
+
+		List<Map<String, String>> map_list = new ArrayList<>();
+
+		if (product_list != null) {
+			for (Map<String, Object> product : product_list) {
+				Map<String, String> map = new HashMap<>();
+				map.put("pk_product_no", product.get("pk_product_no").toString()); // 상품번호
+				map.put("product_title", product.get("product_title").toString()); // 상품명
+				map_list.add(map);
+			}
+		}
+		return map_list;
+	}
+	
+	// 메인 검색창에서 판매자 검색 시 자동글 완성하기 및 정보 가져오기
+	@GetMapping("seller_search")
+	@ResponseBody
+	public List<Map<String, String>> sellerSearch(@RequestParam Map<String, String> paraMap) {
+
+		List<Map<String, Object>> seller_list = service.sellerSearch(paraMap);
+
+		List<Map<String, String>> map_list = new ArrayList<>();
+
+		if (seller_list != null) {
+			for (Map<String, Object> product : seller_list) {
+				Map<String, String> map = new HashMap<>();
+				map.put("pk_member_no", product.get("pk_member_no").toString()); // 회원번호
+				map.put("member_name", product.get("member_name").toString());   // 판매자
+				map_list.add(map);
+			}
+		}
+		return map_list;
+	}
+	
+	// 찜한 상품보기 
+	@GetMapping("wish_list")
+	public ModelAndView wish_list(ModelAndView mav) {
+	    MemberVO login_member_vo = get_member_detail.MemberDetail();
+	    String pk_member_no = login_member_vo.getPk_member_no();
+	    
+	    List<Map<String, String>> product_vo = service.wish_list(pk_member_no);
+	    
+	    mav.addObject("product_vo", product_vo);
+	    mav.setViewName("product/wish_list");
+	    return mav;
+	}
+
+	
 } // end of public class ProductController

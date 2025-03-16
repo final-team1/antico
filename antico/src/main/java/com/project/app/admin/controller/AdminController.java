@@ -222,7 +222,8 @@ public class AdminController {
 				
 		try {
 		  n = service.notice_delete(paraMap);
-		} catch(Throwable e) {
+		} 
+		catch(Throwable e) {
 			e.printStackTrace();
 		}
 		
@@ -604,11 +605,6 @@ public class AdminController {
 		paraMap.put("calendar_enddate", calendar_enddate);
 		paraMap.put("searchType", searchType);
 		paraMap.put("searchWord", searchWord);
-		
-		System.out.println("calendar_startdate: " + calendar_startdate);
-		System.out.println("calendar_enddate: " + calendar_enddate);
-		System.out.println("searchType: " + searchType);
-		System.out.println("searchWord: " + searchWord);
 		
 		calendar_list = service.admin_searchcalendar(paraMap);
 

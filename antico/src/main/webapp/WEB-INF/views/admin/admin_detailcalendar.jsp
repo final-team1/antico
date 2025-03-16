@@ -103,10 +103,10 @@
 				dataType: "json",
 				success:function(json){
 					if(json.n==1){
-						alert("일정을 삭제하였습니다.");
+						showAlert("success", "일정을 삭제하였습니다.");
 					}
 					else {
-						alert("일정을 삭제하지 못했습니다.");
+						showAlert("success", "일정을 삭제하지 못했습니다.");
 					}
 					
 					location.href="<%= ctxPath%>/admin/admin_page";

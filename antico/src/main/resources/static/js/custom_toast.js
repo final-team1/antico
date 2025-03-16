@@ -94,6 +94,16 @@ function errorHandler(request, status, error) {
 }
 
 // ajax 공통 에러 핸들러 함수 및 토스트 처리
+function errorAlert(message) {
+	let msg = message.substring(0, 4) === "msg/" ? message.substr(4) : "";
+
+	showAlert("error", msg);
+
+	// 사이드 탭 닫기
+	closeSideTab();
+}
+
+// ajax 공통 에러 핸들러 함수 및 토스트 처리
 function errorHandlerWithNoClose(request, status, error) {
 	console.log(request.responseText);
 

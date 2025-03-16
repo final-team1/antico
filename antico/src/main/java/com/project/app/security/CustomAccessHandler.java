@@ -21,17 +21,25 @@ public class CustomAccessHandler implements AccessDeniedHandler {
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException access_denied_exception) throws IOException, ServletException {
 		
-		String request_url = request.getRequestURI();
+		String request_uri = request.getRequestURI();
 		String ctx_path = request.getContextPath();
 		
-		if(request_url.startsWith(ctx_path+"/admin")) {
+		if(request_uri.startsWith(ctx_path+"/admin")) {
 			Cookie cookie = new Cookie("message", URLEncoder.encode("관리자페이지는&nbsp;관리자만&nbsp;확인가능합니다.", "UTF-8"));
 			
-			cookie.setMaxAge(5); 
+			cookie.setMaxAge(5);
 			
 			cookie.setPath("/");
 			
 			response.addCookie(cookie);
+		}else if(request_uri.startsWith(ctx_path+"/auction/chatroom")) {
+			response.sendError(600, "msg/경매는 실버회원부터 가능합니다.");
+			
+			return;
+		}else if(request_uri.startsWith(ctx_path+"/comment/comment_add")) {
+			response.sendError(600, "msg/경매는 실버회원부터 가능합니다.");
+			
+			return;
 		}
 		
 		response.sendRedirect(ctx_path+"/index");

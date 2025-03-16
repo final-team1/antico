@@ -613,6 +613,9 @@ $(document).ready(function(){
         
         // 경매 시간 문구 숨기기
         $("span.auction_warning").css({"visibility": "hidden"});
+		
+		// 입찰가격을 상품가격으로 변경하기
+		$("input#prod_price").attr("placeholder", "상품가격");
         
         // 선택한 상품 상태 값 변경
         $("#prod_sale_type_value").val($(this).data("value"));
@@ -646,7 +649,10 @@ $(document).ready(function(){
         
         // 경매 시간 문구 보이기
         $("span.auction_warning").css({"visibility": "visible"});
-
+		
+		// 상품가격을 입찰가격으로 변경하기
+		$("input#prod_price").attr("placeholder", "입찰가격");
+		
         // 일반 판매 버튼 스타일 (흰색 배경, 검은색 글씨)
         $("input.general").css({
             "color": "black",

@@ -52,6 +52,15 @@ public interface ProductService {
 	// 관심상품에 상품 추가하기
 	int wishInsert(String fk_product_no, String fk_member_no);
 	
+	// 상품 올린 회원에 대한 거래 횟수 알아오기
+	String getTradeCntOneMember(String fk_member_no2);
+	
+	// 상품 올린 회원에 대한 후기 수 알아오기
+	String getReviewCntOneMember(String fk_member_no2);
+	
+	// 상품 올린 회원에 대한 단골 수 알아오기
+	String getRegularCustomerCnt(String fk_member_no2);
+	
 	// 특정 회원에 대한 다른 상품 정보 가져오기
 	List<Map<String, String>> getProdcutOneMember(String fk_member_no2, String pk_product_no);
 	
@@ -76,6 +85,11 @@ public interface ProductService {
 	// 검색어에 맞는 시세 조회
 	List<Map<String, String>> getMargetPrice(String search_price);
 	
+	// 메인 검색창에서 상품 검색 시 자동글 완성하기 및 정보 가져오기
+	List<Map<String, Object>> productSearch(Map<String, String> paraMap);
+	
+	// 메인 검색창에서 판매자 검색 시 자동글 완성하기 및 정보 가져오기
+	List<Map<String, Object>> sellerSearch(Map<String, String> paraMap);
 	
 	// 모든 상품 조회 해오기(이미지, 지역)
 	List<Map<String, String>> getProductList(String sort_views_week);
@@ -88,4 +102,11 @@ public interface ProductService {
 
 	// 경매 이미지 상품 등록
 	int insertAuctionProductImage(List<Map<String, String>> fileList, String cProductNo);
+
+	// 찜한 상품보기
+	List<Map<String, String>> wish_list(String pk_member_no);
+	
+	// 경매 낙찰가를 상품가격으로 변경
+	int updateProductPrice(String pk_product_no, String product_price);
+
 }

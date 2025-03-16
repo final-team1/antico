@@ -1,7 +1,11 @@
 package com.project.app.auction.repository;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -17,6 +21,7 @@ import com.project.app.auction.domain.AucChatRoomRespDTO;
 import com.project.app.auction.domain.AuctionChat;
 import com.project.app.auction.domain.AuctionChatRoom;
 import com.project.app.chat.domain.Chat;
+import com.project.app.chat.domain.ChatRoom;
 import com.project.app.chat.domain.ChatRoomRespDTO;
 import com.project.app.chat.domain.Participant;
 import com.project.app.exception.BusinessException;
@@ -40,9 +45,9 @@ public class CustomAuctionChatRoomRepository {
 	 */
 	public List<AucChatRoomRespDTO> findAllWithLatestChatByMemberNo(String memberNo) {
 	    Aggregation aggregation = Aggregation.newAggregation(
-	        
-	        // 최신 채팅으로 정렬
-	        Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendDate")),
+
+			// 최신 채팅으로 정렬
+			Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendDate")),
 
 	        // 채팅 메시지를 roomId(String) 기준으로 그룹화하고, 최신 메시지 정보 추출
 	        Aggregation.group("roomId")
@@ -74,7 +79,10 @@ public class CustomAuctionChatRoomRepository {
 	        // 사용자가 참여한 채팅방만 필터링
 	        Aggregation.match(Criteria.where("chatRoom.participants").elemMatch(Criteria.where("memberNo").is(memberNo))),
 
-	        // 필요한 필드만 유지하여 최종 반환 데이터 구조 정의
+			// 최신 채팅으로 정렬
+			Aggregation.sort(Sort.by(Sort.Direction.DESC, "sendDate")),
+
+			// 필요한 필드만 유지하여 최종 반환 데이터 구조 정의
 	        Aggregation.project()
 	            .and("_id").as("roomId")  // roomId 매핑
 	            .andInclude("message", "sendDate", "senderId", "senderName", "chatType")  // 최신 메시지 정보
@@ -97,9 +105,44 @@ public class CustomAuctionChatRoomRepository {
 	 * 변경된 채팅 id, unReadCount 목록 반환
 	 */
 	public List<AuctionChat> updateUnReadCount(String chatId, String roomId, String memberNo) {
+
+		log.info("roomId: {} memberNo: {}", roomId, memberNo);
+
+		Query selectQuery = Query.query(Criteria.where("_id")
+			.is(new ObjectId(roomId))
+			.and("participants")
+			.elemMatch(Criteria.where("memberNo").is(memberNo)));
+
+		selectQuery.fields().include("participants.$");
+
+		AuctionChatRoom chatRoom = mongoTemplate.findOne(selectQuery, AuctionChatRoom.class);
+
+		if(chatRoom == null) {
+			//TODO 예외처리
+			log.error("chatRoom not found");
+			return null;
+		}
+
+		if(chatRoom.getParticipants().isEmpty()) {
+			// TODO 예외처리
+			log.error("chatRoom participants not found");
+			return null;
+		}
+
+		if(chatRoom.getParticipants().get(0) == null) {
+			// TODO 예외처리
+			log.error("chatRoom participants first not found");
+			return null;
+		}
+
+		Participant participant = chatRoom.getParticipants().get(0);
+
+		log.info("dfdfd " + participant.getStartDate());
+
 		// 채팅방 id를 가진 채팅 메시지 중
 		Query query = new Query(Criteria.where("roomId").is(roomId)
 				.and("_id").lte(chatId)// 채팅 메시지 id가 가져온 chatId보다 작은 모든 채팅메시지에 대해
+				.and("sendDate").gte(participant.getStartDate())
 				.and("readMembers").ne(memberNo)); // memberNo(로그인사용자)가 읽지 않은 모든 메시지들에 대해
 		
 		Update update = new Update()
@@ -115,7 +158,7 @@ public class CustomAuctionChatRoomRepository {
 		
 		// 반환 지정
 		findUpdatedChats.fields().include("_id").include("unReadCount");
-		
+
 		return mongoTemplate.find(findUpdatedChats, AuctionChat.class);
 				
 	}
@@ -130,5 +173,42 @@ public class CustomAuctionChatRoomRepository {
 			throw new BusinessException(ExceptionCode.JOIN_CHATROOM_FAILD);
 		}
 		return mongoTemplate.findById(roomId, AuctionChatRoom.class);
+	}
+
+	public int findUnReadCountByMemberNo(String pk_member_no) {
+		Aggregation aggregation = Aggregation.newAggregation(
+			Aggregation.match(Criteria.where("participants.memberNo").is(pk_member_no)),
+
+			Aggregation.addFields()
+				.addField("roomIdObj")
+				.withValue(
+					ConvertOperators.ToString.toString("$_id")
+				)
+				.build(),
+
+			Aggregation.lookup("auction_chat_messages", "roomIdObj", "roomId", "messages"),
+
+			Aggregation.match(Criteria.where("messages").ne(null)),
+
+			Aggregation.unwind("messages"),
+
+			Aggregation.match(Criteria.where("messages.chatType").is(0)),
+
+			Aggregation.match(
+				new Criteria().orOperator(
+					Criteria.where("messages.readMembers").exists(false),
+					Criteria.where("messages.readMembers").not().elemMatch(Criteria.where("$eq").is(pk_member_no))
+				)
+			),
+
+			Aggregation.count().as("unReadMessageCount")
+		);
+
+		AggregationResults<Map> results = mongoTemplate.aggregate(aggregation, "auction_chat_room", Map.class);
+
+		return Optional.ofNullable(results.getUniqueMappedResult())
+			.map(map -> map.get("unReadMessageCount"))
+			.map(num -> (num instanceof Number) ? ((Number) num).intValue() : Integer.parseInt(num.toString()))
+			.orElse(0);
 	}
 }

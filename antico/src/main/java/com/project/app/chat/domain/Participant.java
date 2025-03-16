@@ -1,5 +1,6 @@
 package com.project.app.chat.domain;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;
@@ -18,11 +19,14 @@ public class Participant {
 	
 	private String memberName; // 사용자 이름
 
+	private LocalDateTime startDate; // 첫 접속 시간
+
 	// Participant 생성 정적 팩토리 메소드
 	public static Participant createParticipant(String memberNo, String memberName) {
 		return Participant.builder()
 				.memberNo(memberNo)
 				.memberName(memberName)
+				.startDate(LocalDateTime.now())
 				.build();
 	}
 
