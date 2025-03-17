@@ -68,16 +68,16 @@ public class ProductService_imple implements ProductService {
 
 	// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public int getProductCnt(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type) {
-		int product_list_cnt = productDAO.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
+	public int getProductCnt(String fk_member_no, String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type) {
+		int product_list_cnt = productDAO.getProductCnt(fk_member_no, search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
 		return product_list_cnt;
 	}
 		
 	
 	// 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
 	@Override
-	public Map<String, String> getProductPrice(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type) {
-		Map<String, String> prodcut_price_info = productDAO.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
+	public Map<String, String> getProductPrice(String fk_member_no, String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type) {
+		Map<String, String> prodcut_price_info = productDAO.getProductPrice(fk_member_no, search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
 		return prodcut_price_info;
 	}
 
@@ -85,8 +85,8 @@ public class ProductService_imple implements ProductService {
 
 	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬, 페이징 포함)
 	@Override
-	public List<Map<String, String>> getProduct(String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type, PagingDTO paging_dto) {
-		List<Map<String, String>> product_list = productDAO.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto);
+	public List<Map<String, String>> getProduct(String fk_member_no, String search_prod, String category_no, String category_detail_no, String min_price, String max_price, String region, String town, String sort_type, String sale_type, PagingDTO paging_dto) {
+		List<Map<String, String>> product_list = productDAO.getProduct(fk_member_no, search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto);
 		return product_list;
 	}
 	
@@ -490,6 +490,7 @@ public class ProductService_imple implements ProductService {
 	// 메인 검색창에서 상품 검색 시 자동글 완성하기 및 정보 가져오기
 	@Override
 	public List<Map<String, Object>> productSearch(Map<String, String> paraMap) {
+		
 		List<Map<String, Object>> product_list = productDAO.productSearch(paraMap);
 		return product_list;
 	}
@@ -506,7 +507,18 @@ public class ProductService_imple implements ProductService {
 	//모든 상품 조회 해오기(이미지, 지역)
 	@Override
 	public List<Map<String, String>> getProductList(String sort_views_week) {
-		List<Map<String, String>> product_list_reg_date = productDAO.getProductList(sort_views_week);
+		
+		// 로그인 한 유저번호 가져오기
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String login_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String fk_member_no = member_vo.getPk_member_no();
+		    if (fk_member_no != null && !fk_member_no.isEmpty()) {
+		    	login_member_no = fk_member_no;
+		    }
+		}
+		
+		List<Map<String, String>> product_list_reg_date = productDAO.getProductList(sort_views_week, login_member_no);
 		return product_list_reg_date;
 	}
 	
