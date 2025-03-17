@@ -11,9 +11,6 @@
 <%-- 채팅방 정보 --%>
 <c:set var="chat_room" value="${requestScope.chat_room}"/>
 
-<%-- 참여자 정보 --%>
-<c:set var="participants" value="${chat_room.participants}"/>
-
 <%-- 현재 로그인 사용자 일련번호 --%>
 <c:set var="login_member_no" value="${requestScope.login_member_vo.pk_member_no}"/>
 
@@ -233,6 +230,9 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+   // TODO 블랙리스트 막기
+
+
         // 엔터키 입력시 채팅 전송 처리
         $("input#message").keydown(function (e) {
             if (e.keyCode == 13) {

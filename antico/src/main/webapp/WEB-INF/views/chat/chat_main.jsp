@@ -172,6 +172,8 @@
                 let html = '';
                 $.each(list, function (index, item) {
 
+                    if(item.productChatDTO != null) {
+
                     html += `
 					<div class="chatroom_item" data-room-id="\${item.chatRoom.roomId}">
 						<img src="${ctx_path}/images/icon/user_circle.svg" width="50" />
@@ -207,6 +209,7 @@
 						</div>
 					</div>
 				`
+                    }
                 });
                 $("div#chatroom_container").html(html);
             },
@@ -223,6 +226,7 @@
             success: function (list) {
                 let html = '';
                 $.each(list, function (index, item) {
+                        if(item.productChatDTO != null) {
                     html += `
 					<div class="auction_chatroom_item" data-room-id="\${item.auctionChatRoom.roomId}">
 						<img src="${ctx_path}/images/icon/user_circle.svg" width="50" />
@@ -258,6 +262,7 @@
 						</div>
 					</div>
 				`
+                        }
                 });
                 $("div#chatroom_container").html(html);
             },
