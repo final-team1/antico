@@ -42,6 +42,8 @@ public class AuctionScheduler {
 
 		List<Map<String, String>> auction_end_product_map = auctionService.updateProductSaleStatusByAuctionEndDate();
 
+		log.info("경매 시작 상품 개수 " + auction_start_product_map.size());
+
 		// 상품 목록을 순회하며 판매자에게 경매 시작 알림 발송 및 채팅방 생성
 		for (Map<String, String> map : auction_start_product_map) {
 

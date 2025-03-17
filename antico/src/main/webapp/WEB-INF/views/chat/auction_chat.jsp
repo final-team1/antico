@@ -518,7 +518,7 @@
 
             // 판매 상태 서버 알림 메시지
             if (chat.chatType == "1") {
-                handleNotificationMessage(chat.message);
+                handleNotificationMessage(chat.message, 1);
             } else {
                 // 년/월/일 형태 문자열 추출
                 const sendDate = chat.sendDate.substring(11, 16);
@@ -576,7 +576,7 @@
                     }
 
                     if (chat.chatType == "1") {
-                        handleNotificationMessage(chat.message);
+                        handleNotificationMessage(chat.message, 0);
                     } else {
 
                         const chatDiv = $(`<div data-chat_id = \${chat.id}>`)
@@ -616,8 +616,8 @@
     }
 
     // 판매상태변경 메시지
-    function handleNotificationMessage(message) {
-        if(message == "경매가 종료되었습니다.") {
+    function handleNotificationMessage(message, t) {
+        if(message == "경매가 종료되었습니다." && t == 1) {
             closeAuction("${chat_room.roomId}");
         }
         $("#chatting").append($("<span class='chat_date'>").text(message));

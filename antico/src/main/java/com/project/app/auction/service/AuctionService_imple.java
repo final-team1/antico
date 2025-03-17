@@ -152,7 +152,7 @@ public class AuctionService_imple implements AuctionService {
 			for (Map<String, String> map : productMapList) {
 				list.add(map.get("pk_product_no"));
 
-				log.info(map.get("product_title"));
+				log.info("경매 상품 가져옴 : " + map.get("product_title"));
 			}
 			auctionDAO.updateProductSaleStatus(list, 4);
 		}
