@@ -51,4 +51,10 @@ public interface TradeDAO {
 	// 거래를 구매취소로 변경하고, 거래취소날짜 업데이트
 	int buyCancel(String pk_product_no);
 
+	// 판매완료인 상품을 조회
+	String productSaleStatus(String pk_product_no);
+
+	// 결제대기인 상태를 조회(구매취소가 가능할 때)
+	String canceled(String pk_product_no, String pk_member_no);
+
 }

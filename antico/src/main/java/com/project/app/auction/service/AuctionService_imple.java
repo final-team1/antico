@@ -36,6 +36,7 @@ import com.project.app.member.service.MemberService;
 import com.project.app.product.domain.ProductImageVO;
 import com.project.app.product.domain.ProductVO;
 import com.project.app.product.service.ProductService;
+import com.project.app.sse.service.SseService;
 import com.project.app.trade.model.TradeDAO;
 import com.project.app.trade.service.TradeService;
 
@@ -71,7 +72,10 @@ public class AuctionService_imple implements AuctionService {
 	private final SimpMessagingTemplate messagingTemplate;
 
 	private static final Pattern BID_PATTERN = Pattern.compile("^@\\d+$");
+
 	private final MemberService memberService;
+
+	private final SseService sseService; // SSE 관리 서비스
 
 	/*
 	 * 경매 상품 추가
@@ -369,9 +373,8 @@ public class AuctionService_imple implements AuctionService {
 
 	@Override
 	public AuctionChatRoom joinAuctionChatRoomByProdNo(String pkProductNo, MemberVO loginMember) {
-		// TODO 경매 시작 전이면 알림
 		AuctionChatRoom chatRoom = auctionChatRoomRepository.findAuctionChatRoomByProductNo(pkProductNo)
-			.orElseThrow(() -> new BusinessException(ExceptionCode.JOIN_CHATROOM_FAILD));
+			.orElseThrow(() -> new BusinessException(ExceptionCode.AUCTION_NOT_STARTED));
 
 		Participant participant = Participant.createParticipant(loginMember.getPk_member_no(), loginMember.getMember_name());
 
@@ -423,6 +426,8 @@ public class AuctionService_imple implements AuctionService {
 		log.info("낙찰자 일련번호 {}", auctionBid.getBidderNo());
 		log.info("판매자 일련번호 {}", product_map.get("fk_member_no"));
 
+		String product_title = product_map.get("product_title");
+
 		// 경매 참여자가 없는 경우
 		if(!auctionBid.getBidderNo().equals(product_map.get("pk_member_no"))) {
 			MemberVO memberVO = memberService.getMemberByMemberNo(auctionBid.getBidderNo());
@@ -463,6 +468,10 @@ public class AuctionService_imple implements AuctionService {
 		AuctionChat newChat = auctionChatRepository.save(chat);
 
 		messagingTemplate.convertAndSend("/room/" + chatRoom.getRoomId() + "/auction", newChat);
+
+		MemberVO bidder = memberService.getMemberByMemberNo(auctionBid.getBidderNo());
+
+		sseService.sendNotification(bidder.getMember_user_id(), "auction_end", "경매에 낙찰되셨습니다. 일반 채팅을 확인해주세요");
 
 	}
 

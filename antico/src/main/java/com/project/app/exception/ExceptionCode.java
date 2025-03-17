@@ -48,7 +48,9 @@ public enum ExceptionCode {
 
 	RPODUCT_NOT_ON_SALE(400, "판매중인 상품이 아닙니다."), // 결제창 불러오기 예외
 
-	NOT_PAYMENT_CONSUMER(400, "구매를 하지 않은 상품은 구매확정이 불가합니다."), // 결제를 하지 않고 구매확정을 할 경우
+	ALREADY_RESERVED_ERROR(400, "이미 예약중인 상품입니다."), // 결제창 불러오기 예외
+
+	NOT_PAYMENT_CONSUMER(400, "구매를 하지 않은 상품입니다."), // 결제를 하지 않은 상태에서 확정, 취소를 할 경우
 
 	PAYMENT_ALREADY_EXISTS(400, "이미 구매확정이 완료되었습니다."), // 이미 구매확정을 했던 상품을 다시 누를 경우
 
@@ -76,6 +78,8 @@ public enum ExceptionCode {
 	AUCTION_NOT_SELLER(500, "판매자만 경매 종료를 할 수 있습니다."),
 
 	AUCTION_PRODUCT_NOT_FOUND(404, "경매중인 상품이 없습니다."),
+
+	AUCTION_NOT_STARTED(500, "경매중인 상품이 아닙니다."),
 
 	//////////////////////////////////계좌 관련 예외 /////////////////////////////////////////////
 

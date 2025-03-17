@@ -33,6 +33,12 @@ window.SSEManager = (() => {
             });
         },
 
+        addModalEvent : function (eventName, alertType) {
+            eventSource.addEventListener(eventName, (event) => {
+                showAlertModal(alertType, event.data);
+            });
+        },
+
         // SSE 연결 해제 함수
         disconnect: function () {
             if (eventSource != null) {

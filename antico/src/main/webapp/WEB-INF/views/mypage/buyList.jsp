@@ -11,7 +11,6 @@
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 <style>
-/* 검색창 스타일 */
 .sell_search_container {
     display: flex;
     align-items: center;
@@ -41,10 +40,9 @@
     height: 46px;
 }
 
-/* 상세 필터 모달 스타일 */
 .filter_modal {
     position: absolute;
-    bottom: -100%; /* 초기에는 숨김 */
+    bottom: -100%; 
     left: 0;
     width: 100%;
     background: #f8f9fa;
@@ -58,7 +56,7 @@
     text-align: center;
 }
 .filter_modal.show {
-    bottom: 0; /* 나타날 때 위로 올라옴 */
+    bottom: 0; 
 }
 .filter_apply {
     width: 100%;
@@ -274,7 +272,6 @@ function Search() {
 function sell_list_info(element) {
     let pk_trade_no = $(element).closest(".sell_history").find("input:hidden[name='pk_trade_no']").val();
 
-    console.log("pk_trade_no:", pk_trade_no);
 
     if (!pk_trade_no) {
         showAlert("error", "거래 번호가 없습니다.");
@@ -323,7 +320,7 @@ function sell_list_info(element) {
 						</strong>
 			        </div>
 			    </div>
-			    <button class="review_btn">받은 후기</button>
+			    <button class="review_btn">보낸 후기</button>
 			</div>
 		</c:forEach>
 	</c:if>
@@ -332,7 +329,7 @@ function sell_list_info(element) {
 <c:if test="${empty requestScope.buy_list}">
 	<div>판매된 상품이 없습니다.</div>
 </c:if>
-<!-- 상세 필터 모달 -->
+
 <div class="filter_modal">
     <div class="filter_content">
         <h5>상세필터</h5>

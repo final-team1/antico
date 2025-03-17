@@ -158,19 +158,24 @@
     function goSearch(){
 
     	if( $("#fromDate").val() > $("#toDate").val() ) {
-    		alert("검색 시작날짜가 검색 종료날짜 보다 크므로 검색할 수 없습니다.");
-    		return;
-    	}
-        
-    	if( $("select#searchType").val()=="" && $("input#searchWord").val()!="" ) {
-    		alert("검색대상 선택을 해주세요!!");
-    		return;
-    	}
-    	
-    	if( $("select#searchType").val()!="" && $("input#searchWord").val()=="" ) {
-    		alert("검색어를 입력하세요!!");
-    		return;
-    	}
+			showAlert("click", "검색 시작날짜가 검색 종료날짜 보다 크므로 검색할 수 없습니다.");
+			return;
+		}
+	    
+		if( $("select#searchType").val()=="" && $("input#searchWord").val()=="" ) {
+			showAlert("click", "검색대상 선택을 해주세요!!");
+			return;
+		}
+		
+		if( $("select#searchType").val()=="" && $("input#searchWord").val()!="" ) {
+			showAlert("click", "검색대상 선택을 해주세요!!");
+			return;
+		}
+		
+		if( $("select#searchType").val()!="" && $("input#searchWord").val()=="" ) {
+			showAlert("click", "검색어를 입력하세요!!");
+			return;
+		}
     	
        	var frm = document.searchScheduleFrm;
         frm.method="get";

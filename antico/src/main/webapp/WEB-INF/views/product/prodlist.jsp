@@ -121,6 +121,11 @@ button.choice_region {
 	color: #5a5a5a;
 }
 
+/* 처음에 하위 카테고리 테이블 숨기기 */
+tr.tr_second {
+	display: none;
+}
+
 
 /* 상품 시세 관련 */
 div#current_price {
@@ -490,7 +495,13 @@ div#is_no_product {
 	                                <span class="sold_out_text">경매중</span>
 	                            </div>
 	                        </c:if>
-	                        
+
+						    <%-- 경매완료 상품이면 오버레이 추가 --%>
+	                        <c:if test="${prod_list.product_sale_status == 5}">
+	                            <div class="sold_out_overlay" onclick="goProductDetail('${prod_list.pk_product_no}')">
+	                                <span class="sold_out_text">완료</span>
+	                            </div>
+	                        </c:if>	                        
 	                        
 						</div>
 						
@@ -571,8 +582,6 @@ div#is_no_product {
 	$(document).ready(function(){
 		
 		
-		$("tr.tr_second").hide(); // 처음에 하위 카테고리 테이블 숨기기
-		
 		// 상품 등록일자 계산 해주기
 	    $("span.product_time").each(function() {
 	        const product_update_date = $(this).attr('data-date'); // 등록일
@@ -584,11 +593,11 @@ div#is_no_product {
 		// 카테고리 + 및 - 버튼을 클릭한 경우
 		$("button.plus_minus").click(function(e){
 			if($(e.target).hasClass("fa-plus")) { // + 버튼을 누르면
-				$("tr.tr_second").show(); // 하위 카테고리 펼치기
+				$("tr.tr_second").css("display", "table-row"); // 하위 카테고리 펼치기
 				$("i.plus_minus").removeClass("fa-plus").addClass("fa-minus"); // 마이너스 아이콘으로 변경하기
 			} 
 			else { // - 버튼을 누르면
-				$("tr.tr_second").hide(); // 하위 카테고리 접기
+				$("tr.tr_second").css("display", "none"); // 하위 카테고리 접기
 				$("i.plus_minus").removeClass("fa-minus").addClass("fa-plus"); // 플러스 아이콘으로 변경하기
 			}
 		}); // end of $("button.plus_minus").click(function(e)
@@ -718,11 +727,11 @@ div#is_no_product {
 	        const category_name = $("li.category[data-category-no='" + category_no + "']").text();  	// 상위 카테고리명
 	        $("span.selected_category").text(" > " + category_name).data("category-no", category_no);  	// 상위 카테고리명 표시 및 상위 카테고리 번호 데이터 넣어주기
 
-	        $("li.category_detail").hide();  // 전체 하위 카테고리 숨기기
+	        $("li.category_detail").css("display", "none");  // 전체 하위 카테고리 숨기기
 	        $("li.category_detail[data-parent-no='" + category_no + "']").show();  // 해당 상위 카테고리의 하위 카테고리만 보이기
 	    	
-	        $("li.category").hide(); // 상위 카테고리들 숨기기
-	        $("tr.tr_second").show(); // 하위 카테고리 테이블 보여주기
+	        $("li.category").css("display", "none"); // 상위 카테고리들 숨기기
+	        $("tr.tr_second").css("display", "table-row"); // 하위 카테고리 테이블 보여주기
 	        $("i.plus_minus").removeClass("fa-plus").addClass("fa-minus"); // 아이콘 - 유지
 	    }
 
@@ -730,7 +739,7 @@ div#is_no_product {
 	    if (category_detail_no) {
 	        const category_detail_name = $("li.category_detail[data-categorydetail-no='" + category_detail_no + "']").text();  	   // 하위 카테고리명
 	        $("span.selected_category_detail").text(" > " + category_detail_name).data("category-detail-no", category_detail_no);  // 하위 카테고리명 표시 및 하위 카테고리 번호 데이터 넣어주기
-	        $("tr.tr_second").show(); // 하위 카테고리 테이블 보여주기
+	        $("tr.tr_second").css("display", "table-row"); // 하위 카테고리 테이블 보여주기
 	        $("i.plus_minus").removeClass("fa-plus").addClass("fa-minus"); // 아이콘 - 유지
 	    }
 	    

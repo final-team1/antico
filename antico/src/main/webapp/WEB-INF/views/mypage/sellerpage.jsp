@@ -8,7 +8,7 @@
 %>
 <c:set var="ctx_Path" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
+<c:set var="review_count" value="${requestScope.review_count}" />
 <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 <script type="text/javascript" src="<%= ctx_Path%>/js/pointcharge.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -455,9 +455,6 @@ function timeAgo(reg_date) {
     const now = new Date(); 					 // 현재 시간
     const product_reg_date = new Date(reg_date); // 상품 등록일
     
-    // console.log("현재 시간:", now);
-    // console.log("상품 등록일:", product_reg_date);
-
     const second = Math.floor((now - product_reg_date) / 1000); // 두 날짜 차이를 초 단위로 계산
     const minute = Math.floor(second / 60);				        // 두 날짜 차이를 분 단위로 계산
     const hour = Math.floor(minute / 60);				   		// 두 날짜 차이를 시간 단위로 계산
@@ -533,28 +530,37 @@ function timeAgo(reg_date) {
         const productItems = document.querySelectorAll('.product_item');
         
         productItems.forEach(item => {
-            const saleStatus = item.querySelector('input[type="hidden"]').value;
-            
+        	const saleStatus = item.querySelector('input[type="hidden"]').value;
+            const sale = ${sale_count.sale}; 
+            const reserved = ${sale_count.reserved}; 
+            const submit = ${sale_count.submit}; 
+            const total_count = ${requestScope.list_size};
+            let count = 0; // 필터링된 개수            
             // 전체 버튼(0)은 모든 항목을 보여줌
             if (status == 0) {
                 item.style.display = 'block';
+                count = total_count;
             }
             // 판매중 버튼(0)일 경우, sale_status가 0인 항목만 표시
             else if (status == 1 && saleStatus == 0) {
                 item.style.display = 'block';
+                count = sale;
             }
             // 예약중 버튼(1)일 경우, sale_status가 1인 항목만 표시
             else if (status == 2 && saleStatus == 1) {
                 item.style.display = 'block';
+                count = reserved;
             }
             // 판매완료 버튼(2)일 경우, sale_status가 2인 항목만 표시
             else if (status == 3 && saleStatus == 2) {
                 item.style.display = 'block';
+				count = submit;
             }
             // 조건에 맞지 않으면 숨김
             else {
                 item.style.display = 'none';
             }
+            $("span#list_count").html(count);
         });
     }
 
@@ -706,7 +712,7 @@ function timeAgo(reg_date) {
 							</div>
 							<div class="stat_box">
 								<p>거래후기</p>
-								<a href="#" onclick="sellerReview()" style="text-decoration: underline;">1</a>
+								<a href="#" onclick="sellerReview()" style="text-decoration: underline;">${review_count}</a>
 							</div>
 							<div class="stat_box">
 								<p>단골</p>
@@ -721,7 +727,7 @@ function timeAgo(reg_date) {
 						<div class="stat_box score_level mt-2">
 							<p style="font-weight: bold; color: ${requestScope.seller_role_color};">${requestScope.seller_role}</p>
 							<div class="trust_bar">
-								<div class="trust_progress" style="width: ${seller_info.member_score/10}%; background-color:${requestScope.seller_role_color};"></div>
+								<div class="trust_progress" style="width: ${seller_info.member_score > 3000 ? 100 : seller_info.member_score / 30}%; background-color:${requestScope.seller_role_color};"></div>
 							</div>
 							<span>${seller_info.member_score}</span>
 						</div>
@@ -738,7 +744,7 @@ function timeAgo(reg_date) {
 						<button class="soldout" onclick="filterProducts(3)">판매완료</button>
 					</nav>
 					<br>
-					<span>총 ${requestScope.list_size}개</span><span class="orderby"><span class="orderby"><button id="highPrice" onclick="highPrice()">높은가격순</button><button id="lowPrice" onclick="lowPrice()">낮은가격순</button><button id="desc" onclick="desc()">최신순</button></span>
+					<span>총 <span id="list_count">${requestScope.list_size}</span>개</span><span class="orderby"><span class="orderby"><button id="highPrice" onclick="highPrice()">높은가격순</button><button id="lowPrice" onclick="lowPrice()">낮은가격순</button><button id="desc" onclick="desc()">최신순</button></span>
 				</section>
 
 				<!-- 상품 목록 -->

@@ -546,7 +546,7 @@
 						<div class="flex-fill">
 							<div>
 								<%-- 상품 검색 시작 --%>
-								<form name="searchFrm" class="search">
+								<form name="searchProdFrm" class="search">
 									<div class="inputContainer">
 										<input type="text" name="search_prod" class="searchBar">
 										<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
@@ -775,18 +775,19 @@
 
 
 			// 상품 검색하는 함수
-			function goSearch() {
-				const frm = document.searchFrm;
-				frm.method = "get";
-				frm.action = "<%= ctxPath%>/product/prodlist";
-				frm.submit();
-			} // end of function goSearch()
+			function goSearchProd() {
+				const prod_frm = document.searchProdFrm;
+				prod_frm.method = "get";
+				prod_frm.action = "<%= ctxPath%>/product/prodlist";
+				prod_frm.submit();
+			} // end of function goSearchProd()
 
 
 			$(document).ready(function(){
 				if(${pageContext.request.userPrincipal.name != null}) {
 					SSEManager.connect("<%=ctxPath%>/sse/${pageContext.request.userPrincipal.name}");
 					SSEManager.addEvent("auction", "info");
+					SSEManager.addModalEvent("auction_end", "info");
 				}
 
 				getChatUnReadCount();
@@ -836,7 +837,7 @@
 
 
 					if(e.keyCode == 13){ // 엔터를 했을 경우
-						goSearch();
+						goSearchProd();
 					}
 
 					// 검색어에서 공백을 제거한 길이를 알아온다.
@@ -957,7 +958,7 @@
 
 				// 판매자 버튼 클릭 시
 				$("button#seller_btn").on("click", function(){
-					$("button#seller_btn").css("border-bottom", "solid 3px black"); // 밑에 테두리 추가
+					$("button#seller_btn").css("border-bottom", "solid 2px black"); // 밑에 테두리 추가
 					$("button#prouct_btn").css("border-bottom", "none");			// 상품 버튼 테두리 제거
 
 
