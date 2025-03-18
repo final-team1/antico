@@ -13,7 +13,7 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
 
   datasource-antico: #DB 접속이 1개만 있을 경우
     driver-class-name: oracle.jdbc.OracleDriver
-    jdbcUrl: jdbc:oracle:thin:@211.238.142.186:1521:xe
+    jdbcUrl: jdbc:oracle:thin:@3.35.52.54:1521:xe
     username: final_orauser1
     password: gclass
     type: com.zaxxer.hikari.HikariDataSource
