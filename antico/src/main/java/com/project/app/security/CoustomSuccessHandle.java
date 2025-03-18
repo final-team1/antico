@@ -39,6 +39,8 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 		
 		String user_id = "";
 		
+		String img_name = "";
+		
 		// 일반 및 카카오 로그인 성공시
 		user_id = authentication.getName();
 
@@ -47,10 +49,21 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
 			user_id = authentication.getName().split(",")[0];
 			
 			user_id = user_id.substring(4);
-		}else if(authentication.getName().startsWith("{sub=")){
+			
+			img_name = String.valueOf(authentication.getPrincipal()).split(",")[2];
+			
+			img_name = img_name.substring(15);
+			
+			
+		}else if(String.valueOf(authentication.getPrincipal()).startsWith("Name:")){
 			user_id = authentication.getName().split(",")[0];
 			
 			user_id = user_id.substring(5);
+			
+			img_name = String.valueOf(authentication.getPrincipal()).split(",")[6];
+			
+			img_name = img_name.substring(9);
+
 		}
 		
 		MemberVO member_vo = get_member_detail.MemberDetail();
@@ -65,6 +78,12 @@ public class CoustomSuccessHandle implements AuthenticationSuccessHandler {
                     );
 	        session.setAttribute("access_token", authorizedClient.getAccessToken().getTokenValue());
 		}
+		
+		if(member_vo.getMember_status().equals("2")) {
+			session.setAttribute("member_status", member_vo.getMember_status());
+		}
+		
+		member_vo.setMember_img_name(img_name);
 		
 		LoginHistoryVO login_history_vo = new LoginHistoryVO();
 		

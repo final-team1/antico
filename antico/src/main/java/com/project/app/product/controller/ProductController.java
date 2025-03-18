@@ -79,6 +79,10 @@ public class ProductController {
 		  String c_product_no = service.getNo();
 	      productvo.setPk_product_no(c_product_no); // 채번 해온 값 담기
 		  // System.out.println(productvo.getFk_member_no());
+	      
+	      // 스크립트 입력 방지(상품명/상품내용)
+	      productvo.setProduct_title(productvo.getProduct_title().replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+	      productvo.setProduct_contents(productvo.getProduct_contents().replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 		
 	      // 이미지 정보 가져오기 
 	      List<MultipartFile> attach_list = product_imgvo.getAttach();
@@ -186,6 +190,9 @@ public class ProductController {
 		// 지역 정보 가져오기
 		List<Map<String, String>> region_list = service.getRegion();
 		
+		// 블랙리스트 정보 가져오기
+		
+		
         mav.addObject("category_list", category_list); 			 	 // 상위 카테고리 정보 전달
         mav.addObject("category_detail_list", category_detail_list); // 하위 카테고리 정보 전달
         mav.addObject("wish_list", wish_list); 						 // 좋아요 정보 전달
@@ -196,10 +203,10 @@ public class ProductController {
 		search_prod = search_prod.trim(); // 검색어 공백 없애주기
 		
 		// 상품 개수 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-        int product_list_cnt = service.getProductCnt(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
+        int product_list_cnt = service.getProductCnt(fk_member_no, search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
         
         // 상품 가격 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-        Map<String, String> prodcut_price_info = service.getProductPrice(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
+        Map<String, String> prodcut_price_info = service.getProductPrice(fk_member_no, search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type);
         
         mav.addObject("product_list_cnt", product_list_cnt); 	     // 총 개수 전달
         mav.addObject("prodcut_price_info", prodcut_price_info);     // 가격 정보 전달 
@@ -221,7 +228,7 @@ public class ProductController {
         if(product_list_cnt > 0) { // 상품이 존재한다면
         	
         	// 모든 상품에 대한 이미지,지역 정보 가져오기 (검색어, 카테고리번호, 가격대, 지역, 정렬 포함)
-            List<Map<String, String>> product_list = service.getProduct(search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto); 
+            List<Map<String, String>> product_list = service.getProduct(fk_member_no, search_prod, category_no, category_detail_no, min_price, max_price, region, town, sort_type, sale_type, paging_dto); 
             
             mav.addObject("product_list", product_list); // 상품 정보 전달	   
         }
@@ -271,12 +278,8 @@ public class ProductController {
 		
 	    // pk_product_no가 favicon.ico일 경우 처리하지 않도록 조건 추가
 	    if ("favicon.ico".equals(pk_product_no)) {
-	    	// System.out.println("favicon.ico 요청을 필터링했습니다.");
 	        return mav; // 빈 mav 반환
 	    }
-		
-	    //System.out.println("1111 pk_product_no " + pk_product_no);
-	    //System.out.println("2222 pk_product_no " + pk_product_no);
 	
 		// 로그인한 회원의 회원번호 값 가져오기
 		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
@@ -429,6 +432,18 @@ public class ProductController {
 	@GetMapping("product_search")
 	@ResponseBody
 	public List<Map<String, String>> productSearch(@RequestParam Map<String, String> paraMap) {
+		
+		// 로그인한 회원의 회원번호 값 가져오기
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String fk_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String login_fk_member_no = member_vo.getPk_member_no();
+		    if (login_fk_member_no != null && !login_fk_member_no.isEmpty()) {
+		        fk_member_no = login_fk_member_no;
+		    }
+		}
+		
+		paraMap.put("fk_member_no", fk_member_no);
 
 		List<Map<String, Object>> product_list = service.productSearch(paraMap);
 
@@ -449,6 +464,17 @@ public class ProductController {
 	@GetMapping("seller_search")
 	@ResponseBody
 	public List<Map<String, String>> sellerSearch(@RequestParam Map<String, String> paraMap) {
+		
+		// 로그인한 회원의 회원번호 값 가져오기
+		MemberVO member_vo = (get_member_detail != null) ? get_member_detail.MemberDetail() : null;
+		String fk_member_no = "0"; // 없는 회원번호 값으로 기본값 설정
+		if (member_vo != null) {
+		    String login_fk_member_no = member_vo.getPk_member_no();
+		    if (login_fk_member_no != null && !login_fk_member_no.isEmpty()) {
+		        fk_member_no = login_fk_member_no;
+		    }
+		}	
+		paraMap.put("fk_member_no", fk_member_no);
 
 		List<Map<String, Object>> seller_list = service.sellerSearch(paraMap);
 

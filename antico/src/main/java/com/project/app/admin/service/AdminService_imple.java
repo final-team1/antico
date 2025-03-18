@@ -9,14 +9,19 @@ import org.springframework.stereotype.Service;
 import com.project.app.admin.domain.CalendarVO;
 import com.project.app.admin.model.AdminDAO;
 import com.project.app.common.FileManager;
+import com.project.app.component.S3FileManager;
 import com.project.app.member.domain.MemberVO;
 import com.project.app.notice.domain.NoticeVO;
+import com.project.app.product.domain.ProductImageVO;
 
 @Service
 public class AdminService_imple implements AdminService {
 
 	@Autowired
 	private AdminDAO dao;
+	
+	@Autowired
+	private S3FileManager s3fileManager;
 
 	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
 	private FileManager fileManager;
@@ -134,6 +139,16 @@ public class AdminService_imple implements AdminService {
 	// 상품삭제하기
 	@Override
 	public int admin_deleteproduct(String pk_product_no) {
+		
+		// 해당 상품에 대한 이미지 정보 가져오기
+		List<ProductImageVO> product_img_list = dao.getproductimg(pk_product_no);
+		
+		for (int i=0; i < product_img_list.size(); i++) {
+			String file_name = product_img_list.get(i).getProd_img_name(); // 이미지 S3 업로드명 가져오기
+
+			s3fileManager.deleteImageFromS3(file_name);
+		}
+		
 		int n = dao.admin_deleteproduct(pk_product_no);
 		return n;
 	}

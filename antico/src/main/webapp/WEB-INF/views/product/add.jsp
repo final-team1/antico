@@ -689,9 +689,20 @@ $(document).ready(function(){
     		return false;
     	}
     	
+    	
     	// 상품 제목 유효성 검사
-    	const prod_title = $("input#prod_title").val().trim();
-    	if(prod_title == "") {
+    	const prod_title = $("input#prod_title").val().trim()
+    	
+		// HTML 태그 + 위험한 이벤트 속성 제거 (XSS 방어)
+		const clean_prod_title = prod_title
+		    .replace(/<[^>]+>/g, '') // HTML 태그 제거
+		    .replace(/(on\w+\s*=\s*["'][^"']*["'])/gi, '') // 이벤트 속성 제거
+		    .replace(/[<>"'`=\/]/g, (char) => ({
+		        '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', 
+		        '`': '&#96;', '=': '&#61;', '/': '&#47;'
+		    }[char]));
+    	
+    	if(clean_prod_title == "") {
     		showAlert('error', '상품제목은 필수 입력사항입니다.');
     		prod_infoData_OK = false;
     		return false;

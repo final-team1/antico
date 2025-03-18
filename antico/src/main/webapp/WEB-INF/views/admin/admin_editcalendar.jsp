@@ -61,6 +61,36 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 	
+		// 시작 시 분
+		var str_startdate = "${requestScope.map.calendar_startdate}";
+		var target = str_startdate.indexOf(":");
+		var start_min = str_startdate.substring(target+1);
+		var start_hour = str_startdate.substring(target-2,target);
+						
+		// 종료 시 분
+		var str_enddate = "${requestScope.map.calendar_enddate}";
+		target = str_enddate.indexOf(":");
+		var end_min = str_enddate.substring(target+1);
+		var end_hour = str_enddate.substring(target-2,target);
+		
+		if(start_hour=='00' && start_min=='00' && end_hour=='23' && end_min=='59' ){
+			$("input#allDay").prop("checked",true);
+		}
+		else{
+			$("input#allDay").prop("checked",false);
+		}
+			
+		// 시작날짜 넣어주기
+		target = str_startdate.indexOf(" ");
+		var start_yyyymmdd = str_startdate.substring(0,target);
+		$("input#startDate").val(start_yyyymmdd);
+		
+		// 종료날짜 넣어주기
+		target = str_enddate.indexOf(" ");
+		var end_yyyymmdd = str_enddate.substring(0,target);
+		$("input#endDate").val(end_yyyymmdd);
+		
+		
 		// 시작시간, 종료시간		
 		var html="";
 		for(var i=0; i<24; i++){

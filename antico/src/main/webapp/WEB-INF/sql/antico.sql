@@ -243,7 +243,8 @@ CONSTRAINT lh_fk_mem_no FOREIGN KEY (fk_mem_no) REFERENCES tbl_member(pk_mem_no)
 
 CREATE SEQUENCE login_history_seq;
 
-
+select *
+from tbl_loginhistory
 
 ------------------------------------------------------------------------------------------------------------------------------
 -- 후기 테이블
@@ -598,6 +599,9 @@ ADD member_oauth_type varchar2(30) NULL;
 select *
 from tbl_member;
 
+select *
+from TBL_LOGINHISTORY;
+
 UPDATE tbl_member
 SET member_name = '최재혁'
 WHERE pk_member_no = 102;
@@ -634,3 +638,21 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+ALTER TABLE tbl_member ADD member_img_name varchar2(50);
+
+ALTER TABLE tbl_member ADD CONSTRAINT uq_member_img UNIQUE (member_img_name);
+
+ALTER TABLE tbl_member MODIFY member_img_name VARCHAR2(200);
+
+UPDATE tbl_member 
+SET member_img_name = 'https://ssl.pstatic.net/static/pwe/address/img_profile.png' 
+WHERE pk_member_no = 191;
+
+commit;
+
+
+
+
+
+

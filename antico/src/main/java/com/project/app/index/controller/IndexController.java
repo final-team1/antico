@@ -1,5 +1,7 @@
 package com.project.app.index.controller;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,11 @@ import com.project.app.member.service.MemberService;
 import com.project.app.product.domain.ProductVO;
 import com.project.app.product.service.ProductService;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(value="/*")
@@ -32,7 +38,7 @@ public class IndexController {
 	
 	
 	@GetMapping("index")  //  http://localhost:9090/final/index
-	public ModelAndView index(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView index(HttpServletRequest request,HttpServletResponse response, ModelAndView mav) throws IOException,ServletException {
 		
 		// 최근 등록된 상품 조회 해오기
 		List<Map<String, String>> product_list_reg_date = service.getProductList(null); 
@@ -42,6 +48,22 @@ public class IndexController {
 		String sort_views_week = "sort_views_week";
 		List<Map<String, String>> product_list_views_week = service.getProductList(sort_views_week); 
 		mav.addObject("product_list_views_week", product_list_views_week);
+		
+		if("2".equals(request.getSession().getAttribute("member_status"))){
+			String ctx_path = request.getContextPath();
+			
+			request.getSession().removeAttribute("member_status");
+			
+			Cookie cookie = new Cookie("message", URLEncoder.encode("정지된&nbsp;회원입니다.", "UTF-8"));
+			
+			cookie.setMaxAge(5); 
+			
+			cookie.setPath("/");
+			
+			response.addCookie(cookie);
+			
+			response.sendRedirect(ctx_path+"/logout");
+		}
 		
 	    mav.setViewName("main/index");
 

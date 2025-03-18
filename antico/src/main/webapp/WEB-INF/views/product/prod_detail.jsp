@@ -568,7 +568,13 @@ span.sold_out_text {
 				                            <div class="sold_out_overlay">
 				                                <span class="sold_out_text">경매중</span>
 				                            </div>
-				                        </c:if>					                     			                        									                            
+				                        </c:if>
+										<%-- 경매완료 상품이면 오버레이 추가 --%>
+										<c:if test="${product_map.product_sale_status == 5}">
+										    <div class="sold_out_overlay">
+										        <span class="sold_out_text">경매완료</span>
+										    </div>
+										</c:if>																                     			                        									                            
 			                        </div>
 			                        <c:set var="is_first_image" value="true"/>			                        
 			                    </c:when>
@@ -606,7 +612,13 @@ span.sold_out_text {
 				                            <div class="sold_out_overlay">
 				                                <span class="sold_out_text">경매중</span>
 				                            </div>
-				                        </c:if>					                        
+				                        </c:if>
+										<%-- 경매완료 상품이면 오버레이 추가 --%>
+										<c:if test="${product_map.product_sale_status == 5}">
+										    <div class="sold_out_overlay">
+										        <span class="sold_out_text">경매완료</span>
+										    </div>
+										</c:if>															                        
 			                        </div>	
 			                        <c:set var="is_first_image" value="true"/>                 	
 			                    </c:when>     	                    
@@ -655,7 +667,13 @@ span.sold_out_text {
                            <div class="sold_out_overlay">
                                <span class="sold_out_text">경매중</span>
                            </div>
-                       </c:if>	                       
+                       </c:if>
+					   <%-- 경매완료 상품이면 오버레이 추가 --%>
+					   <c:if test="${product_map.product_sale_status == 5}">
+					       <div class="sold_out_overlay">
+					           <span class="sold_out_text">경매완료</span>
+					       </div>
+					   </c:if>					   	                       
 		       		
 		        </div>
 		    </c:if> 

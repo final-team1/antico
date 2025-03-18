@@ -176,7 +176,6 @@
             </div>
         </div>
 
-        <button class="review-btn">받은 후기</button>
     </div>
 
     <div class="seller-info">

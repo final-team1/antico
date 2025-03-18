@@ -17,6 +17,7 @@ import com.project.app.member.service.Oauth2Service;
 import com.project.app.mypage.domain.ChargeVO;
 import com.project.app.mypage.domain.LeaveVO;
 import com.project.app.mypage.service.MypageService;
+import com.project.app.review.service.ReviewService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +39,8 @@ public class MypageController {
 	private final GetMemberDetail get_member_detail;
 	
 	private final Oauth2Service oauth2_service;
+	
+	private final ReviewService reviewService;
 	
 	// 카카오 api키
 	@Value("${kakao.apikey}")
@@ -70,10 +73,6 @@ public class MypageController {
 
 	    // 현재 로그인한 회원 정보 가져오기
 	    MemberVO member_vo = get_member_detail.MemberDetail();
-	    if (member_vo == null) {
-	        mav.setViewName("error/404");
-	        return mav;
-	    }
 
 	    String pk_member_no = member_vo.getPk_member_no();
 	    String userid = member_vo.getMember_user_id();
@@ -100,7 +99,9 @@ public class MypageController {
 	    member_role = member_vo.getMember_score();
 
 		member_role = get_member_detail.MemberDetail().getMember_role();
-
+		// 판매자가 받은 총 리뷰 개수
+		int review_count = reviewService.getConsumerTotalReviewCount(member_no);
+		
 	    Map<String, String> trade_map = service.tradeCnt(member_no); // 거래횟수와 단골을 알아오기 위함.
 		String role_color; // 회원등급별 색상을 주기 위한 것.
 		if("0".equals(member_role)) {
@@ -114,7 +115,7 @@ public class MypageController {
 			role_color = "#ffd700";
 		}
 	    List<Map<String, String>> myproduct_list = service.myproduct(mvo);
-
+	    Map<String, String> sale_count = service.saleCount(member_no); // 판매상품 개수 알아오기
 	    // 판매자 정보 설정
 	    try {
 	        Map<String, String> seller_info = service.sellerList(mvo);
@@ -130,6 +131,8 @@ public class MypageController {
 	        mav.setViewName("mypage/sellerpage");
 	    }
 
+	    mav.addObject("review_count", review_count);
+	    mav.addObject("sale_count", sale_count);
 	    mav.addObject("trade_map", trade_map);
 	    mav.addObject("mvo", mvo);
 	    mav.addObject("seller_name", seller_name);
